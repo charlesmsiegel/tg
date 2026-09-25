@@ -71,6 +71,14 @@ class LimitedCharacterEditForm(forms.ModelForm):
         }
 
 
+class OwnerUnapprovedCharacterEditForm(forms.ModelForm):
+    """Editable character fields while its creator is drafting revisions."""
+
+    class Meta:
+        model = Character
+        fields = ["name", "concept", "notes", "description", "public_info", "image"]
+
+
 class LimitedHumanEditForm(forms.ModelForm):
     """
     Limited edit form for Human characters.

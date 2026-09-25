@@ -4,7 +4,9 @@ from django.views import View
 from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView, ListView
 
+from core.access_policy import authorize_route
 from core.cache import CACHE_TIMEOUT_LONG
+from core.permissions import Permission, PermissionManager
 
 
 @method_decorator(cache_page(CACHE_TIMEOUT_LONG), name="dispatch")
@@ -45,18 +47,51 @@ class DictView(View):
     model_class = None
     key_property = None
     default_redirect = None
+    public_view_class = None
+    protected_object = False
+    chargen_router = False
 
     def get_object(self, pk):
         return get_object_or_404(self.model_class, pk=pk)
 
     def handle_request(self, request, *args, **kwargs):
         obj = self.get_object(kwargs["pk"])
+        is_read = request.method in {"GET", "HEAD"}
+        can_view_full = PermissionManager.user_has_permission(
+            request.user, obj, Permission.VIEW_FULL, request=request
+        ) if (self.protected_object or self.chargen_router) else False
+
+        if self.protected_object and not can_view_full:
+            if is_read and self.public_view_class is not None:
+                authorize_route(request, self.public_view_class, args, kwargs, subject=obj)
+                return self.public_view_class.as_view(model_class=self.model_class)(
+                    request, *args, **kwargs
+                )
+            from django.http import Http404
+
+            raise Http404("Object not found")
+
+        if self.chargen_router and self.is_valid_key(obj, getattr(obj, self.key_property)):
+            can_edit = PermissionManager.user_has_permission(
+                request.user, obj, Permission.EDIT_FULL, request=request
+            )
+            if not can_edit:
+                if is_read and can_view_full:
+                    return self.get_default_redirect(request, *args, subject=obj, **kwargs)
+                from django.http import Http404
+
+                raise Http404("Object not found")
+
         key = getattr(obj, self.key_property)
 
         if self.is_valid_key(obj, key):
-            return self.view_mapping[key].as_view()(request, *args, **kwargs)
+            target = self.view_mapping[key]
+            denial = authorize_route(request, target, args, kwargs, subject=obj)
+            if denial is not None:
+                return denial
+            return target.as_view()(request, *args, **kwargs)
 
-        return self.get_default_redirect(request, *args, **kwargs)
+        return self.get_default_redirect(request, *args, subject=obj, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return self.handle_request(request, *args, **kwargs)
@@ -67,10 +102,15 @@ class DictView(View):
     def is_valid_key(self, obj, key):
         return key in self.view_mapping
 
-    def get_default_redirect(self, request, *args, **kwargs):
+    def get_default_redirect(self, request, *args, subject=None, **kwargs):
         if isinstance(self.default_redirect, str):
             return redirect(self.default_redirect)
         elif callable(self.default_redirect):
+            denial = authorize_route(
+                request, self.default_redirect, args, kwargs, subject=subject
+            )
+            if denial is not None:
+                return denial
             return self.default_redirect.as_view()(request, *args, **kwargs)
         raise ValueError("default_redirect must be a URL name or a view callable")
 

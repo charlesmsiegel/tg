@@ -62,8 +62,13 @@ class CharacterQuerySet(ModelQuerySet):
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
+        from game.security import staffed_chronicles
+
+        scope = Q(chronicle__in=staffed_chronicles(user))
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            scope |= Q(chronicle__isnull=True)
         return (
-            self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
+            self.filter(scope, status="Sub")
             .select_related("polymorphic_ctype", "chronicle", "owner", "owner__profile")
             .order_by("name")
         )
@@ -169,7 +174,8 @@ class Character(CharacterModel):
     # Valid status transitions
     STATUS_TRANSITIONS = {
         "Un": ["Sub", "Ret"],  # Unfinished can be submitted or retired
-        "Sub": ["Un", "App", "Ret"],  # Submitted can go back, be approved, or retired
+        "Sub": ["Rev", "App", "Ret"],  # A reviewer can return or approve it.
+        "Rev": ["Sub", "Ret"],  # Revisions are editable until resubmitted.
         "App": ["Ret", "Dec"],  # Approved can be retired or killed
         "Ret": ["App"],  # Retired can be reactivated (ST discretion)
         "Dec": [],  # Deceased is final
@@ -273,7 +279,7 @@ class Character(CharacterModel):
         of truth shared by chargen_back_url and ChargenBackView."""
         # freebies_approved lives on Human, not the base Character.
         return (
-            self.status == "Un"
+            self.status in {"Un", "Rev"}
             and self.creation_status > 1
             and not getattr(self, "freebies_approved", False)
         )

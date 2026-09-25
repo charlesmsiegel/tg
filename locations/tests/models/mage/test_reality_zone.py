@@ -29,7 +29,7 @@ class TestRealityZoneCreateView(TestCase):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="password")
+        self.user = User.objects.create_user(username="testuser", password="password", is_staff=True)
         self.url = RealityZone.get_creation_url()
 
     def test_create_view_requires_login(self):

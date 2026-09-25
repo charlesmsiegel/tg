@@ -1,7 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    ViewPermissionMixin,
+    prepare_created_object,
+)
 from locations.forms.mage.demesne import DemesneForm
 from locations.models.mage.demesne import Demesne
 
@@ -24,6 +29,7 @@ class DemesneCreateView(LoginRequiredMixin, MessageMixin, FormView):
     error_message = "Failed to create demesne. Please correct the errors below."
 
     def form_valid(self, form):
+        prepare_created_object(form, self.request)
         self.object = form.save()
         return super().form_valid(form)
 

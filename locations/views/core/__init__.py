@@ -1,9 +1,11 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views import View
 
+from core.create_redirects import resolve_object_type_url
 from core.utils import get_gameline_name, level_name, tree_sort
 from core.views.generic import DictView
+from core.views.public_object import PublicObjectDetailView
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
 
@@ -67,6 +69,8 @@ from .location import LocationCreateView, LocationDetailView, LocationUpdateView
 
 class GenericLocationDetailView(DictView):
     model_class = LocationModel
+    protected_object = True
+    public_view_class = PublicObjectDetailView
     key_property = "type"
     default_redirect = "locations:index"
 
@@ -171,38 +175,32 @@ class LocationIndexView(View):
     }
 
     def get(self, request, *args, **kwargs):
+        if not (request.user.is_authenticated and (
+            request.user.is_staff or request.user.is_superuser
+        )):
+            from core.views.public_object import render_public_object_list
+
+            return render_public_object_list(request, LocationModel)
         context = self.get_context()
         return render(request, "locations/index.html", context)
 
     def post(self, request, *args, **kwargs):
-        context = self.get_context()
         action = request.POST.get("action")
-        loc_type = request.POST["loc_type"]
-        obj, _ = ObjectType.objects.get_or_create(
-            name=loc_type, defaults={"type": "loc", "gameline": "wod"}
-        )
-        gameline = obj.gameline
+        loc_type = request.POST.get("loc_type")
+        if not loc_type or action not in {"create", "index"}:
+            return HttpResponseBadRequest("Invalid location selection")
         if action == "create":
-            if gameline == "wod":
-                redi = f"locations:create:{loc_type}"
-            elif gameline == "wta":
-                redi = f"locations:werewolf:create:{loc_type}"
-            elif gameline == "mta":
-                redi = f"locations:mage:create:{loc_type}"
-            return redirect(redi)
-        elif action == "index":
-            if gameline == "wod":
-                redi = f"locations:list:{loc_type}"
-            elif gameline == "wta":
-                redi = f"locations:werewolf:list:{loc_type}"
-            elif gameline == "mta":
-                redi = f"locations:mage:list:{loc_type}"
-            return redirect(redi)
-        return render(request, "locations/index.html", context)
+            if not request.user.is_authenticated:
+                return HttpResponseBadRequest("Login required")
+        return redirect(
+            resolve_object_type_url(
+                "loc", loc_type, "create" if action == "create" else "list",
+                request.POST.get("gameline"),
+            )
+        )
 
     def get_context(self):
         game_locations = ObjectType.objects.filter(type="loc")
-        game_location_types = [x.name for x in game_locations]
         context = {
             "objects": game_locations,
         }

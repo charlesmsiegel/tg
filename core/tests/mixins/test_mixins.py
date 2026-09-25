@@ -157,14 +157,13 @@ class ObjectCachingMixinTest(TestCase):
         view.kwargs = {"pk": character.pk}
         view.args = ()
 
-        # Call dispatch which calls get_object()
-        # Query count: 1 for character, 1 for chronicle, 1 for head_st
-        with self.assertNumQueries(3):
-            try:
-                view.dispatch(request, pk=character.pk)
-            except Exception:
-                pass
-            view.get_object()
+        try:
+            view.dispatch(request, pk=character.pk)
+        except Exception:
+            pass  # The isolated test has no template.
+        cached = view.get_object()
+        with self.assertNumQueries(0):
+            self.assertIs(view.get_object(), cached)
 
     def test_character_owner_or_st_mixin_caches_object(self):
         """Test that CharacterOwnerOrSTMixin caches object during dispatch."""
@@ -1090,7 +1089,7 @@ class StorytellerRequiredMixinTest(TestCase):
         request.user = self.st_user
 
         view = TestView.as_view()
-        response = view(request)
+        response = view(request, chronicle_pk=self.chronicle.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_non_st_cannot_access(self):
@@ -1270,8 +1269,8 @@ class SpecialUserMixinTest(TestCase):
             name="Test Character", owner=self.owner, chronicle=self.chronicle, status="App"
         )
 
-    def test_owner_is_special_user(self):
-        """Test that owner is considered a special user."""
+    def test_approved_owner_can_see_full_detail(self):
+        """The compatibility flag represents full detail access."""
 
         class TestView(SpecialUserMixin, DetailView):
             model = Character
@@ -1300,8 +1299,8 @@ class SpecialUserMixinTest(TestCase):
         result = view.check_if_special_user(self.character, self.regular_user)
         self.assertFalse(result)
 
-    def test_no_owner_everyone_is_special(self):
-        """Test that when object has no owner, everyone is special."""
+    def test_no_owner_does_not_grant_full_access(self):
+        """Unowned game data has no implicit full-view audience."""
         self.character.owner = None
         self.character.save()
 
@@ -1310,7 +1309,7 @@ class SpecialUserMixinTest(TestCase):
 
         view = TestView()
         result = view.check_if_special_user(self.character, self.regular_user)
-        self.assertTrue(result)
+        self.assertFalse(result)
 
     def test_anonymous_user_is_not_special(self):
         """Test that anonymous user is not special."""
@@ -1557,13 +1556,14 @@ class ApprovalMixinTest(TestCase):
         class TestApprovalView(ApprovalMixin):
             approve_button_value = "approve"
             reject_button_value = "reject"
+            request_key_prefix = "xp_request_"
 
         return TestApprovalView()
 
     def test_parse_request_id_valid_input(self):
         """Test that valid input returns the correct ID."""
         view = self._create_mock_view()
-        request = self.factory.post("/", data={"xp_request_123": "approve"})
+        request = self.factory.post("/", data={"xp_request_123_approve": "approve"})
         result = view._parse_request_id(request, "approve")
         self.assertEqual(result, 123)
 

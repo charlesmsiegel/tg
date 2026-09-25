@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.forms.changeling.holding import HoldingForm
 from locations.models.changeling import Holding
 
@@ -21,7 +21,7 @@ class HoldingListView(ListView):
     template_name = "locations/changeling/holding/list.html"
 
 
-class HoldingCreateView(LoginRequiredMixin, CreateView):
+class HoldingCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create view for a new Holding"""
 
     model = Holding

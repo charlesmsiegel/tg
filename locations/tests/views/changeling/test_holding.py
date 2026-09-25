@@ -21,11 +21,15 @@ class HoldingListViewTest(TestCase):
 
     def test_list_view_uses_correct_template(self):
         """Test that list view uses the correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "locations/changeling/holding/list.html")
 
     def test_list_view_shows_holdings(self):
         """Test that the list view shows existing holdings."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         holding = Holding.objects.create(
             name="Test Barony",
             rank="barony",
@@ -36,11 +40,15 @@ class HoldingListViewTest(TestCase):
 
     def test_list_view_shows_empty_message(self):
         """Test that the list view shows empty message when no holdings exist."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertContains(response, "No holdings have been created yet")
 
     def test_list_view_has_create_link(self):
         """Test that the list view has a link to create new holdings."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertContains(response, "Create New Holding")
         self.assertContains(response, reverse("locations:changeling:create:holding"))

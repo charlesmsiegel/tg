@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "accounts",
     "characters",
     "game",
+    "tg_schema",
     "items",
     "locations",
     "polymorphic",
@@ -46,6 +47,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.authorization.AuthorizationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "core.middleware.UserListMiddleware",
@@ -53,6 +55,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "tg.urls"
+TEST_RUNNER = "tg.test_runner.LocalMigrationTestRunner"
 
 TEMPLATES = [
     {

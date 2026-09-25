@@ -45,7 +45,7 @@ class ChargenBackView(LoginRequiredMixin, View):
             # invalidate the locked allocation, and freebie_step diverges from
             # the real per-gameline freebie step in several creation routers.
             if not char.can_navigate_back():
-                if char.status != "Un":
+                if char.status not in {"Un", "Rev"}:
                     messages.warning(
                         request,
                         "Cannot change creation steps once a character is submitted.",

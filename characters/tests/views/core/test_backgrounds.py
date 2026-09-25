@@ -88,7 +88,8 @@ class TestHumanBackgroundsViewPermissions(TestCase):
         # Access through the character's absolute URL
         response = self.client.get(self.human.get_absolute_url())
         # Should be forbidden or redirect
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_st_can_access_view(self):
         """Storyteller can access the backgrounds view."""

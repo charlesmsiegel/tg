@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% for object in public_objects %}
+<article class="tg-card mb-3 p-3">
+  <h2><a href="{{ object.url }}">{{ object.name }}</a></h2>
+  {% if object.image_url %}<img src="{{ object.image_url }}" alt="" class="img-fluid">{% endif %}
+  {% if object.public_info %}<p>{{ object.public_info }}</p>{% endif %}
+</article>
+{% empty %}<p>No objects found.</p>{% endfor %}
+{% if character_form %}
+<h2>Create a character</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="create">
+  {{ character_form.as_p }}
+  <button type="submit">Continue</button>
+</form>
+{{ character_form.media }}
+{% endif %}
+{% if group_form %}
+<h2>Create a group</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="create_group">
+  {{ group_form.as_p }}
+  <button type="submit">Continue</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 from items.forms.vampire import LimitedVampireArtifactEditForm, VampireArtifactForm
 from items.models.vampire import Bloodstone, VampireArtifact
 
@@ -41,8 +41,8 @@ class VampireArtifactUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         STs and admins get full access to all fields.
         """
         # Check if user has full edit permission
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
 
         if has_full_edit:
@@ -65,7 +65,7 @@ class BloodstoneDetailView(DetailView):
     template_name = "items/vampire/bloodstone/detail.html"
 
 
-class BloodstoneCreateView(CreateView):
+class BloodstoneCreateView(MessageMixin, CreateView):
     model = Bloodstone
     fields = [
         "name",

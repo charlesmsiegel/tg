@@ -212,6 +212,8 @@ class TestHauntViews(TestCase):
 
     def test_haunt_list_view(self):
         """Test haunt list view."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         Haunt.objects.create(name="Haunt 1")
         Haunt.objects.create(name="Haunt 2")
         response = self.client.get("/locations/wraith/list/haunt/")
@@ -269,6 +271,8 @@ class TestHauntViews(TestCase):
         st = User.objects.create_user(username="st_user", password="password")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.storytellers.add(st)
+        chronicle.head_st = st
+        chronicle.save(update_fields=["head_st"])
         haunt = Haunt.objects.create(
             name="Existing Haunt",
             rank=2,
@@ -286,6 +290,8 @@ class TestHauntViews(TestCase):
         st = User.objects.create_user(username="st_user", password="password")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.storytellers.add(st)
+        chronicle.head_st = st
+        chronicle.save(update_fields=["head_st"])
         haunt = Haunt.objects.create(
             name="Existing Haunt",
             rank=2,

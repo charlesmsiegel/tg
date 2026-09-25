@@ -140,7 +140,8 @@ class TestFeraDetailView(FeraViewTestCase):
         response = self.client.get(
             reverse("characters:werewolf:corax", kwargs={"pk": self.corax.pk})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
 
 class TestFeraBreedFactionView(FeraViewTestCase):

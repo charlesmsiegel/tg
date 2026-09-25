@@ -678,6 +678,8 @@ class TestHunterUpdateView(TestCase):
             name="Test Hunter", owner=self.owner, chronicle=self.chronicle
         )
         self.url = reverse("characters:hunter:update:hunter", args=[self.hunter.id])
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_st_can_access_update_view(self):
         """ST should be able to access update view with full form."""

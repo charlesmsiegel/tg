@@ -72,14 +72,16 @@ class PermissionRequiredMixin(ObjectCachingMixin):
 
         obj = self.get_object()
         return PermissionManager.user_has_permission(
-            self.request.user, obj, self.required_permission
+            self.request.user, obj, self.required_permission, request=self.request
         )
 
     def get_context_data(self, **kwargs):
-        """Add is_approved_user flag to context."""
+        """Expose full-read capability to legacy detail templates."""
         context = super().get_context_data(**kwargs)
-        # If we got here, user has passed permission checks
-        context["is_approved_user"] = True
+        context["is_approved_user"] = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.VIEW_FULL,
+            request=self.request,
+        )
         return context
 
 
@@ -248,17 +250,10 @@ class STRequiredMixin(ObjectCachingMixin):
         """Check if user is ST before dispatching."""
         obj = self.get_object()
 
-        # Check if user is admin
-        if request.user.is_superuser or request.user.is_staff:
+        if PermissionManager.user_has_permission(
+            request.user, obj, Permission.APPROVE, request=request
+        ):
             return super().dispatch(request, *args, **kwargs)
-
-        # Check if user is head ST of the chronicle
-        if hasattr(obj, "chronicle") and obj.chronicle:
-            if hasattr(obj.chronicle, "head_st") and obj.chronicle.head_st == request.user:
-                return super().dispatch(request, *args, **kwargs)
-            elif hasattr(obj.chronicle, "head_storytellers"):
-                if obj.chronicle.head_storytellers.filter(id=request.user.id).exists():
-                    return super().dispatch(request, *args, **kwargs)
 
         raise PermissionDenied("Only storytellers can perform this action")
 
@@ -267,10 +262,7 @@ class SpecialUserMixin:
     """
     Mixin for checking if a user has special access to an object.
 
-    Special users include:
-    - The object owner
-    - Any authenticated storyteller (ST)
-    - Anyone if the object has no owner
+    Special users are users with VIEW_FULL for this object.
 
     Templates gating on ``is_approved_user`` should set it via
     get_is_approved_user(); auto-setting it for all such views is in #1459.
@@ -297,15 +289,7 @@ class SpecialUserMixin:
         Returns:
             bool: True if user has special access
         """
-        if obj.owner is None:
-            return True
-        if user == obj.owner:
-            return True
-        if not user.is_authenticated:
-            return False
-        if user.profile.is_st():
-            return True
-        return False
+        return PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL)
 
 
 class SuccessMessageMixin:
@@ -392,6 +376,27 @@ class ErrorMessageMixin:
         return response
 
 
+def prepare_created_object(form, request):
+    """Bind new core.Model rows to their creator before any form saves them."""
+    from core.models import Model
+    from core.permissions import Role
+
+    obj = getattr(form, "instance", None)
+    if not isinstance(obj, Model) or obj.pk is not None:
+        return
+    user = request.user
+    if not user.is_authenticated:
+        raise PermissionDenied("Login required to create objects")
+    gameline = getattr(obj, "gameline", None)
+    if not isinstance(gameline, str):
+        gameline = obj.get_gameline() if hasattr(obj, "get_gameline") else None
+    roles = PermissionManager.get_scoped_roles(user, obj.chronicle, gameline, request)
+    shared_allowed = bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
+    obj.owner = None if shared_allowed and request.POST.get("shared") == "1" else user
+    if Role.ADMIN not in roles:
+        obj.status = "Un"
+
+
 class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
     """
     Combined mixin for both success and error messages.
@@ -403,7 +408,11 @@ class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
             error_message = "Failed to create {model_name}. Please check the form."
     """
 
-    pass
+    def form_valid(self, form):
+        from django.views.generic import CreateView
+        if isinstance(self, CreateView):
+            prepare_created_object(form, self.request)
+        return super().form_valid(form)
 
 
 class DeleteMessageMixin:
@@ -437,10 +446,8 @@ class DeleteMessageMixin:
 
 class StorytellerRequiredMixin:
     """
-    Mixin that restricts access to storytellers and admins only.
-
-    Checks if the user has storyteller status via profile.is_st().
-    This is for general ST-only operations, not chronicle-specific.
+    Restrict writes to staff or storytellers scoped to the target chronicle
+    and gameline. Chronicle-wide targets require the head storyteller.
 
     Usage:
         class StoryCreateView(StorytellerRequiredMixin, CreateView):
@@ -448,15 +455,55 @@ class StorytellerRequiredMixin:
     """
 
     def dispatch(self, request, *args, **kwargs):
-        """Check if user is ST before dispatching."""
-        # Allow admins
-        if request.user.is_superuser or request.user.is_staff:
+        """Authorize the target scope before any subclass handler runs."""
+        from game.models import Chronicle
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied("Login required")
+        if request.user.is_staff or request.user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
 
-        # Check if user is a storyteller
-        if not request.user.is_authenticated or not request.user.profile.is_st():
-            raise PermissionDenied("Only storytellers can perform this action")
+        model = getattr(self, "model", None)
+        obj = None
+        if kwargs.get("pk") is not None and hasattr(self, "get_object"):
+            obj = self.get_object()
+        chronicle = obj if isinstance(obj, Chronicle) else getattr(obj, "chronicle", None)
+        if chronicle is None and obj is not None:
+            character = getattr(obj, "character", None)
+            chronicle = getattr(character, "chronicle", None)
+        if chronicle is None and kwargs.get("chronicle_pk") is not None:
+            chronicle = get_object_or_404(Chronicle, pk=kwargs["chronicle_pk"])
+        if chronicle is None and kwargs.get("character_pk") is not None:
+            from characters.models.core import CharacterModel
 
+            character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
+            chronicle = character.chronicle
+        else:
+            character = getattr(obj, "character", None)
+        gameline = getattr(obj, "gameline", None)
+        if gameline is None and obj is not None:
+            gameline = getattr(character, "gameline", None)
+            if gameline is None and hasattr(character, "get_gameline"):
+                gameline = character.get_gameline()
+        if gameline is None and hasattr(character, "get_gameline"):
+            gameline = character.get_gameline()
+        if gameline is None and model is not Chronicle:
+            gameline = request.POST.get("gameline") if request.method == "POST" else None
+        allowed = (
+            PermissionManager.can_manage_chronicle(request.user, chronicle, request)
+            if model is Chronicle or gameline is None
+            else PermissionManager.can_manage_scope(request.user, chronicle, gameline, request)
+        )
+        if getattr(model, "__name__", None) == "Scene" and obj is None and request.method in {"GET", "HEAD"}:
+            from game.models import STRelationship
+
+            allowed = allowed or bool(
+                chronicle and STRelationship.objects.filter(
+                    chronicle=chronicle, user=request.user
+                ).exists()
+            )
+        if not allowed:
+            raise PermissionDenied("Matching chronicle storyteller required")
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -481,14 +528,11 @@ class CharacterOwnerOrSTMixin(ObjectCachingMixin):
         if request.user.is_superuser or request.user.is_staff:
             return super().dispatch(request, *args, **kwargs)
 
-        # Check if user is a storyteller
-        if request.user.is_authenticated and request.user.profile.is_st():
+        character = getattr(obj, "character", None)
+        if character and PermissionManager.user_has_permission(
+            request.user, character, Permission.VIEW_FULL, request=request
+        ):
             return super().dispatch(request, *args, **kwargs)
-
-        # Check if user is the character owner
-        if hasattr(obj, "character") and obj.character:
-            if obj.character.owner == request.user:
-                return super().dispatch(request, *args, **kwargs)
 
         raise PermissionDenied("Only the character owner or storytellers can access this")
 
@@ -641,123 +685,60 @@ class ApprovalMixin:
         return getattr(self.object, self.spendings_related_name)
 
     def _parse_request_id(self, request, button_value):
-        """Parse the request ID from POST data matching the button value.
+        """Accept exactly one correctly named approval or rejection button."""
+        import re
 
-        Validates that:
-        - A matching POST key exists
-        - The key has at least 3 underscore-separated parts
-        - The third part is a positive integer
-
-        Raises:
-            ValidationError: If the POST data is malformed or missing required keys
-        """
         from django.core.exceptions import ValidationError
 
-        # Find matching keys
         matching_keys = [k for k, v in request.POST.items() if v == button_value]
-        if not matching_keys:
-            raise ValidationError("Invalid request: no matching action key found")
-
-        request_key = matching_keys[0]
-        parts = request_key.split("_")
-
-        # Validate key format (needs at least 3 parts: prefix_type_id)
-        if len(parts) < 3:
-            raise ValidationError("Invalid request: malformed action key format")
-
-        # Validate ID is a positive integer
-        try:
-            request_id = int(parts[2])
-            if request_id < 0:
-                raise ValidationError("Invalid request: ID must be a positive integer")
-            return request_id
-        except ValueError:
-            raise ValidationError("Invalid request: ID must be a valid integer")
+        if len(matching_keys) != 1 or not self.request_key_prefix:
+            raise ValidationError("Invalid request: exactly one action button is required")
+        suffix = "approve" if button_value == self.approve_button_value else "reject"
+        match = re.fullmatch(
+            rf"{re.escape(self.request_key_prefix)}([1-9][0-9]*)_{suffix}",
+            matching_keys[0],
+        )
+        if match is None:
+            raise ValidationError("Invalid request: malformed action key")
+        return int(match.group(1))
 
     def post(self, request, *args, **kwargs):
-        import logging
-
         from django.core.exceptions import ValidationError
-        from django.db import transaction
         from django.shortcuts import redirect
         from django.urls import reverse
 
-        logger = logging.getLogger(__name__)
+        from game.spending_approval import SpendingDecisionError, decide_spending_request
+
         self.object = self.get_object()
-        request_model = self.get_request_model()
-
+        decision = None
+        button = None
         if self.approve_button_value in request.POST.values():
+            decision, button = "approve", self.approve_button_value
+        elif self.reject_button_value in request.POST.values():
+            decision, button = "deny", self.reject_button_value
+
+        if decision is not None:
             try:
-                request_id = self._parse_request_id(request, self.approve_button_value)
-            except ValidationError as e:
-                messages.error(request, str(e))
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-            try:
-                spending_request = self._get_spendings_manager().get(
-                    id=request_id, approved="Pending"
-                )
-            except request_model.DoesNotExist:
-                messages.error(
-                    request, f"{self.spending_type} request not found or already processed"
-                )
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-            try:
-                with transaction.atomic():
-                    service = self.get_service_factory().get_service(self.object)
-                    result = service.apply(spending_request, request.user)
-
-                    if result.success:
-                        messages.success(request, result.message)
-                    else:
-                        messages.error(
-                            request, result.error or f"Failed to apply {self.spending_type}"
-                        )
-            except Exception as e:
-                logger.error(
-                    f"Error approving {self.spending_type} for character {self.object.id}: {e}",
-                    exc_info=True,
-                )
-                messages.error(request, f"Error approving {self.spending_type}: {str(e)}")
-
-            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-        if self.reject_button_value in request.POST.values():
-            try:
-                request_id = self._parse_request_id(request, self.reject_button_value)
-            except ValidationError as e:
-                messages.error(request, str(e))
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-            try:
-                with transaction.atomic():
-                    spending_request = (
-                        self._get_spendings_manager()
-                        .select_for_update()
-                        .get(id=request_id, approved="Pending")
+                request_id = self._parse_request_id(request, button)
+            except ValidationError as exc:
+                messages.error(request, str(exc))
+            else:
+                try:
+                    result = decide_spending_request(
+                        self.get_request_model(),
+                        self.object,
+                        request_id,
+                        request.user,
+                        decision,
                     )
-
-                    service = self.get_service_factory().get_service(self.object)
-                    result = service.deny(spending_request, request.user)
-
-                    if result.success:
-                        messages.success(request, result.message)
-                    else:
-                        messages.error(
-                            request, result.error or f"Failed to deny {self.spending_type}"
-                        )
-            except request_model.DoesNotExist:
-                messages.error(
-                    request, f"{self.spending_type} request not found or already processed"
-                )
-
+                except SpendingDecisionError as exc:
+                    messages.error(request, str(exc))
+                else:
+                    messages.success(request, result.message)
             return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
-        # Call parent post() for other actions (retire, decease, etc.)
         if hasattr(super(), "post"):
             return super().post(request, *args, **kwargs)
-        # If parent doesn't have post(), return to detail view
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 

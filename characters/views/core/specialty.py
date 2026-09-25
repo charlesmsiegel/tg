@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.core import Specialty
@@ -9,7 +8,7 @@ from characters.models.core.statistic import Statistic
 from core.mixins import MessageMixin
 
 
-class SpecialtyDetailView(LoginRequiredMixin, DetailView):
+class SpecialtyDetailView(DetailView):
     model = Specialty
     template_name = "characters/core/specialty/detail.html"
 

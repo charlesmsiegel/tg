@@ -14,7 +14,7 @@ from characters.forms.werewolf.garou import (
 )
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.gift import Gift
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
@@ -33,7 +33,7 @@ from core.mixins import (
     ViewPermissionMixin,
     XPApprovalMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class WerewolfDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -129,8 +129,8 @@ class WerewolfUpdateView(EditPermissionMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -232,9 +232,10 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):
@@ -290,28 +291,16 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get gift permission objects for filtering
-        breed_perm = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.object.breed
-        )[0]
-        auspice_perm = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.object.auspice
-        )[0]
+        context["breed_gifts"] = Gift.objects.filter(
+            rank=1, allowed__shifter="werewolf", allowed__condition=self.object.breed
+        ).distinct().order_by("name")
+        context["auspice_gifts"] = Gift.objects.filter(
+            rank=1, allowed__shifter="werewolf", allowed__condition=self.object.auspice
+        ).distinct().order_by("name")
         if self.object.tribe:
-            tribe_perm = GiftPermission.objects.get_or_create(
-                shifter="werewolf", condition=self.object.tribe.name
-            )[0]
-        else:
-            tribe_perm = None
-
-        context["breed_gifts"] = Gift.objects.filter(rank=1, allowed=breed_perm).order_by("name")
-        context["auspice_gifts"] = Gift.objects.filter(rank=1, allowed=auspice_perm).order_by(
-            "name"
-        )
-        if tribe_perm:
-            context["tribe_gifts"] = Gift.objects.filter(rank=1, allowed=tribe_perm).order_by(
-                "name"
-            )
+            context["tribe_gifts"] = Gift.objects.filter(
+                rank=1, allowed__shifter="werewolf", allowed__condition=self.object.tribe.name
+            ).distinct().order_by("name")
         else:
             context["tribe_gifts"] = []
         return context
@@ -449,10 +438,9 @@ class WerewolfFetishView(GenericBackgroundView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get the current background rating for fetish
-        fetish_bg, _ = Background.objects.get_or_create(
-            property_name="fetish", defaults={"name": "Fetish"}
-        )
-        fetish_rating = BackgroundRating.objects.filter(char=self.object, bg=fetish_bg).first()
+        fetish_rating = BackgroundRating.objects.filter(
+            char=self.object, bg__property_name="fetish"
+        ).first()
         if fetish_rating:
             context["max_fetish_rating"] = fetish_rating.rating
             context["current_fetish_total"] = self.object.total_fetish_rating()

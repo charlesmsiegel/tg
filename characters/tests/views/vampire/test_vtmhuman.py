@@ -79,12 +79,14 @@ class TestVtMHumanDetailView(VtMHumanViewTestCase):
         """Test that characters are hidden from other users."""
         self.client.login(username="otheruser", password="testpassword")
         response = self.client.get(self.vtmhuman.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404."""
         response = self.client.get(self.vtmhuman.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used."""
@@ -150,11 +152,11 @@ class TestVtMHumanBasicsView(VtMHumanViewTestCase):
         self.assertEqual(vtmhuman.creation_status, 1)
 
     def test_basics_view_context_has_storyteller_flag_for_st(self):
-        """Test that context includes storyteller flag for STs."""
+        """An unscoped create page grants no chronicle ST controls."""
         self.client.login(username="storyteller", password="testpassword")
         url = reverse("characters:vampire:create:vtm_human")
         response = self.client.get(url)
-        self.assertTrue(response.context["storyteller"])
+        self.assertFalse(response.context["storyteller"])
 
     def test_basics_view_storyteller_false_for_regular_user(self):
         """Test that storyteller flag is false for non-ST users."""
@@ -187,7 +189,7 @@ class TestVtMHumanAttributeView(VtMHumanViewTestCase):
         self.client.login(username="otheruser", password="testpassword")
         url = reverse("characters:vampire:vtmhuman_creation", kwargs={"pk": self.vtmhuman.pk})
         response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 404)
 
     def test_attribute_view_uses_correct_template(self):
         """Test that correct template is used."""
@@ -357,7 +359,7 @@ class TestVtMHumanCharacterCreationView(VtMHumanViewTestCase):
         self.client.login(username="otheruser", password="testpassword")
         url = reverse("characters:vampire:vtmhuman_creation", kwargs={"pk": vtmhuman.pk})
         response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 404)
 
     def test_accessible_to_storyteller(self):
         """Test that chargen is accessible to storytellers."""

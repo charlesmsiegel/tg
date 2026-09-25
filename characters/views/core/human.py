@@ -16,8 +16,8 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.chargen_mixins import ChargenProgressMixin
 from characters.views.core.character import CharacterDetailView
+from characters.views.core.chargen_mixins import ChargenProgressMixin
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     DropdownOptionsView,
@@ -25,6 +25,7 @@ from core.mixins import (
     MessageMixin,
     SimpleValuesView,
     SpendFreebiesPermissionMixin,
+    prepare_created_object,
 )
 from core.models import Language
 from core.views.generic import DictView
@@ -72,8 +73,9 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     error_message = "Error creating Human."
 
     def form_valid(self, form):
-        if not form.instance.owner:
-            form.instance.owner = self.request.user
+        from core.mixins import prepare_created_object
+
+        prepare_created_object(form, self.request)
         return super().form_valid(form)
 
 
@@ -129,8 +131,7 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
     template_name = "characters/core/human/humanbasics.html"
 
     def form_valid(self, form):
-        if not form.instance.owner:
-            form.instance.owner = self.request.user
+        prepare_created_object(form, self.request)
         return super().form_valid(form)
 
 
@@ -454,12 +455,7 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
 
     model = Human
     form_class = HumanFreebiesForm
-    # NOTE: this template path does not exist; plain-Human chargen templates
-    # are incomplete (tracked in #1459). Repointing it at the wtohuman
-    # template renders but the plain HumanFreebiesForm lacks the conditional
-    # JS that template needs, so the freebies controls stay hidden. Leaving
-    # the pre-existing state rather than shipping a non-functional form here.
-    template_name = "characters/human/human/chargen.html"
+    template_name = "characters/core/human/chargen_form.html"
 
     def form_valid(self, form):
         if form.is_valid():
@@ -515,18 +511,18 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
     def form_invalid(self, form):
         return super().form_invalid(form)
 
-    def dispatch(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if obj.freebies == 0:
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
-    template_name = "characters/core/human/chargen.html"
+    template_name = "characters/core/human/chargen_form.html"
 
     def get_object(self):
         """Return the Human object for permission checking."""
@@ -534,7 +530,7 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
 
-    def dispatch(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
             english, _ = Language.objects.get_or_create(name="English")
@@ -542,7 +538,7 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
@@ -651,6 +647,7 @@ class HumanSpecialtiesChargenView(ChargenProgressMixin, HumanSpecialtiesView):
 
 
 class HumanCharacterCreationView(DictView):
+    chargen_router = True
     view_mapping = {
         1: HumanAttributeChargenView,
         2: HumanAbilityChargenView,
@@ -665,4 +662,4 @@ class HumanCharacterCreationView(DictView):
     default_redirect = HumanDetailView
 
     def is_valid_key(self, obj, key):
-        return key in self.view_mapping and obj.status == "Un"
+        return key in self.view_mapping and obj.status in {"Un", "Rev"}

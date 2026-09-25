@@ -135,7 +135,9 @@ class TestMageDetailViewPost(TestCase):
 
     def test_specialties_submission(self):
         """Test submitting specialties from detail view."""
-        self.client.login(username="owner", password="password")
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
+        self.client.force_login(self.st)
         self.mage.arete = 4  # Must be >= sphere ratings
         self.mage.forces = 4  # Needs specialty
         self.mage.save()
@@ -162,16 +164,16 @@ class TestMageDetailViewPost(TestCase):
         self.assertEqual(self.mage.status, "Ret")
 
     def test_decease_character(self):
-        """Test marking a character as deceased from detail view."""
+        """An owner cannot mark an approved character deceased."""
         self.client.login(username="owner", password="password")
 
         response = self.client.post(
             self.mage.get_absolute_url(),
             {"decease": "true"},
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.mage.refresh_from_db()
-        self.assertEqual(self.mage.status, "Dec")
+        self.assertEqual(self.mage.status, "App")
 
 
 class TestMageAjaxViews(TestCase):

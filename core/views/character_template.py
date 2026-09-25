@@ -3,7 +3,9 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -23,12 +25,14 @@ from core.forms.character_template import (
 )
 from core.mixins import MessageMixin
 from core.models import CharacterTemplate
+from core.permissions import PermissionManager
+from game.security import staffed_chronicles
 
 logger = logging.getLogger(__name__)
 
 
 class STRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict access to Storytellers only (or superusers/staff)"""
+    """Require an editor for this template's chronicle and gameline."""
 
     def test_func(self):
         user = self.request.user
@@ -37,7 +41,14 @@ class STRequiredMixin(UserPassesTestMixin):
         # Allow superusers and staff
         if user.is_superuser or user.is_staff:
             return True
-        return user.profile.is_st()
+        obj = getattr(self, "object", None)
+        if obj is None and getattr(self, "kwargs", {}).get("pk") is not None:
+            obj = self.get_object()
+        return bool(
+            obj and PermissionManager.can_manage_scope(
+                user, obj.chronicle, obj.gameline, self.request
+            )
+        )
 
     def handle_no_permission(self):
         # If user is not authenticated, let LoginRequiredMixin handle it
@@ -51,7 +62,7 @@ class STRequiredMixin(UserPassesTestMixin):
         return redirect("core:home")
 
 
-class CharacterTemplateListView(LoginRequiredMixin, STRequiredMixin, ListView):
+class CharacterTemplateListView(LoginRequiredMixin, ListView):
     """List all templates (official + user-created)"""
 
     model = CharacterTemplate
@@ -61,6 +72,11 @@ class CharacterTemplateListView(LoginRequiredMixin, STRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = CharacterTemplate.objects.all().select_related("owner", "chronicle")
+        if not (self.request.user.is_staff or self.request.user.is_superuser):
+            qs = qs.filter(
+                Q(owner=self.request.user)
+                | Q(chronicle__in=staffed_chronicles(self.request.user))
+            ).distinct()
 
         # Filter by gameline if specified
         gameline = self.request.GET.get("gameline")
@@ -91,7 +107,7 @@ class CharacterTemplateListView(LoginRequiredMixin, STRequiredMixin, ListView):
         return context
 
 
-class CharacterTemplateDetailView(LoginRequiredMixin, STRequiredMixin, DetailView):
+class CharacterTemplateDetailView(LoginRequiredMixin, DetailView):
     """View a template in detail"""
 
     model = CharacterTemplate
@@ -102,7 +118,7 @@ class CharacterTemplateDetailView(LoginRequiredMixin, STRequiredMixin, DetailVie
         return CharacterTemplate.objects.select_related("owner", "chronicle")
 
 
-class CharacterTemplateCreateView(LoginRequiredMixin, STRequiredMixin, MessageMixin, CreateView):
+class CharacterTemplateCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create a new user template (ST only)"""
 
     model = CharacterTemplate
@@ -119,19 +135,13 @@ class CharacterTemplateCreateView(LoginRequiredMixin, STRequiredMixin, MessageMi
         return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateUpdateView(LoginRequiredMixin, STRequiredMixin, MessageMixin, UpdateView):
+class CharacterTemplateUpdateView(LoginRequiredMixin, MessageMixin, UpdateView):
     """Edit a user template (ST only, owner or superuser)"""
 
     model = CharacterTemplate
     form_class = CharacterTemplateForm
     template_name = "core/character_template/form.html"
     success_message = "Template updated successfully!"
-
-    def get_queryset(self):
-        # Only allow editing own templates or if superuser
-        if self.request.user.is_superuser:
-            return CharacterTemplate.objects.all()
-        return CharacterTemplate.objects.filter(owner=self.request.user)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -142,7 +152,7 @@ class CharacterTemplateUpdateView(LoginRequiredMixin, STRequiredMixin, MessageMi
         return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateDeleteView(LoginRequiredMixin, STRequiredMixin, MessageMixin, DeleteView):
+class CharacterTemplateDeleteView(LoginRequiredMixin, MessageMixin, DeleteView):
     """Delete a user template (ST only, owner or superuser)"""
 
     model = CharacterTemplate
@@ -150,14 +160,8 @@ class CharacterTemplateDeleteView(LoginRequiredMixin, STRequiredMixin, MessageMi
     success_url = reverse_lazy("core:character_template_list")
     success_message = "Template deleted successfully!"
 
-    def get_queryset(self):
-        # Only allow deleting own templates (not official ones) or if superuser
-        if self.request.user.is_superuser:
-            return CharacterTemplate.objects.all()
-        return CharacterTemplate.objects.filter(owner=self.request.user, is_official=False)
 
-
-class CharacterTemplateExportView(LoginRequiredMixin, STRequiredMixin, DetailView):
+class CharacterTemplateExportView(LoginRequiredMixin, DetailView):
     """Export a template as JSON"""
 
     model = CharacterTemplate
@@ -196,7 +200,7 @@ class CharacterTemplateExportView(LoginRequiredMixin, STRequiredMixin, DetailVie
         return response
 
 
-class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMixin, FormView):
+class CharacterTemplateImportView(LoginRequiredMixin, MessageMixin, FormView):
     """Import a template from JSON"""
 
     form_class = CharacterTemplateImportForm
@@ -244,7 +248,7 @@ class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMi
                 is_official=False,
                 is_public=form.cleaned_data.get("is_public", False),
                 chronicle=form.cleaned_data.get("chronicle"),
-                status="App",  # Auto-approve imported templates
+                status="Un",
             )
 
             messages.success(
@@ -266,11 +270,15 @@ class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMi
             return self.form_invalid(form)
 
 
-class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
+class CharacterTemplateQuickNPCView(LoginRequiredMixin, View):
     """Quick NPC creation from a template (ST only)"""
 
     def post(self, request, *args, **kwargs):
         template = get_object_or_404(CharacterTemplate, pk=kwargs["pk"])
+        if not PermissionManager.can_manage_scope(
+            request.user, template.chronicle, template.gameline, request
+        ):
+            raise PermissionDenied("Matching chronicle storyteller required")
 
         try:
             # Dynamically import the correct character model based on template

@@ -18,7 +18,7 @@ class TestArtifactDetailViewQueryOptimization(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )
-        self.artifact = Artifact.objects.create(name="Test Artifact", rank=3)
+        self.artifact = Artifact.objects.create(name="Test Artifact", rank=3, owner=self.user)
         for i in range(5):
             resonance = Resonance.objects.create(name=f"Resonance {i}")
             WonderResonanceRating.objects.create(
@@ -34,13 +34,14 @@ class TestArtifactDetailViewQueryOptimization(TestCase):
 
         self.assertEqual(response.status_code, 200)
         query_count = len(context.captured_queries)
-        # With select_related on resonance, queries should be bounded
-        # regardless of number of resonance ratings
-        self.assertLessEqual(
-            query_count,
-            15,
-            f"Too many queries ({query_count}). Detail view may have N+1 issue.",
-        )
+        for i in range(5, 10):
+            resonance = Resonance.objects.create(name=f"Resonance {i}")
+            WonderResonanceRating.objects.create(
+                wonder=self.artifact, resonance=resonance, rating=1
+            )
+        with CaptureQueriesContext(connection) as expanded:
+            self.client.get(f"/items/mage/artifact/{self.artifact.pk}/")
+        self.assertLessEqual(len(expanded.captured_queries), query_count + 2)
 
     def test_resonance_is_in_context(self):
         """Test that resonance ratings are included in context."""

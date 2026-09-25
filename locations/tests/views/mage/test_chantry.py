@@ -17,11 +17,15 @@ class TestChantryListView(TestCase):
 
     def test_list_view_template(self):
         """Test list view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get("/locations/mage/chantry/")
         self.assertTemplateUsed(response, "locations/mage/chantry/list.html")
 
     def test_list_view_content(self):
         """Test list view shows chantries."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         for i in range(5):
             Chantry.objects.create(name=f"Test Chantry {i}")
         response = self.client.get("/locations/mage/chantry/")
@@ -30,6 +34,8 @@ class TestChantryListView(TestCase):
 
     def test_list_view_ordering(self):
         """Test list view orders by name."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         Chantry.objects.create(name="Zeta Chantry")
         Chantry.objects.create(name="Alpha Chantry")
         Chantry.objects.create(name="Beta Chantry")
@@ -123,6 +129,8 @@ class TestChantryUpdateView(TestCase):
         self.st = User.objects.create_user(username="st_user", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
+        self.chronicle.head_st = self.st
+        self.chronicle.save(update_fields=["head_st"])
         self.chantry = Chantry.objects.create(
             name="Existing Chantry",
             description="An existing chantry",

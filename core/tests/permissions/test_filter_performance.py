@@ -111,14 +111,13 @@ class FilterQuerysetPerformanceTest(TestCase):
         self.assertIn(self.owned_character, qs)
         self.assertIn(self.player_character, qs)
 
-    def test_player_sees_approved_chronicle_characters(self):
-        """Player should see approved characters in their chronicle."""
+    def test_player_sees_chronicle_characters(self):
+        """A player can discover public cards at every creation status."""
         qs = PermissionManager.filter_queryset_for_user(self.player, Character.objects.all())
-        # Should see own character and other approved character in same chronicle
+        # Same-chronicle characters remain discoverable as public cards.
         self.assertIn(self.player_character, qs)
         self.assertIn(self.owned_character, qs)
-        # Should not see unfinished character
-        self.assertNotIn(self.unfinished_character, qs)
+        self.assertIn(self.unfinished_character, qs)
         # Should not see other chronicle's character
         self.assertNotIn(self.other_character, qs)
 
@@ -134,13 +133,12 @@ class FilterQuerysetPerformanceTest(TestCase):
         qs = PermissionManager.filter_queryset_for_user(self.admin, Character.objects.all())
         self.assertEqual(qs.count(), Character.objects.count())
 
-    def test_stranger_sees_nothing(self):
-        """Stranger should see no characters."""
+    def test_other_character_owner_is_a_chronicle_player(self):
+        """Owning an unfinished character grants the PLAYER discovery role."""
         qs = PermissionManager.filter_queryset_for_user(self.stranger, Character.objects.all())
         # Stranger owns other_character, so should see that
         self.assertIn(self.other_character, qs)
-        # But nothing else
-        self.assertNotIn(self.owned_character, qs)
+        self.assertIn(self.owned_character, qs)
 
     def test_anonymous_sees_nothing(self):
         """Anonymous user should see no characters."""

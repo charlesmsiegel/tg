@@ -66,6 +66,8 @@ class TestVisageCreateView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that visage create view is accessible when logged in."""
@@ -84,6 +86,8 @@ class TestVisageUpdateView(TestCase):
             username="user", email="user@test.com", password="password"
         )
         self.visage = Visage.objects.create(name="Bel", owner=self.user)
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that visage update view is accessible when logged in."""
@@ -101,6 +105,8 @@ class TestVisage404Handling(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_visage_detail_returns_404_for_invalid_pk(self):
         """Test that visage detail returns 404 for non-existent visage."""

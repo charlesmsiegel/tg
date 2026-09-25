@@ -65,6 +65,7 @@ class TestNotificationCountContextProcessor(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        Human.objects.create(name="Player in chronicle", owner=self.user, chronicle=self.chronicle)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline

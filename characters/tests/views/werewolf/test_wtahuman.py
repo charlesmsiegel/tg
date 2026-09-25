@@ -30,6 +30,8 @@ class WtAHumanViewTestCase(TestCase):
             password="stpassword",
         )
         self.chronicle.storytellers.add(self.st)
+        self.chronicle.head_st = self.st
+        self.chronicle.save(update_fields=["head_st"])
 
 
 class TestWtAHumanDetailView(WtAHumanViewTestCase):
@@ -59,7 +61,8 @@ class TestWtAHumanDetailView(WtAHumanViewTestCase):
     def test_unauthenticated_returns_404(self):
         """Unauthenticated users get 404 (hidden for privacy)."""
         response = self.client.get(self.wtahuman.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_context_contains_object(self):
         """Detail view context contains the character object."""
@@ -96,11 +99,11 @@ class TestWtAHumanBasicsView(WtAHumanViewTestCase):
         self.assertFalse(response.context["storyteller"])
 
     def test_context_contains_storyteller_flag_for_st(self):
-        """Context includes storyteller flag (True for STs)."""
+        """Unscoped creation does not grant chronicle ST controls."""
         self.client.login(username="storyteller", password="stpassword")
         response = self.client.get(reverse("characters:werewolf:create:wta_human"))
         self.assertIn("storyteller", response.context)
-        self.assertTrue(response.context["storyteller"])
+        self.assertFalse(response.context["storyteller"])
 
     def test_create_wtahuman_via_post(self):
         """Can create a WtA Human character."""

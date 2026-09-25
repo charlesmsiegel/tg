@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>{{ public_object.name }}</title></head>
+<body>
+<main>
+  <h1>{{ public_object.name }}</h1>
+  {% if public_object.image_url %}<img src="{{ public_object.image_url }}" alt="">{% endif %}
+  <div>{{ public_object.public_info|linebreaks }}</div>
+</main>
+</body>
+</html>

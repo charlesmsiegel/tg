@@ -24,6 +24,16 @@ urlpatterns = [
         name="object_approval",
     ),
     path(
+        "submit/<str:object_type>/<int:pk>/",
+        views.ObjectSubmissionView.as_view(),
+        name="object_submission",
+    ),
+    path(
+        "revise/<str:object_type>/<int:pk>/",
+        views.ObjectRevisionView.as_view(),
+        name="object_revision",
+    ),
+    path(
         "approve-image/<str:object_type>/<int:pk>/",
         views.ImageApprovalView.as_view(),
         name="image_approval",

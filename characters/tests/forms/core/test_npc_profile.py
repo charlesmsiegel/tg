@@ -203,6 +203,7 @@ class NPCProfileFormSaveTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        Human.objects.create(name="Existing PC", owner=self.user, chronicle=self.chronicle)
 
     def test_save_creates_vtm_human(self):
         """Test saving form creates VtMHuman NPC."""

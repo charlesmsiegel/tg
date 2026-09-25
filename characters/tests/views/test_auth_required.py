@@ -85,14 +85,11 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_specialty_detail_requires_auth(self):
-        """SpecialtyDetailView should require authentication."""
+    def test_specialty_detail_is_public_reference(self):
+        """Specialties are public reference data."""
         url = reverse("characters:specialty", args=[self.specialty.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_specialty_detail_accessible_when_authenticated(self):
         """SpecialtyDetailView should be accessible when authenticated."""
@@ -106,7 +103,8 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         url = reverse("characters:group", args=[self.group.pk])
         response = self.client.get(url)
         # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
         if response.status_code == 302:
             self.assertIn("/accounts/login/", response.url)
 

@@ -30,6 +30,9 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(bg__property_name="enhancement", complete=False).exists():
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -38,9 +41,7 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         obj = Human.objects.get(id=self.kwargs["pk"])
-        enhancement_bg, _ = Background.objects.get_or_create(
-            property_name="enhancement", defaults={"name": "Enhancement"}
-        )
+        enhancement_bg = Background.objects.get(property_name="enhancement")
         self.current_enhancement = BackgroundRating.objects.filter(
             char=obj,
             bg=enhancement_bg,
@@ -52,9 +53,7 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        enhancement_bg, _ = Background.objects.get_or_create(
-            property_name="enhancement", defaults={"name": "Enhancement"}
-        )
+        enhancement_bg = Background.objects.get(property_name="enhancement")
         self.current_enhancement = BackgroundRating.objects.filter(
             char=obj,
             bg=enhancement_bg,

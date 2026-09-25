@@ -46,7 +46,10 @@ class WraithBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = self.request.user.profile.is_st()
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):
@@ -189,6 +192,9 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
         obj = get_object_or_404(Wraith, pk=kwargs.get("pk"))
         # If they already have the right number of passion points, skip this
         if obj.has_passions():
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -268,6 +274,9 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
         obj = get_object_or_404(Wraith, pk=kwargs.get("pk"))
         # If they already have the right number of fetter points, skip this
         if obj.has_fetters():
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -424,6 +433,9 @@ class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVi
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             english, _ = Language.objects.get_or_create(name="English")
             obj.languages.add(english)
             obj.creation_status += 1

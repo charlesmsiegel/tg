@@ -91,6 +91,8 @@ class TestCircleUpdateView(TestCase):
             description="A test circle",
             chronicle=self.chronicle,
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that circle update view is accessible when logged in."""

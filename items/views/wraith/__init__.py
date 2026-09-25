@@ -1,5 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from core.mixins import MessageMixin
 from items.models.wraith import WraithArtifact, WraithRelic
 
 
@@ -9,7 +10,7 @@ class WraithRelicDetailView(DetailView):
     template_name = "items/wraith/relic/detail.html"
 
 
-class WraithRelicCreateView(CreateView):
+class WraithRelicCreateView(MessageMixin, CreateView):
     model = WraithRelic
     fields = [
         "name",
@@ -45,7 +46,7 @@ class WraithArtifactDetailView(DetailView):
     template_name = "items/wraith/artifact/detail.html"
 
 
-class WraithArtifactCreateView(CreateView):
+class WraithArtifactCreateView(MessageMixin, CreateView):
     model = WraithArtifact
     fields = [
         "name",

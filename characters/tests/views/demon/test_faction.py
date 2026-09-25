@@ -67,6 +67,8 @@ class TestFactionCreateView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that faction create view is accessible when logged in."""
@@ -85,6 +87,8 @@ class TestFactionUpdateView(TestCase):
             username="user", email="user@test.com", password="password"
         )
         self.faction = DemonFaction.objects.create(name="Cryptics", owner=self.user)
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that faction update view is accessible when logged in."""
@@ -102,6 +106,8 @@ class TestFaction404Handling(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_faction_detail_returns_404_for_invalid_pk(self):
         """Test that faction detail returns 404 for non-existent faction."""

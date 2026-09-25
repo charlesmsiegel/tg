@@ -19,6 +19,9 @@ class TestRenownIncidentDetailView(TestCase):
 
 class TestRenownIncidentCreateView(TestCase):
     def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        self.client.force_login(get_user_model().objects.create_user("incident-staff", is_staff=True))
         self.valid_data = {
             "name": "RenownIncident",
             "description": "Test",
@@ -48,6 +51,9 @@ class TestRenownIncidentCreateView(TestCase):
 
 class TestRenownIncidentUpdateView(TestCase):
     def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        self.client.force_login(get_user_model().objects.create_user("incident-staff", is_staff=True))
         self.renownincident = RenownIncident.objects.create(
             name="Test RenownIncident",
             description="Test description",

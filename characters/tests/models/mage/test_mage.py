@@ -851,6 +851,8 @@ class TestMageHumanUpdateView(TestCase):
             "public_info": "test_infor",
         }
         self.url = self.mage.get_full_update_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_update_view_status_code(self):
         self.client.login(username="ST", password="password")

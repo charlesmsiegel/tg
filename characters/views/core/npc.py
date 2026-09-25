@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 from characters.forms.core.npc_profile import NPCProfileForm
 from characters.models.core import Character
+from core.permissions import Permission, PermissionManager
 
 
 class NPCProfileCreateView(LoginRequiredMixin, View):
@@ -20,6 +22,10 @@ class NPCProfileCreateView(LoginRequiredMixin, View):
         related_character = None
         if pk:
             related_character = get_object_or_404(Character, pk=pk)
+            if not PermissionManager.user_has_permission(
+                request.user, related_character, Permission.VIEW_FULL, request=request
+            ):
+                raise Http404("Character not found")
 
         form = NPCProfileForm(user=request.user, related_character=related_character)
 
@@ -35,6 +41,10 @@ class NPCProfileCreateView(LoginRequiredMixin, View):
         related_character = None
         if pk:
             related_character = get_object_or_404(Character, pk=pk)
+            if not PermissionManager.user_has_permission(
+                request.user, related_character, Permission.VIEW_FULL, request=request
+            ):
+                raise Http404("Character not found")
 
         form = NPCProfileForm(
             request.POST,

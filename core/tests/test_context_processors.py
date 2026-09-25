@@ -26,13 +26,14 @@ class AllChroniclesContextProcessorTest(TestCase):
         self.assertIn("chronicles", result)
         self.assertEqual(result["chronicles"].count(), 0)
 
-    def test_returns_all_chronicles(self):
-        """Test that all chronicles are returned."""
+    def test_returns_all_chronicles_for_staff(self):
+        """Staff can navigate every chronicle."""
         Chronicle.objects.create(name="Chronicle 1")
         Chronicle.objects.create(name="Chronicle 2")
         Chronicle.objects.create(name="Chronicle 3")
 
         request = self.factory.get("/")
+        request.user = User.objects.create_user(username="staff", is_staff=True)
 
         result = all_chronicles(request)
 
@@ -40,7 +41,7 @@ class AllChroniclesContextProcessorTest(TestCase):
         self.assertEqual(result["chronicles"].count(), 3)
 
     def test_returns_chronicles_queryset(self):
-        """Test that the result is a QuerySet."""
+        """Anonymous navigation keeps a filtered QuerySet."""
         Chronicle.objects.create(name="Test Chronicle")
 
         request = self.factory.get("/")
@@ -50,6 +51,7 @@ class AllChroniclesContextProcessorTest(TestCase):
         from django.db.models import QuerySet
 
         self.assertIsInstance(result["chronicles"], QuerySet)
+        self.assertEqual(result["chronicles"].count(), 0)
 
 
 class AddSpecialUserFlagContextProcessorTest(TestCase):

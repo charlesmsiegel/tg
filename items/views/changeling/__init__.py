@@ -1,5 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from core.mixins import MessageMixin
 from items.models.changeling import Dross, Treasure
 
 
@@ -9,7 +10,7 @@ class TreasureDetailView(DetailView):
     template_name = "items/changeling/treasure/detail.html"
 
 
-class TreasureCreateView(CreateView):
+class TreasureCreateView(MessageMixin, CreateView):
     model = Treasure
     fields = [
         "name",
@@ -55,7 +56,7 @@ class DrossDetailView(DetailView):
     template_name = "items/changeling/dross/detail.html"
 
 
-class DrossCreateView(CreateView):
+class DrossCreateView(MessageMixin, CreateView):
     model = Dross
     fields = [
         "name",

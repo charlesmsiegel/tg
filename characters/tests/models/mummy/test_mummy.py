@@ -238,6 +238,8 @@ class TestMummyUpdateView(TestCase):
             name="Test Mummy", owner=self.owner, chronicle=self.chronicle
         )
         self.url = reverse("characters:mummy:update:mummy", args=[self.mummy.id])
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_st_can_access_update_view(self):
         """ST should be able to access update view with full form."""
@@ -266,6 +268,8 @@ class TestMtRHumanUpdateView(TestCase):
             name="Test Human", owner=self.owner, chronicle=self.chronicle
         )
         self.url = reverse("characters:mummy:update:mtrhuman", args=[self.human.id])
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_st_can_access_update_view(self):
         """ST should be able to access update view with full form."""

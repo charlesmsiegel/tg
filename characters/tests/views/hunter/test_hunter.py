@@ -103,6 +103,8 @@ class TestHunterUpdateView(TestCase):
             name="Test Hunter", owner=self.owner, chronicle=self.chronicle
         )
         self.url = reverse("characters:hunter:update:hunter", args=[self.hunter.id])
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_st_can_access_update_view(self):
         """ST should be able to access update view with full form."""
@@ -156,12 +158,16 @@ class TestHunterListView(TestCase):
 
     def test_list_view_template(self):
         """List view uses correct template."""
+        self.player.is_staff = True
+        self.player.save(update_fields=["is_staff"])
         self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/hunter/hunter/list.html")
 
     def test_list_view_queryset_ordering(self):
         """List view orders by name and includes related objects."""
+        self.player.is_staff = True
+        self.player.save(update_fields=["is_staff"])
         Hunter.objects.create(name="Zebra Hunter", owner=self.player, creed=self.creed)
         Hunter.objects.create(name="Alpha Hunter", owner=self.player, creed=self.creed)
 

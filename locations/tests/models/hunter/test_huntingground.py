@@ -200,6 +200,8 @@ class TestHuntingGroundUpdateView(TestCase):
         self.st = User.objects.create_user(username="st_user", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
+        self.chronicle.head_st = self.st
+        self.chronicle.save(update_fields=["head_st"])
         self.hunting_ground = HuntingGround.objects.create(
             name="Test Ground",
             owner=self.st,

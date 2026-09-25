@@ -80,6 +80,24 @@ class TestCompanionCreationWorkflow(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
+    def test_other_player_cannot_attach_companion_to_mage(self):
+        other = User.objects.create_user("other_companion_creator")
+        self.client.force_login(other)
+        response = self.client.post(
+            reverse("characters:mage:create:companion"),
+            {
+                "name": "Forged Companion",
+                "nature": self.nature.pk,
+                "demeanor": self.demeanor.pk,
+                "concept": "Unauthorized",
+                "companion_type": "familiar",
+                "chronicle": self.chronicle.pk,
+                "companion_of": self.mage.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Companion.objects.filter(name="Forged Companion").exists())
+
 
 class TestCompanionAttributeView(TestCase):
     """Test CompanionAttributeView."""
@@ -420,7 +438,8 @@ class TestCompanionDetailViewWithOwnership(TestCase):
         """Test that other users cannot view companion."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.companion.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_unapproved_visible_to_owner(self):
         """Test that unapproved companion is visible to owner."""
@@ -438,4 +457,5 @@ class TestCompanionDetailViewWithOwnership(TestCase):
         self.companion.refresh_from_db()
         self.client.login(username="other", password="password")
         response = self.client.get(self.companion.get_absolute_url())
-        self.assertIn(response.status_code, [403, 404])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")

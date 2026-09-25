@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, ViewPermissionMixin, prepare_created_object
 from locations.forms.mage.paradox_realm import ParadoxRealmForm
 from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
 
@@ -33,6 +33,7 @@ class ParadoxRealmCreateView(LoginRequiredMixin, FormView):
     error_message = "Failed to create paradox realm. Please correct the errors below."
 
     def form_valid(self, form):
+        prepare_created_object(form, self.request)
         self.object = form.save()
         return super().form_valid(form)
 

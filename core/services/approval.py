@@ -1,10 +1,16 @@
 """Service for handling object and image approvals."""
 
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from characters.models.core.character import Character
+from characters.models.core.group import Group
+from characters.models.changeling.chimera import Chimera
+from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
+from core.models import CharacterTemplate
+from core.permissions import Permission, PermissionManager
 from items.models.core import ItemModel
 from locations.models.core.location import LocationModel
 
@@ -20,9 +26,13 @@ class ApprovalService:
     # Model type to class mapping for object approvals
     OBJECT_MODEL_MAP = {
         "character": Character,
+        "group": Group,
+        "chimera": Chimera,
+        "effect": Effect,
         "location": LocationModel,
         "item": ItemModel,
         "rote": Rote,
+        "template": CharacterTemplate,
     }
 
     # Model type to class mapping for image approvals
@@ -33,7 +43,7 @@ class ApprovalService:
     }
 
     @classmethod
-    def approve_object(cls, model_type: str, object_id: int) -> tuple:
+    def approve_object(cls, model_type: str, object_id: int, approver=None) -> tuple:
         """
         Approve an object (character, location, item, or rote).
 
@@ -53,9 +63,15 @@ class ApprovalService:
             raise ValueError(f"Invalid model type: {model_type}")
 
         with transaction.atomic():
-            obj = get_object_or_404(model_class, pk=object_id)
+            obj = get_object_or_404(model_class.objects.select_for_update(), pk=object_id)
+            if approver is None or not PermissionManager.user_has_permission(
+                approver, obj, Permission.APPROVE
+            ):
+                raise PermissionDenied("Approval requires a scoped storyteller")
+            if obj.status != "Sub":
+                raise ValidationError("Only submitted objects can be approved")
             obj.status = "App"
-            obj.save()
+            obj.save(update_fields=["status"])
 
             # Handle character-specific group pooled background updates
             if model_type == "character" and hasattr(obj, "group_set"):
@@ -65,6 +81,32 @@ class ApprovalService:
 
         type_display = model_type.title()
         return obj, f"{type_display} '{obj.name}' approved successfully!"
+
+    @classmethod
+    def transition_object(cls, model_type, object_id, user, target_status):
+        """Submit a draft or return a submitted object for revisions."""
+        model_class = cls.OBJECT_MODEL_MAP.get(model_type)
+        if model_class is None or target_status not in {"Sub", "Rev"}:
+            raise ValueError("Unsupported object transition")
+        with transaction.atomic():
+            obj = get_object_or_404(model_class.objects.select_for_update(), pk=object_id)
+            if target_status == "Sub":
+                if obj.status not in {"Un", "Rev"}:
+                    raise ValidationError("Only drafts can be submitted")
+                if not PermissionManager.user_has_permission(
+                    user, obj, Permission.EDIT_FULL
+                ):
+                    raise PermissionDenied("Cannot submit this object")
+            else:
+                if obj.status != "Sub":
+                    raise ValidationError("Only submitted objects can be returned")
+                if not PermissionManager.user_has_permission(
+                    user, obj, Permission.APPROVE
+                ):
+                    raise PermissionDenied("Matching chronicle ST required")
+            obj.status = target_status
+            obj.save(update_fields=["status"])
+            return obj
 
     @classmethod
     def approve_image(cls, model_type: str, object_id: int) -> tuple:

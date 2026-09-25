@@ -178,6 +178,7 @@ class TestChimeraDetailView(TestCase):
         self.chimera = Chimera.objects.create(
             name="Test Chimera",
             chimera_type="simple_crafted",
+            owner=self.player,
         )
         self.url = self.chimera.get_absolute_url()
 
@@ -189,7 +190,8 @@ class TestChimeraDetailView(TestCase):
 
     def test_chimera_detail_view_context(self):
         """Test that detail view contains chimera object."""
-        self.client.login(username="User1", password="12345")
+        self.assertEqual(self.chimera.owner_id, self.player.pk)
+        self.assertTrue(self.client.login(username="User1", password="12345"))
         response = self.client.get(self.url)
         self.assertEqual(response.context["object"], self.chimera)
 
@@ -202,6 +204,8 @@ class TestChimeraCreateView(TestCase):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
         self.url = Chimera.get_creation_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_chimera_create_view_status_code(self):
         """Test that create view returns 200."""
@@ -237,6 +241,8 @@ class TestChimeraUpdateView(TestCase):
             chimera_type="simple_crafted",
         )
         self.url = self.chimera.get_update_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_chimera_update_view_status_code(self):
         """Test that update view returns 200."""

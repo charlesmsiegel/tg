@@ -31,9 +31,13 @@ class STRequiredMixinTest(TestCase):
             username="st_user", email="st@test.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Mage")
+        self.gameline = Gameline.objects.create(name="Mage: the Ascension")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.template = CharacterTemplate.objects.create(
+            name="Scoped Template", gameline="mta", character_type="mage",
+            chronicle=self.chronicle,
         )
 
     def test_st_passes_test(self):
@@ -43,6 +47,7 @@ class STRequiredMixinTest(TestCase):
 
         mixin = STRequiredMixin()
         mixin.request = request
+        mixin.object = self.template
         self.assertTrue(mixin.test_func())
 
     def test_regular_user_fails_test(self):
@@ -52,6 +57,7 @@ class STRequiredMixinTest(TestCase):
 
         mixin = STRequiredMixin()
         mixin.request = request
+        mixin.object = self.template
         self.assertFalse(mixin.test_func())
 
     def test_anonymous_user_fails_test(self):
@@ -63,6 +69,7 @@ class STRequiredMixinTest(TestCase):
 
         mixin = STRequiredMixin()
         mixin.request = request
+        mixin.object = self.template
         self.assertFalse(mixin.test_func())
 
     def test_handle_no_permission_redirects_with_message(self):
@@ -98,7 +105,7 @@ class CharacterTemplateListViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.st_user = User.objects.create_user(
-            username="st_user", email="st@test.com", password="testpass123"
+            username="st_user", email="st@test.com", password="testpass123", is_staff=True
         )
         self.regular_user = User.objects.create_user(
             username="regular", email="regular@test.com", password="testpass123"
@@ -127,16 +134,17 @@ class CharacterTemplateListViewTest(TestCase):
         )
 
     def test_requires_login(self):
-        """Test that view requires authentication."""
+        """Anonymous visitors see the public-safe list."""
         response = self.client.get(reverse("core:character_template_list"))
-        # Should redirect to login or return 401/403 for unauthenticated users
-        self.assertIn(response.status_code, [302, 401, 403])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_list.html")
 
     def test_requires_st(self):
-        """Test that view requires ST status."""
+        """Other players receive the public-safe list."""
         self.client.login(username="regular", password="testpass123")
         response = self.client.get(reverse("core:character_template_list"))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_list.html")
 
     def test_st_can_access(self):
         """Test that ST can access the list view."""
@@ -228,12 +236,12 @@ class CharacterTemplateDetailViewTest(TestCase):
         )
 
     def test_requires_login(self):
-        """Test that view requires authentication."""
+        """Anonymous visitors see only a template's public card."""
         response = self.client.get(
             reverse("core:character_template_detail", kwargs={"pk": self.template.pk})
         )
-        # Should redirect to login or return 401/403 for unauthenticated users
-        self.assertIn(response.status_code, [302, 401, 403])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_st_can_view_detail(self):
         """Test that ST can view template details."""
@@ -330,6 +338,7 @@ class CharacterTemplateUpdateViewTest(TestCase):
             gameline="mta",
             character_type="mage",
             owner=self.st_user,
+            is_official=False,
         )
 
     def test_owner_can_update(self):
@@ -346,7 +355,7 @@ class CharacterTemplateUpdateViewTest(TestCase):
         response = self.client.get(
             reverse("core:character_template_update", kwargs={"pk": self.template.pk})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_superuser_can_update_any(self):
         """Test that superuser can update any template."""
@@ -409,7 +418,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         response = self.client.get(
             reverse("core:character_template_delete", kwargs={"pk": self.official_template.pk})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_non_owner_cannot_delete(self):
         """Test that non-owner cannot delete template."""
@@ -417,7 +426,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         response = self.client.get(
             reverse("core:character_template_delete", kwargs={"pk": self.template.pk})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_superuser_can_delete_any(self):
         """Test that superuser can delete any template."""

@@ -39,7 +39,7 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.models import Language
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm
@@ -140,8 +140,8 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form with ST_EDIT_FIELDS.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -175,9 +175,11 @@ class LoadExamplesView(LoginRequiredMixin, View):
         elif category_choice == "Existing Background":
             examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
         elif category_choice == "MeritFlaw":
-            companion, _ = ObjectType.objects.get_or_create(
-                name="companion", defaults={"type": "char", "gameline": "mta"}
-            )
+            companion = ObjectType.objects.filter(
+                name="companion", type="char", gameline="mta"
+            ).first()
+            if companion is None:
+                return dropdown_options_response([])
             examples = MeritFlaw.objects.filter(allowed_types=companion)
             max_flaws = 7
             if m.total_flaws() <= 0:
@@ -228,9 +230,10 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def get_form(self, form_class=None):
@@ -243,7 +246,24 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
         return form
 
     def form_valid(self, form):
-        form.instance.owner = self.request.user
+        from core.mixins import prepare_created_object
+        from core.permissions import Permission, PermissionManager
+        from django.core.exceptions import PermissionDenied
+
+        linked_character = form.instance.companion_of
+        if linked_character is not None and (
+            linked_character.chronicle_id != form.instance.chronicle_id
+            or not (
+                linked_character.owner_id == self.request.user.pk
+                or PermissionManager.user_has_permission(
+                    self.request.user, linked_character, Permission.EDIT_FULL,
+                    request=self.request,
+                )
+            )
+        ):
+            raise PermissionDenied("Cannot attach a companion to this character")
+
+        prepare_created_object(form, self.request)
         return super().form_valid(form)
 
 

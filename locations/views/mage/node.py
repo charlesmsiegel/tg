@@ -4,7 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    ViewPermissionMixin,
+    prepare_created_object,
+)
 from locations.forms.mage.node import NodeForm
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 
@@ -41,6 +46,7 @@ class NodeCreateView(LoginRequiredMixin, MessageMixin, FormView):
     error_message = "Failed to create node. Please correct the errors below."
 
     def form_valid(self, form):
+        prepare_created_object(form, self.request)
         self.object = form.save()
         return super(NodeCreateView, self).form_valid(form)
 

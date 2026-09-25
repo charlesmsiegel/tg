@@ -49,6 +49,8 @@ class TestThornCreateView(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that thorn create view is accessible when logged in."""
@@ -109,6 +111,8 @@ class TestThornUpdateView(TestCase):
             point_cost=2,
             thorn_type="individual",
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that thorn update view is accessible when logged in."""

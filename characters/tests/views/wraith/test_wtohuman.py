@@ -49,7 +49,7 @@ class TestWtOHumanBasicsView(TestCase):
         self.assertIn("storyteller", response.context)
 
     def test_basics_view_storyteller_context_for_st(self):
-        """Test that storyteller context is True for STs."""
+        """An unscoped create page grants no chronicle ST controls."""
         st = User.objects.create_user(username="st", email="st@test.com", password="password")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.storytellers.add(st)
@@ -57,7 +57,7 @@ class TestWtOHumanBasicsView(TestCase):
         self.client.login(username="st", password="password")
         url = reverse("characters:wraith:create:wto_human")
         response = self.client.get(url)
-        self.assertTrue(response.context["storyteller"])
+        self.assertFalse(response.context["storyteller"])
 
 
 class TestWtOHumanTemplateSelectView(TestCase):
@@ -255,6 +255,8 @@ class TestWtOHumanUpdateView(TestCase):
             chronicle=self.chronicle,
             status="App",
         )
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_to_st(self):
         """Test that WtOHuman update view is accessible to storytellers."""

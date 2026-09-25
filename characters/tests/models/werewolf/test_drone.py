@@ -115,4 +115,5 @@ class TestDroneDetailView(TestCase):
         """Test detail view requires authentication."""
         response = self.client.get(self.drone.get_absolute_url())
         # Should return 404 (hidden for unauthenticated users)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")

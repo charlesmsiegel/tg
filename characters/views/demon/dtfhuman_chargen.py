@@ -37,7 +37,10 @@ class DtFHumanBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = self.request.user.profile.is_st()
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):
@@ -66,7 +69,7 @@ class CharacterTemplateSelectionForm(forms.Form):
         super().__init__(*args, **kwargs)
         if character:
             self.fields["template"].queryset = CharacterTemplate.objects.filter(
-                gameline="dtf", character_type="demon", is_public=True
+                gameline="dtf", character_type="demon", is_public=True, status="App"
             ).order_by("name")
 
 
@@ -92,7 +95,7 @@ class DtFHumanTemplateSelectView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["character"] = self.object
         context["available_templates"] = CharacterTemplate.objects.filter(
-            gameline="dtf", character_type="demon", is_public=True
+            gameline="dtf", character_type="demon", is_public=True, status="App"
         ).order_by("name")
         return context
 

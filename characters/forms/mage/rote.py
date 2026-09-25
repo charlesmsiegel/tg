@@ -117,15 +117,21 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
             practice_filter |= Q(practice=practice, **sphere_filter)
 
         effects_known = [x.effect.id for x in self.instance.rotes.all()]
+        # Legacy global library entries have no creator or chronicle. They
+        # remain selectable; private submitted work belongs to its creator.
+        selectable = Q(status="App") | Q(owner__isnull=True, chronicle__isnull=True)
+        if self.instance.owner_id is not None:
+            selectable |= Q(owner_id=self.instance.owner_id)
 
         self.fields["rote_options"].queryset = (
             Rote.objects.filter(**rote_filter_dict)
             .filter(practice_filter)
+            .filter(selectable)
             .exclude(id__in=self.instance.rotes.all())
         )
         self.fields["effect_options"].queryset = Effect.objects.filter(
             **effect_filter_dict
-        ).exclude(id__in=effects_known)
+        ).filter(selectable).exclude(id__in=effects_known)
 
         # Re-run chain setup after choices are configured
         self._setup_chains()
@@ -166,6 +172,8 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
                     description=systems,
                     name=name,
                     status="Sub",
+                    owner=mage.owner,
+                    chronicle=mage.chronicle,
                 )
                 if e.is_learnable(mage) and e.cost() <= mage.rote_points:
                     e.save()
@@ -183,6 +191,7 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
                 effect=e,
                 status="Sub",
                 chronicle=self.instance.chronicle,
+                owner=mage.owner,
             )
         else:
             # Select Rote

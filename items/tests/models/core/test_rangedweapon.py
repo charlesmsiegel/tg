@@ -13,6 +13,8 @@ class TestRangedWeaponDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_object_detail_view_templates(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/core/rangedweapon/detail.html")
 
@@ -33,14 +35,20 @@ class TestRangedWeaponCreateView(TestCase):
         self.url = RangedWeapon.get_creation_url()
 
     def test_create_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/core/rangedweapon/form.html")
 
     def test_create_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(RangedWeapon.objects.count(), 1)
@@ -67,14 +75,20 @@ class TestRangedWeaponUpdateView(TestCase):
         self.url = self.item.get_update_url()
 
     def test_update_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/core/rangedweapon/form.html")
 
     def test_update_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.item.refresh_from_db()

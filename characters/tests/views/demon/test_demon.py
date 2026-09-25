@@ -49,12 +49,14 @@ class TestDemonDetailView(TestCase):
         """Test that characters are hidden from other users (404)."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.demon.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404 (not login redirect)."""
         response = self.client.get(self.demon.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used for demon detail view."""
@@ -72,7 +74,8 @@ class TestDemonDetailView(TestCase):
         )
         self.client.login(username="other", password="password")
         response = self.client.get(unapproved.get_absolute_url())
-        self.assertIn(response.status_code, [403, 404])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_unapproved_visible_to_owner(self):
         """Test that unapproved characters are visible to owners."""

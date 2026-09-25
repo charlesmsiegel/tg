@@ -167,6 +167,8 @@ class TestDomainViews(TestCase):
 
     def test_domain_list_view(self):
         """Test domain list view."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         Domain.objects.create(name="Domain 1")
         Domain.objects.create(name="Domain 2")
         response = self.client.get("/locations/vampire/list/domains/")
@@ -222,6 +224,8 @@ class TestDomainViews(TestCase):
         st = User.objects.create_user(username="st_user", password="password")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.storytellers.add(st)
+        chronicle.head_st = st
+        chronicle.save(update_fields=["head_st"])
         domain = Domain.objects.create(
             name="Existing Domain",
             size=1,
@@ -240,6 +244,8 @@ class TestDomainViews(TestCase):
         st = User.objects.create_user(username="st_user", password="password")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.storytellers.add(st)
+        chronicle.head_st = st
+        chronicle.save(update_fields=["head_st"])
         domain = Domain.objects.create(
             name="Existing Domain",
             size=1,

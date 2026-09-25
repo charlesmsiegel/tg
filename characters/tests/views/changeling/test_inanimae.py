@@ -127,13 +127,13 @@ class TestInanimaeUpdateView(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_update_view_denies_owner(self):
-        """Test that update view denies access to owner (requires EDIT_FULL which owners don't have)."""
+    def test_update_view_allows_draft_owner(self):
+        """A creator can edit their own unfinished object."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(
             reverse("characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk})
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestInanimaeURLs(TestCase):

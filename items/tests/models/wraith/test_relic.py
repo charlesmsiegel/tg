@@ -104,6 +104,8 @@ class TestWraithRelicDetailView(TestCase):
 
     def test_detail_view_template(self):
         """Test detail view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/wraith/relic/detail.html")
 
@@ -116,11 +118,15 @@ class TestWraithRelicCreateView(TestCase):
 
     def test_create_view_status_code(self):
         """Test create view returns 200."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Test create view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/wraith/relic/form.html")
 
@@ -134,11 +140,15 @@ class TestWraithRelicUpdateView(TestCase):
 
     def test_update_view_status_code(self):
         """Test update view returns 200."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Test update view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/wraith/relic/form.html")
 

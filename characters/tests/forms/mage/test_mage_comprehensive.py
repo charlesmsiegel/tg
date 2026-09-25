@@ -10,6 +10,7 @@ from characters.models.mage.mage import Mage
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
+from game.models import Chronicle
 
 
 class TestMageCreationForm(TestCase):
@@ -19,9 +20,6 @@ class TestMageCreationForm(TestCase):
         mage_setup()
         self.player = User.objects.create_user(username="Test", password="password")
         self.st = User.objects.create_user(username="ST", password="password")
-        # Set up ST profile
-        from game.models import Chronicle
-
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -51,10 +49,22 @@ class TestMageCreationForm(TestCase):
         self.assertNotIn(marauders, form.fields["affiliation"].queryset)
 
     def test_form_includes_nephandi_for_st(self):
-        """Test form includes Nephandi for storytellers."""
+        """A head ST sees restricted affiliations in their chronicle."""
         nephandi = MageFaction.objects.create(name="Nephandi", parent=None)
-        form = MageCreationForm(user=self.st)
+        self.chronicle.head_st = self.st
+        self.chronicle.save(update_fields=["head_st"])
+        form = MageCreationForm(
+            user=self.st, initial={"chronicle": self.chronicle.pk}
+        )
         self.assertIn(nephandi, form.fields["affiliation"].queryset)
+
+    def test_st_of_another_chronicle_cannot_choose_nephandi(self):
+        nephandi = MageFaction.objects.create(name="Nephandi", parent=None)
+        Chronicle.objects.create(name="Other chronicle", head_st=self.st)
+        form = MageCreationForm(
+            user=self.st, initial={"chronicle": self.chronicle.pk}
+        )
+        self.assertNotIn(nephandi, form.fields["affiliation"].queryset)
 
     def test_form_valid_data(self):
         """Test form with valid data."""

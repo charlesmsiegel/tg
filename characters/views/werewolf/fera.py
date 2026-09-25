@@ -38,7 +38,7 @@ from core.mixins import (
     ViewPermissionMixin,
     XPApprovalMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class FeraDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -126,8 +126,8 @@ class FeraUpdateView(EditPermissionMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -146,9 +146,10 @@ class FeraBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):
@@ -645,10 +646,9 @@ class FeraFetishView(GenericBackgroundView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get the current background rating for fetish
-        fetish_bg, _ = Background.objects.get_or_create(
-            property_name="fetish", defaults={"name": "Fetish"}
-        )
-        fetish_rating = BackgroundRating.objects.filter(char=self.object, bg=fetish_bg).first()
+        fetish_rating = BackgroundRating.objects.filter(
+            char=self.object, bg__property_name="fetish"
+        ).first()
         if fetish_rating:
             context["max_fetish_rating"] = fetish_rating.rating
             context["current_fetish_total"] = self.object.total_fetish_rating()

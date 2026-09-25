@@ -1,0 +1,9 @@
+{% extends "core/form.html" %}
+{% block progress %}
+    {% include "characters/core/chargen_progress.html" %}
+{% endblock progress %}
+{% block contents %}
+    <h2>{{ object.name }}</h2>
+    {{ form.media }}
+    {{ form.as_p }}
+{% endblock contents %}

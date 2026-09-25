@@ -12,7 +12,7 @@ from django.urls import reverse
 from characters.models.core.human import Human
 from characters.models.mage.companion import Companion
 from core.models import Language, NewsItem
-from game.models import Chronicle
+from game.models import Chronicle, Gameline, STRelationship
 from items.models.core import Material, Medium
 
 
@@ -21,6 +21,7 @@ class TestMaterialMassAssignment(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.client.force_login(User.objects.create_user("material_staff", is_staff=True))
         self.material = Material.objects.create(name="Test Material", is_hard=True)
 
     def test_create_accepts_whitelisted_fields(self):
@@ -46,6 +47,7 @@ class TestMediumMassAssignment(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.client.force_login(User.objects.create_user("medium_staff", is_staff=True))
         self.medium = Medium.objects.create(
             name="Test Medium", length_modifier_type="/", length_modifier=1
         )
@@ -77,6 +79,7 @@ class TestLanguageMassAssignment(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.client.force_login(User.objects.create_user("language_staff", is_staff=True))
         self.language = Language.objects.create(name="Test Language", frequency=1)
 
     def test_create_accepts_whitelisted_fields(self):
@@ -102,6 +105,7 @@ class TestNewsItemMassAssignment(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.client.force_login(User.objects.create_user("news_staff", is_staff=True))
         self.newsitem = NewsItem.objects.create(title="Test News", content="Content here")
 
     def test_create_accepts_whitelisted_fields(self):
@@ -139,7 +143,8 @@ class TestCompanionMassAssignment(TestCase):
             username="attacker", email="attacker@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.chronicle.storytellers.add(self.st)
+        mage = Gameline.objects.create(name="Mage: the Ascension")
+        STRelationship.objects.create(user=self.st, chronicle=self.chronicle, gameline=mage)
 
         self.companion = Companion.objects.create(
             name="Test Companion",
@@ -261,65 +266,47 @@ class TestCompanionMassAssignment(TestCase):
         data = {
             "name": self.companion.name,
             "companion_type": self.companion.companion_type,
-            "status": self.companion.status,
-            "xp": self.companion.xp,
             "willpower": self.companion.willpower,
             "visibility": "PRI",  # Private visibility
+            "status": self.companion.status,
+            "xp": self.companion.xp,
         }
         data.update(overrides)
         return data
 
-    def test_st_can_modify_status_field(self):
-        """Test that STs have access to status field via ST_EDIT_FIELDS."""
+    def test_st_cannot_change_status_through_update_form(self):
+        """Status changes use the dedicated submission and review actions."""
         self.client.login(username="st", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         # Test valid status transition: Un -> Sub
         response = self.client.post(url, self._get_st_form_data(status="Sub"))
 
-        # Debug: check if form has errors
-        if response.status_code == 200 and hasattr(response, "context") and response.context:
-            form = response.context.get("form")
-            if form and form.errors:
-                self.fail(f"Form errors: {form.errors}")
-
-        self.assertEqual(
-            response.status_code, 302, f"Expected redirect, got {response.status_code}"
-        )
+        self.assertEqual(response.status_code, 403)
         self.companion.refresh_from_db()
-        self.assertEqual(self.companion.status, "Sub")
+        self.assertEqual(self.companion.status, "Un")
 
-    def test_st_can_modify_xp_field(self):
-        """Test that STs have access to xp field via ST_EDIT_FIELDS."""
+    def test_st_cannot_change_xp_through_update_form(self):
+        """XP must be awarded through its guarded service."""
         self.client.login(username="st", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         response = self.client.post(url, self._get_st_form_data(xp=100))
 
-        if response.status_code == 200 and hasattr(response, "context") and response.context:
-            form = response.context.get("form")
-            if form and form.errors:
-                self.fail(f"Form errors: {form.errors}")
-
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.companion.refresh_from_db()
-        self.assertEqual(self.companion.xp, 100)
+        self.assertEqual(self.companion.xp, 0)
 
-    def test_st_can_modify_freebies_approved_field(self):
-        """Test that STs have access to freebies_approved field via ST_EDIT_FIELDS."""
+    def test_st_cannot_approve_freebies_through_update_form(self):
+        """Freebie approval must use its dedicated service."""
         self.client.login(username="st", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         response = self.client.post(url, self._get_st_form_data(freebies_approved=True))
 
-        if response.status_code == 200 and hasattr(response, "context") and response.context:
-            form = response.context.get("form")
-            if form and form.errors:
-                self.fail(f"Form errors: {form.errors}")
-
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.companion.refresh_from_db()
-        self.assertEqual(self.companion.freebies_approved, True)
+        self.assertEqual(self.companion.freebies_approved, False)
 
     def test_st_can_modify_st_notes_field(self):
         """Test that STs have access to st_notes field via ST_EDIT_FIELDS."""

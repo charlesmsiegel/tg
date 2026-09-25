@@ -80,6 +80,8 @@ class TestPathCreateView(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that path create view is accessible when logged in."""
@@ -119,6 +121,8 @@ class TestPathUpdateView(TestCase):
             name="Alchemy",
             numina_type="hedge_magic",
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that path update view is accessible when logged in."""
@@ -245,6 +249,8 @@ class TestRitualCreateView(TestCase):
             name="Alchemy",
             numina_type="hedge_magic",
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that ritual create view is accessible when logged in."""
@@ -290,6 +296,8 @@ class TestRitualUpdateView(TestCase):
             path=self.path,
             level=1,
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that ritual update view is accessible when logged in."""

@@ -16,10 +16,14 @@ class TestLocationIndexView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_index_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "locations/index.html")
 
     def test_index_content(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         for i in range(10):
             LocationModel.objects.create(
                 name=f"Location {i}",
@@ -40,6 +44,7 @@ class TestLocationIndexViewPost(TestCase):
 
     def test_post_create_action_mta(self):
         """Test create action redirects to Mage location create."""
+        self.client.force_login(User.objects.create_user(username="creator"))
         response = self.client.post(
             self.url,
             {"action": "create", "loc_type": "node"},
@@ -50,6 +55,7 @@ class TestLocationIndexViewPost(TestCase):
 
     def test_post_create_action_wta(self):
         """Test create action redirects to Werewolf location create."""
+        self.client.force_login(User.objects.create_user(username="creator"))
         response = self.client.post(
             self.url,
             {"action": "create", "loc_type": "caern"},
@@ -87,22 +93,27 @@ class TestLocationIndexViewContext(TestCase):
 
     def test_context_contains_form(self):
         """Test context contains location creation form."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertIn("form", response.context)
 
     def test_context_contains_chrondict(self):
         """Test context contains chronicle dictionary."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertIn("chrondict", response.context)
 
     def test_context_header_for_anonymous_user(self):
-        """Test header defaults for anonymous user."""
+        """Anonymous visitors receive only the safe public index context."""
         response = self.client.get(self.url)
-        self.assertEqual(response.context["header"], "wod_heading")
+        self.assertIn("public_objects", response.context)
+        self.assertNotIn("chrondict", response.context)
 
     def test_context_header_for_authenticated_user(self):
         """Test header uses user's preferred heading."""
-        user = User.objects.create_user(username="testuser", password="password")
+        user = User.objects.create_user(username="testuser", password="password", is_staff=True)
         user.profile.preferred_heading = "vtm_heading"
         user.profile.save()
         self.client.login(username="testuser", password="password")

@@ -14,6 +14,7 @@ class TestProfileDashboardNotifications(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("dashboard-user", "dashboard@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Dashboard Chronicle")
+        Human.objects.create(name="Dashboard character", owner=self.user, chronicle=self.chronicle)
         self.location = LocationModel.objects.create(
             name="Dashboard Location", chronicle=self.chronicle, status="App"
         )
@@ -146,3 +147,31 @@ class TestProfileDashboardSelectors(TestCase):
         for method_name, expected in self.pending_images.items():
             with self.subTest(method=method_name):
                 self.assert_dashboard_matches_profile(method_name, expected)
+
+
+class TestHeadStorytellerDashboard(TestCase):
+    def test_head_storyteller_sees_submitted_objects_without_legacy_m2m(self):
+        head = User.objects.create_user("dashboard-head")
+        owner = User.objects.create_user("dashboard-owner")
+        chronicle = Chronicle.objects.create(name="Head dashboard", head_st=head)
+        character = Human.objects.create(
+            name="Submitted character", owner=owner,
+            chronicle=chronicle, status="Sub",
+        )
+        item = ItemModel.objects.create(
+            name="Submitted item", owner=owner,
+            chronicle=chronicle, status="Sub",
+        )
+
+        dashboard = head.profile.dashboard
+        self.assertIn(character, dashboard.characters_to_approve())
+        self.assertIn(item, dashboard.items_to_approve())
+        self.assertNotIn(character, owner.profile.dashboard.characters_to_approve())
+
+    def test_staff_sees_submitted_object_without_chronicle(self):
+        staff = User.objects.create_user("dashboard-staff", is_staff=True)
+        owner = User.objects.create_user("dashboard-global-owner")
+        item = ItemModel.objects.create(
+            name="Global pending item", owner=owner, status="Sub"
+        )
+        self.assertIn(item, staff.profile.dashboard.items_to_approve())
