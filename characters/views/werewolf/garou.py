@@ -1,4 +1,4 @@
-
+from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -221,7 +221,7 @@ class WerewolfCreateView(MessageMixin, CreateView):
     error_message = "Failed to create werewolf. Please correct the errors below."
 
 
-class WerewolfBasicsView(LoginRequiredMixin, FormView):
+class WerewolfBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = WerewolfCreationForm
     template_name = "characters/werewolf/garou/basics.html"
 
@@ -233,8 +233,9 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
@@ -291,16 +292,28 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breed_gifts"] = Gift.objects.filter(
-            rank=1, allowed__shifter="werewolf", allowed__condition=self.object.breed
-        ).distinct().order_by("name")
-        context["auspice_gifts"] = Gift.objects.filter(
-            rank=1, allowed__shifter="werewolf", allowed__condition=self.object.auspice
-        ).distinct().order_by("name")
+        context["breed_gifts"] = (
+            Gift.objects.filter(
+                rank=1, allowed__shifter="werewolf", allowed__condition=self.object.breed
+            )
+            .distinct()
+            .order_by("name")
+        )
+        context["auspice_gifts"] = (
+            Gift.objects.filter(
+                rank=1, allowed__shifter="werewolf", allowed__condition=self.object.auspice
+            )
+            .distinct()
+            .order_by("name")
+        )
         if self.object.tribe:
-            context["tribe_gifts"] = Gift.objects.filter(
-                rank=1, allowed__shifter="werewolf", allowed__condition=self.object.tribe.name
-            ).distinct().order_by("name")
+            context["tribe_gifts"] = (
+                Gift.objects.filter(
+                    rank=1, allowed__shifter="werewolf", allowed__condition=self.object.tribe.name
+                )
+                .distinct()
+                .order_by("name")
+            )
         else:
             context["tribe_gifts"] = []
         return context

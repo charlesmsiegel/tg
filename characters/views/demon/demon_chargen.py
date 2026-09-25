@@ -1,4 +1,4 @@
-
+from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -30,7 +30,7 @@ from core.mixins import (
 )
 
 
-class DemonBasicsView(LoginRequiredMixin, FormView):
+class DemonBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = DemonCreationForm
     template_name = "characters/demon/demon/basics.html"
 
@@ -42,8 +42,9 @@ class DemonBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 

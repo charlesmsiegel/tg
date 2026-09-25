@@ -124,9 +124,7 @@ class PermissionManager:
             return False
         if user.is_staff or user.is_superuser:
             return True
-        roles = PermissionManager.get_scoped_roles(
-            user, chronicle, gameline, request=request
-        )
+        roles = PermissionManager.get_scoped_roles(user, chronicle, gameline, request=request)
         return bool(roles & {Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
 
     @staticmethod
@@ -146,6 +144,40 @@ class PermissionManager:
         return bool(
             PermissionManager.get_user_roles(user, obj, request=request)
             & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+        )
+
+    @staticmethod
+    def user_can_manage_creation(user, form, request=None):
+        """Derive creation-page ST controls from the selected chronicle scope."""
+        from game.models import Chronicle
+
+        value = None
+        if form.is_bound:
+            value = form.data.get(form.add_prefix("chronicle"))
+        if not value and request is not None:
+            value = request.GET.get("chronicle")
+        if not value:
+            value = form.initial.get("chronicle")
+        if hasattr(value, "pk"):
+            chronicle = value
+        else:
+            try:
+                chronicle = Chronicle.objects.filter(pk=value).first() if value else None
+            except (TypeError, ValueError):
+                chronicle = None
+        instance = getattr(form, "instance", None)
+        if instance is None:
+            model = getattr(getattr(form, "_meta", None), "model", None)
+            instance = model() if model is not None else None
+        gameline = getattr(instance, "gameline", None)
+        if (
+            not isinstance(gameline, str)
+            and instance is not None
+            and hasattr(instance, "get_gameline")
+        ):
+            gameline = instance.get_gameline()
+        return PermissionManager.can_manage_scope(
+            user, chronicle, gameline if isinstance(gameline, str) else None, request
         )
 
     @staticmethod
@@ -170,8 +202,9 @@ class PermissionManager:
             from game.models import STRelationship
 
             relationships = list(
-                STRelationship.objects.filter(user_id=user.pk, chronicle_id=chronicle.pk)
-                .select_related("gameline")
+                STRelationship.objects.filter(
+                    user_id=user.pk, chronicle_id=chronicle.pk
+                ).select_related("gameline")
             )
             if relationships:
                 roles.add(Role.CHRONICLE_ST_VIEW)
@@ -200,15 +233,20 @@ class PermissionManager:
         Returns:
             Set of Role enums
         """
+        # Related records expose a CharacterModel base row. Its class-level
+        # gameline is ``wod``, so resolve it before deriving the scoped role.
+        scope_obj = getattr(obj, "character", None) or obj
+        if hasattr(scope_obj, "get_real_instance"):
+            scope_obj = scope_obj.get_real_instance()
         chronicle = getattr(obj, "chronicle", None)
-        gameline = getattr(obj, "gameline", None)
-        if not isinstance(gameline, str) and hasattr(obj, "get_gameline"):
-            gameline = obj.get_gameline()
+        if chronicle is None:
+            chronicle = getattr(scope_obj, "chronicle", None)
+        gameline = getattr(scope_obj, "gameline", None)
+        if not isinstance(gameline, str) and hasattr(scope_obj, "get_gameline"):
+            gameline = scope_obj.get_gameline()
         if not isinstance(gameline, str):
             gameline = None
-        roles = PermissionManager.get_scoped_roles(
-            user, chronicle, gameline, request=request
-        )
+        roles = PermissionManager.get_scoped_roles(user, chronicle, gameline, request=request)
         if not user.is_authenticated:
             return roles
 
@@ -297,9 +335,7 @@ class PermissionManager:
                 Permission.DELETE,
                 Permission.SPEND_XP,
             ]:
-                return bool(
-                    roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
-                )
+                return bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
 
         # Submitted characters: owners have no permissions, only head ST/admin
         if status == "Sub":
@@ -308,15 +344,15 @@ class PermissionManager:
                 Permission.SPEND_XP,
                 Permission.SPEND_FREEBIES,
             ]:
-                return bool(
-                    roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
-                )
+                return bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
 
         # Unfinished: Owner can spend freebies only (not XP yet)
         if status == "Un":
-            if permission == Permission.SPEND_XP and Role.OWNER in roles and not roles & {
-                Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
-            }:
+            if (
+                permission == Permission.SPEND_XP
+                and Role.OWNER in roles
+                and not roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+            ):
                 # Can't spend XP until approved
                 return False
             if permission == Permission.SPEND_FREEBIES:
@@ -324,9 +360,11 @@ class PermissionManager:
 
         # Approved: Owner can spend XP (not freebies) and edit limited fields
         if status == "App":
-            if permission in {Permission.SPEND_FREEBIES, Permission.EDIT_LIMITED} and Role.OWNER in roles and not roles & {
-                Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
-            }:
+            if (
+                permission in {Permission.SPEND_FREEBIES, Permission.EDIT_LIMITED}
+                and Role.OWNER in roles
+                and not roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+            ):
                 # Can't spend freebies after approval
                 return False
             if permission == Permission.SPEND_XP:
@@ -340,7 +378,9 @@ class PermissionManager:
                 Permission.SPEND_FREEBIES,
             ]:
                 if Role.OWNER in roles and not roles & {
-                    Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
+                    Role.ADMIN,
+                    Role.CHRONICLE_HEAD_ST,
+                    Role.CHRONICLE_ST,
                 }:
                     return False
 

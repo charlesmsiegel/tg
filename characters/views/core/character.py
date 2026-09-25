@@ -56,7 +56,9 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         can_edit = PermissionManager.user_has_permission(
             self.request.user, self.object, Permission.EDIT_FULL, request=self.request
         )
-        context["can_retire"] = can_edit or self.object.owner_id == self.request.user.pk
+        context["can_retire"] = self.object.status != "Dec" and (
+            can_edit or self.object.owner_id == self.request.user.pk
+        )
         context["can_decease"] = PermissionManager.user_has_scoped_editor_role(
             self.request.user, self.object, request=self.request
         )
@@ -74,7 +76,11 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         with transaction.atomic():
             if not can_change_status:
                 # Only owners can retire their own characters
-                if "retire" in request.POST and self.object.owner == request.user:
+                if (
+                    "retire" in request.POST
+                    and self.object.owner == request.user
+                    and self.object.status != "Dec"
+                ):
                     self.object.status = "Ret"
                     self.object.save()
                 # STs/Admins can mark as deceased
@@ -82,7 +88,7 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                     return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
             else:
                 # Handle retirement and death status changes
-                if "retire" in request.POST:
+                if "retire" in request.POST and self.object.status != "Dec":
                     self.object.status = "Ret"
                     self.object.save()
                 if "decease" in request.POST:

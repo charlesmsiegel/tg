@@ -1,4 +1,4 @@
-
+from core.mixins import ScopedCreationFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
@@ -21,7 +21,7 @@ from core.mixins import (
 )
 
 
-class ThrallBasicsView(LoginRequiredMixin, FormView):
+class ThrallBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = ThrallCreationForm
     template_name = "characters/demon/thrall/basics.html"
 
@@ -33,8 +33,9 @@ class ThrallBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 

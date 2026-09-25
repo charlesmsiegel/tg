@@ -1,3 +1,4 @@
+from core.mixins import ScopedCreationFormMixin
 from typing import Any
 
 from django import forms
@@ -139,7 +140,7 @@ class VtMHumanUpdateView(EditPermissionMixin, UpdateView):
             return LimitedHumanEditForm
 
 
-class VtMHumanBasicsView(LoginRequiredMixin, FormView):
+class VtMHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = VtMHumanCreationForm
     template_name = "characters/vampire/vtmhuman/basics.html"
 
@@ -151,8 +152,9 @@ class VtMHumanBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
@@ -320,6 +322,7 @@ class VtMHumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             english, _ = Language.objects.get_or_create(name="English")
             obj.languages.add(english)
