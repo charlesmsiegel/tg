@@ -42,6 +42,8 @@ class TestCircleCreateView(TestCase):
 
     def test_create_circle_successfully(self):
         """Test creating a circle successfully."""
+        # A player may only create in a chronicle they already take part in.
+        Human.objects.create(name="Existing PC", owner=self.user, chronicle=self.chronicle)
         self.client.login(username="testuser", password="password")
         url = reverse("characters:wraith:create:circle")
         data = {
@@ -53,7 +55,23 @@ class TestCircleCreateView(TestCase):
         response = self.client.post(url, data)
         # Should redirect on success
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Circle.objects.filter(name="Test Circle").exists())
+        circle = Circle.objects.get(name="Test Circle")
+        self.assertEqual(circle.owner, self.user)
+        self.assertEqual(circle.status, "Un")
+
+    def test_create_circle_in_chronicle_user_is_not_in_is_refused(self):
+        """Creating in a chronicle the user neither plays in nor runs is refused."""
+        self.client.login(username="testuser", password="password")
+        url = reverse("characters:wraith:create:circle")
+        data = {
+            "name": "Gatecrasher Circle",
+            "description": "A test circle",
+            "chronicle": self.chronicle.pk,
+            "public_info": "",
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Circle.objects.filter(name="Gatecrasher Circle").exists())
 
     def test_create_circle_with_leader_adds_to_members(self):
         """Test that leader is added to members when creating circle."""
