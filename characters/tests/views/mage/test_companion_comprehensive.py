@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from characters.models.core.archetype import Archetype
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.mage import Mage
@@ -82,6 +83,9 @@ class TestCompanionCreationWorkflow(TestCase):
 
     def test_other_player_cannot_attach_companion_to_mage(self):
         other = User.objects.create_user("other_companion_creator")
+        # Another player in the same chronicle, so the chronicle choice is valid and
+        # the companion_of ownership check is what refuses the request.
+        Human.objects.create(name="Other PC", owner=other, chronicle=self.chronicle)
         self.client.force_login(other)
         response = self.client.post(
             reverse("characters:mage:create:companion"),
