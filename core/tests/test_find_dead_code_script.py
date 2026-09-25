@@ -35,3 +35,34 @@ class FindDeadCodeScriptTest(SimpleTestCase):
         for section in SECTIONS:
             self.assertIn(f"## {section}", result.stdout)
         self.assertIn("**Summary:**", result.stdout)
+
+    def test_tsv_format_is_one_tab_separated_row_per_line(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--section=urls", "--format=tsv"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        lines = result.stdout.splitlines()
+        self.assertTrue(lines[0].startswith("# urls\t"), lines[0])
+        self.assertNotIn("**Summary:**", result.stdout)
+        headers, rows = None, 0
+        for line in lines[1:]:
+            fields = line.split("\t")
+            if fields[:2] == ["section", "table"]:
+                headers = fields
+                continue
+            self.assertIsNotNone(headers, f"row before any header: {line!r}")
+            self.assertEqual(fields[0], "urls", line)
+            self.assertEqual(len(fields), len(headers), line)
+            rows += 1
+        self.assertGreater(rows, 0)
+        self.assertIn(
+            "\t".join(
+                ("section", "table", "URL name", "Route", "View", "Status", "Dead-route kind")
+            ),
+            lines,
+        )
