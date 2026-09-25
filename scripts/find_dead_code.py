@@ -7,6 +7,8 @@ pointed at in-memory SQLite before django.setup(). It does import every
 project module and call get_*url() / get_template_names() on unsaved model
 instances and bare views, so any side effects in those methods would run.
 Importing this module has the same database side effect; run it as a script.
+The pure AST/string heuristics live in scripts/dead_code_heuristics.py, which
+has no import side effects and is unit-tested directly.
 Every row is a candidate for review, not a verdict: reflection, string-built
 names and third-party conventions can hide real uses. The symbols section is
 an explicit name-occurrence heuristic.
@@ -50,20 +52,18 @@ from django.template import Library
 from django.template.backends.django import get_installed_libraries
 from django.urls import NoReverseMatch, URLResolver, get_resolver, resolve, reverse
 from django.views import View
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    FormView,
-    ListView,
-    TemplateView,
-    UpdateView,
-)
 from django.views.generic.base import TemplateResponseMixin
 
 from characters.forms.core.character_creation import CharacterCreationForm
 from core.create_redirects import APP_NAMES
 from core.views.generic import DictView
+from scripts.dead_code_heuristics import (
+    call_name,
+    classify_dead_route,
+    find_computed,
+    object_type_seed,
+    pattern_regex,
+)
 from scripts.inventory_authorization_routes import descendants
 
 LOCAL_CONFIGS = [c for c in apps.get_app_configs() if Path(c.path).resolve().is_relative_to(ROOT)]
@@ -80,14 +80,6 @@ SKIP_DIRS = {
     "scripts",
 }  # scripts/ holds tooling like this file, not app code
 TEXT_EXTS = {".py", ".html", ".js", ".txt", ".xml"}
-URL_FUNCS = {"reverse", "reverse_lazy", "redirect", "resolve_url"}
-TEMPLATE_FUNCS = {
-    "render",
-    "render_to_string",
-    "get_template",
-    "select_template",
-    "TemplateResponse",
-}
 ERROR_TEMPLATES = {"400.html", "403.html", "403_csrf.html", "404.html", "500.html"}
 QUOTED = re.compile(r"""(['"])([^'"\s{}%]{1,200})\1""")
 IDENT = re.compile(r"[A-Za-z_]\w*")
@@ -95,9 +87,7 @@ LOAD_RE = re.compile(r"\{%\s*load\s+(.+?)\s*%\}")
 INCLUDE_RE = re.compile(r"\{%\s*(include|extends)\s+(.+?)\s*%\}")
 URL_TAG_RE = re.compile(r"\{%\s*url\s+(\S+)")
 DECORATOR_SKIP = re.compile(r"register|receiver|shared_task|\.task\b")
-CALL_CTX = {**dict.fromkeys(URL_FUNCS, "url"), **dict.fromkeys(TEMPLATE_FUNCS, "template")}
 NOT_URL_GETTERS = {"get_success_url", "get_gameline_for_url"}
-SEED_METHODS = {"create", "get_or_create", "update_or_create"}
 # Actions the index views pass to core.create_redirects.resolve_object_type_url:
 # characters/views/core/__init__.py asks only for "create"; items and locations
 # ask for "create" or "list".
@@ -107,9 +97,6 @@ INDEX_ACTIONS = {"char": {"create"}, "obj": {"create", "list"}, "loc": {"create"
 GROUP_FORM_TYPES = {"cabal", "pack", "motley", "group", "coterie", "circle", "conclave"}
 CHAR_NOT_OFFERED = set(CharacterCreationForm.EXCLUDED_TYPES) - GROUP_FORM_TYPES
 OBJECT_TYPE_STATUS = "dynamic: object-type index (resolve_object_type_url)"
-PAGE_KINDS = [(CreateView, "create"), (UpdateView, "update"), (DeleteView, "delete")]
-PAGE_KINDS += [(ListView, "list"), (DetailView, "detail"), (FormView, "form")]
-PAGE_KINDS += [(TemplateView, "template")]
 TAG_HEADERS = ("Library", "Kind", "Name", "Defined at", "Template files using")
 TAG_HEADERS += ("Python refs (non-test)", "Python refs (tests)", "Status")
 
@@ -127,11 +114,6 @@ def is_test_path(rel):
 
 def module_top(obj):
     return (getattr(obj, "__module__", "") or "").split(".")[0]
-
-
-def call_name(node):
-    func = node.func
-    return func.id if isinstance(func, ast.Name) else getattr(func, "attr", None)
 
 
 class Src:
@@ -191,106 +173,6 @@ class Src:
                 decorators = " ".join(ast.unparse(d) for d in node.decorator_list)
                 kind = "class" if isinstance(node, ast.ClassDef) else "function"
                 self.defs.append((node.name, kind, node.lineno, decorators))
-
-
-def object_type_seed(call):
-    """(name, category, gameline) from a literal ObjectType.objects.get_or_create(...) call."""
-    func = call.func
-    if not (isinstance(func, ast.Attribute) and func.attr in SEED_METHODS):
-        return None
-    if ast.unparse(func.value) != "ObjectType.objects":
-        return None
-    fields = {k.arg: k.value for k in call.keywords if k.arg}
-    defaults = fields.get("defaults")
-    if isinstance(defaults, ast.Dict):
-        fields.update(
-            {
-                getattr(k, "value", None): v
-                for k, v in zip(defaults.keys, defaults.values, strict=True)
-            }
-        )
-    try:
-        return tuple(ast.literal_eval(fields[f]) for f in ("name", "type", "gameline"))
-    except (KeyError, ValueError):
-        return None
-
-
-def str_parts(node):
-    """Flatten a string-building expression into literal parts; None marks a placeholder."""
-    if isinstance(node, ast.Constant) and isinstance(node.value, str):
-        return [node.value]
-    if isinstance(node, ast.JoinedStr):
-        return [v.value if isinstance(v, ast.Constant) else None for v in node.values]
-    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
-        left, right = str_parts(node.left), str_parts(node.right)
-        if left is None and right is None:
-            return None
-        return (left or [None]) + (right or [None])
-    fmt, pattern = None, None
-    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mod):
-        fmt, pattern = node.left, r"%(?:\(\w+\))?[sdrf]"
-    elif isinstance(node, ast.Call) and getattr(node.func, "attr", None) == "format":
-        fmt, pattern = node.func.value, r"\{[^{}]*\}"
-    if isinstance(fmt, ast.Constant) and isinstance(fmt.value, str):
-        pieces = re.split(pattern, fmt.value)
-        return [x for piece in pieces for x in (piece, None)][:-1]
-    return None
-
-
-def find_computed(node, out, ctx):
-    """Record string-building expressions (and variable reverse() args) for manual review."""
-    parts = str_parts(node) if isinstance(node, ast.JoinedStr | ast.BinOp | ast.Call) else None
-    if parts and None in parts and any(parts):
-        literal = "".join(p for p in parts if p)
-        kind = ctx
-        if kind is None and re.search(r"\.(html|txt)\b", literal):
-            kind = "template"
-        elif kind is None and re.fullmatch(r"[a-z_]+:[\w:-]*", parts[0] or ""):
-            kind = "url"
-        if kind:
-            out.append((kind, node.lineno, parts, ast.unparse(node)))
-        return
-    if ctx == "url" and (
-        isinstance(node, ast.Name | ast.Attribute | ast.Subscript)
-        # A nested reverse() or a model get_*url() is resolved elsewhere.
-        or (
-            isinstance(node, ast.Call)
-            and call_name(node) not in CALL_CTX
-            and not re.fullmatch(r"get_\w*url", call_name(node) or "")
-        )
-    ):
-        out.append(("url", node.lineno, [None], ast.unparse(node)))
-    if isinstance(node, ast.Call):
-        name = call_name(node)
-        arg_ctx = CALL_CTX.get(name)
-        for index, child in enumerate(node.args):
-            # redirect() often takes a model object first, so only a string-building
-            # first arg counts there; render()'s name is its second arg.
-            builds_string = isinstance(child, ast.JoinedStr | ast.BinOp | ast.Call)
-            wanted = (
-                index == 0 and arg_ctx == "url" and (name != "redirect" or builds_string)
-            ) or (arg_ctx == "template" and index == (1 if name == "render" else 0))
-            find_computed(child, out, arg_ctx if wanted else None)
-        find_computed(node.func, out, None)
-        for keyword in node.keywords:
-            if keyword.arg == "template_name":
-                kw_ctx = "template"
-            elif keyword.arg == "viewname" and arg_ctx == "url":
-                kw_ctx = "url"
-            else:
-                kw_ctx = None
-            find_computed(keyword.value, out, kw_ctx)
-        return
-    if isinstance(node, ast.Assign) and any(
-        getattr(t, "id", "") == "template_name" for t in node.targets
-    ):
-        return find_computed(node.value, out, "template")
-    for child in ast.iter_child_nodes(node):
-        find_computed(child, out, None)
-
-
-def pattern_regex(parts, wildcard):
-    return re.compile("".join(re.escape(p) if p is not None else wildcard for p in parts) + r"\Z")
 
 
 def load_sources():
@@ -459,27 +341,6 @@ def object_type_routes():
     return rows
 
 
-def classify_dead_route(view, name, route):
-    """(a) alias detail, (b) JSON/AJAX, (c) unlinked page view, (d) other."""
-    try:
-        source = inspect.getsource(view)
-    except (OSError, TypeError):
-        source = ""
-    if re.search(r"ajax|json|load_", f"{name} {route}", re.I) or "JsonResponse" in source:
-        return "(b) JSON/AJAX endpoint"
-    if not isinstance(view, type):
-        return "(d) other (function view)"
-    model = getattr(view, "model", None)
-    if issubclass(view, DetailView) and isinstance(model, type):
-        target = absolute_url_name(model)
-        if target and target != name:
-            return f"(a) alias: {model.__name__}.get_absolute_url() -> {target}"
-    for base, kind in PAGE_KINDS:
-        if issubclass(view, base):
-            return f"(c) {kind} page with no link"
-    return "(d) other (DictView router)" if issubclass(view, DictView) else "(d) other"
-
-
 def section_urls():
     nontest, test = literal_files(False), literal_files(True)
     referenced = set(nontest) | model_url_names()
@@ -515,7 +376,9 @@ def section_urls():
             status = "path also reversed as " + ", ".join(sorted(routes[route]))
         else:
             status = "tests only" if name in test else "dead"
-            kind = classify_dead_route(view, name, route)
+            kind = classify_dead_route(
+                view, name, route, alias_target=absolute_url_name, router_bases=(DictView,)
+            )
             dead_kinds[f"{status} {kind[:3]}"] += 1
         counts[status.split(" as ")[0].split(";")[0]] += 1
         rows.append((name, route, qualname(view), status, kind))
