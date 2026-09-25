@@ -30,6 +30,7 @@ from core.mixins import (  # noqa: E402
     PermissionRequiredMixin,
     StorytellerRequiredMixin,
 )
+from core.route_policy_manifest import VIEW_POLICIES  # noqa: E402
 from core.views.generic import DictView  # noqa: E402
 
 
@@ -88,9 +89,7 @@ def methods(view_class):
     if view_class is None:
         return "unknown"
     accepted = [
-        method.upper()
-        for method in view_class.http_method_names
-        if hasattr(view_class, method)
+        method.upper() for method in view_class.http_method_names if hasattr(view_class, method)
     ]
     if "GET" in accepted and "HEAD" not in accepted:
         accepted.append("HEAD")
@@ -154,33 +153,45 @@ def walk(patterns, prefix=""):
             view_class = getattr(callback, "view_class", None)
             if view_class is None:
                 name = f"{callback.__module__}.{callback.__name__}"
-                yield route, "", name, "function/unknown", "unknown", "ANY*", intended(None, route, "")
+                yield route, "", name, "function/unknown", "unknown", "ANY*", intended(
+                    None, route, ""
+                )
                 continue
             branch = f"{view_class.__module__}.{view_class.__name__}"
             current_gate, login = gate(view_class)
-            yield route, "", branch, current_gate, login, methods(view_class), intended(view_class, route, "")
+            yield route, "", branch, current_gate, login, methods(view_class), intended(
+                view_class, route, ""
+            )
             for key, target, error in descendants(view_class):
-                name = (
-                    f"{target.__module__}.{target.__name__}" if target else error
-                )
+                name = f"{target.__module__}.{target.__name__}" if target else error
                 child_gate, child_login = gate(target)
-                yield route, key, name, child_gate, child_login, methods(target), intended(target, route, key)
+                yield route, key, name, child_gate, child_login, methods(target), intended(
+                    target, route, key
+                )
 
 
 def main():
-    from core.route_policy_manifest import VIEW_POLICIES
-
     def effective_login(policy):
         if policy in {
-            "ACCOUNT", "CHARGEN_STEP", "LOGIN", "OBJECT_ACTION",
-            "OBJECT_AJAX", "OBJECT_CREATE", "OBJECT_WRITE", "STAFF_WRITE",
+            "ACCOUNT",
+            "CHARGEN_STEP",
+            "LOGIN",
+            "OBJECT_ACTION",
+            "OBJECT_AJAX",
+            "OBJECT_CREATE",
+            "OBJECT_WRITE",
+            "STAFF_WRITE",
             "WIDGET",
         }:
             return "yes"
         if policy in {"PUBLIC_CARD", "PUBLIC_READ"}:
             return "no"
         if policy in {
-            "GAME", "OBJECT_DETAIL", "OBJECT_LIST", "PUBLIC_INDEX", "ROUTER",
+            "GAME",
+            "OBJECT_DETAIL",
+            "OBJECT_LIST",
+            "PUBLIC_INDEX",
+            "ROUTER",
         }:
             return "mixed: public read / protected full or write"
         return "framework-owned"
@@ -190,7 +201,9 @@ def main():
     print(f"Rows: {len(rows)}; direct routes: {sum(not r[1] for r in rows)}")
     for key, count in sorted(counts.items()):
         print(f"- {key}: {count}")
-    print("\n| Route | Router branch | View class | Current MRO gate | Login enforced by MRO | Methods | Declared policy | Effective login policy | Intended policy family |")
+    print(
+        "\n| Route | Router branch | View class | Current MRO gate | Login enforced by MRO | Methods | Declared policy | Effective login policy | Intended policy family |"
+    )
     print("|---|---|---|---|---|---|---|---|---|")
     for row in rows:
         policy = VIEW_POLICIES.get(row[2], "framework/undeclared")

@@ -1,7 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    ViewPermissionMixin,
+    prepare_created_object,
+)
 from core.permissions import PermissionManager
 from locations.forms.core.limited_edit import LimitedLocationEditForm
 from locations.models import LocationModel
@@ -34,8 +39,6 @@ class LocationCreateView(LoginRequiredMixin, CreateView):
         return form
 
     def form_valid(self, form):
-        from core.mixins import prepare_created_object
-
         prepare_created_object(form, self.request)
         return super().form_valid(form)
 

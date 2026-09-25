@@ -9,7 +9,7 @@ from .utils import normalize_choices
 
 def _mage_creation_form(request):
     # This form needs a user; the registry supplies it from the authenticated request.
-    from characters.forms.mage.mage import MageCreationForm
+    from characters.forms.mage.mage import MageCreationForm  # deferred: circular import
 
     return MageCreationForm(user=request.user)
 
@@ -23,16 +23,14 @@ REGISTERED_FORMS = {
 
 
 def _allowed_mage_parent(form, field_name, parent_id):
-    from characters.models.mage.faction import MageFaction
+    from characters.models.mage.faction import MageFaction  # deferred: circular import
 
     affiliation_ids = form.fields["affiliation"].queryset.values("pk")
     if field_name == "faction":
         return MageFaction.objects.filter(
             pk=parent_id, parent=None, pk__in=affiliation_ids
         ).exists()
-    return MageFaction.objects.filter(
-        pk=parent_id, parent_id__in=affiliation_ids
-    ).exists()
+    return MageFaction.objects.filter(pk=parent_id, parent_id__in=affiliation_ids).exists()
 
 
 @require_GET

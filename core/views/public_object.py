@@ -6,7 +6,15 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import View
 
+from characters.models.changeling.chimera import Chimera
+from characters.models.core import CharacterModel, Group
+from characters.models.mage.effect import Effect
+from characters.models.mage.rote import Rote
 from core.constants import ImageStatus
+from core.models import CharacterTemplate
+from game.security import readable_chronicles, staffed_chronicles
+from items.models.core import ItemModel
+from locations.models.core import LocationModel
 
 
 class PublicObjectDetailView(View):
@@ -22,21 +30,11 @@ class PublicObjectDetailView(View):
             "public_info": obj.public_info,
             "image_url": image_url,
         }
-        return render(
-            request, "core/public_object_detail.html", {"public_object": public_object}
-        )
+        return render(request, "core/public_object_detail.html", {"public_object": public_object})
 
 
 def render_public_object_list(request, model_class, extra_context=None):
     """Render only allowlisted public fields from core.Model collections."""
-    from characters.models.changeling.chimera import Chimera
-    from characters.models.core import CharacterModel, Group
-    from characters.models.mage.effect import Effect
-    from characters.models.mage.rote import Rote
-    from core.models import CharacterTemplate
-    from items.models.core import ItemModel
-    from locations.models.core import LocationModel
-
     if issubclass(model_class, Group):
         route = "characters:group"
     elif issubclass(model_class, Chimera):
@@ -63,12 +61,8 @@ def render_public_object_list(request, model_class, extra_context=None):
         if issubclass(model_class, CharacterTemplate):
             visible &= Q(is_public=True)
         if user.is_authenticated:
-            from game.security import readable_chronicles, staffed_chronicles
-
             visible |= Q(owner=user)
-            visible |= Q(
-                chronicle_id__in=staffed_chronicles(user).values("pk")
-            )
+            visible |= Q(chronicle_id__in=staffed_chronicles(user).values("pk"))
             visible |= Q(
                 visibility="CHR",
                 chronicle_id__in=readable_chronicles(user).values("pk"),
@@ -79,13 +73,14 @@ def render_public_object_list(request, model_class, extra_context=None):
         {
             "name": row["name"],
             "public_info": row["public_info"],
-            "image_url": default_storage.url(row["image"])
-            if row["image"] and row["image_status"] == ImageStatus.APPROVED else None,
+            "image_url": (
+                default_storage.url(row["image"])
+                if row["image"] and row["image_status"] == ImageStatus.APPROVED
+                else None
+            ),
             "url": reverse(route, kwargs={"pk": row["pk"]}),
         }
-        for row in queryset.values(
-            "pk", "name", "public_info", "image", "image_status"
-        )[:250]
+        for row in queryset.values("pk", "name", "public_info", "image", "image_status")[:250]
     ]
     context = {
         "public_objects": objects,

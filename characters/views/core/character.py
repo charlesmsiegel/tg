@@ -6,10 +6,16 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
 from characters.models.core import Character
 from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
-from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
-from core.permissions import Permission, PermissionManager
+from core.mixins import (
+    EditPermissionMixin,
+    ViewPermissionMixin,
+    VisibilityFilterMixin,
+    prepare_created_object,
+)
+from core.permissions import Permission, PermissionManager, Role
 from game.models import Scene
 from game.security import filter_scenes
 
@@ -133,8 +139,6 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
     error_message = "Failed to create Character. Please correct the errors below."
 
     def form_valid(self, form):
-        from core.mixins import prepare_created_object
-
         prepare_created_object(form, self.request)
         return super().form_valid(form)
 
@@ -175,9 +179,6 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
         Owners get draft fields without approval or ST-only fields.
         STs and admins get full access via the default form with ST_EDIT_FIELDS.
         """
-        from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
-        from core.permissions import Role
-
         roles = PermissionManager.get_user_roles(self.request.user, self.get_object())
         if roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}:
             return super().get_form_class()

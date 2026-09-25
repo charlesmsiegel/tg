@@ -1,5 +1,6 @@
 """Tests for VampireTitle views and templates."""
 
+from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -92,22 +93,25 @@ class TestVampireTitleCreateView(TestCase):
 
     def test_create_view_get_status_code(self):
         """Create view GET is accessible."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Create view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/title/form.html")
 
     def test_create_view_post_creates_title(self):
         """Create view POST creates a new title."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.post(self.url, self.valid_data)
         self.assertEqual(VampireTitle.objects.filter(name="Test Title").count(), 1)
 
@@ -129,15 +133,17 @@ class TestVampireTitleUpdateView(TestCase):
 
     def test_update_view_get_status_code(self):
         """Update view GET is accessible."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Update view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/title/form.html")
 
@@ -170,8 +176,9 @@ class TestVampireTitleCreateViewNegativeCases(TestCase):
 
     def test_create_missing_name_fails(self):
         """Create view POST with missing name fails."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         data = {"value": 5, "is_negative": False}
         response = self.client.post(self.url, data)
         # Form should re-render with errors (200) rather than redirect (302)
@@ -182,8 +189,9 @@ class TestVampireTitleCreateViewNegativeCases(TestCase):
 
     def test_create_empty_data_fails(self):
         """Create view POST with empty data fails."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         initial_count = VampireTitle.objects.count()
         response = self.client.post(self.url, {})
         self.assertEqual(response.status_code, 200)
@@ -191,8 +199,9 @@ class TestVampireTitleCreateViewNegativeCases(TestCase):
 
     def test_create_invalid_sect_fails(self):
         """Create view POST with invalid sect ID fails."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         data = {
             "name": "Test Title",
             "value": 3,

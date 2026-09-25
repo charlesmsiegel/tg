@@ -1,6 +1,7 @@
 from django import forms
 
 from core.models import CharacterTemplate
+from game.security import readable_chronicles
 
 
 class CharacterTemplateForm(forms.ModelForm):
@@ -156,8 +157,6 @@ class CharacterTemplateForm(forms.ModelForm):
 
         # Creators may place drafts only in chronicles they can access.
         if user and user.is_authenticated:
-            from game.security import readable_chronicles
-
             self.fields["chronicle"].queryset = readable_chronicles(user)
             self.fields["chronicle"].required = False
 
@@ -218,8 +217,6 @@ class CharacterTemplateImportForm(forms.Form):
 
         # Creators may place drafts only in chronicles they can access.
         if user and user.is_authenticated:
-            from game.security import readable_chronicles
-
             self.fields["chronicle"].queryset = readable_chronicles(user)
 
     def clean_json_file(self):

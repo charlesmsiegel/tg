@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import FormView
 
 from characters.forms.mage.enhancements import EnhancementForm
@@ -31,7 +31,6 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(bg__property_name="enhancement", complete=False).exists():
             if request.method != "POST":
-                from django.shortcuts import render
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()

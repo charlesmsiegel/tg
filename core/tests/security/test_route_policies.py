@@ -8,7 +8,7 @@ from django.test import RequestFactory, SimpleTestCase
 from django.urls import get_resolver
 
 from characters.models.core import CharacterModel, Group
-from core.access_policy import PROJECT_PREFIXES
+from core.access_policy import PROJECT_PREFIXES, authorize_route, route_policy
 from core.models import CharacterTemplate
 from core.route_policy_manifest import POLICIES, VIEW_POLICIES
 from items.models.core import ItemModel
@@ -28,8 +28,6 @@ class RoutePolicyTests(SimpleTestCase):
         self.assertEqual(sum(len(group) for group in POLICIES.values()), len(names))
 
     def test_unknown_route_has_no_implicit_fallback(self):
-        from core.access_policy import authorize_route, route_policy
-
         class NewUnreviewedView:
             pass
 

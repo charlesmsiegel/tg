@@ -73,8 +73,6 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     error_message = "Error creating Human."
 
     def form_valid(self, form):
-        from core.mixins import prepare_created_object
-
         prepare_created_object(form, self.request)
         return super().form_valid(form)
 

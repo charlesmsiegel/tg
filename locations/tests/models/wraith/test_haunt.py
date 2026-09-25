@@ -1,5 +1,6 @@
 """Tests for Haunt model."""
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -212,8 +213,9 @@ class TestHauntViews(TestCase):
 
     def test_haunt_list_view(self):
         """Test haunt list view."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         Haunt.objects.create(name="Haunt 1")
         Haunt.objects.create(name="Haunt 2")
         response = self.client.get("/locations/wraith/list/haunt/")

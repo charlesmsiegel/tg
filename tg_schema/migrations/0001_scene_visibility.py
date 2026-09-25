@@ -2,13 +2,13 @@
 
 from django.db import migrations
 
+from game.models import Scene
+
 
 def add_scene_visibility(apps, schema_editor):
     # ``game`` has no migration state on legacy installations, so its models
     # are intentionally absent from this migration's historical app registry.
     # Use the live model solely to describe the column being added.
-    from game.models import Scene
-
     scene = Scene
     table = scene._meta.db_table
     with schema_editor.connection.cursor() as cursor:

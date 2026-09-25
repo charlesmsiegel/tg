@@ -1,11 +1,10 @@
-from core.mixins import ScopedCreationFormMixin
 from typing import Any
 
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -30,10 +29,12 @@ from characters.views.wraith.wraith import WraithDetailView
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
+    ScopedCreationFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
 )
 from core.models import Language
+from core.permissions import PermissionManager
 
 
 class WraithBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -47,7 +48,6 @@ class WraithBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from core.permissions import PermissionManager
 
         context["storyteller"] = PermissionManager.user_can_manage_creation(
             self.request.user, context["form"], request=self.request
@@ -195,8 +195,6 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
         # If they already have the right number of passion points, skip this
         if obj.has_passions():
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -278,8 +276,6 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
         # If they already have the right number of fetter points, skip this
         if obj.has_fetters():
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -438,8 +434,6 @@ class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVi
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             english, _ = Language.objects.get_or_create(name="English")
             obj.languages.add(english)

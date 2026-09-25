@@ -5,12 +5,11 @@ from django.test import TestCase
 
 from characters.models.core.human import Human
 from game.models import Chronicle, FreebieSpendingRecord, Gameline, STRelationship
+from game.spending_approval import decide_spending_request
 
 
 class ApprovalSecurityTests(TestCase):
     def setUp(self):
-        from game.spending_approval import decide_spending_request
-
         self.decide = decide_spending_request
         users = get_user_model()
         self.owner = users.objects.create_user("owner")
@@ -20,9 +19,7 @@ class ApprovalSecurityTests(TestCase):
         wod = Gameline.objects.create(name="World of Darkness")
         vtm = Gameline.objects.create(name="Vampire: the Masquerade")
         STRelationship.objects.create(user=self.st, chronicle=self.chronicle, gameline=wod)
-        STRelationship.objects.create(
-            user=self.other_st, chronicle=self.chronicle, gameline=vtm
-        )
+        STRelationship.objects.create(user=self.other_st, chronicle=self.chronicle, gameline=vtm)
         self.character = Human.objects.create(
             name="Hero", owner=self.owner, chronicle=self.chronicle
         )
@@ -38,7 +35,9 @@ class ApprovalSecurityTests(TestCase):
         for user in (self.owner, self.other_st):
             with self.subTest(user=user.username):
                 with self.assertRaises(PermissionDenied):
-                    self.decide(FreebieSpendingRecord, self.character, self.record.pk, user, "approve")
+                    self.decide(
+                        FreebieSpendingRecord, self.character, self.record.pk, user, "approve"
+                    )
         self.record.refresh_from_db()
         self.assertEqual(self.record.approved, "Pending")
 
@@ -50,9 +49,7 @@ class ApprovalSecurityTests(TestCase):
         self.record.refresh_from_db()
         self.assertEqual(self.record.approved, "Approved")
         with self.assertRaises(Http404):
-            self.decide(
-                FreebieSpendingRecord, self.character, self.record.pk, self.st, "approve"
-            )
+            self.decide(FreebieSpendingRecord, self.character, self.record.pk, self.st, "approve")
 
     def test_st_can_self_approve_npc_only(self):
         self.character.owner = self.st
@@ -67,9 +64,7 @@ class ApprovalSecurityTests(TestCase):
         self.character.owner = self.st
         self.character.save()
         with self.assertRaises(PermissionDenied):
-            self.decide(
-                FreebieSpendingRecord, self.character, self.record.pk, self.st, "approve"
-            )
+            self.decide(FreebieSpendingRecord, self.character, self.record.pk, self.st, "approve")
         self.record.refresh_from_db()
         self.assertEqual(self.record.approved, "Pending")
 
@@ -79,6 +74,4 @@ class ApprovalSecurityTests(TestCase):
         self.character.npc = True
         self.character.save()
         with self.assertRaises(PermissionDenied):
-            self.decide(
-                FreebieSpendingRecord, self.character, self.record.pk, staff, "approve"
-            )
+            self.decide(FreebieSpendingRecord, self.character, self.record.pk, staff, "approve")

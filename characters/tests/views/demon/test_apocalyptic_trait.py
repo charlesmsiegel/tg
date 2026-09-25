@@ -3,6 +3,7 @@
 ApocalypticFormTrait is a reference model (public game data) and should be accessible without login.
 """
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -100,16 +101,18 @@ class TestApocalypticFormTraitCreateView(TestCase):
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:demon:create:apocalyptic_trait")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/demon/apocalyptic_trait/form.html")
 
     def test_create_trait_successfully(self):
         """Test creating a trait successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:demon:create:apocalyptic_trait")
         data = {
             "name": "Claws",
@@ -143,16 +146,18 @@ class TestApocalypticFormTraitUpdateView(TestCase):
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.trait.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/demon/apocalyptic_trait/form.html")
 
     def test_update_trait_successfully(self):
         """Test updating a trait successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.trait.get_update_url()
         data = {
             "name": "Updated Wings",
@@ -182,8 +187,9 @@ class TestApocalypticFormTrait404Handling(TestCase):
 
     def test_trait_update_returns_404_for_invalid_pk(self):
         """Test that trait update returns 404 for non-existent trait."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(
             reverse("characters:demon:update:apocalyptic_trait", kwargs={"pk": 99999})
         )

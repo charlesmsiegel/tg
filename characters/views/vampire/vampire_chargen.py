@@ -1,4 +1,3 @@
-from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,8 +19,10 @@ from characters.views.core.human import (
 )
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.mixins import (
+    ScopedCreationFormMixin,
     SpecialUserMixin,
 )
+from core.permissions import PermissionManager
 
 
 class VampireBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -35,7 +36,6 @@ class VampireBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from core.permissions import PermissionManager
 
         context["storyteller"] = PermissionManager.user_can_manage_creation(
             self.request.user, context["form"], request=self.request

@@ -62,7 +62,7 @@ class CharacterQuerySet(ModelQuerySet):
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        from game.security import staffed_chronicles
+        from game.security import staffed_chronicles  # deferred: circular import
 
         scope = Q(chronicle__in=staffed_chronicles(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):

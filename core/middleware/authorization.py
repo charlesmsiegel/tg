@@ -3,6 +3,17 @@
 from django.http import HttpResponse
 
 from core.access_policy import PROJECT_PREFIXES, authorize_route
+from game.models import (
+    Chronicle,
+    FreebieSpendingRecord,
+    Journal,
+    JournalEntry,
+    Scene,
+    StoryXPRequest,
+    WeeklyXPRequest,
+    XPSpendingRequest,
+)
+from game.security import can_read_private_record, can_view_scene, readable_chronicles
 
 
 class AuthorizationMiddleware:
@@ -18,9 +29,7 @@ class AuthorizationMiddleware:
         if not target.__module__.startswith(PROJECT_PREFIXES):
             return None
         pk = view_kwargs.get("pk")
-        if pk is not None and (
-            not str(pk).isascii() or not str(pk).isdecimal() or int(pk) < 1
-        ):
+        if pk is not None and (not str(pk).isascii() or not str(pk).isdecimal() or int(pk) < 1):
             return HttpResponse("Not found", status=404, content_type="text/plain")
         if view_class is not None and view_class.__module__ == "game.views":
             denial = self._check_game_detail(request, view_class, view_kwargs)
@@ -30,30 +39,18 @@ class AuthorizationMiddleware:
 
     @staticmethod
     def _check_game_detail(request, view_class, kwargs):
-        from game.models import (
-            Chronicle,
-            FreebieSpendingRecord,
-            Journal,
-            JournalEntry,
-            Scene,
-            StoryXPRequest,
-            WeeklyXPRequest,
-            XPSpendingRequest,
-        )
-        from game.security import (
-            can_read_private_record,
-            can_view_scene,
-            readable_chronicles,
-        )
-
         model = getattr(view_class, "model", None)
         if view_class.__name__ == "XPSpendingRequestApproveView":
             model = XPSpendingRequest
         elif view_class.__name__ == "WeeklyXPRequestApproveView":
             model = WeeklyXPRequest
         private = {
-            Journal, JournalEntry, XPSpendingRequest, FreebieSpendingRecord,
-            WeeklyXPRequest, StoryXPRequest,
+            Journal,
+            JournalEntry,
+            XPSpendingRequest,
+            FreebieSpendingRecord,
+            WeeklyXPRequest,
+            StoryXPRequest,
         }
         if model not in private | {Chronicle, Scene} or "pk" not in kwargs:
             return None

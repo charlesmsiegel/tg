@@ -149,7 +149,7 @@ class PermissionManager:
     @staticmethod
     def user_can_manage_creation(user, form, request=None):
         """Derive creation-page ST controls from the selected chronicle scope."""
-        from game.models import Chronicle
+        from game.models import Chronicle  # deferred: circular import
 
         value = None
         if form.is_bound:
@@ -199,7 +199,7 @@ class PermissionManager:
             if chronicle.game_storytellers.filter(pk=user.pk).exists():
                 roles.add(Role.GAME_ST)
 
-            from game.models import STRelationship
+            from game.models import STRelationship  # deferred: circular import
 
             relationships = list(
                 STRelationship.objects.filter(

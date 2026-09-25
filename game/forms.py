@@ -2,6 +2,7 @@ from django import forms
 
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
+from core.permissions import PermissionManager
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,
@@ -376,7 +377,6 @@ class AddCharForm(forms.Form):
         user = kwargs.pop("user")
         scene = kwargs.pop("scene")
         super().__init__(*args, **kwargs)
-        from core.permissions import PermissionManager
 
         queryset = CharacterModel.objects.filter(chronicle=scene.chronicle)
         if not PermissionManager.can_manage_scope(user, scene.chronicle, scene.gameline):

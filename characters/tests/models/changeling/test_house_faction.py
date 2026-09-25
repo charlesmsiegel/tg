@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from characters.models.changeling.house import House
@@ -20,9 +21,9 @@ class TestHouseFactionDetailView(TestCase):
 
 class TestHouseFactionCreateView(TestCase):
     def setUp(self):
-        from django.contrib.auth import get_user_model
-
-        self.client.force_login(get_user_model().objects.create_user("faction-staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("faction-staff", is_staff=True)
+        )
         self.house1 = House.objects.create(name="House 1")
         self.house2 = House.objects.create(name="House 2")
         self.valid_data = {
@@ -55,9 +56,9 @@ class TestHouseFactionCreateView(TestCase):
 
 class TestHouseFactionUpdateView(TestCase):
     def setUp(self):
-        from django.contrib.auth import get_user_model
-
-        self.client.force_login(get_user_model().objects.create_user("faction-staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("faction-staff", is_staff=True)
+        )
         self.faction = HouseFaction.objects.create(
             name="Test Faction",
             description="Test description",

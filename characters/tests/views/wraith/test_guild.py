@@ -3,6 +3,7 @@
 Guild is a reference model (public game data) and should be accessible without login.
 """
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -83,16 +84,18 @@ class TestGuildCreateView(TestCase):
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:guild")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/guild/form.html")
 
     def test_create_guild_successfully(self):
         """Test creating a guild successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:guild")
         data = {
             "name": "Mnemoi",
@@ -126,16 +129,18 @@ class TestGuildUpdateView(TestCase):
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.guild.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/guild/form.html")
 
     def test_update_guild_successfully(self):
         """Test updating a guild successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.guild.get_update_url()
         data = {
             "name": "Updated Guild",
@@ -163,7 +168,8 @@ class TestGuild404Handling(TestCase):
 
     def test_guild_update_returns_404_for_invalid_pk(self):
         """Test that guild update returns 404 for non-existent guild."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(reverse("characters:wraith:update:guild", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
