@@ -114,16 +114,6 @@ class EditPermissionMixin(PermissionRequiredMixin):
     raise_404_on_deny = False
 
 
-class SpendXPPermissionMixin(PermissionRequiredMixin):
-    """
-    Require XP spending permission for CBV.
-    Raises 403 if user cannot spend XP.
-    """
-
-    required_permission = Permission.SPEND_XP
-    raise_404_on_deny = False
-
-
 class SpendFreebiesPermissionMixin(PermissionRequiredMixin):
     """
     Require freebie spending permission for CBV.
@@ -242,27 +232,6 @@ class OwnerRequiredMixin(ObjectCachingMixin):
             raise PermissionDenied("Only the owner can perform this action")
 
         return super().dispatch(request, *args, **kwargs)
-
-
-class STRequiredMixin(ObjectCachingMixin):
-    """
-    Mixin that restricts access to chronicle STs and admins only.
-
-    Usage:
-        class CharacterApproveView(STRequiredMixin, UpdateView):
-            model = Character
-    """
-
-    def dispatch(self, request, *args, **kwargs):
-        """Check if user is ST before dispatching."""
-        obj = self.get_object()
-
-        if PermissionManager.user_has_permission(
-            request.user, obj, Permission.APPROVE, request=request
-        ):
-            return super().dispatch(request, *args, **kwargs)
-
-        raise PermissionDenied("Only storytellers can perform this action")
 
 
 class SpecialUserMixin:
@@ -430,35 +399,6 @@ class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
         if isinstance(self, CreateView):
             prepare_created_object(form, self.request)
         return super().form_valid(form)
-
-
-class DeleteMessageMixin:
-    """
-    Mixin to add a success message when an object is deleted.
-
-    Usage:
-        class MyDeleteView(DeleteMessageMixin, DeleteView):
-            model = MyModel
-            success_message = "{name} deleted successfully!"
-    """
-
-    success_message = ""
-
-    def delete(self, request, *args, **kwargs):
-        # Store object info before deletion
-        self.object = self.get_object()
-        object_name = str(self.object)
-
-        # Format success message before deleting object
-        if self.success_message:
-            format_dict = {"name": object_name[:100], "pk": self.object.pk}
-            try:
-                message = self.success_message.format(**format_dict)
-            except (KeyError, ValueError):
-                message = self.success_message
-            messages.success(request, message)
-
-        return super().delete(request, *args, **kwargs)
 
 
 class StorytellerRequiredMixin:
@@ -662,30 +602,3 @@ class XPApprovalMixin(ApprovalMixin):
         from game.models import XPSpendingRequest
 
         return XPSpendingRequest
-
-
-class FreebieApprovalMixin(ApprovalMixin):
-    """
-    Mixin for handling freebie spending request approval and denial.
-
-    Usage:
-        class VampireDetailView(FreebieApprovalMixin, HumanDetailView):
-            model = Vampire
-            template_name = "characters/vampire/vampire/detail.html"
-    """
-
-    approve_button_value = "Approve Freebie"
-    reject_button_value = "Reject Freebie"
-    spendings_related_name = "freebie_spendings"
-    request_key_prefix = "freebie_request_"
-    spending_type = "Freebie spending"
-
-    def get_service_factory(self):
-        from characters.services.freebie_spending import FreebieSpendingServiceFactory
-
-        return FreebieSpendingServiceFactory
-
-    def get_request_model(self):
-        from game.models import FreebieSpendingRecord
-
-        return FreebieSpendingRecord

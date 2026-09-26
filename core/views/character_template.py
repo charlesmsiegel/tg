@@ -2,7 +2,7 @@ import json
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
@@ -29,37 +29,6 @@ from core.permissions import PermissionManager
 from game.security import staffed_chronicles
 
 logger = logging.getLogger(__name__)
-
-
-class STRequiredMixin(UserPassesTestMixin):
-    """Require an editor for this template's chronicle and gameline."""
-
-    def test_func(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return False
-        # Allow superusers and staff
-        if user.is_superuser or user.is_staff:
-            return True
-        obj = getattr(self, "object", None)
-        if obj is None and getattr(self, "kwargs", {}).get("pk") is not None:
-            obj = self.get_object()
-        return bool(
-            obj and PermissionManager.can_manage_scope(
-                user, obj.chronicle, obj.gameline, self.request
-            )
-        )
-
-    def handle_no_permission(self):
-        # If user is not authenticated, let LoginRequiredMixin handle it
-        if not self.request.user.is_authenticated:
-            return super().handle_no_permission()
-        # User is authenticated but not an ST
-        messages.error(
-            self.request,
-            "You must be a Storyteller to access template management features.",
-        )
-        return redirect("core:home")
 
 
 class CharacterTemplateListView(LoginRequiredMixin, ListView):

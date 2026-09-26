@@ -3,100 +3,15 @@
 import json
 
 from django.contrib.auth import get_user_model
-from django.contrib.messages import get_messages
-from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 
 from core.models import CharacterTemplate
-from core.views.character_template import (
-    CharacterTemplateQuickNPCView,
-    STRequiredMixin,
-)
+from core.views.character_template import CharacterTemplateQuickNPCView
 from game.models import Chronicle, Gameline, STRelationship
 
 User = get_user_model()
-
-
-class STRequiredMixinTest(TestCase):
-    """Test STRequiredMixin functionality."""
-
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.regular_user = User.objects.create_user(
-            username="regular", email="regular@test.com", password="testpass123"
-        )
-        self.st_user = User.objects.create_user(
-            username="st_user", email="st@test.com", password="testpass123"
-        )
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Mage: the Ascension")
-        STRelationship.objects.create(
-            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
-        )
-        self.template = CharacterTemplate.objects.create(
-            name="Scoped Template", gameline="mta", character_type="mage",
-            chronicle=self.chronicle,
-        )
-
-    def test_st_passes_test(self):
-        """Test that ST user passes the test."""
-        request = self.factory.get("/")
-        request.user = self.st_user
-
-        mixin = STRequiredMixin()
-        mixin.request = request
-        mixin.object = self.template
-        self.assertTrue(mixin.test_func())
-
-    def test_regular_user_fails_test(self):
-        """Test that regular user fails the test."""
-        request = self.factory.get("/")
-        request.user = self.regular_user
-
-        mixin = STRequiredMixin()
-        mixin.request = request
-        mixin.object = self.template
-        self.assertFalse(mixin.test_func())
-
-    def test_anonymous_user_fails_test(self):
-        """Test that anonymous user fails the test."""
-        from django.contrib.auth.models import AnonymousUser
-
-        request = self.factory.get("/")
-        request.user = AnonymousUser()
-
-        mixin = STRequiredMixin()
-        mixin.request = request
-        mixin.object = self.template
-        self.assertFalse(mixin.test_func())
-
-    def test_handle_no_permission_redirects_with_message(self):
-        """Test that handle_no_permission redirects to index with error message."""
-        from unittest.mock import patch
-
-        request = self.factory.get("/")
-        request.user = self.regular_user
-        # Add message support
-        request.session = "session"
-        messages = FallbackStorage(request)
-        request._messages = messages
-
-        mixin = STRequiredMixin()
-        mixin.request = request
-
-        # Mock redirect to avoid URL resolution issues
-        with patch("core.views.character_template.redirect") as mock_redirect:
-            from django.http import HttpResponseRedirect
-
-            mock_redirect.return_value = HttpResponseRedirect("/")
-            response = mixin.handle_no_permission()
-
-        self.assertEqual(response.status_code, 302)
-        stored_messages = list(get_messages(request))
-        self.assertEqual(len(stored_messages), 1)
-        self.assertIn("Storyteller", str(stored_messages[0]))
 
 
 class CharacterTemplateListViewTest(TestCase):
