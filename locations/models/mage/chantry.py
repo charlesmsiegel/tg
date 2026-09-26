@@ -189,6 +189,8 @@ class Chantry(BackgroundBlock, LocationModel):
         return 0
 
     def bg_cost(self, background_rating):
+        if background_rating.bg is None:
+            return 0
         property_name = background_rating.bg.property_name
         paid_dots = max(0, background_rating.rating - self.free_dots(property_name))
         return self.trait_cost(property_name) * paid_dots

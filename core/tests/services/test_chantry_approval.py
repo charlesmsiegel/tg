@@ -5,8 +5,10 @@ from django.test import TestCase
 from django.urls import reverse
 
 from characters.models.core.background_block import Background
+from characters.models.mage.effect import Effect
 from game.models import Chronicle, Gameline, STRelationship
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.services import chantry_points as svc
 
 
 class ChantrySubmissionFlowTests(TestCase):
@@ -60,3 +62,37 @@ class ChantrySubmissionFlowTests(TestCase):
         self.assertEqual(self.chantry.status, "Rev")
         self.assertEqual(self.chantry.creation_status, 1)
         self.assertEqual(self.chantry.backgrounds.get().rating, 1)
+
+    def test_return_after_purchases_keeps_them_and_only_resets_the_wizard(self):
+        """Review Focus: an ST returns a chantry that has effects bought.
+
+        The player must land on step 1 with the background rating, the
+        Integrated Effects score and the chosen effect all still held.
+        """
+        self.allies.complete = True
+        self.allies.save()
+        self.chantry.creation_status = 7
+        self.chantry.total_points = 6
+        self.chantry.save()
+
+        # Buy a background dot and an Integrated Effects dot through the
+        # chantry_points service, then integrate an effect the way
+        # ChantryEffectsForm.save() does.
+        svc.buy_background_dot(self.chantry, self.allies.bg)
+        svc.buy_ie_dot(self.chantry)
+        effect = Effect.objects.create(name="Bolt", forces=1)
+        self.chantry.integrated_effects.add(effect)
+
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.post(self.submit).status_code, 302)
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.status, "Sub")
+
+        self.client.force_login(self.st)
+        self.assertEqual(self.client.post(self.revise).status_code, 302)
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.status, "Rev")
+        self.assertEqual(self.chantry.creation_status, 1)
+        self.assertEqual(self.chantry.backgrounds.get().rating, 2)
+        self.assertEqual(self.chantry.integrated_effects_score, 1)
+        self.assertEqual(list(self.chantry.integrated_effects.all()), [effect])
