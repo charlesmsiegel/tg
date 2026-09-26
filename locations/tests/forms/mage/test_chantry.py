@@ -21,6 +21,7 @@ from locations.forms.mage.chantry import (
     ChantryCreateForm,
     ChantryEffectsForm,
     ChantryPointForm,
+    ChantryRemoveForm,
     ChantrySelectOrCreateForm,
 )
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
@@ -701,3 +702,69 @@ class TestChantryEffectsFormCostLimit(TestCase):
         form = ChantryEffectsForm(pk=self.chantry.pk)
         self.assertIn(self.fits, form.fields["select"].queryset)
         self.assertNotIn(self.too_costly, form.fields["select"].queryset)
+
+
+class TestChantryRemoveForm(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        mage_setup()
+        cls.allies = Background.objects.get(property_name="allies")
+        cls.library = Background.objects.get(property_name="library")
+
+    def setUp(self):
+        self.chantry = Chantry.objects.create(name="Undo Chantry", total_points=20)
+
+    def test_removes_a_background_dot(self):
+        rating = ChantryBackgroundRating.objects.create(
+            bg=self.allies, chantry=self.chantry, rating=2
+        )
+        form = ChantryRemoveForm({"rating": rating.pk}, chantry=self.chantry)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 1)
+
+    def test_removes_an_ie_dot(self):
+        self.chantry.integrated_effects_score = 2
+        self.chantry.save()
+        form = ChantryRemoveForm({"ie": "on"}, chantry=self.chantry)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save(), 1)
+
+    def test_removes_an_effect(self):
+        effect = Effect.objects.create(name="Chosen", forces=1)
+        self.chantry.integrated_effects.add(effect)
+        form = ChantryRemoveForm({"effect": effect.pk}, chantry=self.chantry)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.assertFalse(self.chantry.integrated_effects.exists())
+
+    def test_requires_exactly_one_target(self):
+        self.assertFalse(ChantryRemoveForm({}, chantry=self.chantry).is_valid())
+        rating = ChantryBackgroundRating.objects.create(
+            bg=self.allies, chantry=self.chantry, rating=1
+        )
+        form = ChantryRemoveForm({"rating": rating.pk, "ie": "on"}, chantry=self.chantry)
+        self.assertFalse(form.is_valid())
+
+    def test_other_chantrys_rating_is_invalid(self):
+        other = Chantry.objects.create(name="Other", total_points=20)
+        foreign = ChantryBackgroundRating.objects.create(bg=self.allies, chantry=other, rating=2)
+        form = ChantryRemoveForm({"rating": foreign.pk}, chantry=self.chantry)
+        self.assertFalse(form.is_valid())
+
+    def test_free_library_floor_is_invalid(self):
+        self.chantry.chantry_type = "library"
+        self.chantry.save()
+        rating = ChantryBackgroundRating.objects.create(
+            bg=self.library, chantry=self.chantry, rating=3
+        )
+        form = ChantryRemoveForm({"rating": rating.pk}, chantry=self.chantry)
+        self.assertFalse(form.is_valid())
+
+    def test_ie_overcommit_is_invalid(self):
+        self.chantry.integrated_effects_score = 1
+        self.chantry.save()
+        self.chantry.integrated_effects.add(Effect.objects.create(name="Used", forces=1))
+        form = ChantryRemoveForm({"ie": "on"}, chantry=self.chantry)
+        self.assertFalse(form.is_valid())
