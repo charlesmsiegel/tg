@@ -1,0 +1,1342 @@
+[
+  {
+    "name": "locations:vampire:create:haven",
+    "path": "locations/vampire/create/haven/",
+    "view": "locations.views.vampire.HavenCreateView"
+  },
+  {
+    "name": "locations:vampire:create:domain",
+    "path": "locations/vampire/create/domain/",
+    "view": "locations.views.vampire.DomainCreateView"
+  },
+  {
+    "name": "locations:vampire:create:elysium",
+    "path": "locations/vampire/create/elysium/",
+    "view": "locations.views.vampire.ElysiumCreateView"
+  },
+  {
+    "name": "locations:vampire:create:rack",
+    "path": "locations/vampire/create/rack/",
+    "view": "locations.views.vampire.RackCreateView"
+  },
+  {
+    "name": "locations:vampire:create:chantry",
+    "path": "locations/vampire/create/chantry/",
+    "view": "locations.views.vampire.TremereChantryCreateView"
+  },
+  {
+    "name": "locations:vampire:create:tremere_chantry",
+    "path": "locations/vampire/create/tremere_chantry/",
+    "view": "locations.views.vampire.TremereChantryCreateView"
+  },
+  {
+    "name": "locations:vampire:create:barrens",
+    "path": "locations/vampire/create/barrens/",
+    "view": "locations.views.vampire.BarrensCreateView"
+  },
+  {
+    "name": "locations:vampire:update:haven",
+    "path": "locations/vampire/update/haven/<pk>/",
+    "view": "locations.views.vampire.HavenUpdateView"
+  },
+  {
+    "name": "locations:vampire:update:domain",
+    "path": "locations/vampire/update/domain/<pk>/",
+    "view": "locations.views.vampire.DomainUpdateView"
+  },
+  {
+    "name": "locations:vampire:update:elysium",
+    "path": "locations/vampire/update/elysium/<pk>/",
+    "view": "locations.views.vampire.ElysiumUpdateView"
+  },
+  {
+    "name": "locations:vampire:update:rack",
+    "path": "locations/vampire/update/rack/<pk>/",
+    "view": "locations.views.vampire.RackUpdateView"
+  },
+  {
+    "name": "locations:vampire:update:chantry",
+    "path": "locations/vampire/update/chantry/<pk>/",
+    "view": "locations.views.vampire.TremereChantryUpdateView"
+  },
+  {
+    "name": "locations:vampire:update:barrens",
+    "path": "locations/vampire/update/barrens/<pk>/",
+    "view": "locations.views.vampire.BarrensUpdateView"
+  },
+  {
+    "name": "locations:vampire:list:haven",
+    "path": "locations/vampire/list/havens/",
+    "view": "locations.views.vampire.HavenListView"
+  },
+  {
+    "name": "locations:vampire:list:domain",
+    "path": "locations/vampire/list/domains/",
+    "view": "locations.views.vampire.DomainListView"
+  },
+  {
+    "name": "locations:vampire:list:elysium",
+    "path": "locations/vampire/list/elysiums/",
+    "view": "locations.views.vampire.ElysiumListView"
+  },
+  {
+    "name": "locations:vampire:list:rack",
+    "path": "locations/vampire/list/racks/",
+    "view": "locations.views.vampire.RackListView"
+  },
+  {
+    "name": "locations:vampire:list:tremere_chantry",
+    "path": "locations/vampire/list/tremere_chantry/",
+    "view": "locations.views.vampire.TremereChantryListView"
+  },
+  {
+    "name": "locations:vampire:list:barrens",
+    "path": "locations/vampire/list/barrens/",
+    "view": "locations.views.vampire.BarrensListView"
+  },
+  {
+    "name": "locations:vampire:haven",
+    "path": "locations/vampire/haven/<pk>/",
+    "view": "locations.views.vampire.HavenDetailView"
+  },
+  {
+    "name": "locations:vampire:domain",
+    "path": "locations/vampire/domain/<pk>/",
+    "view": "locations.views.vampire.DomainDetailView"
+  },
+  {
+    "name": "locations:vampire:elysium",
+    "path": "locations/vampire/elysium/<pk>/",
+    "view": "locations.views.vampire.ElysiumDetailView"
+  },
+  {
+    "name": "locations:vampire:rack",
+    "path": "locations/vampire/rack/<pk>/",
+    "view": "locations.views.vampire.RackDetailView"
+  },
+  {
+    "name": "locations:vampire:chantry",
+    "path": "locations/vampire/chantry/<pk>/",
+    "view": "locations.views.vampire.TremereChantryDetailView"
+  },
+  {
+    "name": "locations:vampire:barrens",
+    "path": "locations/vampire/barrens/<pk>/",
+    "view": "locations.views.vampire.BarrensDetailView"
+  },
+  {
+    "name": "locations:werewolf:create:caern",
+    "path": "locations/werewolf/create/caern/",
+    "view": "locations.views.werewolf.caern.CaernCreateView"
+  },
+  {
+    "name": "locations:werewolf:update:caern",
+    "path": "locations/werewolf/update/caern/<pk>/",
+    "view": "locations.views.werewolf.caern.CaernUpdateView"
+  },
+  {
+    "name": "locations:werewolf:list:caern",
+    "path": "locations/werewolf/list/caern/",
+    "view": "locations.views.werewolf.caern.CaernListView"
+  },
+  {
+    "name": "locations:werewolf:caern",
+    "path": "locations/werewolf/caern/<pk>/",
+    "view": "locations.views.werewolf.caern.CaernDetailView"
+  },
+  {
+    "name": "locations:mage:create:node",
+    "path": "locations/mage/create/node/",
+    "view": "locations.views.mage.node.NodeCreateView"
+  },
+  {
+    "name": "locations:mage:create:sector",
+    "path": "locations/mage/create/sector/",
+    "view": "locations.views.mage.sector.SectorCreateView"
+  },
+  {
+    "name": "locations:mage:create:horizon_realm",
+    "path": "locations/mage/create/realm/",
+    "view": "locations.views.mage.realm.RealmCreateView"
+  },
+  {
+    "name": "locations:mage:create:paradox_realm",
+    "path": "locations/mage/create/paradox_realm/",
+    "view": "locations.views.mage.paradox_realm.ParadoxRealmCreateView"
+  },
+  {
+    "name": "locations:mage:create:sanctum",
+    "path": "locations/mage/create/sanctum/",
+    "view": "locations.views.mage.sanctum.SanctumCreateView"
+  },
+  {
+    "name": "locations:mage:create:demesne",
+    "path": "locations/mage/create/demesne/",
+    "view": "locations.views.mage.demesne.DemesneCreateView"
+  },
+  {
+    "name": "locations:mage:create:library",
+    "path": "locations/mage/create/library/",
+    "view": "locations.views.mage.library.LibraryCreateView"
+  },
+  {
+    "name": "locations:mage:create:chantry",
+    "path": "locations/mage/create/chantry/",
+    "view": "locations.views.mage.chantry.ChantryBasicsView"
+  },
+  {
+    "name": "locations:mage:create:chantry_direct",
+    "path": "locations/mage/create/chantry/direct/",
+    "view": "locations.views.mage.chantry.ChantryCreateView"
+  },
+  {
+    "name": "locations:mage:create:reality_zone",
+    "path": "locations/mage/create/reality_zone/",
+    "view": "locations.views.mage.reality_zone.RealityZoneCreateView"
+  },
+  {
+    "name": "locations:mage:update:node",
+    "path": "locations/mage/update/node/<pk>/",
+    "view": "locations.views.mage.node.NodeUpdateView"
+  },
+  {
+    "name": "locations:mage:update:sector",
+    "path": "locations/mage/update/sector/<pk>/",
+    "view": "locations.views.mage.sector.SectorUpdateView"
+  },
+  {
+    "name": "locations:mage:update:library",
+    "path": "locations/mage/update/library/<pk>/",
+    "view": "locations.views.mage.library.LibraryUpdateView"
+  },
+  {
+    "name": "locations:mage:update:horizon_realm",
+    "path": "locations/mage/update/realm/<pk>/",
+    "view": "locations.views.mage.realm.RealmUpdateView"
+  },
+  {
+    "name": "locations:mage:update:paradox_realm",
+    "path": "locations/mage/update/paradox_realm/<pk>/",
+    "view": "locations.views.mage.paradox_realm.ParadoxRealmUpdateView"
+  },
+  {
+    "name": "locations:mage:update:sanctum",
+    "path": "locations/mage/update/sanctum/<pk>/",
+    "view": "locations.views.mage.sanctum.SanctumUpdateView"
+  },
+  {
+    "name": "locations:mage:update:demesne",
+    "path": "locations/mage/update/demesne/<pk>/",
+    "view": "locations.views.mage.demesne.DemesneUpdateView"
+  },
+  {
+    "name": "locations:mage:update:chantry",
+    "path": "locations/mage/update/chantry/<pk>/",
+    "view": "locations.views.mage.chantry.ChantryUpdateView"
+  },
+  {
+    "name": "locations:mage:update:reality_zone",
+    "path": "locations/mage/update/reality_zone/<pk>/",
+    "view": "locations.views.mage.reality_zone.RealityZoneUpdateView"
+  },
+  {
+    "name": "locations:mage:list:node",
+    "path": "locations/mage/list/node/",
+    "view": "locations.views.mage.node.NodeListView"
+  },
+  {
+    "name": "locations:mage:list:sector",
+    "path": "locations/mage/list/sector/",
+    "view": "locations.views.mage.sector.SectorListView"
+  },
+  {
+    "name": "locations:mage:list:chantry",
+    "path": "locations/mage/list/chantry/",
+    "view": "locations.views.mage.chantry.ChantryListView"
+  },
+  {
+    "name": "locations:mage:list:library",
+    "path": "locations/mage/list/library/",
+    "view": "locations.views.mage.library.LibraryListView"
+  },
+  {
+    "name": "locations:mage:list:horizon_realm",
+    "path": "locations/mage/list/horizon_realm/",
+    "view": "locations.views.mage.realm.RealmListView"
+  },
+  {
+    "name": "locations:mage:list:paradox_realm",
+    "path": "locations/mage/list/paradox_realm/",
+    "view": "locations.views.mage.paradox_realm.ParadoxRealmListView"
+  },
+  {
+    "name": "locations:mage:list:sanctum",
+    "path": "locations/mage/list/sanctum/",
+    "view": "locations.views.mage.sanctum.SanctumListView"
+  },
+  {
+    "name": "locations:mage:list:demesne",
+    "path": "locations/mage/list/demesne/",
+    "view": "locations.views.mage.demesne.DemesneListView"
+  },
+  {
+    "name": "locations:mage:list:reality_zone",
+    "path": "locations/mage/list/reality_zone/",
+    "view": "locations.views.mage.reality_zone.RealityZoneListView"
+  },
+  {
+    "name": "locations:mage:ajax:load_chantry_examples",
+    "path": "locations/mage/ajax/load_chantry_examples/",
+    "view": "locations.views.mage.chantry.LoadExamplesView"
+  },
+  {
+    "name": "locations:mage:node",
+    "path": "locations/mage/node/",
+    "view": "locations.views.mage.node.NodeListView"
+  },
+  {
+    "name": "locations:mage:sector",
+    "path": "locations/mage/sector/",
+    "view": "locations.views.mage.sector.SectorListView"
+  },
+  {
+    "name": "locations:mage:chantry",
+    "path": "locations/mage/chantry/",
+    "view": "locations.views.mage.chantry.ChantryListView"
+  },
+  {
+    "name": "locations:mage:library",
+    "path": "locations/mage/library/",
+    "view": "locations.views.mage.library.LibraryListView"
+  },
+  {
+    "name": "locations:mage:horizon_realm",
+    "path": "locations/mage/horizon_realm/",
+    "view": "locations.views.mage.realm.RealmListView"
+  },
+  {
+    "name": "locations:mage:paradox_realm",
+    "path": "locations/mage/paradox_realm/",
+    "view": "locations.views.mage.paradox_realm.ParadoxRealmListView"
+  },
+  {
+    "name": "locations:mage:sanctum",
+    "path": "locations/mage/sanctum/",
+    "view": "locations.views.mage.sanctum.SanctumListView"
+  },
+  {
+    "name": "locations:mage:demesne",
+    "path": "locations/mage/demesne/",
+    "view": "locations.views.mage.demesne.DemesneListView"
+  },
+  {
+    "name": "locations:mage:reality_zone",
+    "path": "locations/mage/reality_zone/",
+    "view": "locations.views.mage.reality_zone.RealityZoneListView"
+  },
+  {
+    "name": "locations:mage:node",
+    "path": "locations/mage/node/<pk>/",
+    "view": "locations.views.mage.node.NodeDetailView"
+  },
+  {
+    "name": "locations:mage:sector",
+    "path": "locations/mage/sector/<pk>/",
+    "view": "locations.views.mage.sector.SectorDetailView"
+  },
+  {
+    "name": "locations:mage:chantry",
+    "path": "locations/mage/chantry/<pk>/",
+    "view": "locations.views.mage.chantry.ChantryDetailView"
+  },
+  {
+    "name": "locations:mage:library",
+    "path": "locations/mage/library/<pk>/",
+    "view": "locations.views.mage.library.LibraryDetailView"
+  },
+  {
+    "name": "locations:mage:horizon_realm",
+    "path": "locations/mage/horizon_realm/<pk>/",
+    "view": "locations.views.mage.realm.RealmDetailView"
+  },
+  {
+    "name": "locations:mage:paradox_realm",
+    "path": "locations/mage/paradox_realm/<pk>/",
+    "view": "locations.views.mage.paradox_realm.ParadoxRealmDetailView"
+  },
+  {
+    "name": "locations:mage:sanctum",
+    "path": "locations/mage/sanctum/<pk>/",
+    "view": "locations.views.mage.sanctum.SanctumDetailView"
+  },
+  {
+    "name": "locations:mage:demesne",
+    "path": "locations/mage/demesne/<pk>/",
+    "view": "locations.views.mage.demesne.DemesneDetailView"
+  },
+  {
+    "name": "locations:mage:reality_zone",
+    "path": "locations/mage/reality_zone/<pk>/",
+    "view": "locations.views.mage.reality_zone.RealityZoneDetailView"
+  },
+  {
+    "name": "locations:wraith:create:byway",
+    "path": "locations/wraith/create/byway/",
+    "view": "locations.views.wraith.byway.BywayCreateView"
+  },
+  {
+    "name": "locations:wraith:create:citadel",
+    "path": "locations/wraith/create/citadel/",
+    "view": "locations.views.wraith.citadel.CitadelCreateView"
+  },
+  {
+    "name": "locations:wraith:create:freehold",
+    "path": "locations/wraith/create/freehold/",
+    "view": "locations.views.wraith.freehold.WraithFreeholdCreateView"
+  },
+  {
+    "name": "locations:wraith:create:haunt",
+    "path": "locations/wraith/create/haunt/",
+    "view": "locations.views.wraith.haunt.HauntCreateView"
+  },
+  {
+    "name": "locations:wraith:create:necropolis",
+    "path": "locations/wraith/create/necropolis/",
+    "view": "locations.views.wraith.necropolis.NecropolisCreateView"
+  },
+  {
+    "name": "locations:wraith:create:nihil",
+    "path": "locations/wraith/create/nihil/",
+    "view": "locations.views.wraith.nihil.NihilCreateView"
+  },
+  {
+    "name": "locations:wraith:update:byway",
+    "path": "locations/wraith/update/byway/<pk>/",
+    "view": "locations.views.wraith.byway.BywayUpdateView"
+  },
+  {
+    "name": "locations:wraith:update:citadel",
+    "path": "locations/wraith/update/citadel/<pk>/",
+    "view": "locations.views.wraith.citadel.CitadelUpdateView"
+  },
+  {
+    "name": "locations:wraith:update:freehold",
+    "path": "locations/wraith/update/freehold/<pk>/",
+    "view": "locations.views.wraith.freehold.WraithFreeholdUpdateView"
+  },
+  {
+    "name": "locations:wraith:update:haunt",
+    "path": "locations/wraith/update/haunt/<pk>/",
+    "view": "locations.views.wraith.haunt.HauntUpdateView"
+  },
+  {
+    "name": "locations:wraith:update:necropolis",
+    "path": "locations/wraith/update/necropolis/<pk>/",
+    "view": "locations.views.wraith.necropolis.NecropolisUpdateView"
+  },
+  {
+    "name": "locations:wraith:update:nihil",
+    "path": "locations/wraith/update/nihil/<pk>/",
+    "view": "locations.views.wraith.nihil.NihilUpdateView"
+  },
+  {
+    "name": "locations:wraith:list:byway",
+    "path": "locations/wraith/list/byway/",
+    "view": "locations.views.wraith.byway.BywayListView"
+  },
+  {
+    "name": "locations:wraith:list:citadel",
+    "path": "locations/wraith/list/citadel/",
+    "view": "locations.views.wraith.citadel.CitadelListView"
+  },
+  {
+    "name": "locations:wraith:list:freehold",
+    "path": "locations/wraith/list/freehold/",
+    "view": "locations.views.wraith.freehold.WraithFreeholdListView"
+  },
+  {
+    "name": "locations:wraith:list:haunt",
+    "path": "locations/wraith/list/haunt/",
+    "view": "locations.views.wraith.haunt.HauntListView"
+  },
+  {
+    "name": "locations:wraith:list:necropolis",
+    "path": "locations/wraith/list/necropolis/",
+    "view": "locations.views.wraith.necropolis.NecropolisListView"
+  },
+  {
+    "name": "locations:wraith:list:nihil",
+    "path": "locations/wraith/list/nihil/",
+    "view": "locations.views.wraith.nihil.NihilListView"
+  },
+  {
+    "name": "locations:wraith:byway",
+    "path": "locations/wraith/byway/<pk>/",
+    "view": "locations.views.wraith.byway.BywayDetailView"
+  },
+  {
+    "name": "locations:wraith:citadel",
+    "path": "locations/wraith/citadel/<pk>/",
+    "view": "locations.views.wraith.citadel.CitadelDetailView"
+  },
+  {
+    "name": "locations:wraith:freehold",
+    "path": "locations/wraith/freehold/<pk>/",
+    "view": "locations.views.wraith.freehold.WraithFreeholdDetailView"
+  },
+  {
+    "name": "locations:wraith:haunt",
+    "path": "locations/wraith/haunt/<pk>/",
+    "view": "locations.views.wraith.haunt.HauntDetailView"
+  },
+  {
+    "name": "locations:wraith:necropolis",
+    "path": "locations/wraith/necropolis/<pk>/",
+    "view": "locations.views.wraith.necropolis.NecropolisDetailView"
+  },
+  {
+    "name": "locations:wraith:nihil",
+    "path": "locations/wraith/nihil/<pk>/",
+    "view": "locations.views.wraith.nihil.NihilDetailView"
+  },
+  {
+    "name": "locations:changeling:create:freehold",
+    "path": "locations/changeling/create/freehold/",
+    "view": "locations.views.changeling.creation.FreeholdBasicsView"
+  },
+  {
+    "name": "locations:changeling:create:freehold_direct",
+    "path": "locations/changeling/create/freehold/direct/",
+    "view": "locations.views.changeling.freehold.FreeholdCreateView"
+  },
+  {
+    "name": "locations:changeling:create:holding",
+    "path": "locations/changeling/create/holding/",
+    "view": "locations.views.changeling.holding.HoldingCreateView"
+  },
+  {
+    "name": "locations:changeling:create:trod",
+    "path": "locations/changeling/create/trod/",
+    "view": "locations.views.changeling.trod.TrodCreateView"
+  },
+  {
+    "name": "locations:changeling:create:dream_realm",
+    "path": "locations/changeling/create/dream_realm/",
+    "view": "locations.views.changeling.dream_realm.DreamRealmCreateView"
+  },
+  {
+    "name": "locations:changeling:update:freehold",
+    "path": "locations/changeling/update/freehold/<int:pk>/",
+    "view": "locations.views.changeling.creation.FreeholdCreationView"
+  },
+  {
+    "name": "locations:changeling:update:freehold_direct",
+    "path": "locations/changeling/update/freehold/<int:pk>/direct/",
+    "view": "locations.views.changeling.freehold.FreeholdUpdateView"
+  },
+  {
+    "name": "locations:changeling:update:holding",
+    "path": "locations/changeling/update/holding/<int:pk>/",
+    "view": "locations.views.changeling.holding.HoldingUpdateView"
+  },
+  {
+    "name": "locations:changeling:update:trod",
+    "path": "locations/changeling/update/trod/<int:pk>/",
+    "view": "locations.views.changeling.trod.TrodUpdateView"
+  },
+  {
+    "name": "locations:changeling:update:dream_realm",
+    "path": "locations/changeling/update/dream_realm/<int:pk>/",
+    "view": "locations.views.changeling.dream_realm.DreamRealmUpdateView"
+  },
+  {
+    "name": "locations:changeling:list:freehold",
+    "path": "locations/changeling/list/freehold/",
+    "view": "locations.views.changeling.freehold.FreeholdListView"
+  },
+  {
+    "name": "locations:changeling:list:holding",
+    "path": "locations/changeling/list/holding/",
+    "view": "locations.views.changeling.holding.HoldingListView"
+  },
+  {
+    "name": "locations:changeling:list:trod",
+    "path": "locations/changeling/list/trod/",
+    "view": "locations.views.changeling.trod.TrodListView"
+  },
+  {
+    "name": "locations:changeling:list:dream_realm",
+    "path": "locations/changeling/list/dream_realm/",
+    "view": "locations.views.changeling.dream_realm.DreamRealmListView"
+  },
+  {
+    "name": "locations:changeling:freehold",
+    "path": "locations/changeling/freehold/<int:pk>/",
+    "view": "locations.views.changeling.freehold.FreeholdDetailView"
+  },
+  {
+    "name": "locations:changeling:dream_realm",
+    "path": "locations/changeling/dream_realm/<int:pk>/",
+    "view": "locations.views.changeling.dream_realm.DreamRealmDetailView"
+  },
+  {
+    "name": "locations:changeling:holding",
+    "path": "locations/changeling/holding/<int:pk>/",
+    "view": "locations.views.changeling.holding.HoldingDetailView"
+  },
+  {
+    "name": "locations:changeling:trod",
+    "path": "locations/changeling/trod/<int:pk>/",
+    "view": "locations.views.changeling.trod.TrodDetailView"
+  },
+  {
+    "name": "locations:demon:create:bastion",
+    "path": "locations/demon/create/bastion/",
+    "view": "locations.views.demon.bastion.BastionCreateView"
+  },
+  {
+    "name": "locations:demon:create:reliquary",
+    "path": "locations/demon/create/reliquary/",
+    "view": "locations.views.demon.reliquary.ReliquaryCreateView"
+  },
+  {
+    "name": "locations:demon:update:bastion",
+    "path": "locations/demon/update/bastion/<pk>/",
+    "view": "locations.views.demon.bastion.BastionUpdateView"
+  },
+  {
+    "name": "locations:demon:update:reliquary",
+    "path": "locations/demon/update/reliquary/<pk>/",
+    "view": "locations.views.demon.reliquary.ReliquaryUpdateView"
+  },
+  {
+    "name": "locations:demon:list:bastion",
+    "path": "locations/demon/list/bastion/",
+    "view": "locations.views.demon.bastion.BastionListView"
+  },
+  {
+    "name": "locations:demon:list:reliquary",
+    "path": "locations/demon/list/reliquary/",
+    "view": "locations.views.demon.reliquary.ReliquaryListView"
+  },
+  {
+    "name": "locations:demon:bastion",
+    "path": "locations/demon/bastion/<pk>/",
+    "view": "locations.views.demon.bastion.BastionDetailView"
+  },
+  {
+    "name": "locations:demon:reliquary",
+    "path": "locations/demon/reliquary/<pk>/",
+    "view": "locations.views.demon.reliquary.ReliquaryDetailView"
+  },
+  {
+    "name": "locations:mummy:create:tomb",
+    "path": "locations/mummy/create/tomb/",
+    "view": "locations.views.mummy.TombCreateView"
+  },
+  {
+    "name": "locations:mummy:create:cult_temple",
+    "path": "locations/mummy/create/cult_temple/",
+    "view": "locations.views.mummy.CultTempleCreateView"
+  },
+  {
+    "name": "locations:mummy:create:sanctuary",
+    "path": "locations/mummy/create/sanctuary/",
+    "view": "locations.views.mummy.UndergroundSanctuaryCreateView"
+  },
+  {
+    "name": "locations:mummy:update:tomb",
+    "path": "locations/mummy/update/tomb/<int:pk>/",
+    "view": "locations.views.mummy.TombUpdateView"
+  },
+  {
+    "name": "locations:mummy:update:cult_temple",
+    "path": "locations/mummy/update/cult_temple/<int:pk>/",
+    "view": "locations.views.mummy.CultTempleUpdateView"
+  },
+  {
+    "name": "locations:mummy:update:sanctuary",
+    "path": "locations/mummy/update/sanctuary/<int:pk>/",
+    "view": "locations.views.mummy.UndergroundSanctuaryUpdateView"
+  },
+  {
+    "name": "locations:mummy:list:tomb",
+    "path": "locations/mummy/list/tomb/",
+    "view": "locations.views.mummy.TombListView"
+  },
+  {
+    "name": "locations:mummy:list:cult_temple",
+    "path": "locations/mummy/list/cult_temple/",
+    "view": "locations.views.mummy.CultTempleListView"
+  },
+  {
+    "name": "locations:mummy:list:sanctuary",
+    "path": "locations/mummy/list/sanctuary/",
+    "view": "locations.views.mummy.UndergroundSanctuaryListView"
+  },
+  {
+    "name": "locations:mummy:tomb",
+    "path": "locations/mummy/tomb/<int:pk>/",
+    "view": "locations.views.mummy.TombDetailView"
+  },
+  {
+    "name": "locations:mummy:cult_temple",
+    "path": "locations/mummy/cult_temple/<int:pk>/",
+    "view": "locations.views.mummy.CultTempleDetailView"
+  },
+  {
+    "name": "locations:mummy:sanctuary",
+    "path": "locations/mummy/sanctuary/<int:pk>/",
+    "view": "locations.views.mummy.UndergroundSanctuaryDetailView"
+  },
+  {
+    "name": "locations:hunter:create:safehouse",
+    "path": "locations/hunter/create/safehouse/",
+    "view": "locations.views.hunter.safehouse.SafehouseCreateView"
+  },
+  {
+    "name": "locations:hunter:create:hunting_ground",
+    "path": "locations/hunter/create/hunting-ground/",
+    "view": "locations.views.hunter.huntingground.HuntingGroundCreateView"
+  },
+  {
+    "name": "locations:hunter:update:safehouse",
+    "path": "locations/hunter/update/safehouse/<pk>/",
+    "view": "locations.views.hunter.safehouse.SafehouseUpdateView"
+  },
+  {
+    "name": "locations:hunter:update:hunting_ground",
+    "path": "locations/hunter/update/hunting-ground/<pk>/",
+    "view": "locations.views.hunter.huntingground.HuntingGroundUpdateView"
+  },
+  {
+    "name": "locations:hunter:list:safehouse",
+    "path": "locations/hunter/list/safehouses/",
+    "view": "locations.views.hunter.safehouse.SafehouseListView"
+  },
+  {
+    "name": "locations:hunter:list:hunting_ground",
+    "path": "locations/hunter/list/hunting-grounds/",
+    "view": "locations.views.hunter.huntingground.HuntingGroundListView"
+  },
+  {
+    "name": "locations:hunter:safehouse-list",
+    "path": "locations/hunter/safehouse/",
+    "view": "locations.views.hunter.safehouse.SafehouseListView"
+  },
+  {
+    "name": "locations:hunter:safehouse",
+    "path": "locations/hunter/safehouse/<pk>/",
+    "view": "locations.views.hunter.safehouse.SafehouseDetailView"
+  },
+  {
+    "name": "locations:hunter:hunting-ground-list",
+    "path": "locations/hunter/hunting-ground/",
+    "view": "locations.views.hunter.huntingground.HuntingGroundListView"
+  },
+  {
+    "name": "locations:hunter:hunting_ground",
+    "path": "locations/hunter/hunting-ground/<pk>/",
+    "view": "locations.views.hunter.huntingground.HuntingGroundDetailView"
+  },
+  {
+    "name": "locations:create:location",
+    "path": "locations/create/location/",
+    "view": "locations.views.core.location.LocationCreateView"
+  },
+  {
+    "name": "locations:create:city",
+    "path": "locations/create/city/",
+    "view": "locations.views.core.city.CityCreateView"
+  },
+  {
+    "name": "locations:update:location",
+    "path": "locations/update/location/<pk>/",
+    "view": "locations.views.core.location.LocationUpdateView"
+  },
+  {
+    "name": "locations:update:city",
+    "path": "locations/update/city/<pk>/",
+    "view": "locations.views.core.city.CityUpdateView"
+  },
+  {
+    "name": "locations:list:city",
+    "path": "locations/list/city/",
+    "view": "locations.views.core.city.CityListView"
+  },
+  {
+    "name": "locations:index",
+    "path": "locations/index/",
+    "view": "locations.views.core.LocationIndexView"
+  },
+  {
+    "name": "locations:city",
+    "path": "locations/city/<pk>/",
+    "view": "locations.views.core.city.CityDetailView"
+  },
+  {
+    "name": "locations:location",
+    "path": "locations/<pk>/",
+    "view": "locations.views.core.GenericLocationDetailView"
+  },
+  {
+    "name": "items:vampire:create:artifact",
+    "path": "items/vampire/create/artifact/",
+    "view": "items.views.vampire.VampireArtifactCreateView"
+  },
+  {
+    "name": "items:vampire:create:bloodstone",
+    "path": "items/vampire/create/bloodstone/",
+    "view": "items.views.vampire.BloodstoneCreateView"
+  },
+  {
+    "name": "items:vampire:update:artifact",
+    "path": "items/vampire/update/artifact/<pk>/",
+    "view": "items.views.vampire.VampireArtifactUpdateView"
+  },
+  {
+    "name": "items:vampire:update:bloodstone",
+    "path": "items/vampire/update/bloodstone/<pk>/",
+    "view": "items.views.vampire.BloodstoneUpdateView"
+  },
+  {
+    "name": "items:vampire:list:artifact",
+    "path": "items/vampire/list/artifacts/",
+    "view": "items.views.vampire.VampireArtifactListView"
+  },
+  {
+    "name": "items:vampire:list:bloodstone",
+    "path": "items/vampire/list/bloodstones/",
+    "view": "items.views.vampire.BloodstoneListView"
+  },
+  {
+    "name": "items:vampire:artifact",
+    "path": "items/vampire/artifact/<pk>/",
+    "view": "items.views.vampire.VampireArtifactDetailView"
+  },
+  {
+    "name": "items:vampire:bloodstone",
+    "path": "items/vampire/bloodstone/<pk>/",
+    "view": "items.views.vampire.BloodstoneDetailView"
+  },
+  {
+    "name": "items:werewolf:create:fetish",
+    "path": "items/werewolf/create/fetish/",
+    "view": "items.views.werewolf.fetish.FetishCreateView"
+  },
+  {
+    "name": "items:werewolf:create:talen",
+    "path": "items/werewolf/create/talen/",
+    "view": "items.views.werewolf.talen.TalenCreateView"
+  },
+  {
+    "name": "items:werewolf:update:fetish",
+    "path": "items/werewolf/update/fetish/<pk>/",
+    "view": "items.views.werewolf.fetish.FetishUpdateView"
+  },
+  {
+    "name": "items:werewolf:update:talen",
+    "path": "items/werewolf/update/talen/<pk>/",
+    "view": "items.views.werewolf.talen.TalenUpdateView"
+  },
+  {
+    "name": "items:werewolf:list:fetish",
+    "path": "items/werewolf/list/fetish/",
+    "view": "items.views.werewolf.fetish.FetishListView"
+  },
+  {
+    "name": "items:werewolf:list:talen",
+    "path": "items/werewolf/list/talen/",
+    "view": "items.views.werewolf.talen.TalenListView"
+  },
+  {
+    "name": "items:werewolf:fetish",
+    "path": "items/werewolf/fetish/<pk>/",
+    "view": "items.views.werewolf.fetish.FetishDetailView"
+  },
+  {
+    "name": "items:werewolf:talen",
+    "path": "items/werewolf/talen/<pk>/",
+    "view": "items.views.werewolf.talen.TalenDetailView"
+  },
+  {
+    "name": "items:mage:create:wonder",
+    "path": "items/mage/create/wonder/",
+    "view": "items.views.mage.wonder.WonderCreateView"
+  },
+  {
+    "name": "items:mage:create:charm",
+    "path": "items/mage/create/charm/",
+    "view": "items.views.mage.charm.CharmCreateView"
+  },
+  {
+    "name": "items:mage:create:artifact",
+    "path": "items/mage/create/artifact/",
+    "view": "items.views.mage.artifact.ArtifactCreateView"
+  },
+  {
+    "name": "items:mage:create:talisman",
+    "path": "items/mage/create/talisman/",
+    "view": "items.views.mage.talisman.TalismanCreateView"
+  },
+  {
+    "name": "items:mage:create:periapt",
+    "path": "items/mage/create/periapt/",
+    "view": "items.views.mage.periapt.PeriaptCreateView"
+  },
+  {
+    "name": "items:mage:create:grimoire",
+    "path": "items/mage/create/grimoire/",
+    "view": "items.views.mage.grimoire.GrimoireCreateView"
+  },
+  {
+    "name": "items:mage:create:sorcerer_artifact",
+    "path": "items/mage/create/sorcerer_artifact/",
+    "view": "items.views.mage.sorcerer_artifact.SorcererArtifactCreateView"
+  },
+  {
+    "name": "items:mage:update:wonder",
+    "path": "items/mage/update/wonder/<pk>/",
+    "view": "items.views.mage.wonder.WonderUpdateView"
+  },
+  {
+    "name": "items:mage:update:charm",
+    "path": "items/mage/update/charm/<pk>/",
+    "view": "items.views.mage.charm.CharmUpdateView"
+  },
+  {
+    "name": "items:mage:update:artifact",
+    "path": "items/mage/update/artifact/<pk>/",
+    "view": "items.views.mage.artifact.ArtifactUpdateView"
+  },
+  {
+    "name": "items:mage:update:talisman",
+    "path": "items/mage/update/talisman/<pk>/",
+    "view": "items.views.mage.talisman.TalismanUpdateView"
+  },
+  {
+    "name": "items:mage:update:periapt",
+    "path": "items/mage/update/periapt/<pk>/",
+    "view": "items.views.mage.periapt.PeriaptUpdateView"
+  },
+  {
+    "name": "items:mage:update:grimoire",
+    "path": "items/mage/update/grimoire/<pk>/",
+    "view": "items.views.mage.grimoire.GrimoireUpdateView"
+  },
+  {
+    "name": "items:mage:update:sorcerer_artifact",
+    "path": "items/mage/update/sorcerer_artifact/<pk>/",
+    "view": "items.views.mage.sorcerer_artifact.SorcererArtifactUpdateView"
+  },
+  {
+    "name": "items:mage:list:wonder",
+    "path": "items/mage/list/wonder/",
+    "view": "items.views.mage.wonder.WonderListView"
+  },
+  {
+    "name": "items:mage:list:charm",
+    "path": "items/mage/list/charm/",
+    "view": "items.views.mage.charm.CharmListView"
+  },
+  {
+    "name": "items:mage:list:artifact",
+    "path": "items/mage/list/artifact/",
+    "view": "items.views.mage.artifact.ArtifactListView"
+  },
+  {
+    "name": "items:mage:list:talisman",
+    "path": "items/mage/list/talisman/",
+    "view": "items.views.mage.talisman.TalismanListView"
+  },
+  {
+    "name": "items:mage:list:periapt",
+    "path": "items/mage/list/periapt/",
+    "view": "items.views.mage.periapt.PeriaptListView"
+  },
+  {
+    "name": "items:mage:list:grimoire",
+    "path": "items/mage/list/grimoire/",
+    "view": "items.views.mage.grimoire.GrimoireListView"
+  },
+  {
+    "name": "items:mage:list:sorcerer_artifact",
+    "path": "items/mage/list/sorcerer_artifact/",
+    "view": "items.views.mage.sorcerer_artifact.SorcererArtifactListView"
+  },
+  {
+    "name": "items:mage:wonder",
+    "path": "items/mage/wonder/<pk>/",
+    "view": "items.views.mage.wonder.WonderDetailView"
+  },
+  {
+    "name": "items:mage:charm",
+    "path": "items/mage/charm/<pk>/",
+    "view": "items.views.mage.charm.CharmDetailView"
+  },
+  {
+    "name": "items:mage:artifact",
+    "path": "items/mage/artifact/<pk>/",
+    "view": "items.views.mage.artifact.ArtifactDetailView"
+  },
+  {
+    "name": "items:mage:talisman",
+    "path": "items/mage/talisman/<pk>/",
+    "view": "items.views.mage.talisman.TalismanDetailView"
+  },
+  {
+    "name": "items:mage:periapt",
+    "path": "items/mage/periapt/<pk>/",
+    "view": "items.views.mage.periapt.PeriaptDetailView"
+  },
+  {
+    "name": "items:mage:grimoire",
+    "path": "items/mage/grimoire/<pk>/",
+    "view": "items.views.mage.grimoire.GrimoireDetailView"
+  },
+  {
+    "name": "items:mage:sorcerer_artifact",
+    "path": "items/mage/sorcerer_artifact/<pk>/",
+    "view": "items.views.mage.sorcerer_artifact.SorcererArtifactDetailView"
+  },
+  {
+    "name": "items:wraith:create:relic",
+    "path": "items/wraith/create/relic/",
+    "view": "items.views.wraith.WraithRelicCreateView"
+  },
+  {
+    "name": "items:wraith:create:artifact",
+    "path": "items/wraith/create/artifact/",
+    "view": "items.views.wraith.WraithArtifactCreateView"
+  },
+  {
+    "name": "items:wraith:update:relic",
+    "path": "items/wraith/update/relic/<pk>/",
+    "view": "items.views.wraith.WraithRelicUpdateView"
+  },
+  {
+    "name": "items:wraith:update:artifact",
+    "path": "items/wraith/update/artifact/<pk>/",
+    "view": "items.views.wraith.WraithArtifactUpdateView"
+  },
+  {
+    "name": "items:wraith:list:relic",
+    "path": "items/wraith/list/relics/",
+    "view": "items.views.wraith.WraithRelicListView"
+  },
+  {
+    "name": "items:wraith:list:artifact",
+    "path": "items/wraith/list/artifacts/",
+    "view": "items.views.wraith.WraithArtifactListView"
+  },
+  {
+    "name": "items:wraith:relic",
+    "path": "items/wraith/relic/<pk>/",
+    "view": "items.views.wraith.WraithRelicDetailView"
+  },
+  {
+    "name": "items:wraith:artifact",
+    "path": "items/wraith/artifact/<pk>/",
+    "view": "items.views.wraith.WraithArtifactDetailView"
+  },
+  {
+    "name": "items:changeling:create:treasure",
+    "path": "items/changeling/create/treasure/",
+    "view": "items.views.changeling.TreasureCreateView"
+  },
+  {
+    "name": "items:changeling:create:dross",
+    "path": "items/changeling/create/dross/",
+    "view": "items.views.changeling.DrossCreateView"
+  },
+  {
+    "name": "items:changeling:update:treasure",
+    "path": "items/changeling/update/treasure/<pk>/",
+    "view": "items.views.changeling.TreasureUpdateView"
+  },
+  {
+    "name": "items:changeling:update:dross",
+    "path": "items/changeling/update/dross/<pk>/",
+    "view": "items.views.changeling.DrossUpdateView"
+  },
+  {
+    "name": "items:changeling:list:treasure",
+    "path": "items/changeling/list/treasures/",
+    "view": "items.views.changeling.TreasureListView"
+  },
+  {
+    "name": "items:changeling:list:dross",
+    "path": "items/changeling/list/dross/",
+    "view": "items.views.changeling.DrossListView"
+  },
+  {
+    "name": "items:changeling:treasure",
+    "path": "items/changeling/treasure/<pk>/",
+    "view": "items.views.changeling.TreasureDetailView"
+  },
+  {
+    "name": "items:changeling:dross",
+    "path": "items/changeling/dross/<pk>/",
+    "view": "items.views.changeling.DrossDetailView"
+  },
+  {
+    "name": "items:demon:create:relic",
+    "path": "items/demon/create/relic/",
+    "view": "items.views.demon.relic.RelicCreateView"
+  },
+  {
+    "name": "items:demon:update:relic",
+    "path": "items/demon/update/relic/<pk>/",
+    "view": "items.views.demon.relic.RelicUpdateView"
+  },
+  {
+    "name": "items:demon:list:relic",
+    "path": "items/demon/list/relics/",
+    "view": "items.views.demon.relic.RelicListView"
+  },
+  {
+    "name": "items:demon:relic",
+    "path": "items/demon/relic/<pk>/",
+    "view": "items.views.demon.relic.RelicDetailView"
+  },
+  {
+    "name": "items:mummy:create:relic",
+    "path": "items/mummy/create/relic/",
+    "view": "items.views.mummy.MummyRelicCreateView"
+  },
+  {
+    "name": "items:mummy:create:vessel",
+    "path": "items/mummy/create/vessel/",
+    "view": "items.views.mummy.VesselCreateView"
+  },
+  {
+    "name": "items:mummy:create:ushabti",
+    "path": "items/mummy/create/ushabti/",
+    "view": "items.views.mummy.UshabtiCreateView"
+  },
+  {
+    "name": "items:mummy:update:relic",
+    "path": "items/mummy/update/relic/<int:pk>/",
+    "view": "items.views.mummy.MummyRelicUpdateView"
+  },
+  {
+    "name": "items:mummy:update:vessel",
+    "path": "items/mummy/update/vessel/<int:pk>/",
+    "view": "items.views.mummy.VesselUpdateView"
+  },
+  {
+    "name": "items:mummy:update:ushabti",
+    "path": "items/mummy/update/ushabti/<int:pk>/",
+    "view": "items.views.mummy.UshabtiUpdateView"
+  },
+  {
+    "name": "items:mummy:list:relic",
+    "path": "items/mummy/list/relic/",
+    "view": "items.views.mummy.MummyRelicListView"
+  },
+  {
+    "name": "items:mummy:list:vessel",
+    "path": "items/mummy/list/vessel/",
+    "view": "items.views.mummy.VesselListView"
+  },
+  {
+    "name": "items:mummy:list:ushabti",
+    "path": "items/mummy/list/ushabti/",
+    "view": "items.views.mummy.UshabtiListView"
+  },
+  {
+    "name": "items:mummy:relic",
+    "path": "items/mummy/relic/<int:pk>/",
+    "view": "items.views.mummy.MummyRelicDetailView"
+  },
+  {
+    "name": "items:mummy:vessel",
+    "path": "items/mummy/vessel/<int:pk>/",
+    "view": "items.views.mummy.VesselDetailView"
+  },
+  {
+    "name": "items:mummy:ushabti",
+    "path": "items/mummy/ushabti/<int:pk>/",
+    "view": "items.views.mummy.UshabtiDetailView"
+  },
+  {
+    "name": "items:hunter:create:gear",
+    "path": "items/hunter/create/gear/",
+    "view": "items.views.hunter.gear.HunterGearCreateView"
+  },
+  {
+    "name": "items:hunter:create:relic",
+    "path": "items/hunter/create/relic/",
+    "view": "items.views.hunter.relic.HunterRelicCreateView"
+  },
+  {
+    "name": "items:hunter:update:gear",
+    "path": "items/hunter/update/gear/<pk>/",
+    "view": "items.views.hunter.gear.HunterGearUpdateView"
+  },
+  {
+    "name": "items:hunter:update:relic",
+    "path": "items/hunter/update/relic/<pk>/",
+    "view": "items.views.hunter.relic.HunterRelicUpdateView"
+  },
+  {
+    "name": "items:hunter:list:gear",
+    "path": "items/hunter/list/gear/",
+    "view": "items.views.hunter.gear.HunterGearListView"
+  },
+  {
+    "name": "items:hunter:list:relic",
+    "path": "items/hunter/list/relics/",
+    "view": "items.views.hunter.relic.HunterRelicListView"
+  },
+  {
+    "name": "items:hunter:gear",
+    "path": "items/hunter/gear/<pk>/",
+    "view": "items.views.hunter.gear.HunterGearDetailView"
+  },
+  {
+    "name": "items:hunter:relic",
+    "path": "items/hunter/relic/<pk>/",
+    "view": "items.views.hunter.relic.HunterRelicDetailView"
+  },
+  {
+    "name": "items:create:item",
+    "path": "items/create/item/",
+    "view": "items.views.core.item.ItemCreateView"
+  },
+  {
+    "name": "items:create:weapon",
+    "path": "items/create/weapon/",
+    "view": "items.views.core.weapon.WeaponCreateView"
+  },
+  {
+    "name": "items:create:melee_weapon",
+    "path": "items/create/meleeweapon/",
+    "view": "items.views.core.meleeweapon.MeleeWeaponCreateView"
+  },
+  {
+    "name": "items:create:ranged_weapon",
+    "path": "items/create/rangedweapon/",
+    "view": "items.views.core.rangedweapon.RangedWeaponCreateView"
+  },
+  {
+    "name": "items:create:thrown_weapon",
+    "path": "items/create/thrownweapon/",
+    "view": "items.views.core.thrownweapon.ThrownWeaponCreateView"
+  },
+  {
+    "name": "items:create:material",
+    "path": "items/create/material/",
+    "view": "items.views.core.material.MaterialCreateView"
+  },
+  {
+    "name": "items:create:medium",
+    "path": "items/create/medium/",
+    "view": "items.views.core.medium.MediumCreateView"
+  },
+  {
+    "name": "items:update:item",
+    "path": "items/update/item/<pk>/",
+    "view": "items.views.core.item.ItemUpdateView"
+  },
+  {
+    "name": "items:update:weapon",
+    "path": "items/update/weapon/<pk>/",
+    "view": "items.views.core.weapon.WeaponUpdateView"
+  },
+  {
+    "name": "items:update:melee_weapon",
+    "path": "items/update/meleeweapon/<pk>/",
+    "view": "items.views.core.meleeweapon.MeleeWeaponUpdateView"
+  },
+  {
+    "name": "items:update:ranged_weapon",
+    "path": "items/update/rangedweapon/<pk>/",
+    "view": "items.views.core.rangedweapon.RangedWeaponUpdateView"
+  },
+  {
+    "name": "items:update:thrown_weapon",
+    "path": "items/update/thrownweapon/<pk>/",
+    "view": "items.views.core.thrownweapon.ThrownWeaponUpdateView"
+  },
+  {
+    "name": "items:update:material",
+    "path": "items/update/material/<pk>/",
+    "view": "items.views.core.material.MaterialUpdateView"
+  },
+  {
+    "name": "items:update:medium",
+    "path": "items/update/medium/<pk>/",
+    "view": "items.views.core.medium.MediumUpdateView"
+  },
+  {
+    "name": "items:list:material",
+    "path": "items/list/material/",
+    "view": "items.views.core.material.MaterialListView"
+  },
+  {
+    "name": "items:list:medium",
+    "path": "items/list/medium/",
+    "view": "items.views.core.medium.MediumListView"
+  },
+  {
+    "name": "items:list:weapon",
+    "path": "items/list/weapon/",
+    "view": "items.views.core.weapon.WeaponListView"
+  },
+  {
+    "name": "items:list:melee_weapon",
+    "path": "items/list/melee_weapon/",
+    "view": "items.views.core.meleeweapon.MeleeWeaponListView"
+  },
+  {
+    "name": "items:list:ranged_weapon",
+    "path": "items/list/ranged_weapon/",
+    "view": "items.views.core.rangedweapon.RangedWeaponListView"
+  },
+  {
+    "name": "items:list:thrown_weapon",
+    "path": "items/list/thrown_weapon/",
+    "view": "items.views.core.thrownweapon.ThrownWeaponListView"
+  },
+  {
+    "name": "items:index",
+    "path": "items/index/",
+    "view": "items.views.core.ItemIndexView"
+  },
+  {
+    "name": "items:material",
+    "path": "items/material/<pk>/",
+    "view": "items.views.core.material.MaterialDetailView"
+  },
+  {
+    "name": "items:medium",
+    "path": "items/medium/<pk>/",
+    "view": "items.views.core.medium.MediumDetailView"
+  },
+  {
+    "name": "items:weapon",
+    "path": "items/weapon/<pk>/",
+    "view": "items.views.core.weapon.WeaponDetailView"
+  },
+  {
+    "name": "items:melee_weapon",
+    "path": "items/melee_weapon/<pk>/",
+    "view": "items.views.core.meleeweapon.MeleeWeaponDetailView"
+  },
+  {
+    "name": "items:ranged_weapon",
+    "path": "items/ranged_weapon/<pk>/",
+    "view": "items.views.core.rangedweapon.RangedWeaponDetailView"
+  },
+  {
+    "name": "items:thrown_weapon",
+    "path": "items/thrown_weapon/<pk>/",
+    "view": "items.views.core.thrownweapon.ThrownWeaponDetailView"
+  },
+  {
+    "name": "items:item",
+    "path": "items/<pk>/",
+    "view": "items.views.core.GenericItemDetailView"
+  }
+]

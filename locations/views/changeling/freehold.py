@@ -1,19 +1,15 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from core.mixins import EditPermissionMixin, ViewPermissionMixin, prepare_created_object
-from locations.forms.changeling.freehold import FreeholdForm
-from locations.models.changeling import Freehold
+from locations.registry import registry
 
 
-class FreeholdDetailView(ViewPermissionMixin, DetailView):
+class _FreeholdDetailView(ViewPermissionMixin, DetailView):
     """Detail view for a Freehold"""
-
-    model = Freehold
-    template_name = "locations/changeling/freehold/detail.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -23,21 +19,11 @@ class FreeholdDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class FreeholdListView(ListView):
-    """List view for all Freeholds"""
-
-    model = Freehold
-    ordering = ["name"]
-    template_name = "locations/changeling/freehold/list.html"
+FreeholdDetailView = registry.view("locations.Freehold", "detail")
 
 
-class FreeholdCreateView(LoginRequiredMixin, FormView):
+class _FreeholdCreateView(LoginRequiredMixin, FormView):
     """Create view for a new Freehold"""
-
-    template_name = "locations/changeling/freehold/form.html"
-    form_class = FreeholdForm
-    success_message = "Freehold '{name}' created successfully!"
-    error_message = "Failed to create freehold. Please correct the errors below."
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
@@ -58,17 +44,20 @@ class FreeholdCreateView(LoginRequiredMixin, FormView):
         return context
 
 
-class FreeholdUpdateView(EditPermissionMixin, UpdateView):
-    """Update view for an existing Freehold"""
+FreeholdCreateView = registry.view("locations.Freehold", "create")
 
-    model = Freehold
-    form_class = FreeholdForm
-    template_name = "locations/changeling/freehold/form.html"
-    success_message = "Freehold '{name}' updated successfully!"
-    error_message = "Failed to update freehold. Please correct the errors below."
+
+class _FreeholdUpdateView(EditPermissionMixin, UpdateView):
+    """Update view for an existing Freehold"""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["feature_points"] = self.object.get_total_feature_points()
         context["holdings_required"] = self.object.get_holdings_required()
         return context
+
+
+FreeholdUpdateView = registry.view("locations.Freehold", "update")
+
+
+FreeholdListView = registry.view("locations.Freehold", "list")

@@ -31,6 +31,12 @@ class AuthorizationMiddleware:
         pk = view_kwargs.get("pk")
         if pk is not None and (not str(pk).isascii() or not str(pk).isdecimal() or int(pk) < 1):
             return HttpResponse("Not found", status=404, content_type="text/plain")
+        # Registry views enforce the same evaluator before their custom dispatch.
+        # Let that wrapper resolve the subject once and reuse it for rendering.
+        from core.model_registry import RegistryViewMixin
+
+        if view_class is not None and issubclass(view_class, RegistryViewMixin):
+            return None
         if view_class is not None and view_class.__module__ == "game.views":
             denial = self._check_game_detail(request, view_class, view_kwargs)
             if denial is not None:

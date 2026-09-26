@@ -1,32 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, ListView, UpdateView
+from django.views.generic import FormView
 
 from core.mixins import (
-    EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
     prepare_created_object,
 )
-from locations.forms.mage.sanctum import SanctumForm
-from locations.models.mage.sanctum import Sanctum
+from locations.registry import registry
 
 
-class SanctumDetailView(ViewPermissionMixin, DetailView):
-    model = Sanctum
-    template_name = "locations/mage/sanctum/detail.html"
-
-
-class SanctumListView(ListView):
-    model = Sanctum
-    ordering = ["name"]
-    template_name = "locations/mage/sanctum/list.html"
-
-
-class SanctumCreateView(LoginRequiredMixin, MessageMixin, FormView):
-    form_class = SanctumForm
-    template_name = "locations/mage/sanctum/form.html"
-    success_message = "Sanctum '{name}' created successfully!"
-    error_message = "Failed to create sanctum. Please correct the errors below."
+class _SanctumCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
@@ -37,9 +19,9 @@ class SanctumCreateView(LoginRequiredMixin, MessageMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class SanctumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = Sanctum
-    form_class = SanctumForm
-    template_name = "locations/mage/sanctum/form.html"
-    success_message = "Sanctum '{name}' updated successfully!"
-    error_message = "Failed to update sanctum. Please correct the errors below."
+SanctumCreateView = registry.view("locations.Sanctum", "create")
+
+
+SanctumDetailView = registry.view("locations.Sanctum", "detail")
+SanctumListView = registry.view("locations.Sanctum", "list")
+SanctumUpdateView = registry.view("locations.Sanctum", "update")

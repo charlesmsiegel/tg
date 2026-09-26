@@ -1,36 +1,3 @@
-from django.urls import path
+from locations.registry import registry
 
-from locations import views
-
-urls = [
-    path(
-        "byway/",
-        views.wraith.BywayCreateView.as_view(),
-        name="byway",
-    ),
-    path(
-        "citadel/",
-        views.wraith.CitadelCreateView.as_view(),
-        name="citadel",
-    ),
-    path(
-        "freehold/",
-        views.wraith.WraithFreeholdCreateView.as_view(),
-        name="freehold",
-    ),
-    path(
-        "haunt/",
-        views.wraith.HauntCreateView.as_view(),
-        name="haunt",
-    ),
-    path(
-        "necropolis/",
-        views.wraith.NecropolisCreateView.as_view(),
-        name="necropolis",
-    ),
-    path(
-        "nihil/",
-        views.wraith.NihilCreateView.as_view(),
-        name="nihil",
-    ),
-]
+urls = registry.urls("wraith", "create")

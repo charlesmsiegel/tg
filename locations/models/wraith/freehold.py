@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -75,13 +74,3 @@ class WraithFreehold(LocationModel):
 
     def __str__(self):
         return f"{self.name} (Freehold)"
-
-    def get_absolute_url(self):
-        return reverse("locations:wraith:freehold", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("locations:wraith:update:freehold", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:wraith:create:freehold")

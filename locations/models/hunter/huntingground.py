@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -109,13 +108,6 @@ class HuntingGround(LocationModel):
     class Meta:
         verbose_name = "Hunting Ground"
         verbose_name_plural = "Hunting Grounds"
-
-    def get_update_url(self):
-        return reverse("locations:hunter:update:hunting_ground", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:hunter:create:hunting_ground")
 
     def calculate_total_rating(self):
         """Calculate total hunting ground value/danger."""

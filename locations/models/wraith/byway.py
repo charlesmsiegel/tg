@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -68,13 +67,3 @@ class Byway(LocationModel):
 
     def __str__(self):
         return f"{self.name} (Byway)"
-
-    def get_absolute_url(self):
-        return reverse("locations:wraith:byway", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("locations:wraith:update:byway", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:wraith:create:byway")

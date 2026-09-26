@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -46,13 +45,6 @@ class Bloodstone(ItemModel):
     class Meta:
         verbose_name = "Bloodstone"
         verbose_name_plural = "Bloodstones"
-
-    def get_update_url(self):
-        return reverse("items:vampire:update:bloodstone", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:vampire:create:bloodstone")
 
     def add_blood(self, amount):
         """Add blood to the bloodstone, respecting max capacity."""

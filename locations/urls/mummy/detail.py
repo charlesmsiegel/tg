@@ -1,17 +1,3 @@
-from django.urls import path
+from locations.registry import registry
 
-from locations import views
-
-urls = [
-    path("tomb/<int:pk>/", views.mummy.TombDetailView.as_view(), name="tomb"),
-    path(
-        "cult_temple/<int:pk>/",
-        views.mummy.CultTempleDetailView.as_view(),
-        name="cult_temple",
-    ),
-    path(
-        "sanctuary/<int:pk>/",
-        views.mummy.UndergroundSanctuaryDetailView.as_view(),
-        name="sanctuary",
-    ),
-]
+urls = registry.urls("mummy", "detail")

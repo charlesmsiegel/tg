@@ -9,6 +9,7 @@ from django.urls import get_resolver
 
 from characters.models.core import CharacterModel, Group
 from core.access_policy import PROJECT_PREFIXES, authorize_route, route_policy
+from core.model_registry import get_registry
 from core.models import CharacterTemplate
 from core.route_policy_manifest import POLICIES, VIEW_POLICIES
 from items.models.core import ItemModel
@@ -23,9 +24,22 @@ class RoutePolicyTests(SimpleTestCase):
             for row in walk(get_resolver().url_patterns)
             if row[2].startswith(PROJECT_PREFIXES)
         }
-        self.assertEqual(names - VIEW_POLICIES.keys(), set())
-        self.assertEqual(VIEW_POLICIES.keys() - names, set())
-        self.assertEqual(sum(len(group) for group in POLICIES.values()), len(names))
+        registered = {
+            action.view_path: action.policy
+            for app in ("items", "locations")
+            for entry in get_registry(app)
+            for action in entry.actions.values()
+        }
+        self.assertFalse(registered.keys() & VIEW_POLICIES.keys(), "Policy has two sources")
+        declared = VIEW_POLICIES | registered
+        self.assertEqual(names, declared.keys())
+        self.assertEqual(
+            sum(len(group) for group in POLICIES.values()) + len(registered), len(names)
+        )
+        for name, policy in declared.items():
+            module, class_name = name.rsplit(".", 1)
+            target = getattr(importlib.import_module(module), class_name)
+            self.assertEqual(route_policy(target), policy, name)
 
     def test_unknown_route_has_no_implicit_fallback(self):
         class NewUnreviewedView:
@@ -43,7 +57,14 @@ class RoutePolicyTests(SimpleTestCase):
             "accounts.views.CustomLoginView",
             "accounts.views.CustomPasswordResetView",
         }
-        for name in POLICIES["PUBLIC_READ"] - auth_forms:
+        registered_reads = {
+            action.view_path
+            for app in ("items", "locations")
+            for entry in get_registry(app)
+            for action in entry.actions.values()
+            if action.policy == "PUBLIC_READ"
+        }
+        for name in (POLICIES["PUBLIC_READ"] | registered_reads) - auth_forms:
             module, class_name = name.rsplit(".", 1)
             view = getattr(importlib.import_module(module), class_name)
             self.assertFalse(

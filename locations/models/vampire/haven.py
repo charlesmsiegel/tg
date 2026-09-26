@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from characters.models.core import MeritFlaw
 from core.models import BaseMeritFlawRating
@@ -50,13 +49,6 @@ class Haven(LocationModel):
     class Meta:
         verbose_name = "Haven"
         verbose_name_plural = "Havens"
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:haven", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:haven")
 
     def calculate_total_rating(self):
         """Calculate total Haven Background rating."""

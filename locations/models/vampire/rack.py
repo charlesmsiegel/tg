@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -70,13 +69,6 @@ class Rack(LocationModel):
     class Meta:
         verbose_name = "Rack"
         verbose_name_plural = "Racks"
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:rack", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:rack")
 
     def get_total_value(self):
         """Calculate the overall value of this rack."""

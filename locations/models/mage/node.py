@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from characters.models.core import MeritFlaw
 from characters.models.core.merit_flaw_block import MeritFlawBlock
@@ -80,13 +79,6 @@ class Node(MeritFlawBlock, LocationModel):
                 violation_error_message="Tass per week must be between 0 and 100",
             ),
         ]
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:node", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:node")
 
     def set_rank(self, rank):
         self.rank = rank

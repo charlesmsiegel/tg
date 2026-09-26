@@ -1,10 +1,10 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from characters.models.mage.focus import Practice
 from core.models import BasePracticeRating
+from core.registry_urls import RegistryURLMixin
 
 
 class ZoneRating(BasePracticeRating):
@@ -27,7 +27,7 @@ class ZoneRating(BasePracticeRating):
         ]
 
 
-class RealityZone(models.Model):
+class RealityZone(RegistryURLMixin, models.Model):
     type = "reality_zone"
     gameline = "mta"
 
@@ -41,16 +41,6 @@ class RealityZone(models.Model):
 
     def get_heading(self):
         return "mta_heading"
-
-    def get_absolute_url(self):
-        return reverse("locations:mage:reality_zone", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:reality_zone", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:reality_zone")
 
     def get_positive_practices(self):
         return ZoneRating.objects.filter(zone=self, rating__gt=0).order_by(

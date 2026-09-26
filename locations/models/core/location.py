@@ -1,9 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.urls import reverse
 
 from characters.models.core import CharacterModel
 from core.models import Model, ModelManager, ModelQuerySet
+from core.registry_urls import RegistryURLMixin
 from game.models import Scene
 
 
@@ -19,7 +19,7 @@ class LocationQuerySet(ModelQuerySet):
 LocationModelManager = ModelManager.from_queryset(LocationQuerySet)
 
 
-class LocationModel(Model):
+class LocationModel(RegistryURLMixin, Model):
     type = "location"
 
     parent = models.ForeignKey(
@@ -46,16 +46,6 @@ class LocationModel(Model):
     class Meta:
         verbose_name = "Location"
         verbose_name_plural = "Location"
-
-    def get_absolute_url(self):
-        return reverse("locations:location", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:update:location", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:create:location")
 
     def get_scenes(self):
         return Scene.objects.filter(location=self)

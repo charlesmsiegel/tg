@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core.item import ItemModel
 
@@ -28,10 +27,3 @@ class Weapon(ItemModel):
             ("N", "Not Applicable"),
         ],
     )
-
-    def get_update_url(self):
-        return reverse(f"items:update:{self.type}", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse(f"items:create:{cls.type}")

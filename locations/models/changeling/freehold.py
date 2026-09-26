@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -180,16 +179,6 @@ class Freehold(LocationModel):
                 violation_error_message="Passages must be between 0 and 20",
             ),
         ]
-
-    def get_absolute_url(self):
-        return reverse("locations:changeling:freehold", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:changeling:update:freehold", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:changeling:create:freehold")
 
     def get_archetype_display_with_benefit(self):
         """Returns archetype with its mechanical benefit"""

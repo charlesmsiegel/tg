@@ -1,15 +1,12 @@
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView
 
-from core.mixins import MessageMixin
 from items.models.mage import WonderResonanceRating
-from items.models.mage.talisman import Talisman
+from items.registry import registry
 
 
-class TalismanDetailView(DetailView):
-    model = Talisman
-    template_name = "items/mage/talisman/detail.html"
+class _TalismanDetailView(DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -19,51 +16,9 @@ class TalismanDetailView(DetailView):
         return context
 
 
-class TalismanListView(ListView):
-    model = Talisman
-    ordering = ["name"]
-    template_name = "items/mage/talisman/list.html"
+TalismanDetailView = registry.view("items.Talisman", "detail")
 
 
-class TalismanCreateView(MessageMixin, CreateView):
-    model = Talisman
-    fields = [
-        "name",
-        "rank",
-        "background_cost",
-        "quintessence_max",
-        "description",
-        "powers",
-        "arete",
-    ]
-    template_name = "items/mage/talisman/form.html"
-    success_message = "Talisman '{name}' created successfully!"
-    error_message = "Failed to create Talisman. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form
-
-
-class TalismanUpdateView(MessageMixin, UpdateView):
-    model = Talisman
-    fields = [
-        "name",
-        "rank",
-        "background_cost",
-        "quintessence_max",
-        "description",
-        "powers",
-        "arete",
-    ]
-    template_name = "items/mage/talisman/form.html"
-    success_message = "Talisman '{name}' updated successfully!"
-    error_message = "Failed to update Talisman. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form
+TalismanListView = registry.view("items.Talisman", "list")
+TalismanCreateView = registry.view("items.Talisman", "create")
+TalismanUpdateView = registry.view("items.Talisman", "update")

@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 
 from items.models.core.item import ItemModel
 
@@ -172,16 +171,6 @@ class Ushabti(ItemModel):
     # ========================================
     # URLS
     # ========================================
-
-    def get_absolute_url(self):
-        return reverse("items:mummy:ushabti", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("items:mummy:update:ushabti", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mummy:create:ushabti")
 
     class Meta:
         verbose_name = "Ushabti"

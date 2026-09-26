@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 
 from core.models import BaseResonanceRating
 from items.models.core.item import ItemModel
@@ -177,16 +176,6 @@ class MummyRelic(ItemModel):
     # ========================================
     # URLS
     # ========================================
-
-    def get_absolute_url(self):
-        return reverse("items:mummy:relic", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("items:mummy:update:relic", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mummy:create:relic")
 
     class Meta:
         verbose_name = "Mummy Relic"

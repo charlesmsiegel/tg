@@ -29,6 +29,7 @@ from core.mixins import (  # noqa: E402
     PermissionRequiredMixin,
     StorytellerRequiredMixin,
 )
+from core.model_registry import get_registry  # noqa: E402
 from core.route_policy_manifest import VIEW_POLICIES  # noqa: E402
 from core.views.generic import DictView  # noqa: E402
 
@@ -202,8 +203,14 @@ def main():
         "\n| Route | Router branch | View class | Current MRO gate | Login enforced by MRO | Methods | Declared policy | Effective login policy | Intended policy family |"
     )
     print("|---|---|---|---|---|---|---|---|---|")
+    declared = VIEW_POLICIES | {
+        action.view_path: action.policy
+        for app in ("items", "locations")
+        for entry in get_registry(app)
+        for action in entry.actions.values()
+    }
     for row in rows:
-        policy = VIEW_POLICIES.get(row[2], "framework/undeclared")
+        policy = declared.get(row[2], "framework/undeclared")
         displayed = (*row[:-1], policy, effective_login(policy), row[-1])
         print("| " + " | ".join(str(value).replace("|", "\\|") for value in displayed) + " |")
 

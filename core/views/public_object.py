@@ -19,9 +19,12 @@ from locations.models.core import LocationModel
 
 class PublicObjectDetailView(View):
     model_class = None
+    resolved_object = None
 
     def get(self, request, *args, **kwargs):
-        obj = get_object_or_404(self.model_class, pk=kwargs["pk"])
+        obj = self.resolved_object
+        if obj is None:
+            obj = get_object_or_404(self.model_class, pk=kwargs["pk"])
         image_url = None
         if obj.image and obj.image_status == ImageStatus.APPROVED:
             image_url = obj.image.url

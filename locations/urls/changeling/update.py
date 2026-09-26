@@ -1,33 +1,12 @@
 from django.urls import path
 
 from locations import views
+from locations.registry import registry
 
-urls = [
-    # Multi-step creation router - routes to appropriate step based on creation_status
+urls = registry.urls("changeling", "update") + [
     path(
         "freehold/<int:pk>/",
         views.changeling.FreeholdCreationView.as_view(),
         name="freehold",
-    ),
-    # Direct update (all-at-once) - for approved/completed freeholds
-    path(
-        "freehold/<int:pk>/direct/",
-        views.changeling.FreeholdUpdateView.as_view(),
-        name="freehold_direct",
-    ),
-    path(
-        "holding/<int:pk>/",
-        views.changeling.HoldingUpdateView.as_view(),
-        name="holding",
-    ),
-    path(
-        "trod/<int:pk>/",
-        views.changeling.TrodUpdateView.as_view(),
-        name="trod",
-    ),
-    path(
-        "dream_realm/<int:pk>/",
-        views.changeling.DreamRealmUpdateView.as_view(),
-        name="dream_realm",
-    ),
+    )
 ]

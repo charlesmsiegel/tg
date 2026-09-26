@@ -1,7 +1,6 @@
 import random
 
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 
@@ -19,13 +18,6 @@ class Library(LocationModel):
     class Meta:
         verbose_name = "Library"
         verbose_name_plural = "Libraries"
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:library", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:library")
 
     def add_book(self, grimoire):
         self.books.add(grimoire)

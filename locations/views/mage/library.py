@@ -1,32 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, ListView, UpdateView
+from django.views.generic import FormView
 
 from core.mixins import (
-    EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
     prepare_created_object,
 )
-from locations.forms.mage.library import LibraryForm
-from locations.models.mage.library import Library
+from locations.registry import registry
 
 
-class LibraryDetailView(ViewPermissionMixin, DetailView):
-    model = Library
-    template_name = "locations/mage/library/detail.html"
-
-
-class LibraryListView(ListView):
-    model = Library
-    ordering = ["name"]
-    template_name = "locations/mage/library/list.html"
-
-
-class LibraryCreateView(LoginRequiredMixin, MessageMixin, FormView):
-    template_name = "locations/mage/library/form.html"
-    form_class = LibraryForm
-    success_message = "Library '{name}' created successfully!"
-    error_message = "Failed to create library. Please correct the errors below."
+class _LibraryCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
@@ -37,15 +19,9 @@ class LibraryCreateView(LoginRequiredMixin, MessageMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class LibraryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = Library
-    fields = ["name", "description", "contained_within", "rank", "faction", "books"]
-    template_name = "locations/mage/library/form.html"
-    success_message = "Library '{name}' updated successfully!"
-    error_message = "Failed to update library. Please correct the errors below."
+LibraryCreateView = registry.view("locations.Library", "create")
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form
+
+LibraryDetailView = registry.view("locations.Library", "detail")
+LibraryListView = registry.view("locations.Library", "list")
+LibraryUpdateView = registry.view("locations.Library", "update")

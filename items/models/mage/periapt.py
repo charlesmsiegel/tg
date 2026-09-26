@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from .wonder import Wonder
 
@@ -75,13 +74,6 @@ class Periapt(Wonder):
             )
         if errors:
             raise ValidationError(errors)
-
-    def get_update_url(self):
-        return reverse("items:mage:update:periapt", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mage:create:periapt")
 
     def set_power(self, power):
         self.power = power

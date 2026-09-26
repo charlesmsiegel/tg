@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 
@@ -30,13 +29,6 @@ class Caern(LocationModel):
     class Meta:
         verbose_name = "Caern"
         verbose_name_plural = "Caerns"
-
-    def get_update_url(self):
-        return reverse("locations:werewolf:update:caern", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:werewolf:create:caern")
 
     def save(self, *args, **kwargs):
         if "gauntlet" not in kwargs:

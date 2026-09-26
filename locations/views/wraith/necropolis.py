@@ -1,50 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from locations.registry import registry
 
-from core.mixins import (
-    EditPermissionMixin,
-    MessageMixin,
-    ViewPermissionMixin,
-)
-from locations.models.wraith.necropolis import Necropolis
-
-
-class NecropolisDetailView(ViewPermissionMixin, DetailView):
-    model = Necropolis
-    template_name = "locations/wraith/necropolis/detail.html"
-
-
-class NecropolisCreateView(LoginRequiredMixin, MessageMixin, CreateView):
-    model = Necropolis
-    fields = [
-        "name",
-        "description",
-        "contained_within",
-        "region",
-        "population",
-        "deathlord",
-    ]
-    template_name = "locations/wraith/necropolis/form.html"
-    success_message = "Necropolis '{name}' created successfully!"
-    error_message = "Failed to create necropolis. Please correct the errors below."
-
-
-class NecropolisUpdateView(EditPermissionMixin, UpdateView):
-    model = Necropolis
-    fields = [
-        "name",
-        "description",
-        "contained_within",
-        "region",
-        "population",
-        "deathlord",
-    ]
-    template_name = "locations/wraith/necropolis/form.html"
-    success_message = "Necropolis '{name}' updated successfully!"
-    error_message = "Failed to update necropolis. Please correct the errors below."
-
-
-class NecropolisListView(ListView):
-    model = Necropolis
-    ordering = ["name"]
-    template_name = "locations/wraith/necropolis/list.html"
+NecropolisDetailView = registry.view("locations.Necropolis", "detail")
+NecropolisListView = registry.view("locations.Necropolis", "list")
+NecropolisCreateView = registry.view("locations.Necropolis", "create")
+NecropolisUpdateView = registry.view("locations.Necropolis", "update")

@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -98,13 +97,6 @@ class Safehouse(LocationModel):
     class Meta:
         verbose_name = "Safehouse"
         verbose_name_plural = "Safehouses"
-
-    def get_update_url(self):
-        return reverse("locations:hunter:update:safehouse", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:hunter:create:safehouse")
 
     def calculate_total_rating(self):
         """Calculate total safehouse value."""

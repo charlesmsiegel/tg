@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -89,10 +88,3 @@ class HunterGear(ItemModel):
     class Meta:
         verbose_name = "Hunter Gear"
         verbose_name_plural = "Hunter Gear"
-
-    def get_update_url(self):
-        return reverse("items:hunter:update:gear", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:hunter:create:gear")

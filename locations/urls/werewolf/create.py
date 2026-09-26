@@ -1,11 +1,3 @@
-from django.urls import path
+from locations.registry import registry
 
-from locations import views
-
-urls = [
-    path(
-        "caern/",
-        views.werewolf.CaernCreateView.as_view(),
-        name="caern",
-    ),
-]
+urls = registry.urls("werewolf", "create")

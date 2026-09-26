@@ -1,23 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin
 from core.permissions import PermissionManager
 from items.forms.core.limited_edit import LimitedItemEditForm
-from items.models.core import ItemModel
+from items.registry import registry
 
 
-class ItemDetailView(ViewPermissionMixin, DetailView):
-    model = ItemModel
-    template_name = "items/core/item/detail.html"
-
-
-class ItemCreateView(LoginRequiredMixin, MessageMixin, CreateView):
-    model = ItemModel
-    fields = ["name", "description"]
-    template_name = "items/core/item/form.html"
-    success_message = "Item '{name}' created successfully!"
-    error_message = "Failed to create Item. Please correct the errors below."
+class _ItemCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -32,12 +22,10 @@ class ItemCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class ItemUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = ItemModel
-    fields = ["name", "description"]
-    template_name = "items/core/item/form.html"
-    success_message = "Item '{name}' updated successfully!"
-    error_message = "Failed to update Item. Please correct the errors below."
+ItemCreateView = registry.view("items.ItemModel", "create")
+
+
+class _ItemUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
 
     def get_form_class(self):
         """
@@ -67,3 +55,10 @@ class ItemUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
                 {"placeholder": "Enter description here"}
             )
         return form
+
+
+ItemUpdateView = registry.view("items.ItemModel", "update")
+
+
+ItemDetailView = registry.view("items.ItemModel", "detail")
+ItemListView = registry.view("items.ItemModel", "list")

@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 
@@ -57,16 +56,6 @@ class CultTemple(LocationModel):
     has_ritual_chamber = models.BooleanField(
         default=True, help_text="Space for performing Hekau rituals"
     )
-
-    def get_absolute_url(self):
-        return reverse("locations:mummy:cult_temple", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:mummy:update:cult_temple", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mummy:create:cult_temple")
 
     class Meta:
         verbose_name = "Cult Temple"

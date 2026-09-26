@@ -1,14 +1,12 @@
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView
 
-from core.mixins import MessageMixin
-from items.models.mage import Charm, WonderResonanceRating
+from items.models.mage import WonderResonanceRating
+from items.registry import registry
 
 
-class CharmDetailView(DetailView):
-    model = Charm
-    template_name = "items/mage/charm/detail.html"
+class _CharmDetailView(DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -18,51 +16,9 @@ class CharmDetailView(DetailView):
         return context
 
 
-class CharmListView(ListView):
-    model = Charm
-    ordering = ["name"]
-    template_name = "items/mage/charm/list.html"
+CharmDetailView = registry.view("items.Charm", "detail")
 
 
-class CharmCreateView(MessageMixin, CreateView):
-    model = Charm
-    fields = [
-        "name",
-        "rank",
-        "background_cost",
-        "quintessence_max",
-        "description",
-        "power",
-        "arete",
-    ]
-    template_name = "items/mage/charm/form.html"
-    success_message = "Charm '{name}' created successfully!"
-    error_message = "Failed to create Charm. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form
-
-
-class CharmUpdateView(MessageMixin, UpdateView):
-    model = Charm
-    fields = [
-        "name",
-        "rank",
-        "background_cost",
-        "quintessence_max",
-        "description",
-        "power",
-        "arete",
-    ]
-    template_name = "items/mage/charm/form.html"
-    success_message = "Charm '{name}' updated successfully!"
-    error_message = "Failed to update Charm. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form
+CharmListView = registry.view("items.Charm", "list")
+CharmCreateView = registry.view("items.Charm", "create")
+CharmUpdateView = registry.view("items.Charm", "update")

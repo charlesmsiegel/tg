@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -200,16 +199,6 @@ class DreamRealm(LocationModel):
                 violation_error_message="Glamour level must be between 0 and 10",
             ),
         ]
-
-    def get_absolute_url(self):
-        return reverse("locations:changeling:dream_realm", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:changeling:update:dream_realm", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:changeling:create:dream_realm")
 
     def __str__(self):
         return f"{self.name} ({self.get_depth_display()})"

@@ -51,8 +51,11 @@ class DictView(View):
     public_view_class = None
     protected_object = False
     chargen_router = False
+    resolved_object = None
 
     def get_object(self, pk):
+        if self.resolved_object is not None:
+            return self.resolved_object
         return get_object_or_404(self.model_class, pk=pk)
 
     def handle_request(self, request, *args, **kwargs):

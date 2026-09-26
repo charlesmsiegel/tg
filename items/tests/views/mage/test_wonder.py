@@ -35,9 +35,7 @@ class TestWonderDetailViewQueryOptimization(TestCase):
         query_count = len(context.captured_queries)
         for i in range(5, 10):
             resonance = Resonance.objects.create(name=f"Resonance {i}")
-            WonderResonanceRating.objects.create(
-                wonder=self.wonder, resonance=resonance, rating=1
-            )
+            WonderResonanceRating.objects.create(wonder=self.wonder, resonance=resonance, rating=1)
         with CaptureQueriesContext(connection) as expanded:
             self.client.get(f"/items/mage/wonder/{self.wonder.pk}/")
         self.assertLessEqual(len(expanded.captured_queries), query_count + 2)
@@ -55,39 +53,27 @@ class TestWonderDetailViewQueryOptimization(TestCase):
 class TestWonderCreateView(TestCase):
     """Test WonderCreateView functionality."""
 
-    def test_create_view_has_get_success_url_method(self):
-        """Test that WonderCreateView has explicit get_success_url method."""
+    def test_create_view_redirects_to_saved_object(self):
+        from items.models.mage.wonder import Wonder
         from items.views.mage.wonder import WonderCreateView
 
-        self.assertTrue(
-            hasattr(WonderCreateView, "get_success_url"),
-            "WonderCreateView should have get_success_url method",
-        )
-        # Verify it's defined on the class itself, not inherited
-        self.assertIn(
-            "get_success_url",
-            WonderCreateView.__dict__,
-            "get_success_url should be explicitly defined on WonderCreateView",
-        )
+        obj = Wonder.objects.create(name="Saved Wonder")
+        view = WonderCreateView()
+        view.object = obj
+        self.assertEqual(view.get_success_url(), obj.get_absolute_url())
 
 
 class TestWonderUpdateView(TestCase):
     """Test WonderUpdateView functionality."""
 
-    def test_update_view_has_get_success_url_method(self):
-        """Test that WonderUpdateView has explicit get_success_url method."""
+    def test_update_view_redirects_to_saved_object(self):
+        from items.models.mage.wonder import Wonder
         from items.views.mage.wonder import WonderUpdateView
 
-        self.assertTrue(
-            hasattr(WonderUpdateView, "get_success_url"),
-            "WonderUpdateView should have get_success_url method",
-        )
-        # Verify it's defined on the class itself, not inherited
-        self.assertIn(
-            "get_success_url",
-            WonderUpdateView.__dict__,
-            "get_success_url should be explicitly defined on WonderUpdateView",
-        )
+        obj = Wonder.objects.create(name="Saved Wonder")
+        view = WonderUpdateView()
+        view.object = obj
+        self.assertEqual(view.get_success_url(), obj.get_absolute_url())
 
 
 class TestWonderFormTemplateJS(TestCase):

@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.mage.wonder import Wonder
 
@@ -19,13 +18,6 @@ class Talen(Wonder):
     class Meta:
         verbose_name = "Talen"
         verbose_name_plural = "Talens"
-
-    def get_update_url(self):
-        return reverse("items:werewolf:update:talen", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:werewolf:create:talen")
 
     def save(self, *args, **kwargs):
         # Talens typically cost Background points equal to their rank
