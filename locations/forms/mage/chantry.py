@@ -1,4 +1,5 @@
 from django import forms
+from django.db import transaction
 
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
@@ -169,7 +170,13 @@ class ChantryCreateForm(forms.ModelForm):
 
 
 class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
-    """Form for selecting an existing Chantry or creating a new one."""
+    """Create a chantry for a character's Chantry background, or join one.
+
+    ``points`` is the character's Chantry background rating. A new chantry is
+    owned by the character's player, starts unfinished in the chantry wizard and
+    is funded with exactly those points. Joining only adds the points; the
+    chosen chantry's owner, chronicle and status are never touched.
+    """
 
     create_or_select_config = {
         "toggle_field": "create_new",
@@ -179,14 +186,9 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
 
     create_new = CreateOrSelectField(label="Create a new Chantry?")
     existing_chantry = forms.ModelChoiceField(
-        queryset=Chantry.objects.all(),
+        queryset=Chantry.objects.none(),
         required=False,
         label="Select an existing Chantry",
-    )
-    total_points = forms.IntegerField(
-        min_value=0,
-        required=False,
-        error_messages={"min_value": "Total points must be 0 or higher."},
     )
 
     class Meta:
@@ -195,7 +197,6 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
             "create_new",
             "existing_chantry",
             "name",
-            "chronicle",
             "contained_within",
             "description",
             "faction",
@@ -205,31 +206,44 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
             "gauntlet",
             "shroud",
             "dimension_barrier",
-            "total_points",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
             "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        self.character = kwargs.pop("character")
+    def __init__(self, *args, character, points=0, **kwargs):
+        self.character = character
+        self.points = points
         super().__init__(*args, **kwargs)
-        for field in self.fields.keys():
-            self.fields[field].required = False
+        for field in self.fields.values():
+            field.required = False
+        self.fields["existing_chantry"].queryset = Chantry.objects.filter(
+            chronicle=character.chronicle
+        ).exclude(status__in=["Ret", "Dec"])
 
-        if self.character is not None:
-            self.fields["existing_chantry"].queryset = Chantry.objects.filter(
-                chronicle=self.character.chronicle
-            )
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("create_new") and not (cleaned_data.get("name") or "").strip():
+            self.add_error("name", "A new Chantry needs a name.")
+        return cleaned_data
 
     def save(self, commit=True):
-        if self.is_creating():
-            chantry = super().save(commit=commit)
-            chantry.total_points = int(self.cleaned_data.get("total_points") or 0)
-            chantry.save()
-        else:
-            chantry = self.cleaned_data.get("existing_chantry")
-            chantry.total_points += int(self.cleaned_data.get("total_points") or 0)
-            chantry.save()
-        return chantry
+        """Create or join the chantry and return it. Always commits."""
+        with transaction.atomic():
+            if self.is_creating():
+                chantry = super().save(commit=False)
+                chantry.owner = self.character.owner
+                chantry.chronicle = self.character.chronicle
+                chantry.status = "Un"
+                chantry.creation_status = 1
+                chantry.total_points = self.points
+                chantry.save()
+                self.save_m2m()
+                return chantry
+            chantry = Chantry.objects.select_for_update().get(
+                pk=self.cleaned_data["existing_chantry"].pk
+            )
+            chantry.total_points += self.points
+            chantry.save(update_fields=["total_points"])
+            return chantry
