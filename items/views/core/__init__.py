@@ -10,52 +10,7 @@ from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
-
-# Changeling models
-from items.models.changeling.dross import Dross
-from items.models.changeling.treasure import Treasure
-
-# Core models
 from items.models.core.item import ItemModel
-from items.models.core.material import Material
-from items.models.core.medium import Medium
-from items.models.core.meleeweapon import MeleeWeapon
-from items.models.core.rangedweapon import RangedWeapon
-from items.models.core.thrownweapon import ThrownWeapon
-from items.models.core.weapon import Weapon
-
-# Demon models
-from items.models.demon.relic import Relic as DemonRelic
-
-# Hunter models
-from items.models.hunter.gear import HunterGear
-from items.models.hunter.relic import HunterRelic
-
-# Mage models
-from items.models.mage.artifact import Artifact
-from items.models.mage.charm import Charm
-from items.models.mage.grimoire import Grimoire
-from items.models.mage.periapt import Periapt
-from items.models.mage.sorcerer_artifact import SorcererArtifact
-from items.models.mage.talisman import Talisman
-from items.models.mage.wonder import Wonder
-
-# Mummy models
-from items.models.mummy.relic import MummyRelic
-from items.models.mummy.ushabti import Ushabti
-from items.models.mummy.vessel import Vessel
-
-# Vampire models
-from items.models.vampire.artifact import VampireArtifact
-from items.models.vampire.bloodstone import Bloodstone
-
-# Werewolf models
-from items.models.werewolf.fetish import Fetish
-from items.models.werewolf.talen import Talen
-
-# Wraith models
-from items.models.wraith.artifact import WraithArtifact
-from items.models.wraith.relic import WraithRelic
 from items.views import mage, werewolf
 
 from .item import ItemCreateView, ItemDetailView, ItemUpdateView
@@ -138,46 +93,6 @@ class GenericItemDetailView(DictView):
 
 
 class ItemIndexView(View):
-    items = {
-        # Core
-        "item": ItemModel,
-        "weapon": Weapon,
-        "melee_weapon": MeleeWeapon,
-        "thrown_weapon": ThrownWeapon,
-        "ranged_weapon": RangedWeapon,
-        "material": Material,
-        "medium": Medium,
-        # Changeling
-        "treasure": Treasure,
-        "dross": Dross,
-        # Demon
-        "demon_relic": DemonRelic,
-        # Hunter
-        "hunter_relic": HunterRelic,
-        "hunter_gear": HunterGear,
-        # Mage
-        "wonder": Wonder,
-        "charm": Charm,
-        "artifact": Artifact,
-        "talisman": Talisman,
-        "grimoire": Grimoire,
-        "sorcerer_artifact": SorcererArtifact,
-        "periapt": Periapt,
-        # Mummy
-        "mummy_relic": MummyRelic,
-        "vessel": Vessel,
-        "ushabti": Ushabti,
-        # Vampire
-        "vampire_artifact": VampireArtifact,
-        "bloodstone": Bloodstone,
-        # Werewolf
-        "fetish": Fetish,
-        "talen": Talen,
-        # Wraith
-        "wraith_relic": WraithRelic,
-        "wraith_artifact": WraithArtifact,
-    }
-
     def get(self, request, *args, **kwargs):
         if not (
             request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
@@ -255,34 +170,7 @@ __all__ = [
     "Chronicle",
     "ObjectType",
     "ItemCreationForm",
-    "Dross",
-    "Treasure",
     "ItemModel",
-    "Material",
-    "Medium",
-    "MeleeWeapon",
-    "RangedWeapon",
-    "ThrownWeapon",
-    "Weapon",
-    "DemonRelic",
-    "HunterGear",
-    "HunterRelic",
-    "Artifact",
-    "Charm",
-    "Grimoire",
-    "Periapt",
-    "SorcererArtifact",
-    "Talisman",
-    "Wonder",
-    "MummyRelic",
-    "Ushabti",
-    "Vessel",
-    "VampireArtifact",
-    "Bloodstone",
-    "Fetish",
-    "Talen",
-    "WraithArtifact",
-    "WraithRelic",
     "mage",
     "werewolf",
     "ItemCreateView",

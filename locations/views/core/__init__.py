@@ -8,59 +8,7 @@ from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
-
-# Changeling models
-from locations.models.changeling.dream_realm import DreamRealm
-from locations.models.changeling.freehold import Freehold
-from locations.models.changeling.holding import Holding
-from locations.models.changeling.trod import Trod
-
-# Core models
-from locations.models.core.city import City
 from locations.models.core.location import LocationModel
-
-# Demon models
-from locations.models.demon.bastion import Bastion
-from locations.models.demon.reliquary import Reliquary
-
-# Hunter models
-from locations.models.hunter.huntingground import HuntingGround
-from locations.models.hunter.safehouse import Safehouse
-
-# Mage models
-from locations.models.mage.chantry import Chantry
-from locations.models.mage.demesne import Demesne
-from locations.models.mage.library import Library
-from locations.models.mage.node import Node
-from locations.models.mage.paradox_realm import ParadoxRealm
-from locations.models.mage.reality_zone import RealityZone
-from locations.models.mage.realm import HorizonRealm
-from locations.models.mage.sanctum import Sanctum
-from locations.models.mage.sector import Sector
-
-# Mummy models
-from locations.models.mummy.cult_temple import CultTemple
-from locations.models.mummy.sanctuary import UndergroundSanctuary
-from locations.models.mummy.tomb import Tomb
-
-# Vampire models
-from locations.models.vampire.barrens import Barrens
-from locations.models.vampire.chantry import TremereChantry
-from locations.models.vampire.domain import Domain
-from locations.models.vampire.elysium import Elysium
-from locations.models.vampire.haven import Haven
-from locations.models.vampire.rack import Rack
-
-# Werewolf models
-from locations.models.werewolf.caern import Caern
-
-# Wraith models
-from locations.models.wraith.byway import Byway
-from locations.models.wraith.citadel import Citadel
-from locations.models.wraith.freehold import WraithFreehold
-from locations.models.wraith.haunt import Haunt
-from locations.models.wraith.necropolis import Necropolis
-from locations.models.wraith.nihil import Nihil
 from locations.views import mage, werewolf
 
 from .city import CityCreateView, CityDetailView, CityListView, CityUpdateView
@@ -127,53 +75,6 @@ class GenericLocationDetailView(DictView):
 
 
 class LocationIndexView(View):
-    locs = {
-        # Core
-        "location": LocationModel,
-        "city": City,
-        # Changeling
-        "freehold": Freehold,
-        "dream_realm": DreamRealm,
-        "trod": Trod,
-        "holding": Holding,
-        # Demon
-        "bastion": Bastion,
-        "reliquary": Reliquary,
-        # Hunter
-        "hunting_ground": HuntingGround,
-        "safehouse": Safehouse,
-        # Mage
-        "node": Node,
-        "sector": Sector,
-        "library": Library,
-        "horizon_realm": HorizonRealm,
-        "paradox_realm": ParadoxRealm,
-        "chantry": Chantry,
-        "sanctum": Sanctum,
-        "reality_zone": RealityZone,
-        "demesne": Demesne,
-        # Mummy
-        "tomb": Tomb,
-        "cult_temple": CultTemple,
-        "underground_sanctuary": UndergroundSanctuary,
-        # Vampire
-        "haven": Haven,
-        "domain": Domain,
-        "elysium": Elysium,
-        "rack": Rack,
-        "tremere_chantry": TremereChantry,
-        "barrens": Barrens,
-        # Werewolf
-        "caern": Caern,
-        # Wraith
-        "haunt": Haunt,
-        "necropolis": Necropolis,
-        "citadel": Citadel,
-        "nihil": Nihil,
-        "byway": Byway,
-        "wraith_freehold": WraithFreehold,
-    }
-
     def get(self, request, *args, **kwargs):
         if not (
             request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
@@ -241,41 +142,7 @@ __all__ = [
     "Chronicle",
     "ObjectType",
     "LocationCreationForm",
-    "DreamRealm",
-    "Freehold",
-    "Holding",
-    "Trod",
-    "City",
     "LocationModel",
-    "Bastion",
-    "Reliquary",
-    "HuntingGround",
-    "Safehouse",
-    "Chantry",
-    "Demesne",
-    "Library",
-    "Node",
-    "ParadoxRealm",
-    "RealityZone",
-    "HorizonRealm",
-    "Sanctum",
-    "Sector",
-    "CultTemple",
-    "UndergroundSanctuary",
-    "Tomb",
-    "Barrens",
-    "TremereChantry",
-    "Domain",
-    "Elysium",
-    "Haven",
-    "Rack",
-    "Caern",
-    "Byway",
-    "Citadel",
-    "WraithFreehold",
-    "Haunt",
-    "Necropolis",
-    "Nihil",
     "mage",
     "werewolf",
     "CityCreateView",
