@@ -574,3 +574,26 @@ class D7RemovedTests(SimpleTestCase):
 
     def test_human_url_block_removed(self):
         self.assert_modules_absent(["characters.models.core.human_url_block"])
+
+    def test_orphan_templates_removed(self):
+        self.assert_templates_absent(
+            [
+                "characters/core/human/create.html",
+                "characters/core/human/basics_block_form.html",
+                "characters/mage/mage/create.html",
+                "characters/mage/mage/mage_basics_block_form.html",
+                "characters/mage/effect/create.html",
+                "characters/mage/spheres/display.html",
+                "characters/mage/tenet/display_includes/basics.html",
+                "characters/mage/corrupted_practice/display_includes/specialization.html",
+                "characters/mage/specialized_practice/display_includes/specialization.html",
+                "characters/werewolf/renownincident/display_includes/temporary_renown.html",
+                "items/demon/relic/display_includes/basics.html",
+                "items/demon/relic/display_includes/powers.html",
+                "locations/core/city/display_includes/basics.html",
+                "locations/core/location/display_includes/title.html",
+                "core/includes/property_row.html",
+                "core/includes/stat_card.html",
+                "core/includes/stat_row.html",
+            ]
+        )
