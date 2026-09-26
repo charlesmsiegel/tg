@@ -86,3 +86,31 @@ class D3ChainedSelectRemovedTest(RemovalAssertions, SimpleTestCase):
 
     def test_live_widget_endpoint_kept(self):
         self.assertEqual(reverse("__chained_select_ajax__"), "/__chained_select__/")
+
+
+class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
+    """D4: the unused AJAX endpoints, their views, templates and bases are gone."""
+
+    def test_freebie_population_views_removed(self):
+        for module_path, name in [
+            ("characters.views.core.human", "HumanFreebieFormPopulationView"),
+            ("characters.views.werewolf.garou", "WerewolfFreebieFormPopulationView"),
+            ("characters.views.demon.demon_chargen", "DemonFreebieFormPopulationView"),
+            ("characters.views.demon.dtfhuman_chargen", "DtFHumanFreebieFormPopulationView"),
+            ("characters.views.demon.thrall_chargen", "ThrallFreebieFormPopulationView"),
+            ("characters.views.demon", "DemonFreebieFormPopulationView"),
+            ("characters.views.demon", "DtFHumanFreebieFormPopulationView"),
+            ("characters.views.demon", "ThrallFreebieFormPopulationView"),
+        ]:
+            self.assertAttributesRemoved(module_path, name)
+
+    def test_dropdown_templates_removed(self):
+        self.assertTemplatesRemoved(
+            "characters/core/human/load_examples_dropdown_list.html",
+            "characters/core/human/load_values_dropdown_list.html",
+            "characters/mage/mage/load_faction_dropdown_list.html",
+            "characters/mage/mage/load_mf_rating_dropdown_list.html",
+            "characters/mage/mage/load_subfaction_dropdown_list.html",
+            "characters/mage/sorcerer/load_affinity_dropdown_list.html",
+            "characters/mage/sorcerer/load_attribute_dropdown_list.html",
+        )

@@ -14,7 +14,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -235,10 +234,6 @@ class DtFHumanAlliesView(GenericBackgroundView):
 class DtFHumanSpecialtiesView(HumanSpecialtiesView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
-
-
-class DtFHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = DtFHuman
 
 
 class DtFHumanCharacterCreationView(HumanCharacterCreationView):
