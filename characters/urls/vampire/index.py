@@ -4,6 +4,11 @@ from characters import views
 
 urls = [
     path("clan/", views.vampire.VampireClanListView.as_view(), name="clan"),
+    path(
+        "revenant_family/",
+        views.vampire.RevenantFamilyListView.as_view(),
+        name="revenant_family",
+    ),
     path("coterie/", views.vampire.CoterieListView.as_view(), name="coterie"),
     path("discipline/", views.vampire.DisciplineListView.as_view(), name="discipline"),
     path("path/", views.vampire.PathListView.as_view(), name="path"),
