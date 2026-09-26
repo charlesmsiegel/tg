@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.changeling.chained_freebies import ChainedChangelingFreebiesForm
 from characters.forms.changeling.changeling import ChangelingCreationForm
@@ -26,7 +26,6 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     ViewPermissionMixin,
@@ -58,98 +57,6 @@ class ChangelingDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
             character=self.object
         )
         return context
-
-
-class ChangelingCreateView(MessageMixin, CreateView):
-    model = Changeling
-    fields = [
-        "name",
-        "description",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "willpower",
-        "age",
-        "apparent_age",
-        "history",
-        "goals",
-        "notes",
-        "kenning",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "gremayre",
-        "law",
-        "politics",
-        "technology",
-        "court",
-        "seeming",
-        "autumn",
-        "chicanery",
-        "chronos",
-        "contract",
-        "dragons_ire",
-        "legerdemain",
-        "metamorphosis",
-        "naming",
-        "oneiromancy",
-        "primal",
-        "pyretics",
-        "skycraft",
-        "soothsay",
-        "sovereign",
-        "spring",
-        "summer",
-        "wayfare",
-        "winter",
-        "actor",
-        "fae",
-        "nature_realm",
-        "prop",
-        "scene",
-        "time",
-        "banality",
-        "glamour",
-        "musing_threshold",
-        "ravaging_threshold",
-        "antithesis",
-        "true_name",
-        "date_ennobled",
-        "crysalis",
-        "date_of_crysalis",
-        "fae_mien",
-    ]
-    template_name = "characters/changeling/changeling/form.html"
-    success_message = "Changeling '{name}' created successfully!"
-    error_message = "Failed to create changeling. Please correct the errors below."
 
 
 class ChangelingUpdateView(EditPermissionMixin, UpdateView):

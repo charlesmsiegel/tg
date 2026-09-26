@@ -274,7 +274,9 @@ class TestWtAHumanDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/werewolf/wtahuman/detail.html")
 
 
-class TestWtAHumanCreateView(TestCase):
+class TestWtAHumanCreateRoute(TestCase):
+    """The characters:werewolf:create:wta_human route, served by WtAHumanBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

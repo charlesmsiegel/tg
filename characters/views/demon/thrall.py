@@ -1,10 +1,9 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Thrall
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
@@ -15,83 +14,6 @@ from core.permissions import PermissionManager
 class ThrallDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Thrall
     template_name = "characters/demon/thrall/detail.html"
-
-
-class ThrallCreateView(MessageMixin, CreateView):
-    model = Thrall
-    success_message = "Thrall created successfully."
-    error_message = "Error creating thrall."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "intuition",
-        "leadership",
-        "seduction",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "performance",
-        "security",
-        "survival",
-        "technology",
-        "animal_ken",
-        "demolitions",
-        "academics",
-        "computer",
-        "finance",
-        "investigation",
-        "law",
-        "enigmas",
-        "medicine",
-        "occult",
-        "politics",
-        "religion",
-        "research",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "faith_potential",
-        "daily_faith_offered",
-        "master",
-        "enhancements",
-        "conviction",
-        "courage",
-        "conscience",
-    ]
-    template_name = "characters/demon/thrall/form.html"
 
 
 class ThrallUpdateView(EditPermissionMixin, UpdateView):

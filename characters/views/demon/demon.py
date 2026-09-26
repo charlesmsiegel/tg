@@ -1,10 +1,9 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Demon
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
@@ -19,94 +18,6 @@ class DemonDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-
-
-class DemonCreateView(MessageMixin, CreateView):
-    model = Demon
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "intuition",
-        "leadership",
-        "seduction",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "performance",
-        "security",
-        "survival",
-        "technology",
-        "animal_ken",
-        "demolitions",
-        "academics",
-        "computer",
-        "finance",
-        "investigation",
-        "law",
-        "enigmas",
-        "medicine",
-        "occult",
-        "politics",
-        "religion",
-        "research",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "house",
-        "faction",
-        "visage",
-        "faith",
-        "temporary_faith",
-        "torment",
-        "temporary_torment",
-        "conviction",
-        "courage",
-        "conscience",
-        "apocalyptic_form",
-        "days_until_consumption",
-        "celestial_name",
-        "age_of_fall",
-        "abyss_duration",
-    ]
-    template_name = "characters/demon/demon/form.html"
-    success_message = "Demon '{name}' created successfully!"
-    error_message = "Failed to create demon. Please correct the errors below."
-
-    def get_success_url(self):
-        return self.object.get_absolute_url()
 
 
 class DemonUpdateView(EditPermissionMixin, UpdateView):

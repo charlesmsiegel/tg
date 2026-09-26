@@ -605,7 +605,9 @@ class TestMtAHumanDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/mage/mtahuman/detail.html")
 
 
-class TestMtAHumanCreateView(TestCase):
+class TestMtAHumanCreateRoute(TestCase):
+    """The characters:mage:create:mta_human route, served by MtAHumanBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

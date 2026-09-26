@@ -150,7 +150,9 @@ class TestKinfolkDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/werewolf/kinfolk/detail.html")
 
 
-class TestKinfolkCreateView(TestCase):
+class TestKinfolkCreateRoute(TestCase):
+    """The characters:werewolf:create:kinfolk route, served by KinfolkBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

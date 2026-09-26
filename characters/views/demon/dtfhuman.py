@@ -1,10 +1,9 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import DtFHuman
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
@@ -15,79 +14,6 @@ from core.permissions import PermissionManager
 class DtFHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/detail.html"
-
-
-class DtFHumanCreateView(MessageMixin, CreateView):
-    model = DtFHuman
-    success_message = "DtF Human created successfully."
-    error_message = "Error creating DtF Human."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "intuition",
-        "leadership",
-        "seduction",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "performance",
-        "security",
-        "survival",
-        "technology",
-        "animal_ken",
-        "demolitions",
-        "academics",
-        "computer",
-        "finance",
-        "investigation",
-        "law",
-        "enigmas",
-        "medicine",
-        "occult",
-        "politics",
-        "religion",
-        "research",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-    ]
-    template_name = "characters/demon/dtfhuman/form.html"
-
-    def get_success_url(self):
-        return self.object.get_absolute_url()
 
 
 class DtFHumanUpdateView(EditPermissionMixin, UpdateView):

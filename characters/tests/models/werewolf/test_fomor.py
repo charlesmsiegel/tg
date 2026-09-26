@@ -63,7 +63,9 @@ class TestFomorDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/werewolf/fomor/detail.html")
 
 
-class TestFomorCreateView(TestCase):
+class TestFomorCreateRoute(TestCase):
+    """The characters:werewolf:create:fomor route, served by FomorBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

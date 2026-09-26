@@ -2,7 +2,6 @@
 
 Tests cover:
 - VtMHumanDetailView - Character detail display
-- VtMHumanCreateView - Full character creation
 - VtMHumanUpdateView - Character editing
 - VtMHumanBasicsView - Initial creation step
 - VtMHumanTemplateSelectView - Template selection

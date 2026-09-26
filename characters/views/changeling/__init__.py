@@ -10,7 +10,6 @@ from .cantrip import (
     CantripUpdateView,
 )
 from .changeling import ChangelingCharacterCreationView
-from .changeling import ChangelingCreateView as ChangelingCharacterListView
 from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
 from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView
 from .chimera import (
@@ -20,7 +19,6 @@ from .chimera import (
     ChimeraUpdateView,
 )
 from .ctdhuman import CtDHumanBasicsView, CtDHumanCharacterCreationView, CtDHumanTemplateSelectView
-from .ctdhuman import CtDHumanCreateView as CtDHumanCharacterListView
 from .ctdhuman import CtDHumanDetailView as CtDHumanCharacterDetailView
 from .ctdhuman import CtDHumanUpdateView as CtDHumanCharacterUpdateView
 from .house import HouseCreateView as ChangelingHouseCreateView
@@ -46,7 +44,6 @@ __all__ = [
     "CantripListView",
     "CantripUpdateView",
     "ChangelingCharacterCreationView",
-    "ChangelingCharacterListView",
     "ChangelingCharacterDetailView",
     "ChangelingCharacterUpdateView",
     "ChimeraCreateView",
@@ -56,7 +53,6 @@ __all__ = [
     "CtDHumanBasicsView",
     "CtDHumanCharacterCreationView",
     "CtDHumanTemplateSelectView",
-    "CtDHumanCharacterListView",
     "CtDHumanCharacterDetailView",
     "CtDHumanCharacterUpdateView",
     "ChangelingHouseCreateView",

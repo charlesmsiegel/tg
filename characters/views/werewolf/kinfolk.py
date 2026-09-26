@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -18,7 +18,6 @@ from characters.views.werewolf.wtahuman import (
 )
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
@@ -52,82 +51,6 @@ class KinfolkDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
         all_gifts = [all_gifts[i : i + row_length] for i in range(0, len(all_gifts), row_length)]
         context["gifts"] = all_gifts
         return context
-
-
-class KinfolkCreateView(MessageMixin, CreateView):
-    model = Kinfolk
-    success_message = "Kinfolk created successfully."
-    error_message = "Error creating kinfolk."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "breed",
-        "tribe",
-        "relation",
-        "gifts",
-        "gnosis",
-        "fetishes_owned",
-        "glory",
-        "temporary_glory",
-        "wisdom",
-        "temporary_wisdom",
-        "honor",
-        "temporary_honor",
-    ]
-    template_name = "characters/werewolf/kinfolk/form.html"
 
 
 class KinfolkUpdateView(EditPermissionMixin, UpdateView):

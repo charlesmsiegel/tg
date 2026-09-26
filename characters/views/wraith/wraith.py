@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.wraith.wraith import Wraith
@@ -20,25 +20,6 @@ class WraithDetailView(XPApprovalMixin, HumanDetailView):
         context["fetters"] = self.object.fetters.all()
         context["passions"] = self.object.passions.all()
         return context
-
-
-class WraithCreateView(MessageMixin, CreateView):
-    model = Wraith
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "chronicle",
-        "image",
-        "npc",
-        "guild",
-        "legion",
-        "faction",
-    ]
-    template_name = "characters/wraith/wraith/form.html"
-    success_message = "Wraith '{name}' created successfully!"
-    error_message = "Failed to create wraith. Please correct the errors below."
 
 
 class WraithUpdateView(EditPermissionMixin, MessageMixin, UpdateView):

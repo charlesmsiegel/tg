@@ -156,8 +156,8 @@ class TestWraithDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestWraithCreateView(TestCase):
-    """Test WraithCreateView functionality."""
+class TestWraithCreateRoute(TestCase):
+    """The characters:wraith:create:wraith route, served by WraithBasicsView."""
 
     def setUp(self):
         self.client = Client()

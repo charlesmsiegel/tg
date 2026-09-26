@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
@@ -27,7 +27,6 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     ViewPermissionMixin,
@@ -42,68 +41,62 @@ class CtDHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     template_name = "characters/changeling/ctdhuman/detail.html"
 
 
-class CtDHumanCreateView(MessageMixin, CreateView):
-    model = CtDHuman
-    success_message = "CtD Human created successfully."
-    error_message = "Error creating CtD Human."
-    FORM_FIELDS = [
-        "name",
-        "description",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "willpower",
-        "age",
-        "apparent_age",
-        "history",
-        "goals",
-        "notes",
-        "kenning",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "gremayre",
-        "law",
-        "politics",
-        "technology",
-    ]
-    fields = FORM_FIELDS
-    template_name = "characters/changeling/ctdhuman/form.html"
+CTDHUMAN_FORM_FIELDS = [
+    "name",
+    "description",
+    "strength",
+    "dexterity",
+    "stamina",
+    "perception",
+    "intelligence",
+    "wits",
+    "charisma",
+    "manipulation",
+    "appearance",
+    "alertness",
+    "athletics",
+    "brawl",
+    "empathy",
+    "expression",
+    "intimidation",
+    "streetwise",
+    "subterfuge",
+    "crafts",
+    "drive",
+    "etiquette",
+    "firearms",
+    "melee",
+    "stealth",
+    "academics",
+    "computer",
+    "investigation",
+    "medicine",
+    "science",
+    "willpower",
+    "age",
+    "apparent_age",
+    "history",
+    "goals",
+    "notes",
+    "kenning",
+    "leadership",
+    "animal_ken",
+    "larceny",
+    "performance",
+    "survival",
+    "enigmas",
+    "gremayre",
+    "law",
+    "politics",
+    "technology",
+]
 
 
 class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
     model = CtDHuman
     success_message = "CtD Human updated successfully."
     error_message = "Error updating CtD Human."
-    fields = CtDHumanCreateView.FORM_FIELDS
+    fields = CTDHUMAN_FORM_FIELDS
     template_name = "characters/changeling/ctdhuman/form.html"
 
     def get_form_class(self):

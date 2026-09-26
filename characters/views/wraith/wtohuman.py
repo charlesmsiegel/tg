@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -27,7 +27,6 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -40,69 +39,6 @@ from core.permissions import PermissionManager
 class WtOHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/detail.html"
-
-
-class WtOHumanCreateView(MessageMixin, CreateView):
-    model = WtOHuman
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "awareness",
-        "persuasion",
-        "larceny",
-        "meditation",
-        "performance",
-        "bureaucracy",
-        "enigmas",
-        "occult",
-        "politics",
-        "technology",
-    ]
-    template_name = "characters/wraith/wtohuman/form.html"
-    success_message = "Wraith Human '{name}' created successfully!"
-    error_message = "Failed to create wraith human. Please correct the errors below."
 
 
 class WtOHumanUpdateView(EditPermissionMixin, UpdateView):

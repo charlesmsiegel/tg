@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.vampire import Vampire
@@ -19,27 +19,6 @@ class VampireDetailView(XPApprovalMixin, HumanDetailView):
         if self.object.clan:
             context["clan_disciplines"] = self.object.get_clan_disciplines()
         return context
-
-
-class VampireCreateView(MessageMixin, CreateView):
-    model = Vampire
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "chronicle",
-        "image",
-        "npc",
-        "clan",
-        "sect",
-        "sire",
-        "generation_rating",
-        "path",
-    ]
-    template_name = "characters/vampire/vampire/form.html"
-    success_message = "Vampire '{name}' created successfully!"
-    error_message = "Failed to create vampire. Please correct the errors below."
 
 
 class VampireUpdateView(MessageMixin, UpdateView):

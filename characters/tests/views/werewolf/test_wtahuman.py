@@ -258,8 +258,8 @@ class TestWtAHumanUpdateView(WtAHumanViewTestCase):
         self.assertIn(response.status_code, [200, 302])
 
 
-class TestWtAHumanCreateView(WtAHumanViewTestCase):
-    """Tests for WtAHumanCreateView."""
+class TestWtAHumanCreateRoute(WtAHumanViewTestCase):
+    """The characters:werewolf:create:wta_human route, served by WtAHumanBasicsView."""
 
     def test_create_view_accessible(self):
         """Create view is accessible for authenticated users."""

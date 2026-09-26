@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.ghoul import Ghoul
@@ -17,24 +17,6 @@ class GhoulDetailView(XPApprovalMixin, HumanDetailView):
         context = super().get_context_data(**kwargs)
         context["disciplines"] = self.object.get_disciplines()
         return context
-
-
-class GhoulCreateView(MessageMixin, CreateView):
-    model = Ghoul
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "chronicle",
-        "image",
-        "npc",
-        "domitor",
-        "is_independent",
-    ]
-    template_name = "characters/vampire/ghoul/form.html"
-    success_message = "Ghoul created successfully."
-    error_message = "Error creating ghoul."
 
 
 class GhoulUpdateView(MessageMixin, UpdateView):
