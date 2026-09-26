@@ -34,6 +34,8 @@ from scripts.inventory_authorization_routes import get_resolver, walk
 
 PROJECT_PREFIXES = ("accounts.", "characters.", "core.", "game.", "items.", "locations.", "widgets.")
 PLAYER_MODELS = (CharacterModel, Group, Chimera, Effect, Rote, ItemModel, LocationModel, CharacterTemplate)
+# Player-object edit forms that only a scoped storyteller or staff may use.
+ST_WRITE_VIEWS = {"locations.views.mage.chantry.ChantryUpdateView"}
 
 
 def classify(name, view, step_names):
@@ -49,6 +51,8 @@ def classify(name, view, step_names):
         } else "ACCOUNT"
     if name.startswith("game."):
         return "GAME"
+    if name in ST_WRITE_VIEWS:
+        return "OBJECT_ST_WRITE"
     if issubclass(view, DictView):
         return "ROUTER"
     if name in step_names:

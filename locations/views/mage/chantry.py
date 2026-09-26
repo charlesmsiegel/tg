@@ -24,6 +24,31 @@ from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.services.chantry_points import apply_type_grants
+
+# Every field of the direct (ST) forms; chantry/form.html renders exactly these.
+DIRECT_FORM_FIELDS = [
+    "name",
+    "contained_within",
+    "gauntlet",
+    "shroud",
+    "dimension_barrier",
+    "description",
+    "faction",
+    "leadership_type",
+    "season",
+    "chantry_type",
+    "total_points",
+    "integrated_effects",
+    "leaders",
+    "members",
+    "cabals",
+    "ambassador",
+    "node_tender",
+    "investigator",
+    "guardian",
+    "teacher",
+]
 
 
 class ChantryDetailView(ViewPermissionMixin, DetailView):
@@ -52,25 +77,7 @@ class ChantryListView(ListView):
 
 class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Chantry
-    fields = [
-        "name",
-        "contained_within",
-        "description",
-        "faction",
-        "leadership_type",
-        "leaders",
-        "season",
-        "chantry_type",
-        "total_points",
-        "integrated_effects",
-        "members",
-        "cabals",
-        "ambassador",
-        "node_tender",
-        "investigator",
-        "guardian",
-        "teacher",
-    ]
+    fields = DIRECT_FORM_FIELDS
     template_name = "locations/mage/chantry/form.html"
     success_message = "Chantry '{name}' created successfully!"
     error_message = "Failed to create chantry. Please correct the errors below."
@@ -83,26 +90,10 @@ class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
 
 class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+    """Direct edit form; the route policy (OBJECT_ST_WRITE) limits it to scoped STs and staff."""
+
     model = Chantry
-    fields = [
-        "name",
-        "contained_within",
-        "description",
-        "faction",
-        "leadership_type",
-        "leaders",
-        "season",
-        "chantry_type",
-        "total_points",
-        "integrated_effects",
-        "members",
-        "cabals",
-        "ambassador",
-        "node_tender",
-        "investigator",
-        "guardian",
-        "teacher",
-    ]
+    fields = DIRECT_FORM_FIELDS
     template_name = "locations/mage/chantry/form.html"
     success_message = "Chantry '{name}' updated successfully!"
     error_message = "Failed to update chantry. Please correct the errors below."
@@ -112,6 +103,12 @@ class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if "chantry_type" in form.changed_data:
+            apply_type_grants(self.object)
+        return response
 
 
 class LoadExamplesView(View):

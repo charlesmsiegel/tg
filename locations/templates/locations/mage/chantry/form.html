@@ -1,85 +1,36 @@
 {% extends "locations/core/location/form.html" %}
+{% comment %}
+    Renders every field of DIRECT_FORM_FIELDS (locations/views/mage/chantry.py).
+    The parent renders name, contained_within, gauntlet, shroud,
+    dimension_barrier and description; this template renders the rest.
+    A field missing here is blanked on save.
+{% endcomment %}
 {% block creation_title %}
     Create Chantry
 {% endblock creation_title %}
-{% block prominents %}
-    <div class="row">
-        <div class="col-sm">Faction</div>
-        <div class="col-sm">{{ factions }}</div>
-        <div class="col-sm">Season</div>
-        <div class="col-sm">{{ form.get_season_display }}</div>
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ form.get_chantry_type_display }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm">Leadership Type</div>
-        <div class="col-sm">{{ form.get_leadership_type_display }}</div>
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ form.rank }}</div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ form.get_heading }}">Leaders</h3>
-    </div>
-    {% for leader in form.leaders.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ leader.get_absolute_url }}">{{ leader.name }}</a>
-        </div>
-    {% endfor %}
-    <div class="row">
-        <div class="col-sm">Ambassador</div>
-        <a class="col-sm" href="{{ form.ambassador.get_absolute_url }}">{{ form.ambassador.name }}</a>
-        <div class="col-sm">Node Tender</div>
-        <a class="col-sm" href="{{ form.node_tender.get_absolute_url }}">{{ form.node_tender.name }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Investigators</div>
-    </div>
-    {% for character in form.investigator.all %}
-        <div class="row">
-            <a class="col-sm" href={{ character.get_absolute_url }}>{{ character.name }}</a>
-        </div>
-    {% endfor %}
-    <div class="row">
-        <div class="col-sm">Guardians</div>
-    </div>
-    {% for character in form.guardian.all %}
-        <div class="row">
-            <a class="col-sm" href={{ character.get_absolute_url }}>{{ character.name }}</a>
-        </div>
-    {% endfor %}
-    <div class="row">
-        <div class="col-sm">Teachers</div>
-    </div>
-    {% for character in form.teacher.all %}
-        <div class="row">
-            <a class="col-sm" href={{ character.get_absolute_url }}>{{ character.name }}</a>
-        </div>
-    {% endfor %}
-{% endblock prominents %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Integrated Effects</div>
-        <div class="col-sm">{{ form.integrated_effects }}</div>
-    </div>
+    {% if form.chronicle %}
+        {% include "locations/mage/chantry/field_row.html" with field=form.chronicle %}
+    {% endif %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.faction %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.leadership_type %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.season %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.chantry_type %}
     <h3 class="row {{ object.get_heading }}">
         <div class="col-sm">Points</div>
         <div class="col-sm">{{ form.total_points }}</div>
     </h3>
-    <h2 class="col-sm {{ form.get_heading }}">Cabals</h2>
-    {% for cabal in form.cabals.all %}
-        <div class="row">
-            <a class="col-sm" href={{ cabal.get_absolute_url }}>
-                <h3 class="{{ form.get_heading }}">{{ cabal.name }}</h3>
-            </a>
-        </div>
-        {% for member in cabal.members.all %}
-            <div class="row">
-                <div class="col-sm">
-                    <a class="col-sm" href={{ member.get_absolute_url }}>{{ member.name }}</a>
-                </div>
-            </div>
-        {% endfor %}
-    {% endfor %}
+    {% if object %}
+        <p class="text-muted">{{ object.points }} unspent of {{ object.total_points }}</p>
+    {% endif %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.integrated_effects %}
+    <h3 class="{{ object.get_heading }}">Personnel</h3>
+    {% include "locations/mage/chantry/field_row.html" with field=form.leaders %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.members %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.cabals %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.ambassador %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.node_tender %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.investigator %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.guardian %}
+    {% include "locations/mage/chantry/field_row.html" with field=form.teacher %}
 {% endblock other %}

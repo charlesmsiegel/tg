@@ -604,6 +604,9 @@ locations.views.wraith.haunt.HauntListView
 locations.views.wraith.necropolis.NecropolisListView
 locations.views.wraith.nihil.NihilListView
     """.split()),
+    'OBJECT_ST_WRITE': frozenset("""
+locations.views.mage.chantry.ChantryUpdateView
+    """.split()),
     'OBJECT_WRITE': frozenset("""
 characters.views.changeling.autumn_person.AutumnPersonUpdateView
 characters.views.changeling.chimera.ChimeraUpdateView
@@ -685,7 +688,6 @@ locations.views.demon.bastion.BastionUpdateView
 locations.views.demon.reliquary.ReliquaryUpdateView
 locations.views.hunter.huntingground.HuntingGroundUpdateView
 locations.views.hunter.safehouse.SafehouseUpdateView
-locations.views.mage.chantry.ChantryUpdateView
 locations.views.mage.demesne.DemesneUpdateView
 locations.views.mage.library.LibraryUpdateView
 locations.views.mage.node.NodeUpdateView
