@@ -80,8 +80,8 @@ from .mixins.chained import ChainedSelectMixin
 from .mixins.conditional import ConditionalFieldsMixin
 from .mixins.create_or_select import CreateOrSelectMixin
 from .mixins.point_pool import DistributionPoolMixin, PointPoolMixin, SimplePoolMixin
-from .views import ChainedSelectAjaxView, auto_chained_ajax_view, make_ajax_view
-from .widgets.chained import ChainedSelect, ChainedSelectMultiple
+from .views import auto_chained_ajax_view
+from .widgets.chained import ChainedSelect
 from .widgets.create_or_select import CreateOrSelectWidget
 
 # FilterableList exports
@@ -92,7 +92,6 @@ from .widgets.point_pool import PointPoolInput, PointPoolSelect
 __all__ = [
     # Chained Select Widgets
     "ChainedSelect",
-    "ChainedSelectMultiple",
     "CreateOrSelectWidget",
     "OptionMetadataSelect",
     "OptionMetadataSelectMultiple",
@@ -112,9 +111,7 @@ __all__ = [
     "SimplePoolMixin",
     "DistributionPoolMixin",
     # Views
-    "ChainedSelectAjaxView",
     "auto_chained_ajax_view",
-    "make_ajax_view",
     # FilterableList
     "get_filterable_list_js",
     "render_filterable_list_script",
