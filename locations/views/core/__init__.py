@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 
 from core.create_redirects import resolve_object_type_url
-from core.utils import get_gameline_name, level_name, tree_sort
+from core.utils import get_gameline_name
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle, ObjectType
@@ -237,8 +237,6 @@ __all__ = [
     "render",
     "View",
     "get_gameline_name",
-    "level_name",
-    "tree_sort",
     "DictView",
     "Chronicle",
     "ObjectType",

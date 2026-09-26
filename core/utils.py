@@ -44,25 +44,6 @@ def dice(dicepool, difficulty=6, specialty=False):
     return dice_list, max([total, 0])
 
 
-def compute_level(x, level=0):
-    if x.parent is None:
-        return level
-    return compute_level(x.parent, level=level + 1)
-
-
-def level_name(x):
-    return (compute_level(x) * "&emsp;&emsp;") + x.name
-
-
-def tree_sort(x, l=None):
-    if l is None:
-        l = []
-    l.append(x)
-    for y in x.children.order_by("name"):
-        tree_sort(y, l=l)
-    return l
-
-
 def filepath(instance, filename):
     s = str(instance.__class__).split(" ")[-1][:-1][1:-1]
     s = "/".join([x for x in s.split(".") if x != "models"])
@@ -106,14 +87,6 @@ def get_short_gameline_name(s):
     if s == "wod":
         return ""
     return settings.GAMELINES.get(s, {}).get("app_name", "")
-
-
-def fast_selector(cls):
-    max_value = cls.objects.last().id
-    index = random.randint(1, max_value)
-    while not cls.objects.filter(pk=index).exists():
-        index = random.randint(1, max_value)
-    return cls.objects.get(pk=index)
 
 
 def display_queryset(prop):
