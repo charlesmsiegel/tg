@@ -237,3 +237,59 @@ class TestRemoval(ChantryPointsTestCase):
         effect = Effect.objects.create(name="Loose", forces=1)
         with self.assertRaises(ValidationError):
             svc.remove_effect(chantry, effect)
+
+
+class TestLibraryTypeRule(ChantryPointsTestCase):
+    def test_apply_type_grants_creates_free_library_dots(self):
+        chantry = self.make_chantry(total_points=10, chantry_type="library")
+        rating = svc.apply_type_grants(chantry)
+        self.assertEqual((rating.bg, rating.rating), (self.library, 3))
+        self.assertEqual(chantry.points, 10)
+
+    def test_apply_type_grants_raises_to_floor_and_keeps_more(self):
+        chantry = self.make_chantry(total_points=10, chantry_type="library")
+        rating = self.rate(chantry, self.library, 1)
+        svc.apply_type_grants(chantry)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 3)
+        rating.rating = 4
+        rating.save()
+        svc.apply_type_grants(chantry)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 4)
+        self.assertEqual(chantry.backgrounds.count(), 1)
+
+    def test_apply_type_grants_ignores_other_types(self):
+        chantry = self.make_chantry(chantry_type="war")
+        self.assertIsNone(svc.apply_type_grants(chantry))
+        self.assertFalse(chantry.backgrounds.exists())
+
+    def test_dots_above_floor_are_paid_and_capped(self):
+        chantry = self.make_chantry(total_points=10, chantry_type="library")
+        svc.apply_type_grants(chantry)
+        self.assertEqual(svc.next_dot_cost(chantry, self.library), 2)
+        svc.buy_background_dot(chantry, self.library)
+        svc.buy_background_dot(chantry, self.library)
+        self.assertEqual(chantry.points, 6)
+        with self.assertRaises(ValidationError):
+            svc.buy_background_dot(chantry, self.library)
+
+    def test_floor_cannot_be_removed(self):
+        chantry = self.make_chantry(total_points=10, chantry_type="library")
+        rating = svc.apply_type_grants(chantry)
+        svc.buy_background_dot(chantry, self.library)
+        rating.refresh_from_db()
+        svc.remove_background_dot(rating)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 3)
+        with self.assertRaises(ValidationError):
+            svc.remove_background_dot(rating)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 3)
+
+    def test_dots_become_paid_when_type_changes(self):
+        chantry = self.make_chantry(total_points=10, chantry_type="library")
+        svc.apply_type_grants(chantry)
+        chantry.chantry_type = "war"
+        chantry.save()
+        self.assertEqual(chantry.points, 4)

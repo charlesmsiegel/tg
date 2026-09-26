@@ -584,3 +584,17 @@ class TestChantrySelectOrCreateFormChronicleLess(TestCase):
         self.assertIn("existing_chantry", form.errors)
         self.other_chantry.refresh_from_db()
         self.assertEqual(self.other_chantry.total_points, 5)
+
+
+class TestChantrySelectOrCreateFormTypeGrants(TestChantrySelectOrCreateFormSetup):
+    def test_creating_library_type_grants_free_library_dots(self):
+        form = ChantrySelectOrCreateForm(
+            data={"create_new": "on", "name": "Stacks", "chantry_type": "library"},
+            character=self.character,
+            points=4,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        chantry = form.save()
+        rating = chantry.backgrounds.get(bg__property_name="library")
+        self.assertEqual(rating.rating, 3)
+        self.assertEqual(chantry.points, 4)
