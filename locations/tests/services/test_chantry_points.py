@@ -144,6 +144,15 @@ class TestHasAffordablePurchase(ChantryPointsTestCase):
         self.assertNotIn(self.sanctum, new)
         self.assertNotIn(self.fame, new)
 
+    def test_skips_allowed_background_with_no_background_row(self):
+        """An allowed background name can lack a Background row without crashing."""
+        chantry = self.make_chantry(total_points=5)
+        self.node.delete()
+        new, existing = svc.affordable_backgrounds(chantry)
+        self.assertNotIn(self.node, new)
+        self.assertIn(self.allies, new)
+        self.assertTrue(svc.has_affordable_purchase(chantry))
+
 
 class TestRemoval(ChantryPointsTestCase):
     def test_refund_one_dot(self):
@@ -237,6 +246,24 @@ class TestRemoval(ChantryPointsTestCase):
         effect = Effect.objects.create(name="Loose", forces=1)
         with self.assertRaises(ValidationError):
             svc.remove_effect(chantry, effect)
+
+    def test_removal_of_a_vanished_rating_is_refused(self):
+        """A concurrent remove already deleted the rating; no bare DoesNotExist leaks out."""
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.allies, 1)
+        ChantryBackgroundRating.objects.filter(pk=rating.pk).delete()
+        with self.assertRaises(ValidationError):
+            svc.remove_background_dot(rating)
+
+    def test_removal_of_an_orphaned_rating_is_refused(self):
+        """The rating's chantry was deleted (SET_NULL); no bare AttributeError leaks out."""
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.allies, 1)
+        chantry.delete()
+        rating.refresh_from_db()
+        self.assertIsNone(rating.chantry_id)
+        with self.assertRaises(ValidationError):
+            svc.remove_background_dot(rating)
 
 
 class TestLibraryTypeRule(ChantryPointsTestCase):

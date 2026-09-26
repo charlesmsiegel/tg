@@ -752,6 +752,15 @@ class TestChantryRemoveForm(TestCase):
         foreign = ChantryBackgroundRating.objects.create(bg=self.allies, chantry=other, rating=2)
         form = ChantryRemoveForm({"rating": foreign.pk}, chantry=self.chantry)
         self.assertFalse(form.is_valid())
+        self.assertIn("rating", form.errors)
+
+    def test_other_chantrys_effect_is_invalid(self):
+        other = Chantry.objects.create(name="Other", total_points=20)
+        foreign_effect = Effect.objects.create(name="Elsewhere", forces=1)
+        other.integrated_effects.add(foreign_effect)
+        form = ChantryRemoveForm({"effect": foreign_effect.pk}, chantry=self.chantry)
+        self.assertFalse(form.is_valid())
+        self.assertIn("effect", form.errors)
 
     def test_free_library_floor_is_invalid(self):
         self.chantry.chantry_type = "library"
