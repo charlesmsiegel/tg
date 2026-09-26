@@ -384,3 +384,13 @@ class D6RemovedTests(SimpleTestCase):
         from core import context_processors
 
         self.assertTrue(callable(context_processors.permissions))
+
+    def test_decorators_and_cache_middleware_modules_are_gone(self):
+        from django.conf import settings
+
+        for dotted_path in ("core.decorators", "core.middleware.cache_middleware"):
+            with self.subTest(module=dotted_path):
+                self.assertFalse(self._module_exists(dotted_path))
+        self.assertNotIn(
+            "core.middleware.cache_middleware.PerUserCacheMiddleware", settings.MIDDLEWARE
+        )
