@@ -1,10 +1,17 @@
 from django import forms
 
 from locations.models.changeling import Freehold
+from locations.models.changeling.freehold import PowerChoices
 
 
 class FreeholdForm(forms.ModelForm):
     """Form for creating and editing Freeholds"""
+
+    powers = forms.MultipleChoiceField(
+        choices=PowerChoices.choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
     class Meta:
         model = Freehold
@@ -67,7 +74,6 @@ class FreeholdForm(forms.ModelForm):
                     "placeholder": "What does the balefire look like and where is it?",
                 }
             ),
-            "powers": forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):

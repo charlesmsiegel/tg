@@ -13,7 +13,7 @@ from django.test import TestCase
 
 from characters.tests.utils import changeling_setup
 from locations.forms.changeling.freehold import FreeholdForm
-from locations.models.changeling.freehold import Freehold
+from locations.models.changeling.freehold import Freehold, PowerChoices
 
 
 class TestFreeholdFormSetup(TestCase):
@@ -584,3 +584,60 @@ class TestFreeholdFormPowers(TestFreeholdFormSetup):
 
         freehold = form.save()
         self.assertEqual(len(freehold.powers), 3)
+
+
+class TestFreeholdFormPowerChoices(TestFreeholdFormSetup):
+    """The powers checkboxes offer PowerChoices and round-trip through the JSONField."""
+
+    def _data(self, **overrides):
+        data = {
+            "name": "Choice Freehold",
+            "description": "Tests power choices",
+            "archetype": "homestead",
+            "balefire": 1,
+            "size": 1,
+            "sanctuary": 0,
+            "resources": 0,
+            "passages": 1,
+            "gauntlet": 7,
+            "shroud": 7,
+            "dimension_barrier": 6,
+        }
+        data.update(overrides)
+        return data
+
+    def test_powers_field_offers_power_choices(self):
+        form = FreeholdForm()
+        self.assertEqual(list(form.fields["powers"].choices), list(PowerChoices.choices))
+        self.assertFalse(form.fields["powers"].required)
+
+    def test_powers_render_as_checkboxes(self):
+        html = str(FreeholdForm()["powers"])
+        for value, _label in PowerChoices.choices:
+            self.assertIn(f'value="{value}"', html)
+
+    def test_chosen_power_is_saved_as_list(self):
+        form = FreeholdForm(data=self._data(powers=["warning_call"]))
+        self.assertTrue(form.is_valid(), form.errors)
+        freehold = form.save()
+        freehold.refresh_from_db()
+        self.assertEqual(freehold.powers, ["warning_call"])
+
+    def test_unknown_power_is_rejected(self):
+        form = FreeholdForm(data=self._data(powers=["not_a_power"]))
+        self.assertFalse(form.is_valid())
+        self.assertIn("powers", form.errors)
+
+    def test_no_power_saves_empty_list(self):
+        form = FreeholdForm(data=self._data())
+        self.assertTrue(form.is_valid(), form.errors)
+        freehold = form.save()
+        freehold.refresh_from_db()
+        self.assertEqual(freehold.powers, [])
+
+    def test_saved_powers_are_checked_when_editing(self):
+        freehold = Freehold.objects.create(
+            name="Existing", archetype="homestead", powers=["resonant_dreams"]
+        )
+        html = str(FreeholdForm(instance=freehold)["powers"])
+        self.assertRegex(html, r'value="resonant_dreams"[^>]*checked')
