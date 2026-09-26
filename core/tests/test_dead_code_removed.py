@@ -597,3 +597,30 @@ class D7RemovedTests(SimpleTestCase):
                 "core/includes/stat_row.html",
             ]
         )
+
+
+class D8RemovedTests(SimpleTestCase):
+    """Unit D8: URL and index hygiene."""
+
+    def test_list_included_url_modules_have_no_app_name(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        # Walk the files, not pkgutil: the */urls/core directories have no __init__.py.
+        base = Path(settings.BASE_DIR)
+        checked = 0
+        for app in ("characters", "items", "locations"):
+            for path in sorted((base / app / "urls").rglob("*.py")):
+                parts = path.relative_to(base).with_suffix("").parts
+                module_name = ".".join(parts[:-1] if parts[-1] == "__init__" else parts)
+                with self.subTest(module=module_name):
+                    module = importlib.import_module(module_name)
+                    self.assertFalse(hasattr(module, "app_name"))
+                checked += 1
+        self.assertGreater(checked, 100)
+
+    def test_game_urls_keep_app_name(self):
+        from game import urls as game_urls
+
+        self.assertEqual(game_urls.app_name, "game")

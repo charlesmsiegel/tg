@@ -2,7 +2,6 @@ from django.urls import path
 
 from locations import views
 
-app_name = "changeling:create"
 urls = [
     # Multi-step creation starts with basics
     path(

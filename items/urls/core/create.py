@@ -2,7 +2,6 @@ from django.urls import path
 
 from items import views
 
-app_name = "items:create"
 urls = [
     path("item/", views.core.ItemCreateView.as_view(), name="item"),
     path(

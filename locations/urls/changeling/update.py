@@ -2,7 +2,6 @@ from django.urls import path
 
 from locations import views
 
-app_name = "changeling:update"
 urls = [
     # Multi-step creation router - routes to appropriate step based on creation_status
     path(

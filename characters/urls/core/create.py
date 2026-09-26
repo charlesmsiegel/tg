@@ -9,7 +9,6 @@ from characters.views.core.meritflaw import MeritFlawCreateView
 from characters.views.core.npc import NPCProfileCreateView
 from characters.views.core.specialty import SpecialtyCreateView
 
-app_name = "characters:create"
 urls = [
     path(
         "character/",

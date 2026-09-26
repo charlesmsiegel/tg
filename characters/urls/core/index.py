@@ -5,7 +5,6 @@ from characters.views.core.derangement import DerangementListView
 from characters.views.core.meritflaw import MeritFlawListView
 from characters.views.core.specialty import SpecialtyListView
 
-app_name = "characters:list"
 urls = [
     path(
         "archetypes/",

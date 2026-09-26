@@ -2,7 +2,6 @@ from django.urls import path
 
 from items import views
 
-app_name = "vampire:list"
 urls = [
     path(
         "artifacts/",

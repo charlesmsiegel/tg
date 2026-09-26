@@ -2,7 +2,6 @@ from django.urls import path
 
 from characters import views
 
-app_name = "mummy:create"
 urls = [
     path(
         "mtrhuman/",

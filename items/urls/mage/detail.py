@@ -2,7 +2,6 @@ from django.urls import path
 
 from items import views
 
-app_name = "items:mage:detail"
 urls = [
     path("wonder/<pk>/", views.mage.WonderDetailView.as_view(), name="wonder"),
     path("charm/<pk>/", views.mage.CharmDetailView.as_view(), name="charm"),

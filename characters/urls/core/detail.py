@@ -7,7 +7,6 @@ from characters.views.core.derangement import DerangementDetailView
 from characters.views.core.meritflaw import MeritFlawDetailView
 from characters.views.core.specialty import SpecialtyDetailView
 
-app_name = "characters:detail"
 urls = [
     path("groups/<pk>/", GenericGroupDetailView.as_view(), name="group"),
     path(

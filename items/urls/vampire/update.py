@@ -2,7 +2,6 @@ from django.urls import path
 
 from items import views
 
-app_name = "vampire:update"
 urls = [
     path(
         "artifact/<pk>/",
