@@ -211,3 +211,14 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
             with self.subTest(file=relative):
                 source = (REPO_ROOT / relative).read_text(encoding="utf-8")
                 self.assertNotIn("OBJECT_AJAX", source)
+
+    def test_ajax_view_bases_removed(self):
+        self.assertAttributesRemoved(
+            "core.mixins",
+            "AjaxLoginRequiredMixin",
+            "DropdownOptionsView",
+            "SimpleValuesView",
+            "JsonListView",
+        )
+        # dropdown_options_response stays until chantry PR C5 removes its last caller.
+        self.assertAttributesRemoved("core.ajax", "simple_values_response")

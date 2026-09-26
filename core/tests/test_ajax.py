@@ -4,7 +4,7 @@ import json
 
 from django.test import SimpleTestCase
 
-from core.ajax import dropdown_options_response, simple_values_response
+from core.ajax import dropdown_options_response
 
 
 class MockObject:
@@ -84,48 +84,3 @@ class TestDropdownOptionsResponse(SimpleTestCase):
         self.assertEqual(data["options"][0]["label"], "Third")
         self.assertEqual(data["options"][1]["label"], "First")
         self.assertEqual(data["options"][2]["label"], "Second")
-
-
-class TestSimpleValuesResponse(SimpleTestCase):
-    """Tests for simple_values_response function."""
-
-    def test_empty_values(self):
-        """Test with empty values list."""
-        response = simple_values_response([])
-        data = json.loads(response.content)
-        self.assertEqual(data, {"values": []})
-
-    def test_integer_values(self):
-        """Test with list of integers."""
-        response = simple_values_response([1, 2, 3, 4, 5])
-        data = json.loads(response.content)
-        self.assertEqual(data["values"], [1, 2, 3, 4, 5])
-
-    def test_string_values(self):
-        """Test with list of strings."""
-        response = simple_values_response(["a", "b", "c"])
-        data = json.loads(response.content)
-        self.assertEqual(data["values"], ["a", "b", "c"])
-
-    def test_mixed_values(self):
-        """Test with mixed value types."""
-        response = simple_values_response([1, "two", 3])
-        data = json.loads(response.content)
-        self.assertEqual(data["values"], [1, "two", 3])
-
-    def test_generator_input(self):
-        """Test with generator input (converts to list)."""
-
-        def gen():
-            yield 1
-            yield 2
-            yield 3
-
-        response = simple_values_response(gen())
-        data = json.loads(response.content)
-        self.assertEqual(data["values"], [1, 2, 3])
-
-    def test_returns_json_response(self):
-        """Test that function returns a proper JsonResponse."""
-        response = simple_values_response([])
-        self.assertEqual(response["Content-Type"], "application/json")

@@ -62,27 +62,3 @@ def dropdown_options_response(queryset, value_attr="pk", label_attr="name", extr
         options.append(option)
 
     return JsonResponse({"options": options})
-
-
-def simple_values_response(values):
-    """
-    Return a JSON response for a list of simple values (e.g., rating numbers).
-
-    Args:
-        values: An iterable of simple values (strings, integers, etc.)
-
-    Returns:
-        JsonResponse with list of values
-
-    Example:
-        # In view:
-        ratings = [1, 2, 3, 4, 5]
-        return simple_values_response(ratings)
-
-        # In JavaScript:
-        success: function(data) {
-            const select = document.getElementById('id_rating');
-            populateDropdownFromValues(select, data.values);
-        }
-    """
-    return JsonResponse({"values": list(values)})
