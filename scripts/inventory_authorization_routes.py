@@ -24,7 +24,6 @@ from django.urls import URLPattern, URLResolver, get_resolver  # noqa: E402
 from django.views import View  # noqa: E402
 
 from core.mixins import (  # noqa: E402
-    AjaxLoginRequiredMixin,
     CharacterOwnerOrSTMixin,
     OwnerRequiredMixin,
     PermissionRequiredMixin,
@@ -76,8 +75,6 @@ def gate(view_class):
         return "CharacterOwnerOrSTMixin", "yes"
     if OwnerRequiredMixin in mro:
         return "OwnerRequiredMixin", "yes"
-    if AjaxLoginRequiredMixin in mro:
-        return "AjaxLoginRequiredMixin", "yes"
     if LoginRequiredMixin in mro:
         return "LoginRequiredMixin", "yes"
     if UserPassesTestMixin in mro:
