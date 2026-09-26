@@ -30,30 +30,6 @@ KNOWN_MISSING = {
         "characters.views.werewolf.drone.DroneBasicsView",
         "Step 2",
     ),
-    "characters/core/human/allies_display.html": (
-        "characters.views.werewolf.fera.FeraAbilityView",
-        "Step 2",
-    ),
-    "characters/core/human/allies_form.html": (
-        "characters.views.werewolf.fera.FeraAbilityView",
-        "Step 2",
-    ),
-    "characters/demon/demon/chargen.html": (
-        "characters.views.demon.demon_chargen.DemonAttributeView",
-        "Step 2",
-    ),
-    "characters/demon/dtfhuman/chargen.html": (
-        "characters.views.demon.dtfhuman_chargen.DtFHumanAttributeView",
-        "Step 2",
-    ),
-    "characters/demon/thrall/chargen.html": (
-        "characters.views.demon.thrall_chargen.ThrallAttributeView",
-        "Step 2",
-    ),
-    "characters/mage/mage/mage_wonder_block_form.html": (
-        "characters.views.mage.companion.CompanionAbilityView",
-        "Step 2",
-    ),
     "characters/demon/ritual/form.html": (
         "characters.views.demon.ritual.RitualUpdateView",
         "Step 7",
@@ -177,7 +153,11 @@ class RoutedTemplatesTest(SimpleTestCase):
 
     def test_known_missing_templates_are_still_missing(self):
         written = sorted(set(KNOWN_MISSING) - set(self.missing))
-        self.assertEqual(written, [], "These templates exist now: remove them from KNOWN_MISSING")
+        self.assertEqual(
+            written,
+            [],
+            "These templates are no longer missing from routed pages: remove them from KNOWN_MISSING",
+        )
 
     def test_known_missing_entries_name_a_view_that_reaches_them(self):
         for template, (view, _step) in KNOWN_MISSING.items():
