@@ -346,7 +346,9 @@ class TestWerewolfDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/werewolf/garou/detail.html")
 
 
-class TestWerewolfCreateView(TestCase):
+class TestWerewolfCreateRoute(TestCase):
+    """The characters:werewolf:create:werewolf route, served by WerewolfBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

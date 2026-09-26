@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -28,7 +28,6 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -43,86 +42,80 @@ class VtMHumanDetailView(XPApprovalMixin, HumanDetailView):
     template_name = "characters/vampire/vtmhuman/detail.html"
 
 
-class VtMHumanCreateView(MessageMixin, CreateView):
-    model = VtMHuman
-    success_message = "VtM Human created successfully."
-    error_message = "Error creating VtM Human."
-    FORM_FIELDS = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "xp",
-        "awareness",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-    ]
-    fields = FORM_FIELDS
-    template_name = "characters/vampire/vtmhuman/form.html"
+VTMHUMAN_FORM_FIELDS = [
+    "name",
+    "owner",
+    "description",
+    "nature",
+    "demeanor",
+    "willpower",
+    "derangements",
+    "age",
+    "apparent_age",
+    "date_of_birth",
+    "merits_and_flaws",
+    "history",
+    "goals",
+    "notes",
+    "strength",
+    "dexterity",
+    "stamina",
+    "perception",
+    "intelligence",
+    "wits",
+    "charisma",
+    "manipulation",
+    "appearance",
+    "alertness",
+    "athletics",
+    "brawl",
+    "empathy",
+    "expression",
+    "intimidation",
+    "streetwise",
+    "subterfuge",
+    "crafts",
+    "drive",
+    "etiquette",
+    "firearms",
+    "melee",
+    "stealth",
+    "academics",
+    "computer",
+    "investigation",
+    "medicine",
+    "science",
+    "specialties",
+    "languages",
+    "willpower",
+    "derangements",
+    "age",
+    "apparent_age",
+    "date_of_birth",
+    "merits_and_flaws",
+    "history",
+    "goals",
+    "notes",
+    "xp",
+    "awareness",
+    "leadership",
+    "animal_ken",
+    "larceny",
+    "performance",
+    "survival",
+    "finance",
+    "law",
+    "occult",
+    "politics",
+    "technology",
+]
 
 
 class VtMHumanUpdateView(EditPermissionMixin, UpdateView):
     model = VtMHuman
     success_message = "VtM Human updated successfully."
     error_message = "Error updating VtM Human."
-    fields = VtMHumanCreateView.FORM_FIELDS
+    fields = VTMHUMAN_FORM_FIELDS
     template_name = "characters/vampire/vtmhuman/form.html"
 
     def get_form_class(self):

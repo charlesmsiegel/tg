@@ -90,8 +90,8 @@ class TestDemonDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestDemonCreateView(TestCase):
-    """Test DemonCreateView functionality."""
+class TestDemonCreateRoute(TestCase):
+    """The characters:demon:create:demon route, served by DemonBasicsView."""
 
     def setUp(self):
         self.client = Client()
@@ -123,21 +123,6 @@ class TestDemonCreateView(TestCase):
         url = reverse("characters:demon:create:demon")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/demon/demon/basics.html")
-
-    def test_create_view_has_get_success_url_method(self):
-        """Test that DemonCreateView has explicit get_success_url method."""
-        from characters.views.demon.demon import DemonCreateView
-
-        self.assertTrue(
-            hasattr(DemonCreateView, "get_success_url"),
-            "DemonCreateView should have get_success_url method",
-        )
-        # Verify it's defined on the class itself, not inherited
-        self.assertIn(
-            "get_success_url",
-            DemonCreateView.__dict__,
-            "get_success_url should be explicitly defined on DemonCreateView",
-        )
 
 
 class TestDemonUpdateView(TestCase):

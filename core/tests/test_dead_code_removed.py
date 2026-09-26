@@ -448,3 +448,79 @@ class D6RemovedTests(SimpleTestCase):
             with self.subTest(module=module.__name__, name=name):
                 self.assertFalse(hasattr(module, name))
                 self.assertNotIn(name, getattr(module, "__all__", ()))
+
+
+class D7RemovedTests(SimpleTestCase):
+    """Unit D7: superseded views, forms and templates stay deleted."""
+
+    def assert_names_absent(self, names_by_module):
+        for module_path, names in names_by_module.items():
+            module = importlib.import_module(module_path)
+            for name in names:
+                with self.subTest(module=module_path, name=name):
+                    self.assertFalse(hasattr(module, name))
+                    self.assertNotIn(name, getattr(module, "__all__", ()))
+
+    def assert_modules_absent(self, module_paths):
+        for module_path in module_paths:
+            with self.subTest(module=module_path):
+                self.assertIsNone(importlib.util.find_spec(module_path))
+
+    def assert_templates_absent(self, template_names):
+        for template_name in template_names:
+            with self.subTest(template=template_name):
+                with self.assertRaises(TemplateDoesNotExist):
+                    get_template(template_name)
+
+    def test_superseded_character_create_views_removed(self):
+        self.assert_names_absent(
+            {
+                "characters.views.changeling.changeling": ["ChangelingCreateView"],
+                "characters.views.changeling.ctdhuman": ["CtDHumanCreateView"],
+                "characters.views.changeling": [
+                    "ChangelingCharacterListView",
+                    "CtDHumanCharacterListView",
+                ],
+                "characters.views.demon.demon": ["DemonCreateView"],
+                "characters.views.demon.dtfhuman": ["DtFHumanCreateView"],
+                "characters.views.demon.thrall": ["ThrallCreateView"],
+                "characters.views.demon": [
+                    "DemonCreateView",
+                    "DtFHumanCreateView",
+                    "ThrallCreateView",
+                ],
+                "characters.views.mage.mtahuman": ["MtAHumanCreateView"],
+                "characters.views.mage": ["MtAHumanCreateView"],
+                "characters.views.vampire.ghoul": ["GhoulCreateView"],
+                "characters.views.vampire.vampire": ["VampireCreateView"],
+                "characters.views.vampire.vtmhuman": ["VtMHumanCreateView"],
+                "characters.views.vampire": [
+                    "GhoulCreateView",
+                    "VampireCreateView",
+                    "VtMHumanCreateView",
+                ],
+                "characters.views.werewolf.fomor": ["FomorCreateView"],
+                "characters.views.werewolf.garou": ["WerewolfCreateView"],
+                "characters.views.werewolf.kinfolk": ["KinfolkCreateView"],
+                "characters.views.werewolf.wtahuman": ["WtAHumanCreateView"],
+                "characters.views.werewolf": [
+                    "FomorCreateView",
+                    "WerewolfCreateView",
+                    "KinfolkCreateView",
+                    "WtAHumanCreateView",
+                ],
+                "characters.views.wraith.wraith": ["WraithCreateView"],
+                "characters.views.wraith.wtohuman": ["WtOHumanCreateView"],
+                "characters.views.wraith": ["WraithCreateView", "WtOHumanCreateView"],
+            }
+        )
+
+    def test_update_views_keep_their_field_lists(self):
+        from characters.views.changeling import ctdhuman
+        from characters.views.vampire import vtmhuman
+
+        self.assertIs(ctdhuman.CtDHumanUpdateView.fields, ctdhuman.CTDHUMAN_FORM_FIELDS)
+        self.assertIs(vtmhuman.VtMHumanUpdateView.fields, vtmhuman.VTMHUMAN_FORM_FIELDS)
+        self.assertIn("kenning", ctdhuman.CTDHUMAN_FORM_FIELDS)
+        self.assertIn("finance", vtmhuman.VTMHUMAN_FORM_FIELDS)
+

@@ -62,8 +62,8 @@ class TestThrallDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/demon/thrall/detail.html")
 
 
-class TestThrallCreateView(TestCase):
-    """Test ThrallCreateView functionality."""
+class TestThrallCreateRoute(TestCase):
+    """The characters:demon:create:thrall route, served by ThrallBasicsView."""
 
     def setUp(self):
         self.client = Client()

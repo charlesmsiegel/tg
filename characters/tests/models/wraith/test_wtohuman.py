@@ -192,7 +192,9 @@ class TestWtOHumanDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/wraith/wtohuman/detail.html")
 
 
-class TestWtOHumanCreateView(TestCase):
+class TestWtOHumanCreateRoute(TestCase):
+    """The characters:wraith:create:wto_human route, served by WtOHumanBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

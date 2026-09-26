@@ -184,10 +184,10 @@ class VampireDetailView(DetailView):
     model = Vampire
     template_name = 'characters/vampire/vampire/detail.html'
 
-class VampireCreateView(CreateView):
-    model = Vampire
-    form_class = VampireForm
-    template_name = 'characters/vampire/vampire/create.html'
+# views/vampire/vampire_chargen.py - creation starts at the Basics step
+class VampireBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
+    form_class = VampireCreationForm
+    template_name = 'characters/vampire/vampire/basics.html'
 ```
 
 ## Character Creation Workflow

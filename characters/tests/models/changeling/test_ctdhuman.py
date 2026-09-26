@@ -224,7 +224,9 @@ class TestCtDHumanDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/changeling/ctdhuman/detail.html")
 
 
-class TestCtDHumanCreateView(TestCase):
+class TestCtDHumanCreateRoute(TestCase):
+    """The characters:changeling:create:ctd_human route, served by CtDHumanBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

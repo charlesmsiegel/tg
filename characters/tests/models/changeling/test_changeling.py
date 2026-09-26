@@ -577,7 +577,9 @@ class TestChangelingDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/changeling/changeling/detail.html")
 
 
-class TestChangelingCreateView(TestCase):
+class TestChangelingCreateRoute(TestCase):
+    """The characters:changeling:create:changeling route, served by ChangelingBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

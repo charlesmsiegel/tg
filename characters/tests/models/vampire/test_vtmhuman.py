@@ -213,7 +213,9 @@ class TestVtMHumanDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/vampire/vtmhuman/detail.html")
 
 
-class TestVtMHumanCreateView(TestCase):
+class TestVtMHumanCreateRoute(TestCase):
+    """The characters:vampire:create:vtm_human route, served by VtMHumanBasicsView."""
+
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

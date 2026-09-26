@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -11,7 +11,7 @@ from characters.forms.werewolf.garou import (
     WerewolfGiftsForm,
     WerewolfHistoryForm,
 )
-from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.background_block import BackgroundRating
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.gift import Gift
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -26,7 +26,6 @@ from characters.views.core.human import (
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     ViewPermissionMixin,
@@ -135,89 +134,6 @@ class WerewolfUpdateView(EditPermissionMixin, UpdateView):
             return super().get_form_class()
         else:
             return LimitedHumanEditForm
-
-
-class WerewolfCreateView(MessageMixin, CreateView):
-    model = Werewolf
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "rank",
-        "auspice",
-        "breed",
-        "tribe",
-        "camps",
-        "gnosis",
-        "rage",
-        "glory",
-        "temporary_glory",
-        "wisdom",
-        "temporary_wisdom",
-        "honor",
-        "temporary_honor",
-        "gifts",
-        "rites_known",
-        "fetishes_owned",
-        "first_change",
-        "battle_scars",
-        "age_of_first_change",
-    ]
-    template_name = "characters/werewolf/garou/form.html"
-    success_message = "Werewolf '{name}' created successfully!"
-    error_message = "Failed to create werewolf. Please correct the errors below."
 
 
 class WerewolfBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):

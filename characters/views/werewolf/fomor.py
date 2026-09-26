@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -25,7 +25,6 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     ViewPermissionMixin,
@@ -37,73 +36,6 @@ from core.permissions import PermissionManager
 class FomorDetailView(ViewPermissionMixin, DetailView):
     model = Fomor
     template_name = "characters/werewolf/fomor/detail.html"
-
-
-class FomorCreateView(MessageMixin, CreateView):
-    model = Fomor
-    success_message = "Fomor created successfully."
-    error_message = "Error creating fomor."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "rage",
-        "gnosis",
-        "powers",
-    ]
-    template_name = "characters/werewolf/fomor/form.html"
 
 
 class FomorUpdateView(EditPermissionMixin, UpdateView):

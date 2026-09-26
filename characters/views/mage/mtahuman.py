@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -32,7 +32,6 @@ from characters.views.mage.background_views import (
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
-    MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
     XPApprovalMixin,
@@ -52,120 +51,6 @@ class MtAHumanDetailView(XPApprovalMixin, HumanDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-
-
-class MtAHumanCreateView(MessageMixin, CreateView):
-    model = MtAHuman
-    success_message = "MtA Human created successfully."
-    error_message = "Error creating MtA Human."
-    fields = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "specialties",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "awareness",
-        "art",
-        "leadership",
-        "animal_kinship",
-        "blatancy",
-        "carousing",
-        "flying",
-        "high_ritual",
-        "lucid_dreaming",
-        "search",
-        "seduction",
-        "larceny",
-        "meditation",
-        "research",
-        "survival",
-        "technology",
-        "acrobatics",
-        "archery",
-        "biotech",
-        "energy_weapons",
-        "jetpack",
-        "riding",
-        "torture",
-        "cosmology",
-        "enigmas",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "area_knowledge",
-        "belief_systems",
-        "cryptography",
-        "demolitions",
-        "lore",
-        "media",
-        "pharmacopeia",
-        "cooking",
-        "diplomacy",
-        "instruction",
-        "intrigue",
-        "intuition",
-        "mimicry",
-        "negotiation",
-        "newspeak",
-        "scan",
-        "scrounging",
-        "style",
-        "blind_fighting",
-        "climbing",
-        "disguise",
-        "elusion",
-        "escapology",
-        "fast_draw",
-        "fast_talk",
-        "fencing",
-        "fortune_telling",
-        "gambling",
-        "gunsmith",
-        "heavy_weapons",
-        "hunting",
-        "hypnotism",
-        "jury_rigging",
-        "microgravity_operations",
-        "misdirection",
-        "networking",
-        "pilot",
-        "psychology",
-        "security",
-        "speed_reading",
-        "swimming",
-        "conspiracy_theory",
-        "chantry_politics",
-        "covert_culture",
-        "cultural_savvy",
-        "helmsman",
-        "history_knowledge",
-        "power_brokering",
-        "propaganda",
-        "theology",
-        "unconventional_warface",
-        "vice",
-    ]
-    template_name = "characters/mage/mtahuman/form.html"
 
 
 class MtAHumanUpdateView(EditPermissionMixin, UpdateView):
