@@ -4,9 +4,9 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from characters.models.changeling.chimera import Chimera
 from characters.models.core.character import Character
 from characters.models.core.group import Group
-from characters.models.changeling.chimera import Chimera
 from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.models import CharacterTemplate
@@ -97,6 +97,12 @@ class ApprovalService:
                     user, obj, Permission.EDIT_FULL
                 ):
                     raise PermissionDenied("Cannot submit this object")
+                # Opt-in hook: a model lists what still blocks submission.
+                submission_errors = getattr(obj, "submission_errors", None)
+                if submission_errors is not None:
+                    errors = submission_errors()
+                    if errors:
+                        raise ValidationError("; ".join(errors))
             else:
                 if obj.status != "Sub":
                     raise ValidationError("Only submitted objects can be returned")
@@ -104,8 +110,14 @@ class ApprovalService:
                     user, obj, Permission.APPROVE
                 ):
                     raise PermissionDenied("Matching chronicle ST required")
+            update_fields = ["status"]
+            if target_status == "Rev":
+                # Opt-in hook: a model resets its own state and names the fields.
+                on_returned = getattr(obj, "on_returned_for_revision", None)
+                if on_returned is not None:
+                    update_fields.extend(on_returned())
             obj.status = target_status
-            obj.save(update_fields=["status"])
+            obj.save(update_fields=update_fields)
             return obj
 
     @classmethod
