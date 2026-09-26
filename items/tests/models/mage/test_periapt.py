@@ -1,6 +1,7 @@
 """Tests for Periapt model."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from game.models import Chronicle
@@ -225,3 +226,63 @@ class TestPeriaptChargeManagement(TestCase):
         periapt.recharge()
         periapt.refresh_from_db()
         self.assertEqual(periapt.current_charges, 3)
+
+
+class TestPeriaptClean(TestCase):
+    """Rules recovered from the deleted Periapt form: arete >= rank, charges <= max."""
+
+    def test_arete_below_rank_is_rejected(self):
+        periapt = Periapt(name="Weak", rank=3, arete=2)
+        with self.assertRaises(ValidationError) as ctx:
+            periapt.full_clean()
+        self.assertIn("Periapt Arete rating must be at least equal to rank", ctx.exception.messages)
+
+    def test_save_refuses_arete_below_rank(self):
+        with self.assertRaises(ValidationError):
+            Periapt.objects.create(name="Weak", rank=3, arete=2)
+        self.assertFalse(Periapt.objects.filter(name="Weak").exists())
+
+    def test_arete_equal_to_rank_is_valid(self):
+        periapt = Periapt.objects.create(name="Balanced", rank=3, arete=3)
+        self.assertEqual(periapt.arete, 3)
+
+    def test_current_charges_above_max_is_rejected(self):
+        periapt = Periapt(name="Overfull", max_charges=2, current_charges=3)
+        with self.assertRaises(ValidationError) as ctx:
+            periapt.full_clean()
+        self.assertIn("Current charges cannot exceed maximum charges", ctx.exception.messages)
+
+    def test_current_charges_equal_to_max_is_valid(self):
+        periapt = Periapt.objects.create(name="Full", max_charges=2, current_charges=2)
+        self.assertEqual(periapt.current_charges, 2)
+
+    def test_both_rules_are_reported_together(self):
+        periapt = Periapt(name="Broken", rank=2, arete=1, max_charges=1, current_charges=5)
+        with self.assertRaises(ValidationError) as ctx:
+            periapt.full_clean()
+        self.assertEqual(len(ctx.exception.messages), 2)
+
+    def test_create_view_shows_rule_as_form_error(self):
+        user = User.objects.create_user(username="maker", password="password")
+        self.client.force_login(user)
+        response = self.client.post(
+            Periapt.get_creation_url(),
+            {
+                "name": "Weak Periapt",
+                "description": "Too little Arete",
+                "rank": 3,
+                "background_cost": 0,
+                "quintessence_max": 0,
+                "arete": 1,
+                "max_charges": 1,
+                "current_charges": 1,
+                "is_consumable": "on",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "Periapt Arete rating must be at least equal to rank",
+            response.context["form"].non_field_errors(),
+        )
+        self.assertContains(response, "Periapt Arete rating must be at least equal to rank")
+        self.assertFalse(Periapt.objects.filter(name="Weak Periapt").exists())
