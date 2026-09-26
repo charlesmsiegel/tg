@@ -1,6 +1,9 @@
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -14,7 +17,9 @@ from core.mixins import (
     MessageMixin,
     ViewPermissionMixin,
 )
+from core.permissions import PermissionManager
 from core.views.generic import DictView
+from game.models import Chronicle
 from locations.forms.mage.chantry import (
     ChantryCreateForm,
     ChantryEffectsForm,
@@ -51,6 +56,22 @@ DIRECT_FORM_FIELDS = [
 ]
 
 
+def direct_create_chronicles(user):
+    """Chronicles in which user may create a chantry with the direct form.
+
+    Mirrors PermissionManager.can_manage_scope for the Mage gameline: staff get
+    every chronicle; otherwise the chronicles the user heads or is a Mage ST of.
+    """
+    if not user.is_authenticated:
+        return Chronicle.objects.none()
+    if user.is_staff or user.is_superuser:
+        return Chronicle.objects.all()
+    mage = settings.GAMELINES["mta"]["name"]
+    return Chronicle.objects.filter(
+        Q(head_st=user) | Q(st_relationships__user=user, st_relationships__gameline__name=mage)
+    ).distinct()
+
+
 class ChantryDetailView(ViewPermissionMixin, DetailView):
     model = Chantry
     template_name = "locations/mage/chantry/detail.html"
@@ -74,19 +95,46 @@ class ChantryListView(ListView):
     ordering = ["name"]
     template_name = "locations/mage/chantry/list.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["can_create_directly"] = direct_create_chronicles(self.request.user).exists()
+        return context
+
 
 class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    """All-fields create form for Mage STs of the chosen chronicle, and staff."""
+
     model = Chantry
-    fields = DIRECT_FORM_FIELDS
+    fields = ["chronicle", *DIRECT_FORM_FIELDS]
     template_name = "locations/mage/chantry/form.html"
     success_message = "Chantry '{name}' created successfully!"
     error_message = "Failed to create chantry. Please correct the errors below."
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not direct_create_chronicles(request.user).exists():
+            raise PermissionDenied("Only storytellers can create a chantry directly")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+        form.fields["chronicle"].queryset = direct_create_chronicles(self.request.user)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        if not PermissionManager.user_can_manage_creation(request.user, form, request=request):
+            raise PermissionDenied("Choose a chronicle you are a storyteller for")
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        apply_type_grants(self.object)
+        return response
 
 
 class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
@@ -170,19 +218,28 @@ class LoadExamplesView(View):
         return dropdown_options_response(examples, label_attr="__str__")
 
 
-class ChantryBasicsView(FormView):
+class ChantryBasicsView(LoginRequiredMixin, CreateView):
+    """Wizard entry: the player names the chantry and chooses its total points."""
+
     model = Chantry
     form_class = ChantryCreateForm
     template_name = "locations/mage/chantry/basics.html"
 
-    def form_valid(self, form):
-        # Save the Chantry object
-        self.object = form.save()
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["can_create_directly"] = direct_create_chronicles(self.request.user).exists()
+        return context
 
-    def get_success_url(self):
-        # Simply use the model's get_absolute_url
-        return self.object.get_absolute_url()
+    def form_valid(self, form):
+        chantry = form.save(commit=False)
+        chantry.owner = self.request.user
+        chantry.status = "Un"
+        chantry.creation_status = 1
+        chantry.save()
+        form.save_m2m()
+        apply_type_grants(chantry)
+        self.object = chantry
+        return HttpResponseRedirect(chantry.get_absolute_url())
 
 
 class ChantryPointsView(EditPermissionMixin, FormView):

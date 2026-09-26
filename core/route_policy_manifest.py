@@ -398,6 +398,7 @@ locations.views.demon.bastion.BastionCreateView
 locations.views.demon.reliquary.ReliquaryCreateView
 locations.views.hunter.huntingground.HuntingGroundCreateView
 locations.views.hunter.safehouse.SafehouseCreateView
+locations.views.mage.chantry.ChantryBasicsView
 locations.views.mage.chantry.ChantryCreateView
 locations.views.mage.realm.RealmCreateView
 locations.views.mage.sector.SectorCreateView

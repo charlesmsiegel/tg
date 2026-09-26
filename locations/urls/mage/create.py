@@ -40,8 +40,13 @@ urls = [
     ),
     path(
         "chantry/",
-        views.mage.ChantryCreateView.as_view(),
+        views.mage.ChantryBasicsView.as_view(),
         name="chantry",
+    ),
+    path(
+        "chantry/direct/",
+        views.mage.ChantryCreateView.as_view(),
+        name="chantry_direct",
     ),
     path(
         "reality_zone/",

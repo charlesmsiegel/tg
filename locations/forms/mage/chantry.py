@@ -223,9 +223,11 @@ class ChantryCreateForm(forms.ModelForm):
         widgets = _CHANTRY_WIDGETS
 
     def save(self, commit=True):
-        chantry = super().save(commit=commit)
-        chantry.total_points = int(self.cleaned_data.get("total_points"))
-        chantry.save()
+        chantry = super().save(commit=False)
+        chantry.total_points = self.cleaned_data["total_points"]
+        if commit:
+            chantry.save()
+            self.save_m2m()
         return chantry
 
 

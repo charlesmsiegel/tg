@@ -206,7 +206,7 @@ class TestChantryCreateView(TestCase):
     def test_create_view_template(self):
         self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "locations/mage/chantry/form.html")
+        self.assertTemplateUsed(response, "locations/mage/chantry/basics.html")
 
 
 class TestChantryUpdateView(TestCase):

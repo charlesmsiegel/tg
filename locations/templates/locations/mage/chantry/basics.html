@@ -2,6 +2,13 @@
 {% block creation_title %}
     Create Chantry
 {% endblock creation_title %}
+{% block progress %}
+    {% if can_create_directly %}
+        <p class="text-right">
+            <a href="{% url 'locations:mage:create:chantry_direct' %}">Storytellers: create directly</a>
+        </p>
+    {% endif %}
+{% endblock progress %}
 {% block other %}
     <div class="row">
         <div class="col-sm">Faction</div>
