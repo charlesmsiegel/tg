@@ -4,8 +4,12 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.core.background_block import Background
+from characters.models.core.human import Human
+from characters.models.mage.effect import Effect
 from characters.tests.utils import mage_setup
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.models.mage.library import Library
+from locations.models.mage.node import Node
 from locations.services import chantry_points as svc
 
 
@@ -139,3 +143,97 @@ class TestHasAffordablePurchase(ChantryPointsTestCase):
         self.assertNotIn(self.allies, new)
         self.assertNotIn(self.sanctum, new)
         self.assertNotIn(self.fame, new)
+
+
+class TestRemoval(ChantryPointsTestCase):
+    def test_refund_one_dot(self):
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.node, 2)
+        points = chantry.points
+        result = svc.remove_background_dot(rating)
+        self.assertEqual(result.rating, 1)
+        self.assertEqual(chantry.points, points + 3)
+
+    def test_rating_deleted_at_zero(self):
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.allies, 1)
+        self.assertIsNone(svc.remove_background_dot(rating))
+        self.assertFalse(ChantryBackgroundRating.objects.filter(pk=rating.pk).exists())
+
+    def test_removal_detaches_linked_node(self):
+        chantry = self.make_chantry()
+        node = Node.objects.create(name="Well", rank=2)
+        chantry.add_node(node)
+        rating = self.rate(chantry, self.node, 2)
+        rating.linked_object = node
+        rating.note = "Well"
+        rating.url = node.get_absolute_url()
+        rating.complete = True
+        rating.save()
+
+        svc.remove_background_dot(rating)
+
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 1)
+        self.assertIsNone(rating.linked_object)
+        self.assertEqual((rating.note, rating.url, rating.complete), ("", "", False))
+        self.assertFalse(chantry.nodes.filter(pk=node.pk).exists())
+        self.assertTrue(Node.objects.filter(pk=node.pk).exists())
+
+    def test_removal_detaches_linked_library(self):
+        chantry = self.make_chantry()
+        library = Library.objects.create(name="Stacks", rank=1)
+        chantry.chantry_library = library
+        chantry.save()
+        library.contained_within.add(chantry)
+        rating = self.rate(chantry, self.library, 1)
+        rating.linked_object = library
+        rating.complete = True
+        rating.save()
+
+        self.assertIsNone(svc.remove_background_dot(rating))
+
+        chantry.refresh_from_db()
+        self.assertIsNone(chantry.chantry_library)
+        self.assertFalse(library.contained_within.filter(pk=chantry.pk).exists())
+        self.assertTrue(Library.objects.filter(pk=library.pk).exists())
+
+    def test_removal_unlinks_ally_without_deleting_it(self):
+        chantry = self.make_chantry()
+        ally = Human.objects.create(name="Friendly Face")
+        rating = self.rate(chantry, self.allies, 2)
+        rating.linked_object = ally
+        rating.complete = True
+        rating.save()
+
+        svc.remove_background_dot(rating)
+
+        rating.refresh_from_db()
+        self.assertIsNone(rating.linked_object)
+        self.assertFalse(rating.complete)
+        self.assertTrue(Human.objects.filter(pk=ally.pk).exists())
+
+    def test_ie_removal_refused_when_effects_would_overcommit(self):
+        chantry = self.make_chantry(integrated_effects_score=2)  # 8 IE points
+        effect = Effect.objects.create(name="Big Ward", forces=3, prime=2)  # rote_cost 5
+        chantry.integrated_effects.add(effect)
+        with self.assertRaises(ValidationError):
+            svc.remove_ie_dot(chantry)  # IE 1 allows only 4
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.integrated_effects_score, 2)
+
+        svc.remove_effect(chantry, effect)
+        self.assertEqual(svc.remove_ie_dot(chantry), 1)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.integrated_effects_score, 1)
+
+    def test_ie_removal_refused_at_zero(self):
+        chantry = self.make_chantry()
+        with self.assertRaises(ValidationError):
+            svc.remove_ie_dot(chantry)
+
+    def test_remove_effect_not_chosen_is_refused(self):
+        chantry = self.make_chantry()
+        effect = Effect.objects.create(name="Loose", forces=1)
+        with self.assertRaises(ValidationError):
+            svc.remove_effect(chantry, effect)
