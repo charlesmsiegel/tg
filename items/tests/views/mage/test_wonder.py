@@ -80,21 +80,25 @@ class TestWonderFormTemplateJS(TestCase):
     """Test that wonder form template includes required JavaScript functionality."""
 
     def test_form_include_has_toggle_effect_fields(self):
-        """Wonder form_include.html has toggleEffectFields function."""
+        """The form loads the static asset containing its effect-field toggle."""
+        from pathlib import Path
+
+        from django.contrib.staticfiles import finders
         from django.template import loader
 
         template = loader.get_template("items/mage/wonder/form_include.html")
         template_source = template.template.source
 
-        # Verify the template contains the required JavaScript functionality
-        self.assertIn("function toggleEffectFields", template_source)
+        self.assertIn("{% static 'items/js/wonder-form.js' %}", template_source)
+        script = Path(finders.find("items/js/wonder-form.js")).read_text(encoding="utf-8")
+        self.assertIn("function toggleEffectFields", script)
 
     def test_form_include_has_init_wonder_form(self):
-        """Wonder form_include.html has initWonderForm function."""
-        from django.template import loader
+        """The static asset initializes the form when the DOM is ready."""
+        from pathlib import Path
 
-        template = loader.get_template("items/mage/wonder/form_include.html")
-        template_source = template.template.source
+        from django.contrib.staticfiles import finders
 
-        # Verify the template contains the initialization function
-        self.assertIn("initWonderForm", template_source)
+        script = Path(finders.find("items/js/wonder-form.js")).read_text(encoding="utf-8")
+        self.assertIn("function initWonderForm", script)
+        self.assertIn("document.addEventListener('DOMContentLoaded', initWonderForm)", script)
