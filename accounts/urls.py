@@ -1,7 +1,7 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from accounts import views
-from core import views as core_views
 
 urlpatterns = [
     path("password_reset/", views.CustomPasswordResetView.as_view(), name="password_reset"),
@@ -54,5 +54,5 @@ urlpatterns = [
         name="weekly_xp_approval",
     ),
     path("login/", views.CustomLoginView.as_view(), name="login"),
-    path("", core_views.HomeListView.as_view(), name="user"),
+    path("", RedirectView.as_view(pattern_name="core:home"), name="user"),
 ]

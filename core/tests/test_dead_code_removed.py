@@ -624,3 +624,13 @@ class D8RemovedTests(SimpleTestCase):
         from game import urls as game_urls
 
         self.assertEqual(game_urls.app_name, "game")
+
+    def test_accounts_root_redirects_to_home(self):
+        from django.urls import resolve, reverse
+        from django.views.generic import RedirectView
+
+        self.assertEqual(reverse("accounts:user"), "/accounts/")
+        match = resolve("/accounts/")
+        self.assertEqual(match.view_name, "accounts:user")
+        self.assertIs(match.func.view_class, RedirectView)
+        self.assertEqual(match.func.view_initkwargs, {"pattern_name": "core:home"})
