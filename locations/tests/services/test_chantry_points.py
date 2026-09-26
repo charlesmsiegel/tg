@@ -1,7 +1,9 @@
 """Tests for the chantry points service (M20 chantry costs and caps)."""
 
 from django.core.exceptions import ValidationError
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 
 from characters.models.core.background_block import Background
 from characters.models.core.human import Human
@@ -264,6 +266,60 @@ class TestRemoval(ChantryPointsTestCase):
         self.assertIsNone(rating.chantry_id)
         with self.assertRaises(ValidationError):
             svc.remove_background_dot(rating)
+
+    def test_removal_error_none_for_a_background_less_rating(self):
+        """A rating whose bg was SET_NULL has no floor and can always be removed."""
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.allies, 1)
+        rating.bg = None
+        rating.save()
+        self.assertIsNone(svc.background_removal_error(rating))
+
+    def test_removal_of_a_background_less_rating_succeeds(self):
+        chantry = self.make_chantry()
+        rating = self.rate(chantry, self.allies, 1)
+        rating.bg = None
+        rating.save()
+        self.assertIsNone(svc.remove_background_dot(rating))
+        self.assertFalse(ChantryBackgroundRating.objects.filter(pk=rating.pk).exists())
+
+    def test_removal_of_linked_library_never_touches_nodes_m2m(self):
+        """Detaching a Library (or Sanctum) must not issue a nodes.remove() query."""
+        chantry = self.make_chantry()
+        library = Library.objects.create(name="Stacks", rank=1)
+        chantry.chantry_library = library
+        chantry.save()
+        library.contained_within.add(chantry)
+        rating = self.rate(chantry, self.library, 2)
+        rating.linked_object = library
+        rating.save()
+
+        with CaptureQueriesContext(connection) as ctx:
+            svc.remove_background_dot(rating)
+
+        nodes_table = Chantry.nodes.through._meta.db_table
+        self.assertFalse(any(nodes_table in query["sql"] for query in ctx.captured_queries))
+        # The Library side effect still runs.
+        chantry.refresh_from_db()
+        self.assertIsNone(chantry.chantry_library)
+
+
+class TestVanishedChantryIsRefusedEverywhere(ChantryPointsTestCase):
+    """Every mutation refuses a chantry deleted behind the caller's back."""
+
+    def test_buy_ie_dot_on_vanished_chantry_is_refused(self):
+        chantry = self.make_chantry()
+        chantry.delete()
+        with self.assertRaises(ValidationError):
+            svc.buy_ie_dot(chantry)
+
+    def test_remove_effect_on_vanished_chantry_is_refused(self):
+        chantry = self.make_chantry()
+        effect = Effect.objects.create(name="Ghost", forces=1)
+        chantry.integrated_effects.add(effect)
+        chantry.delete()
+        with self.assertRaises(ValidationError):
+            svc.remove_effect(chantry, effect)
 
 
 class TestLibraryTypeRule(ChantryPointsTestCase):
