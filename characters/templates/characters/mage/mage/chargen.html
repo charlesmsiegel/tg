@@ -132,12 +132,12 @@
             {% endif %}
         {% endblock ally %}
         {% block chantry %}
-            {% if object.creation_status == 17 %}
+            {% if object.creation_status == 20 %}
                 {% include "locations/mage/chantry/select_or_create_form.html" %}
             {% endif %}
         {% endblock chantry %}
         {% block specialties_form %}
-            {% if object.creation_status == 18 %}
+            {% if object.creation_status == 21 %}
                 {% include "characters/mage/mage/mage_specialties_block_form.html" %}
             {% endif %}
         {% endblock specialties_form %}
