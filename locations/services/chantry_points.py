@@ -215,3 +215,27 @@ def remove_effect(chantry, effect):
         if not locked.integrated_effects.filter(pk=effect.pk).exists():
             raise ValidationError(f"{effect} is not one of this chantry's effects.")
         locked.integrated_effects.remove(effect)
+
+
+def apply_type_grants(chantry):
+    """Give a library-type chantry its free Library dots.
+
+    Creates the Library rating at the free floor or raises it to the floor.
+    Does nothing for other types; dots already above the floor are kept.
+    Returns the Library rating, or None when no grant applies.
+    """
+    with transaction.atomic():
+        locked = _lock(chantry)
+        floor = locked.free_dots("library")
+        if floor == 0:
+            return None
+        library, _ = Background.objects.get_or_create(
+            property_name="library", defaults={"name": "Library"}
+        )
+        rating = _held_rating(locked, library)
+        if rating is None:
+            return ChantryBackgroundRating.objects.create(chantry=locked, bg=library, rating=floor)
+        if rating.rating < floor:
+            rating.rating = floor
+            rating.save(update_fields=["rating"])
+        return rating

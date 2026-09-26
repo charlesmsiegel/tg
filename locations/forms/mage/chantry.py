@@ -7,6 +7,7 @@ from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
+from locations.services import chantry_points
 from widgets import (
     ChainedChoiceField,
     ChainedSelectMixin,
@@ -232,6 +233,7 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
                 chantry.total_points = self.points
                 chantry.save()
                 self.save_m2m()
+                chantry_points.apply_type_grants(chantry)
                 return chantry
             pk = self.cleaned_data["existing_chantry"].pk
             # A single atomic UPDATE, not select_for_update() (a no-op on SQLite): two
