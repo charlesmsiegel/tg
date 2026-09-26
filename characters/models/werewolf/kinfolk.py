@@ -10,8 +10,6 @@ from items.models.werewolf.fetish import Fetish
 class Kinfolk(WtAHuman):
     type = "kinfolk"
 
-    freebie_step = 5
-
     allowed_backgrounds = ["allies", "contacts", "mentor", "pure_breed", "resources"]
 
     BREEDS = [

@@ -29,8 +29,6 @@ from locations.models.mage.node import Node
 class Mage(MtAHuman):
     type = "mage"
 
-    freebie_step = 7
-
     allowed_backgrounds = [
         "contacts",
         "mentor",

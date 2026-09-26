@@ -1,0 +1,15 @@
+{% load dots sanitize_text %}
+<div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
+                                <p class="tg-card-subtitle">You have Potence 1 automatically. You may spend up to 2 dots on additional disciplines{% if has_domitor %} from your domitor's clan{% else %} (Physical disciplines only){% endif %}.</p>
+                            </div>
+                            <div class="tg-card-body">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                            </div>
+                        </div>
+                    </div>
+                </div>

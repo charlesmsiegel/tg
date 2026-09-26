@@ -1,11 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
 from characters.models.demon.thrall import Thrall
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -56,7 +59,7 @@ class ThrallAttributeView(HumanAttributeView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallAbilityView(SpecialUserMixin, UpdateView):
+class ThrallAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = Thrall.primary_abilities
     template_name = "characters/demon/thrall/chargen.html"
@@ -90,7 +93,7 @@ class ThrallAbilityView(SpecialUserMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -100,7 +103,7 @@ class ThrallBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallVirtuesView(SpecialUserMixin, UpdateView):
+class ThrallVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/thrall/chargen.html"
@@ -127,12 +130,12 @@ class ThrallVirtuesView(SpecialUserMixin, UpdateView):
         # Update willpower based on courage
         self.object.willpower = form.cleaned_data.get("courage", 1)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class ThrallExtrasView(SpecialUserMixin, UpdateView):
+class ThrallExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = [
         "age",
@@ -161,7 +164,7 @@ class ThrallExtrasView(SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -185,6 +188,8 @@ class ThrallLanguagesView(HumanLanguagesView):
 
 
 class ThrallAlliesView(GenericBackgroundView):
+    background_name = "allies"
+    primary_object_class = Thrall
     model = Thrall
     template_name = "characters/demon/thrall/chargen.html"
     form_class = LinkedNPCForm
@@ -201,17 +206,7 @@ class ThrallSpecialtiesView(HumanSpecialtiesView):
 
 
 class ThrallCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: ThrallAttributeView,
-        2: ThrallAbilityView,
-        3: ThrallBackgroundsView,
-        4: ThrallVirtuesView,
-        5: ThrallExtrasView,
-        6: ThrallFreebiesView,
-        7: ThrallLanguagesView,
-        8: ThrallAlliesView,
-        9: ThrallSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Thrall
     key_property = "creation_status"
     default_redirect = DetailView

@@ -64,7 +64,7 @@ class TestWraithCreation(WraithTestCase):
 
     def test_wraith_freebie_step(self):
         """Wraith has correct freebie step."""
-        self.assertEqual(self.wraith.freebie_step, 7)
+        self.assertEqual(self.wraith.freebie_step, 9)
 
     def test_wraith_background_points(self):
         """Wraith has correct background points."""

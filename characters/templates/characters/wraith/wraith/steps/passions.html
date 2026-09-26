@@ -1,0 +1,24 @@
+{% load dots sanitize_text %}
+<div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Passions ({{ passion_points_spent }}/{{ passion_points_total }})</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Passions are the emotional drives that keep you anchored to the world. You have {{ passion_points_remaining }} points remaining.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if object.passions.all %}
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <h4>Current Passions:</h4>
+                            {% for passion in object.passions.all %}
+                                <div class="mb-2">
+                                    <strong>{{ passion.emotion }}:</strong> {{ passion.description }} ({{ passion.rating|dots }})
+                                    {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}

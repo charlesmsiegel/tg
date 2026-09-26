@@ -1,4 +1,3 @@
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -15,8 +14,6 @@ from core.models import Model
 class LinearMagicPath(Model):
     type = "linear_magic_path"
     gameline = "mta"
-
-    freebie_step = 8
 
     numina_type = models.CharField(
         max_length=20,
@@ -58,7 +55,6 @@ class LinearMagicRitual(Model):
 
 class Sorcerer(MtAHuman):
     type = "sorcerer"
-    freebie_step = 8
 
     allowed_backgrounds = [
         "allies",

@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -11,10 +13,10 @@ from characters.forms.werewolf.garou import (
     WerewolfGiftsForm,
     WerewolfHistoryForm,
 )
-from characters.models.core.background_block import BackgroundRating
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.gift import Gift
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -187,7 +189,7 @@ class WerewolfBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
-class WerewolfGiftsView(SpecialUserMixin, UpdateView):
+class WerewolfGiftsView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     form_class = WerewolfGiftsForm
     template_name = "characters/werewolf/garou/chargen.html"
@@ -234,13 +236,13 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
 
     def form_valid(self, form):
         """Handle successful form validation. Validation logic is in the form."""
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Gifts selected successfully!")
         return super().form_valid(form)
 
 
-class WerewolfHistoryView(SpecialUserMixin, UpdateView):
+class WerewolfHistoryView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     form_class = WerewolfHistoryForm
     template_name = "characters/werewolf/garou/chargen.html"
@@ -260,13 +262,13 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
 
     def form_valid(self, form):
         """Handle successful form validation. Validation logic is in the form."""
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "First Change details saved successfully!")
         return super().form_valid(form)
 
 
-class WerewolfExtrasView(SpecialUserMixin, UpdateView):
+class WerewolfExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = [
         "date_of_birth",
@@ -281,7 +283,7 @@ class WerewolfExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/werewolf/garou/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
@@ -351,51 +353,12 @@ class WerewolfContactsView(GenericBackgroundView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
-class WerewolfFetishView(GenericBackgroundView):
-    primary_object_class = Werewolf
-    background_name = "fetish"
-    form_class = None  # We'll handle this specially
-    template_name = "characters/werewolf/garou/chargen.html"
-    multiple_ownership = True
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get the current background rating for fetish
-        fetish_rating = BackgroundRating.objects.filter(
-            char=self.object, bg__property_name="fetish"
-        ).first()
-        if fetish_rating:
-            context["max_fetish_rating"] = fetish_rating.rating
-            context["current_fetish_total"] = self.object.total_fetish_rating()
-        else:
-            context["max_fetish_rating"] = 0
-            context["current_fetish_total"] = 0
-        context["available_fetishes"] = self.object.filter_fetishes(
-            min_rating=0,
-            max_rating=(fetish_rating.rating if fetish_rating else 0),
-        )
-        return context
-
-
 class WerewolfSpecialtiesView(HumanSpecialtiesView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
 class WerewolfCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: WerewolfAttributeView,
-        2: WerewolfAbilityView,
-        3: WerewolfBackgroundsView,
-        4: WerewolfGiftsView,
-        5: WerewolfHistoryView,
-        6: WerewolfExtrasView,
-        7: WerewolfFreebiesView,
-        8: WerewolfLanguagesView,
-        9: WerewolfAlliesView,
-        10: WerewolfMentorView,
-        11: WerewolfContactsView,
-        12: WerewolfSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Werewolf
     key_property = "creation_status"
     default_redirect = WerewolfDetailView

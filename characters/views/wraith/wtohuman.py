@@ -4,10 +4,12 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -17,6 +19,7 @@ from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
 from characters.models.wraith.wtohuman import WtOHuman
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -227,7 +230,7 @@ class WtOHumanAttributeView(HumanAttributeView):
     tertiary = 3
 
 
-class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
+class WtOHumanAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = WtOHuman.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -270,7 +273,7 @@ class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}. Current: {talents} talents, {skills} skills, {knowledges} knowledges.",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Abilities allocated successfully!")
         return super().form_valid(form)
@@ -285,7 +288,7 @@ class WtOHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
+class WtOHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = [
         "date_of_birth",
@@ -300,7 +303,7 @@ class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
@@ -342,7 +345,9 @@ class WtOHumanFreebiesView(HumanFreebiesView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WtOHumanLanguagesView(
+    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
+):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 
@@ -351,18 +356,6 @@ class WtOHumanLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, Form
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
@@ -385,7 +378,7 @@ class WtOHumanLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, Form
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         messages.success(self.request, "Languages added successfully!")
         return HttpResponseRedirect(human.get_absolute_url())
@@ -406,7 +399,9 @@ class WtOHumanAlliesView(GenericBackgroundView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WtOHumanSpecialtiesView(
+    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
+):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 
@@ -444,16 +439,7 @@ class WtOHumanSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, Fo
 
 
 class WtOHumanCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: WtOHumanAttributeView,
-        2: WtOHumanAbilityView,
-        3: WtOHumanBackgroundsView,
-        4: WtOHumanExtrasView,
-        5: WtOHumanFreebiesView,
-        6: WtOHumanLanguagesView,
-        7: WtOHumanAlliesView,
-        8: WtOHumanSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = WtOHuman
     key_property = "creation_status"
     default_redirect = WtOHumanDetailView

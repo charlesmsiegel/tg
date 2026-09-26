@@ -1,4 +1,3 @@
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
@@ -19,8 +18,6 @@ class Demon(LoreBlock, DtFHuman):
     """Main Demon character class."""
 
     type = "demon"
-
-    freebie_step = 7
 
     allowed_backgrounds = [
         "contacts",

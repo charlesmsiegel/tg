@@ -4,9 +4,11 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.changeling.chained_freebies import ChainedChangelingFreebiesForm
 from characters.forms.changeling.changeling import ChangelingCreationForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -17,6 +19,7 @@ from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.core.specialty import Specialty
 from characters.views.changeling.ctdhuman import CtDHumanAbilityView
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -224,7 +227,7 @@ class ChangelingBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
+class ChangelingArtsRealmsView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "autumn",
@@ -331,13 +334,13 @@ class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
                 return self.form_invalid(form)
 
         # All validations passed, increment creation_status and save
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Arts and Realms allocated successfully!")
         return super().form_valid(form)
 
 
-class ChangelingExtrasView(SpecialUserMixin, UpdateView):
+class ChangelingExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "date_of_birth",
@@ -363,7 +366,7 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
@@ -423,7 +426,7 @@ class ChangelingFreebiesView(HumanFreebiesView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingLanguagesView(EditPermissionMixin, FormView):
+class ChangelingLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/changeling/changeling/chargen.html"
 
@@ -432,18 +435,6 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Changeling, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Changeling, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -463,7 +454,7 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 changeling.languages.add(language)
-        changeling.creation_status += 1
+        advance(changeling, user=self.request.user)
         changeling.save()
         messages.success(self.request, "Languages added successfully!")
         return HttpResponseRedirect(changeling.get_absolute_url())
@@ -481,7 +472,7 @@ class ChangelingAlliesView(GenericBackgroundView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
+class ChangelingSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/changeling/changeling/chargen.html"
 
@@ -516,17 +507,7 @@ class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
 
 
 class ChangelingCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: ChangelingAttributeView,
-        2: ChangelingAbilityView,
-        3: ChangelingBackgroundsView,
-        4: ChangelingArtsRealmsView,
-        5: ChangelingExtrasView,
-        6: ChangelingFreebiesView,
-        7: ChangelingLanguagesView,
-        8: ChangelingAlliesView,
-        9: ChangelingSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Changeling
     key_property = "creation_status"
     default_redirect = ChangelingDetailView

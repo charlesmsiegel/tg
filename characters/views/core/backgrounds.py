@@ -3,15 +3,17 @@ import json
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
+from characters.chargen.transitions import advance
 from characters.forms.core.backgroundform import BackgroundRatingFormSet
 from characters.models.core.background_block import Background
 from characters.models.core.human import Human
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from core.mixins import (
     SpendFreebiesPermissionMixin,
 )
 
 
-class HumanBackgroundsView(SpendFreebiesPermissionMixin, FormView):
+class HumanBackgroundsView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
 
@@ -41,7 +43,7 @@ class HumanBackgroundsView(SpendFreebiesPermissionMixin, FormView):
                 )
             return super().form_invalid(form)
         form.save()
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 

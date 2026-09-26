@@ -1,0 +1,17 @@
+{% load static %}
+<div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Virtues</h5>
+                                <p class="tg-card-subtitle">Spend 7 dots on Virtues ({{ object.active_virtue_1_name }}, {{ object.active_virtue_2_name }}, Courage)</p>
+                            </div>
+                            <div class="tg-card-body">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <div id="virtues-validation-status" role="status" style="font-weight: 600; margin-top: 8px;"></div>
+                                <script src="{% static 'characters/js/vampire-virtues.js' %}"></script>
+                            </div>
+                        </div>
+                    </div>
+                </div>

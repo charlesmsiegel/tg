@@ -7,7 +7,6 @@ from characters.models.core.human import Human
 class MtRHuman(Human):
     type = "mtr_human"
     gameline = "mtr"
-    freebie_step = 5
 
     talents = [
         "alertness",

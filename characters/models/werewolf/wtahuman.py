@@ -8,8 +8,6 @@ class WtAHuman(Human):
 
     gameline = "wta"
 
-    freebie_step = 5
-
     talents = [
         "alertness",
         "athletics",

@@ -42,8 +42,8 @@ class ChargenBackView(LoginRequiredMixin, View):
             # chargen_back_url button); the branches below only choose the
             # message for the blocked case. Once freebies are approved, back
             # navigation is blocked entirely — any earlier step could
-            # invalidate the locked allocation, and freebie_step diverges from
-            # the real per-gameline freebie step in several creation routers.
+            # invalidate the locked allocation. The registry chooses the
+            # previous applicable step only after this gate passes.
             if not char.can_navigate_back():
                 if char.status not in {"Un", "Rev"}:
                     messages.warning(

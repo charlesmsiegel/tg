@@ -41,7 +41,7 @@ class TestBackgroundSkipping(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         mage.refresh_from_db()
-        self.assertEqual(mage.creation_status, 11)
+        self.assertEqual(mage.creation_status, 21)
 
     def test_skips_library_when_none_purchased(self):
         """Test that library step is skipped when no library background."""
@@ -61,7 +61,7 @@ class TestBackgroundSkipping(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         mage.refresh_from_db()
-        self.assertEqual(mage.creation_status, 12)
+        self.assertEqual(mage.creation_status, 21)
 
 
 class TestEnhancementViewSkipping(TestCase):
@@ -92,4 +92,4 @@ class TestEnhancementViewSkipping(TestCase):
         self.assertEqual(mage.creation_status, 14)
         self.assertEqual(self.client.post(url, {}).status_code, 302)
         mage.refresh_from_db()
-        self.assertEqual(mage.creation_status, 15)
+        self.assertEqual(mage.creation_status, 21)

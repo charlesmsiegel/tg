@@ -23,8 +23,6 @@ class Earthbound(LoreBlock, DtFHuman):
 
     type = "earthbound"
 
-    freebie_step = 7
-
     # Earthbound-specific backgrounds
     allowed_backgrounds = [
         "contacts",

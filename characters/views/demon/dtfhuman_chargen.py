@@ -5,11 +5,14 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.dtfhuman import DtFHumanCreationForm
 from characters.forms.demon.freebies import DtFHumanFreebiesForm
 from characters.models.demon.dtf_human import DtFHuman
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -127,7 +130,7 @@ class DtFHumanAttributeView(HumanAttributeView):
         return context
 
 
-class DtFHumanAbilityView(SpecialUserMixin, UpdateView):
+class DtFHumanAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = DtFHuman.primary_abilities
     template_name = "characters/demon/dtfhuman/chargen.html"
@@ -161,7 +164,7 @@ class DtFHumanAbilityView(SpecialUserMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -171,7 +174,7 @@ class DtFHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/dtfhuman/chargen.html"
 
 
-class DtFHumanExtrasView(SpecialUserMixin, UpdateView):
+class DtFHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = [
         "age",
@@ -204,7 +207,7 @@ class DtFHumanExtrasView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -221,6 +224,8 @@ class DtFHumanLanguagesView(HumanLanguagesView):
 
 
 class DtFHumanAlliesView(GenericBackgroundView):
+    background_name = "allies"
+    primary_object_class = DtFHuman
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
     form_class = LinkedNPCForm
@@ -237,16 +242,7 @@ class DtFHumanSpecialtiesView(HumanSpecialtiesView):
 
 
 class DtFHumanCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: DtFHumanAttributeView,
-        2: DtFHumanAbilityView,
-        3: DtFHumanBackgroundsView,
-        4: DtFHumanExtrasView,
-        5: DtFHumanFreebiesView,
-        6: DtFHumanLanguagesView,
-        7: DtFHumanAlliesView,
-        8: DtFHumanSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = DtFHuman
     key_property = "creation_status"
     default_redirect = DetailView

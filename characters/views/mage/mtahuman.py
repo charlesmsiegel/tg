@@ -4,10 +4,12 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -18,6 +20,7 @@ from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mtahuman import MtAHuman
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -185,7 +188,7 @@ class MtAHumanUpdateView(EditPermissionMixin, UpdateView):
         return context
 
 
-class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
+class MtAHumanAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = MtAHuman
     fields = [
         "awareness",
@@ -355,7 +358,7 @@ class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -466,7 +469,7 @@ class MtAHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mtahuman/chargen.html"
 
 
-class MtAHumanExtrasView(SpecialUserMixin, UpdateView):
+class MtAHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = MtAHuman
     fields = [
         "date_of_birth",
@@ -485,7 +488,7 @@ class MtAHumanExtrasView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -522,7 +525,7 @@ class MtAHumanFreebiesView(HumanFreebiesView):
     template_name = "characters/mage/mtahuman/chargen.html"
 
 
-class MtAHumanLanguagesView(EditPermissionMixin, FormView):
+class MtAHumanLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
@@ -531,18 +534,6 @@ class MtAHumanLanguagesView(EditPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
@@ -565,7 +556,7 @@ class MtAHumanLanguagesView(EditPermissionMixin, FormView):
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         return HttpResponseRedirect(human.get_absolute_url())
 
@@ -607,7 +598,7 @@ class MtAHumanNodeView(GenericBackgroundView):
     template_name = "characters/mage/mtahuman/chargen.html"
 
 
-class MtAHumanSpecialtiesView(EditPermissionMixin, FormView):
+class MtAHumanSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
@@ -643,11 +634,6 @@ class MtAHumanSpecialtiesView(EditPermissionMixin, FormView):
 class MtAHumanWonderView(GenericBackgroundView):
     primary_object_class = MtAHuman
     background_name = "wonder"
-    potential_skip = [
-        "enhancement",
-        "sanctum",
-        "allies",
-    ]
     form_class = WonderForm
     template_name = "characters/mage/mtahuman/chargen.html"
     multiple_ownership = True
@@ -656,9 +642,6 @@ class MtAHumanWonderView(GenericBackgroundView):
 class MtAHumanSanctumView(GenericBackgroundView):
     primary_object_class = MtAHuman
     background_name = "sanctum"
-    potential_skip = [
-        "allies",
-    ]
     form_class = SanctumForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
@@ -669,22 +652,7 @@ class MtAHumanChantryView(CharacterChantryBackgroundView):
 
 
 class MtAHumanCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: MtAHumanAttributeView,
-        2: MtAHumanAbilityView,
-        3: MtAHumanBackgroundsView,
-        4: MtAHumanExtrasView,
-        5: MtAHumanFreebiesView,
-        6: MtAHumanLanguagesView,
-        7: MtAHumanNodeView,
-        8: MtAHumanLibraryView,
-        9: MtAHumanWonderView,
-        10: MtAHumanEnhancementView,
-        11: MtAHumanSanctumView,
-        12: MtAHumanAlliesView,
-        13: MtAHumanChantryView,
-        14: MtAHumanSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = MtAHuman
     key_property = "creation_status"
     default_redirect = MtAHumanDetailView

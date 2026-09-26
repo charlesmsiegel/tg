@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
@@ -323,16 +324,7 @@ class KinfolkSpecialtiesView(WtAHumanSpecialtiesView):
 
 
 class KinfolkCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: KinfolkAttributeView,
-        2: KinfolkAbilityView,
-        3: KinfolkBackgroundsView,
-        4: KinfolkExtrasView,
-        5: KinfolkFreebiesView,
-        6: KinfolkLanguagesView,
-        7: KinfolkAlliesView,
-        8: KinfolkSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Kinfolk
     key_property = "creation_status"
     default_redirect = KinfolkDetailView

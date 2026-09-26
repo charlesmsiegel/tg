@@ -1,0 +1,6 @@
+{% if object.freebies_approved %}
+    <p>Freebie points remaining: {{ object.freebies }}</p>
+    {{ form.as_p }}
+{% else %}
+    <p>Waiting on ST to Assign Freebie Total</p>
+{% endif %}

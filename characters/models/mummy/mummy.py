@@ -16,7 +16,6 @@ class Mummy(MtRHuman):
     """
 
     type = "mummy"
-    freebie_step = 7
 
     # ========================================
     # CORE MUMMY STATS

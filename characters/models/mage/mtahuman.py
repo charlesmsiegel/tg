@@ -8,8 +8,6 @@ from items.models.mage.wonder import Wonder
 class MtAHuman(Human):
     type = "mta_human"
 
-    freebie_step = 5
-
     allowed_backgrounds = [
         "contacts",
         "mentor",

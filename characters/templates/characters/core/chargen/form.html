@@ -1,0 +1,5 @@
+{{ form.as_p }}
+{% for name, context in chargen_formsets.items %}
+    {{ context.formset.management_form }}
+    {{ context.formset.as_p }}
+{% endfor %}

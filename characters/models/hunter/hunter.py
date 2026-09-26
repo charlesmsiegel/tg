@@ -16,7 +16,6 @@ class Hunter(HtRHuman):
     """
 
     type = "hunter"
-    freebie_step = 7
 
     # ===== CREED =====
     creed = models.ForeignKey(

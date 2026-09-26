@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.werewolf.drone import DroneCreationForm
 from characters.models.werewolf.drone import Drone
@@ -167,15 +168,7 @@ class DroneSpecialtiesView(WtAHumanSpecialtiesView):
 
 
 class DroneCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: DroneAttributeView,
-        2: DroneAbilityView,
-        3: DroneBackgroundsView,
-        4: DroneExtrasView,
-        5: DroneFreebiesView,
-        6: DroneLanguagesView,
-        7: DroneSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Drone
     key_property = "creation_status"
     default_redirect = DroneDetailView

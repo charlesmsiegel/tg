@@ -1,0 +1,5 @@
+{% if object.freebies_approved %}
+    {% include "characters/mage/sorcerer/sorcerer_freebies_form.html" %}
+{% else %}
+    {% include "characters/core/chargen/freebies.html" %}
+{% endif %}

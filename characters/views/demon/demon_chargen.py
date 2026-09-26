@@ -4,6 +4,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
@@ -13,6 +15,7 @@ from characters.models.demon.apocalyptic_form import (
 )
 from characters.models.demon.demon import Demon
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -73,7 +76,7 @@ class DemonAttributeView(HumanAttributeView):
         return context
 
 
-class DemonAbilityView(SpecialUserMixin, UpdateView):
+class DemonAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = Demon.primary_abilities
     template_name = "characters/demon/demon/chargen.html"
@@ -107,7 +110,7 @@ class DemonAbilityView(SpecialUserMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -117,7 +120,7 @@ class DemonBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/demon/chargen.html"
 
 
-class DemonLoresView(SpecialUserMixin, UpdateView):
+class DemonLoresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "lore_of_the_celestials",
@@ -131,7 +134,7 @@ class DemonLoresView(SpecialUserMixin, UpdateView):
         "lore_of_the_fundament",
         "lore_of_patterns",
         "lore_of_portals",
-        "lore_of_forging",
+        "lore_of_the_forge",
         "lore_of_longing",
         "lore_of_storms",
         "lore_of_transfiguration",
@@ -179,12 +182,12 @@ class DemonLoresView(SpecialUserMixin, UpdateView):
             )
             return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class DemonApocalypticFormView(EditPermissionMixin, FormView):
+class DemonApocalypticFormView(ChargenStepMixin, EditPermissionMixin, FormView):
     template_name = "characters/demon/demon/chargen.html"
     form_class = forms.Form
 
@@ -296,12 +299,12 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
             apoc_form.high_torment_traits.add(trait)
 
         demon.apocalyptic_form = apoc_form
-        demon.creation_status += 1
+        advance(demon, user=self.request.user)
         demon.save()
         return HttpResponseRedirect(demon.get_absolute_url())
 
 
-class DemonVirtuesView(SpecialUserMixin, UpdateView):
+class DemonVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/demon/chargen.html"
@@ -332,16 +335,15 @@ class DemonVirtuesView(SpecialUserMixin, UpdateView):
         # Update willpower based on courage
         self.object.willpower = form.cleaned_data.get("courage", 1)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class DemonExtrasView(SpecialUserMixin, UpdateView):
+class DemonExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "celestial_name",
-        "host_name",
         "age_of_fall",
         "abyss_duration",
         "age",
@@ -357,9 +359,6 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["celestial_name"].widget.attrs.update(
             {"placeholder": "Your name before the Fall"}
-        )
-        form.fields["host_name"].widget.attrs.update(
-            {"placeholder": "Name of the mortal body you inhabit"}
         )
         form.fields["history"].widget.attrs.update(
             {
@@ -384,7 +383,7 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -448,23 +447,7 @@ class DemonSpecialtiesView(HumanSpecialtiesView):
 
 
 class DemonCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: DemonAttributeView,
-        2: DemonAbilityView,
-        3: DemonBackgroundsView,
-        4: DemonLoresView,
-        5: DemonApocalypticFormView,
-        6: DemonVirtuesView,
-        7: DemonExtrasView,
-        8: DemonFreebiesView,
-        9: DemonLanguagesView,
-        10: DemonAlliesView,
-        11: DemonMentorView,
-        12: DemonContactsView,
-        13: DemonRetainersView,
-        14: DemonFollowersView,
-        15: DemonSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Demon
     key_property = "creation_status"
     default_redirect = DetailView

@@ -1,0 +1,27 @@
+{% load dots sanitize_text %}
+<div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Shadow</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Your Shadow is the dark reflection of your Psyche, embodying suppressed emotions and drives. Choose a Shadow Archetype that represents your character's inner darkness.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if shadow_archetypes %}
+                    <div class="row">
+                        <div class="col-sm">
+                            <h3>Available Shadow Archetypes</h3>
+                            {% for archetype in shadow_archetypes %}
+                                <div class="tg-card mb-3">
+                                    <div class="tg-card-body">
+                                        <h5 class="tg-card-title">{{ archetype.name }}</h5>
+                                        <p><strong>Core Function:</strong> {{ archetype.core_function|sanitize_html }}</p>
+                                        <p><strong>Modus Operandi:</strong> {{ archetype.modus_operandi|sanitize_html }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}

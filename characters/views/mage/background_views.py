@@ -2,12 +2,14 @@ from typing import Any
 
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
+from characters.chargen.transitions import advance
 from characters.forms.mage.enhancements import EnhancementForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
     SpendFreebiesPermissionMixin,
@@ -15,30 +17,15 @@ from core.mixins import (
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm
 
 
-class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
+class MtAEnhancementView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = EnhancementForm
     template_name = "characters/mage/mage/chargen.html"
-
-    potential_skip = [
-        "sanctum",
-        "allies",
-    ]
 
     def get_object(self):
         """Return the Human object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if not obj.backgrounds.filter(bg__property_name="enhancement", complete=False).exists():
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -87,26 +74,7 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
             ).count()
             == 0
         ):
-            obj.creation_status += 1
-            obj.save()
-            for step in self.potential_skip:
-                bg, _ = Background.objects.get_or_create(
-                    property_name=step,
-                    defaults={"name": step.replace("_", " ").title()},
-                )
-                if (
-                    BackgroundRating.objects.filter(
-                        bg=bg,
-                        char=obj,
-                        complete=False,
-                    ).count()
-                    == 0
-                ):
-                    obj.creation_status += 1
-                else:
-                    obj.save()
-                    break
-            obj.save()
+            advance(obj, user=self.request.user)
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
@@ -149,6 +117,6 @@ class CharacterChantryBackgroundView(GenericBackgroundView):
             if not character.backgrounds.filter(
                 bg__property_name=self.background_name, complete=False
             ).exists():
-                character.creation_status += 1
+                advance(character, user=self.request.user)
                 character.save()
         return HttpResponseRedirect(character.get_absolute_url())

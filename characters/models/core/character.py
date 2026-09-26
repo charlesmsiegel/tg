@@ -4,6 +4,7 @@ from django.db.models import CheckConstraint, OuterRef, Q, Subquery
 from django.urls import reverse
 from django.utils import timezone
 
+from characters.chargen.registry import FreebiePosition
 from core.models import Model, ModelManager, ModelQuerySet
 from core.utils import CharacterOrganizationRegistry
 
@@ -81,47 +82,18 @@ class CharacterQuerySet(ModelQuerySet):
         Uses database-level filtering with polymorphic_ctype to avoid loading all
         characters into memory.
         """
-        # Map of character model names to their freebie_step values
-        # This must match the freebie_step class attributes defined in each character type
-        freebie_step_map = {
-            # Humans (step 5)
-            "vtmhuman": 5,
-            "wtahuman": 5,
-            "mtahuman": 5,
-            "wtohuman": 5,
-            "ctdhuman": 5,
-            "dtfhuman": 5,
-            "companion": 5,
-            "kinfolk": 5,
-            "werewolf": 5,  # inherits from WtAHuman
-            "fomor": 5,  # inherits from WtAHuman
-            # Step 6
-            "ghoul": 6,
-            "changeling": 6,
-            "thrall": 6,
-            # Step 7
-            "vampire": 7,
-            "wraith": 7,
-            "mage": 7,
-            "demon": 7,
-            "earthbound": 7,
-            # Step 8 - Fera and Sorcerers
-            "fera": 8,
-            "bastet": 8,  # inherits from Fera
-            "corax": 8,  # inherits from Fera
-            "gurahl": 8,  # inherits from Fera
-            "mokole": 8,  # inherits from Fera
-            "nuwisha": 8,  # inherits from Fera
-            "ratkin": 8,  # inherits from Fera
-            "sorcerer": 8,
-            "linearsorcerer": 8,
-        }
+        from django.apps import apps
 
-        # Build Q objects for each character type
-        q_objects = Q()
-        for model_name, freebie_step in freebie_step_map.items():
-            q_objects |= Q(polymorphic_ctype__model=model_name, creation_status=freebie_step)
-
+        q_objects = Q(pk__in=[])
+        for model in apps.get_app_config("characters").get_models():
+            if not issubclass(model, Character):
+                continue
+            if model.freebie_step > 0:
+                q_objects |= Q(
+                    polymorphic_ctype__app_label=model._meta.app_label,
+                    polymorphic_ctype__model=model._meta.model_name,
+                    creation_status=model.freebie_step,
+                )
         return self.filter(q_objects)
 
 
@@ -143,9 +115,8 @@ class CharacterModel(Model):
 
 
 class Character(CharacterModel):
+    freebie_step = FreebiePosition()
     type = "character"
-
-    freebie_step = -1
 
     gameline = "wod"
 
@@ -256,12 +227,15 @@ class Character(CharacterModel):
             return "Spirit"
         return self.type.replace("_", " ").title()
 
-    def next_stage(self):
-        self.creation_status += 1
-        self.save(update_fields=["creation_status"])
+    def next_stage(self, *, user):
+        from characters.chargen.transitions import advance
+
+        return advance(self, user=user)
 
     def prev_stage(self):
-        self.creation_status -= 1
+        from characters.chargen.transitions import previous_position
+
+        self.creation_status = previous_position(self)
         self.save(update_fields=["creation_status"])
 
     def has_concept(self):
@@ -277,6 +251,11 @@ class Character(CharacterModel):
     def can_navigate_back(self):
         """Whether chargen back-navigation is currently allowed. Single source
         of truth shared by chargen_back_url and ChargenBackView."""
+        from characters.chargen import get_workflow
+
+        workflow = get_workflow(self.type)
+        if workflow and not 1 <= self.creation_status <= len(workflow.steps):
+            return False
         # freebies_approved lives on Human, not the base Character.
         return (
             self.status in {"Un", "Rev"}

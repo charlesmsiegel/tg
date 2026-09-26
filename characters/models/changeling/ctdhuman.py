@@ -6,8 +6,6 @@ from characters.models.core.human import Human
 class CtDHuman(Human):
     type = "ctd_human"
 
-    freebie_step = 5
-
     gameline = "ctd"
 
     talents = [
