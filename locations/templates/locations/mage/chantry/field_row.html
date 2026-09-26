@@ -1,0 +1,9 @@
+<div class="row mb-2">
+    <div class="col-sm-4">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    </div>
+    <div class="col-sm-8">
+        {{ field }}
+        {% for error in field.errors %}<div class="tg-error-message">{{ error }}</div>{% endfor %}
+    </div>
+</div>
