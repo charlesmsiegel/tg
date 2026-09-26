@@ -16,8 +16,6 @@ from core.mixins import (
     EditPermissionMixin,
     OwnerRequiredMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    STRequiredMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
 )
@@ -389,10 +387,6 @@ class DeploymentMixinExistenceTest(TestCase):
         """EditPermissionMixin exists and has correct permission."""
         self.assertEqual(EditPermissionMixin.required_permission, Permission.EDIT_FULL)
 
-    def test_spend_xp_mixin_exists(self):
-        """SpendXPPermissionMixin exists and has correct permission."""
-        self.assertEqual(SpendXPPermissionMixin.required_permission, Permission.SPEND_XP)
-
     def test_spend_freebies_mixin_exists(self):
         """SpendFreebiesPermissionMixin exists and has correct permission."""
         self.assertEqual(
@@ -406,7 +400,3 @@ class DeploymentMixinExistenceTest(TestCase):
     def test_owner_required_mixin_exists(self):
         """OwnerRequiredMixin exists."""
         self.assertTrue(hasattr(OwnerRequiredMixin, "dispatch"))
-
-    def test_st_required_mixin_exists(self):
-        """STRequiredMixin exists."""
-        self.assertTrue(hasattr(STRequiredMixin, "dispatch"))

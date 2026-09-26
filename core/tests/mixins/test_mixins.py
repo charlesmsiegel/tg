@@ -8,12 +8,11 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import RequestFactory, TestCase
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 
 from characters.models.core.character import Character
 from core.mixins import (
     CharacterOwnerOrSTMixin,
-    DeleteMessageMixin,
     EditPermissionMixin,
     ErrorMessageMixin,
     MessageMixin,
@@ -22,9 +21,7 @@ from core.mixins import (
     PermissionRequiredMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     StorytellerRequiredMixin,
-    STRequiredMixin,
     SuccessMessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
@@ -134,36 +131,6 @@ class ObjectCachingMixinTest(TestCase):
                 pass  # Template doesn't exist, but that's fine
             # Subsequent calls should use cache
             view.get_object()
-
-    def test_st_required_mixin_caches_object(self):
-        """Test that STRequiredMixin caches object during dispatch."""
-        head_st = User.objects.create_user(
-            username="head_st", email="head_st@test.com", password="testpass123"
-        )
-        chronicle = Chronicle.objects.create(name="ST Chronicle", head_st=head_st)
-        character = Character.objects.create(
-            name="ST Character", owner=self.owner, chronicle=chronicle, status="App"
-        )
-
-        class TestView(STRequiredMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = head_st
-
-        view = TestView()
-        view.request = request
-        view.kwargs = {"pk": character.pk}
-        view.args = ()
-
-        try:
-            view.dispatch(request, pk=character.pk)
-        except Exception:
-            pass  # The isolated test has no template.
-        cached = view.get_object()
-        with self.assertNumQueries(0):
-            self.assertIs(view.get_object(), cached)
 
     def test_character_owner_or_st_mixin_caches_object(self):
         """Test that CharacterOwnerOrSTMixin caches object during dispatch."""
@@ -379,52 +346,6 @@ class EditPermissionMixinTest(TestCase):
 
         request = self.factory.get("/")
         request.user = self.owner
-
-        view = TestView.as_view()
-        with self.assertRaises(PermissionDenied):
-            view(request, pk=self.character.pk)
-
-
-class SpendXPPermissionMixinTest(TestCase):
-    """Tests for SpendXPPermissionMixin."""
-
-    def setUp(self):
-        """Set up test data."""
-        self.factory = RequestFactory()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="testpass123"
-        )
-        self.stranger = User.objects.create_user(
-            username="stranger", email="stranger@test.com", password="testpass123"
-        )
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.character = Character.objects.create(
-            name="Test Character", owner=self.owner, chronicle=self.chronicle, status="App"
-        )
-
-    def test_owner_can_spend_xp(self):
-        """Test that owner can spend XP on approved character."""
-
-        class TestView(SpendXPPermissionMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = self.owner
-
-        view = TestView.as_view()
-        response = view(request, pk=self.character.pk)
-        self.assertEqual(response.status_code, 200)
-
-    def test_stranger_cannot_spend_xp(self):
-        """Test that stranger cannot spend XP (raises 403)."""
-
-        class TestView(SpendXPPermissionMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = self.stranger
 
         view = TestView.as_view()
         with self.assertRaises(PermissionDenied):
@@ -947,97 +868,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class STRequiredMixinTest(TestCase):
-    """Tests for STRequiredMixin."""
-
-    def setUp(self):
-        """Set up test data."""
-        self.factory = RequestFactory()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="testpass123"
-        )
-        self.head_st = User.objects.create_user(
-            username="head_st", email="head_st@test.com", password="testpass123"
-        )
-        self.other = User.objects.create_user(
-            username="other", email="other@test.com", password="testpass123"
-        )
-        self.admin = User.objects.create_user(
-            username="admin",
-            email="admin@test.com",
-            password="testpass123",
-            is_staff=True,
-            is_superuser=True,
-        )
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.head_st)
-        self.character = Character.objects.create(
-            name="Test Character", owner=self.owner, chronicle=self.chronicle, status="App"
-        )
-
-    def test_head_st_can_access(self):
-        """Test that head ST can access."""
-
-        class TestView(STRequiredMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = self.head_st
-
-        view = TestView.as_view()
-        response = view(request, pk=self.character.pk)
-        self.assertEqual(response.status_code, 200)
-
-    def test_admin_can_access(self):
-        """Test that admin can access."""
-
-        class TestView(STRequiredMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = self.admin
-
-        view = TestView.as_view()
-        response = view(request, pk=self.character.pk)
-        self.assertEqual(response.status_code, 200)
-
-    def test_non_st_cannot_access(self):
-        """Test that non-ST cannot access (raises 403)."""
-
-        class TestView(STRequiredMixin, DetailView):
-            model = Character
-            template_name = "test.html"
-
-        request = self.factory.get("/")
-        request.user = self.other
-
-        view = TestView.as_view()
-        with self.assertRaises(PermissionDenied):
-            view(request, pk=self.character.pk)
-
-    def test_head_st_via_head_storytellers_m2m(self):
-        """Test head ST detection via head_storytellers M2M field."""
-        chronicle2 = Chronicle.objects.create(name="Chronicle 2")
-        # Mock head_storytellers if it exists
-        if hasattr(chronicle2, "head_storytellers"):
-            chronicle2.head_storytellers.add(self.head_st)
-            char2 = Character.objects.create(
-                name="Char 2", owner=self.owner, chronicle=chronicle2, status="App"
-            )
-
-            class TestView(STRequiredMixin, DetailView):
-                model = Character
-                template_name = "test.html"
-
-            request = self.factory.get("/")
-            request.user = self.head_st
-
-            view = TestView.as_view()
-            response = view(request, pk=char2.pk)
-            self.assertEqual(response.status_code, 200)
-
-
 class StorytellerRequiredMixinTest(TestCase):
     """Tests for StorytellerRequiredMixin."""
 
@@ -1465,78 +1295,6 @@ class MessageMixinTest(TestCase):
         """Test that MessageMixin has both success and error handling."""
         self.assertTrue(issubclass(MessageMixin, SuccessMessageMixin))
         self.assertTrue(issubclass(MessageMixin, ErrorMessageMixin))
-
-
-class DeleteMessageMixinTest(TestCase):
-    """Tests for DeleteMessageMixin."""
-
-    def setUp(self):
-        """Set up test data."""
-        self.factory = RequestFactory()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="testpass123"
-        )
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.character = Character.objects.create(
-            name="Test Character", owner=self.user, chronicle=self.chronicle, status="App"
-        )
-
-    def _add_messages_middleware(self, request):
-        """Add messages middleware to request."""
-        request.session = "session"
-        messages = FallbackStorage(request)
-        request._messages = messages
-        return request
-
-    def test_delete_shows_success_message(self):
-        """Test that delete shows success message."""
-
-        class TestView(DeleteMessageMixin, DeleteView):
-            model = Character
-            success_message = "{name} deleted!"
-            success_url = "/"
-            template_name = "test.html"
-
-        request = self._add_messages_middleware(self.factory.post("/"))
-        request.user = self.user
-
-        view = TestView()
-        view.request = request
-        view.kwargs = {"pk": self.character.pk}
-
-        # Call delete method directly
-        view.object = view.get_object()
-        view.delete(request)
-
-        # Check that success message was added
-        messages = list(get_messages(request))
-        self.assertEqual(len(messages), 1)
-        self.assertIn("Test Character", str(messages[0]))
-
-    def test_delete_message_with_format_error(self):
-        """Test that delete handles format errors gracefully."""
-
-        class TestView(DeleteMessageMixin, DeleteView):
-            model = Character
-            success_message = "{invalid_field} deleted!"
-            success_url = "/"
-            template_name = "test.html"
-
-        request = self._add_messages_middleware(self.factory.post("/"))
-        request.user = self.user
-
-        view = TestView()
-        view.request = request
-        view.kwargs = {"pk": self.character.pk}
-
-        # Should not crash
-        view.object = view.get_object()
-        view.delete(request)
-
-        # Check that fallback message was added
-        messages = list(get_messages(request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), "{invalid_field} deleted!")
 
 
 class ApprovalMixinTest(TestCase):

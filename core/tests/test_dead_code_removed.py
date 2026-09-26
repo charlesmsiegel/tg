@@ -345,3 +345,42 @@ class D5RemovedTests(SimpleTestCase):
                 source = (base_dir / relative_path).read_text(encoding="utf-8")
                 self.assertIsNone(re.search(r"{%\s*load\b[^%]*\b" + library + r"\b", source))
                 get_template(template_name)
+
+
+class D6RemovedTests(SimpleTestCase):
+    """Unit D6: dead mixins, decorators, middleware, cache helpers and utilities stay deleted."""
+
+    @staticmethod
+    def _module_exists(dotted_path):
+        """Return True when ``dotted_path`` can be imported (parents included)."""
+        import importlib.util
+
+        try:
+            return importlib.util.find_spec(dotted_path) is not None
+        except ModuleNotFoundError:
+            return False
+
+    def test_dead_core_mixins_are_gone(self):
+        import core.mixins
+
+        for name in (
+            "STRequiredMixin",
+            "SpendXPPermissionMixin",
+            "DeleteMessageMixin",
+            "FreebieApprovalMixin",
+        ):
+            with self.subTest(name=name):
+                self.assertFalse(hasattr(core.mixins, name))
+        for name in ("SpendFreebiesPermissionMixin", "XPApprovalMixin", "MessageMixin"):
+            with self.subTest(kept=name):
+                self.assertTrue(hasattr(core.mixins, name))
+
+    def test_character_template_st_mixin_is_gone(self):
+        from core.views import character_template
+
+        self.assertFalse(hasattr(character_template, "STRequiredMixin"))
+
+    def test_kept_step6_context_processor_survives(self):
+        from core import context_processors
+
+        self.assertTrue(callable(context_processors.permissions))
