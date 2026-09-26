@@ -64,6 +64,16 @@ urls = [
         name="fomor_full",
     ),
     path(
+        "drone/<pk>/",
+        views.werewolf.DroneCharacterCreationView.as_view(),
+        name="drone",
+    ),
+    path(
+        "drone/full/<pk>/",
+        views.werewolf.DroneUpdateView.as_view(),
+        name="drone_full",
+    ),
+    path(
         "werewolf/full/<pk>/",
         views.werewolf.WerewolfUpdateView.as_view(),
         name="werewolf_full",
