@@ -198,3 +198,16 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
                     module = importlib.import_module(f"{app}.urls.{module_name}")
                     self.assertTrue(hasattr(module, "urls"))
                     self.assertIn(namespace, mounted)
+
+    def test_object_ajax_policy_removed(self):
+        from core.route_policy_manifest import POLICIES
+
+        self.assertNotIn("OBJECT_AJAX", POLICIES)
+        for relative in (
+            "core/access_policy.py",
+            "scripts/build_route_policy_manifest.py",
+            "scripts/inventory_authorization_routes.py",
+        ):
+            with self.subTest(file=relative):
+                source = (REPO_ROOT / relative).read_text(encoding="utf-8")
+                self.assertNotIn("OBJECT_AJAX", source)

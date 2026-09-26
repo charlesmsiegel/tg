@@ -177,7 +177,6 @@ def main():
             "CHARGEN_STEP",
             "LOGIN",
             "OBJECT_ACTION",
-            "OBJECT_AJAX",
             "OBJECT_CREATE",
             "OBJECT_WRITE",
             "STAFF_WRITE",
