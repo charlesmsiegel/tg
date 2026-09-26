@@ -29,6 +29,7 @@ from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.registry import registry
 from locations.services.chantry_points import apply_type_grants
 
 # Every field of the direct (ST) forms; chantry/form.html renders exactly these.
@@ -72,9 +73,7 @@ def direct_create_chronicles(user):
     ).distinct()
 
 
-class ChantryDetailView(ViewPermissionMixin, DetailView):
-    model = Chantry
-    template_name = "locations/mage/chantry/detail.html"
+class _ChantryDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -90,10 +89,10 @@ class ChantryDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class ChantryListView(ListView):
-    model = Chantry
-    ordering = ["name"]
-    template_name = "locations/mage/chantry/list.html"
+ChantryDetailView = registry.view("locations.Chantry", "detail")
+
+
+class _ChantryListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,14 +100,11 @@ class ChantryListView(ListView):
         return context
 
 
-class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
-    """All-fields create form for Mage STs of the chosen chronicle, and staff."""
+ChantryListView = registry.view("locations.Chantry", "list")
 
-    model = Chantry
-    fields = ["chronicle", *DIRECT_FORM_FIELDS]
-    template_name = "locations/mage/chantry/form.html"
-    success_message = "Chantry '{name}' created successfully!"
-    error_message = "Failed to create chantry. Please correct the errors below."
+
+class _ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    """All-fields create form for Mage STs of the chosen chronicle, and staff."""
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated and not direct_create_chronicles(request.user).exists():
@@ -137,14 +133,11 @@ class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return response
 
 
-class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    """Direct edit form; the route policy (OBJECT_ST_WRITE) limits it to scoped STs and staff."""
+ChantryCreateView = registry.view("locations.Chantry", "create")
 
-    model = Chantry
-    fields = DIRECT_FORM_FIELDS
-    template_name = "locations/mage/chantry/form.html"
-    success_message = "Chantry '{name}' updated successfully!"
-    error_message = "Failed to update chantry. Please correct the errors below."
+
+class _ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+    """Direct edit form; the route policy (OBJECT_ST_WRITE) limits it to scoped STs and staff."""
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -157,6 +150,9 @@ class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         if "chantry_type" in form.changed_data:
             apply_type_grants(self.object)
         return response
+
+
+ChantryUpdateView = registry.view("locations.Chantry", "update")
 
 
 class LoadExamplesView(View):

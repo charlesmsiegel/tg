@@ -1,0 +1,4 @@
+{% extends "core/base.html" %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="tg-card">{% csrf_token %}{{ form.as_p }}<button type="submit" class="tg-btn">Save</button></form>
+{% endblock %}

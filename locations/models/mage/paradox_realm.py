@@ -1,7 +1,6 @@
 import random
 
 from django.db import models
-from django.urls import reverse
 
 from locations.models.mage.realm import HorizonRealm
 
@@ -118,13 +117,6 @@ class ParadoxRealm(HorizonRealm):
     class Meta:
         verbose_name = "Paradox Realm"
         verbose_name_plural = "Paradox Realms"
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:paradox_realm", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:paradox_realm")
 
     def get_obstacles(self):
         """Get all obstacles for this realm"""

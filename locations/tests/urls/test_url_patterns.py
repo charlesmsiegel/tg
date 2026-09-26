@@ -64,16 +64,9 @@ class LocationsGamelineUrlsTest(TestCase):
 
     def test_all_gamelines_have_url_patterns(self):
         """Test that all gamelines in URL_PATTERNS create URL entries."""
-        for url_path, module_name, namespace in GameLine.URL_PATTERNS:
-            # Test that the gameline path exists in urlpatterns
-            expected_prefix = f"/locations/{url_path}/"
-            found = False
-            for pattern in locations_urls.urlpatterns:
-                if hasattr(pattern, "pattern") and str(pattern.pattern).startswith(url_path):
-                    found = True
-                    break
-            # Note: found may be False if module doesn't exist (caught by exception)
-            # This is expected behavior
+        actual = {str(pattern.pattern) for pattern in locations_urls.urlpatterns}
+        for url_path, _, _ in GameLine.URL_PATTERNS:
+            self.assertIn(f"{url_path}/", actual)
 
 
 class LocationsCreateUrlsTest(TestCase):
@@ -81,7 +74,7 @@ class LocationsCreateUrlsTest(TestCase):
 
     def test_create_namespace_exists(self):
         """Test that create namespace is accessible."""
-        resolver = resolve("/locations/create/")
+        resolver = resolve(reverse("locations:create:location"))
         self.assertIsNotNone(resolver)
 
 
@@ -103,5 +96,5 @@ class LocationsListUrlsTest(TestCase):
 
     def test_list_namespace_exists(self):
         """Test that list namespace is accessible."""
-        resolver = resolve("/locations/list/")
+        resolver = resolve(reverse("locations:list:city"))
         self.assertIsNotNone(resolver)

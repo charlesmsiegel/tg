@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -91,13 +90,3 @@ class Nihil(LocationModel):
 
     def __str__(self):
         return f"{self.name} (Nihil)"
-
-    def get_absolute_url(self):
-        return reverse("locations:wraith:nihil", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("locations:wraith:update:nihil", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:wraith:create:nihil")

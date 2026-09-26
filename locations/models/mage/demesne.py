@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 from locations.models.mage.reality_zone import RealityZone
@@ -31,10 +30,3 @@ class Demesne(LocationModel):
     class Meta:
         verbose_name = "Demesne"
         verbose_name_plural = "Demesnes"
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:demesne", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:demesne")

@@ -1,41 +1,6 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from items.registry import registry
 
-from core.mixins import MessageMixin
-from items.models.core import Medium
-
-
-class MediumDetailView(DetailView):
-    model = Medium
-    template_name = "items/core/medium/detail.html"
-
-
-class MediumCreateView(MessageMixin, CreateView):
-    model = Medium
-    fields = ["name", "length_modifier_type", "length_modifier"]
-    template_name = "items/core/medium/form.html"
-    success_message = "Medium '{name}' created successfully!"
-    error_message = "Failed to create Medium. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here", "rows": 1})
-        return form
-
-
-class MediumUpdateView(MessageMixin, UpdateView):
-    model = Medium
-    fields = ["name", "length_modifier_type", "length_modifier"]
-    template_name = "items/core/medium/form.html"
-    success_message = "Medium '{name}' updated successfully!"
-    error_message = "Failed to update Medium. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here", "rows": 1})
-        return form
-
-
-class MediumListView(ListView):
-    model = Medium
-    ordering = ["name"]
-    template_name = "items/core/medium/list.html"
+MediumDetailView = registry.view("items.Medium", "detail")
+MediumListView = registry.view("items.Medium", "list")
+MediumCreateView = registry.view("items.Medium", "create")
+MediumUpdateView = registry.view("items.Medium", "update")

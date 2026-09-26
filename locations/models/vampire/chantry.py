@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -104,13 +103,6 @@ class TremereChantry(LocationModel):
     class Meta:
         verbose_name = "Tremere Chantry"
         verbose_name_plural = "Tremere Chantries"
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:chantry", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:chantry")
 
     def calculate_total_rating(self):
         """Calculate total Chantry value."""

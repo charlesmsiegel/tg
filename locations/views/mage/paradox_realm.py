@@ -1,17 +1,15 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.generic.edit import FormView
 
 from core.mixins import EditPermissionMixin, ViewPermissionMixin, prepare_created_object
-from locations.forms.mage.paradox_realm import ParadoxRealmForm
 from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
+from locations.registry import registry
 
 
-class ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
-    model = ParadoxRealm
-    template_name = "locations/mage/paradox_realm/detail.html"
+class _ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -20,17 +18,10 @@ class ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class ParadoxRealmListView(ListView):
-    model = ParadoxRealm
-    ordering = ["name"]
-    template_name = "locations/mage/paradox_realm/list.html"
+ParadoxRealmDetailView = registry.view("locations.ParadoxRealm", "detail")
 
 
-class ParadoxRealmCreateView(LoginRequiredMixin, FormView):
-    template_name = "locations/mage/paradox_realm/form.html"
-    form_class = ParadoxRealmForm
-    success_message = "Paradox Realm '{name}' created successfully!"
-    error_message = "Failed to create paradox realm. Please correct the errors below."
+class _ParadoxRealmCreateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
@@ -41,12 +32,10 @@ class ParadoxRealmCreateView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class ParadoxRealmUpdateView(EditPermissionMixin, FormView):
-    model = ParadoxRealm
-    template_name = "locations/mage/paradox_realm/form.html"
-    form_class = ParadoxRealmForm
-    success_message = "Paradox Realm '{name}' updated successfully!"
-    error_message = "Failed to update paradox realm. Please correct the errors below."
+ParadoxRealmCreateView = registry.view("locations.ParadoxRealm", "create")
+
+
+class _ParadoxRealmUpdateView(EditPermissionMixin, FormView):
 
     def get_object(self):
         return ParadoxRealm.objects.get(pk=self.kwargs["pk"])
@@ -62,3 +51,9 @@ class ParadoxRealmUpdateView(EditPermissionMixin, FormView):
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+ParadoxRealmUpdateView = registry.view("locations.ParadoxRealm", "update")
+
+
+ParadoxRealmListView = registry.view("locations.ParadoxRealm", "list")

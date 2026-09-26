@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from core.models import BaseResonanceRating
 from items.models.core import ItemModel
@@ -59,13 +58,6 @@ class Wonder(ItemModel):
                 violation_error_message="Wonder quintessence max must be between 0 and 100",
             ),
         ]
-
-    def get_update_url(self):
-        return reverse("items:mage:update:wonder", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mage:create:wonder")
 
     def set_rank(self, rank):
         self.rank = rank

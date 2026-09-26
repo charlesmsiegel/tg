@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -152,16 +151,6 @@ class Dross(ItemModel):
                 violation_error_message="Glamour value must be between 1 and 10",
             ),
         ]
-
-    def get_absolute_url(self):
-        return reverse("items:changeling:dross", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("items:changeling:update:dross", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:changeling:create:dross")
 
     def __str__(self):
         if self.name:

@@ -4,7 +4,6 @@ import random
 
 from django.db import models
 from django.db.models import Q
-from django.urls import reverse
 
 from characters.models.core.ability_block import Ability
 from characters.models.mage.effect import Effect
@@ -53,13 +52,6 @@ class Grimoire(Wonder):
     class Meta:
         verbose_name = "Grimoire"
         verbose_name_plural = "Grimoires"
-
-    def get_update_url(self):
-        return reverse("items:mage:update:grimoire", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mage:create:grimoire")
 
     def set_abilities(self, abilities):
         for ability in abilities:

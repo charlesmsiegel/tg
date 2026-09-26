@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -188,16 +187,6 @@ class Holding(LocationModel):
                 violation_error_message="Freehold count must be between 0 and 50",
             ),
         ]
-
-    def get_absolute_url(self):
-        return reverse("locations:changeling:holding", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:changeling:update:holding", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:changeling:create:holding")
 
     def __str__(self):
         if self.ruler_name:

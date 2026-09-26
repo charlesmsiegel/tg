@@ -5,9 +5,11 @@ from django.shortcuts import redirect, render
 from django.views import View
 
 from core.create_redirects import resolve_object_type_url
+from core.model_registry import get_registry
 from core.utils import get_gameline_name
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
+from core.views.registry import RegistryDetailView
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
 from items.models.core.item import ItemModel
@@ -42,54 +44,10 @@ from .thrownweapon import (
 from .weapon import WeaponCreateView, WeaponDetailView, WeaponListView, WeaponUpdateView
 
 
-class GenericItemDetailView(DictView):
+class GenericItemDetailView(RegistryDetailView):
+    registry_app = "items"
     model_class = ItemModel
-    protected_object = True
     public_view_class = PublicObjectDetailView
-    key_property = "type"
-    default_redirect = "items:index"
-
-    @property
-    def view_mapping(self):
-        from items.views import changeling, demon, hunter, mummy, vampire, wraith
-
-        return {
-            # Core
-            "item": ItemDetailView,
-            "weapon": WeaponDetailView,
-            "melee_weapon": MeleeWeaponDetailView,
-            "thrown_weapon": ThrownWeaponDetailView,
-            "ranged_weapon": RangedWeaponDetailView,
-            # Mage
-            "wonder": mage.WonderDetailView,
-            "charm": mage.CharmDetailView,
-            "artifact": mage.ArtifactDetailView,
-            "talisman": mage.TalismanDetailView,
-            "grimoire": mage.GrimoireDetailView,
-            "sorcerer_artifact": mage.SorcererArtifactDetailView,
-            "periapt": mage.PeriaptDetailView,
-            # Werewolf
-            "fetish": werewolf.FetishDetailView,
-            "talen": werewolf.TalenDetailView,
-            # Vampire
-            "vampire_artifact": vampire.VampireArtifactDetailView,
-            "bloodstone": vampire.BloodstoneDetailView,
-            # Wraith
-            "relic": wraith.WraithRelicDetailView,
-            "wraith_artifact": wraith.WraithArtifactDetailView,
-            # Changeling
-            "treasure": changeling.TreasureDetailView,
-            "dross": changeling.DrossDetailView,
-            # Demon
-            "demon_relic": demon.RelicDetailView,
-            # Hunter
-            "hunter_relic": hunter.HunterRelicDetailView,
-            "hunter_gear": hunter.HunterGearDetailView,
-            # Mummy
-            "mummy_relic": mummy.MummyRelicDetailView,
-            "vessel": mummy.VesselDetailView,
-            "ushabti": mummy.UshabtiDetailView,
-        }
 
 
 class ItemIndexView(View):
@@ -127,8 +85,7 @@ class ItemIndexView(View):
         )
 
     def get_context(self):
-        game_items = ObjectType.objects.filter(type="obj")
-        game_items_types = [x.name for x in game_items]
+        game_items = get_registry("items").menu(self.request.user)
         context = {
             "objects": game_items,
         }
@@ -139,14 +96,7 @@ class ItemIndexView(View):
                 c = ItemModel.objects.for_chronicle(chron).order_by("name")
             else:
                 c = ItemModel.objects.filter(chronicle=chron).order_by("name")
-            items = [x for x in c if x.type in game_items_types]
-
-            # Include polymorphic_ctype for subclass-specific method calls in templates
-            c = (
-                ItemModel.objects.filter(id__in=[x.id for x in items], chronicle=chron)
-                .with_polymorphic_ctype()
-                .order_by("name")
-            )
+            c = c.with_polymorphic_ctype()
             chron_dict[chron] = c
 
         context["chron_dict"] = chron_dict

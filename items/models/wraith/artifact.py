@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -40,16 +39,6 @@ class WraithArtifact(ItemModel):
     class Meta:
         verbose_name = "Artifact"
         verbose_name_plural = "Artifacts"
-
-    def get_absolute_url(self):
-        return reverse("items:wraith:artifact", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("items:wraith:update:artifact", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:wraith:create:artifact")
 
     def set_level(self, level):
         self.level = level

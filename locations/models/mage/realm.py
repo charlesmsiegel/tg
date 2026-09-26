@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from characters.models.core import MeritFlaw
 from characters.models.core.merit_flaw_block import MeritFlawBlock
@@ -189,13 +188,6 @@ class HorizonRealm(MeritFlawBlock, LocationModel):
                 violation_error_message="Arcane must be between 0 and 5",
             ),
         ]
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:horizon_realm", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:horizon_realm")
 
     # Rank and Build Points
     RANK_BUILD_POINTS = {

@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -27,16 +26,6 @@ class WraithRelic(ItemModel):
     class Meta:
         verbose_name = "Relic"
         verbose_name_plural = "Relics"
-
-    def get_absolute_url(self):
-        return reverse("items:wraith:relic", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("items:wraith:update:relic", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:wraith:create:relic")
 
     def set_level(self, level):
         self.level = level

@@ -1,16 +1,3 @@
-from django.urls import path
+from items.registry import registry
 
-from items import views
-
-urls = [
-    path(
-        "relic/<pk>/",
-        views.wraith.WraithRelicDetailView.as_view(),
-        name="relic",
-    ),
-    path(
-        "artifact/<pk>/",
-        views.wraith.WraithArtifactDetailView.as_view(),
-        name="artifact",
-    ),
-]
+urls = registry.urls("wraith", "detail")

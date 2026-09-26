@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from core.models import BaseMeritFlawRating
 from locations.models.core.location import LocationModel
@@ -179,16 +178,6 @@ class Tomb(LocationModel):
     # ========================================
     # URLS
     # ========================================
-
-    def get_absolute_url(self):
-        return reverse("locations:mummy:tomb", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:mummy:update:tomb", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mummy:create:tomb")
 
     class Meta:
         verbose_name = "Tomb"

@@ -5,21 +5,15 @@ from locations.models.mage.reality_zone import RealityZone
 
 
 class TestRealityZoneDetailView(TestCase):
-    """Test RealityZone detail view.
-
-    Note: RealityZone is a simple model (not LocationModel) without owner/status fields.
-    ViewPermissionMixin on this model returns 404 for all users since permission checking
-    fails on models without the expected fields.
-    """
+    """RealityZone is publicly readable reference data, without owner/status fields."""
 
     def setUp(self) -> None:
         self.reality_zone = RealityZone.objects.create(name="Test RealityZone")
         self.url = self.reality_zone.get_absolute_url()
 
     def test_reality_zone_detail_view_status_code(self):
-        # ViewPermissionMixin returns 404 because RealityZone lacks owner/status
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, self.reality_zone.name)
 
 
 class TestRealityZoneCreateView(TestCase):

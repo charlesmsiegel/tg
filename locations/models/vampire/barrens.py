@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -115,13 +114,6 @@ class Barrens(LocationModel):
     class Meta:
         verbose_name = "Barrens"
         verbose_name_plural = "Barrens"
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:barrens", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:barrens")
 
     def get_control_status(self):
         """Return a description of who controls this territory."""

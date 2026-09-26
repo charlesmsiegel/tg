@@ -11,17 +11,10 @@ from .core import create, detail, index, update
 urlpatterns = []
 
 for url_path, module_name, namespace in GameLine.URL_PATTERNS:
-    try:
-        gameline_module = import_module(f".{module_name}", package="items.urls")
-        urlpatterns.append(
-            path(
-                f"{url_path}/",
-                include((gameline_module.urls, module_name), namespace=namespace),
-            )
-        )
-    except (ImportError, AttributeError):
-        # Skip if module doesn't exist or doesn't have urls attribute
-        pass
+    gameline_module = import_module(f".{module_name}", package="items.urls")
+    urlpatterns.append(
+        path(f"{url_path}/", include((gameline_module.urls, module_name), namespace=namespace))
+    )
 
 # Add core URL patterns
 urlpatterns.extend(

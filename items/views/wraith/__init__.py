@@ -1,80 +1,12 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-
-from core.mixins import MessageMixin
-from items.models.wraith import WraithArtifact, WraithRelic
-
-
 # WraithRelic Views
-class WraithRelicDetailView(DetailView):
-    model = WraithRelic
-    template_name = "items/wraith/relic/detail.html"
-
-
-class WraithRelicCreateView(MessageMixin, CreateView):
-    model = WraithRelic
-    fields = [
-        "name",
-        "description",
-        "level",
-        "rarity",
-        "pathos_cost",
-    ]
-    template_name = "items/wraith/relic/form.html"
-
-
-class WraithRelicUpdateView(UpdateView):
-    model = WraithRelic
-    fields = [
-        "name",
-        "description",
-        "level",
-        "rarity",
-        "pathos_cost",
-    ]
-    template_name = "items/wraith/relic/form.html"
-
-
-class WraithRelicListView(ListView):
-    model = WraithRelic
-    ordering = ["name"]
-    template_name = "items/wraith/relic/list.html"
-
-
 # WraithArtifact Views
-class WraithArtifactDetailView(DetailView):
-    model = WraithArtifact
-    template_name = "items/wraith/artifact/detail.html"
+from items.registry import registry
 
-
-class WraithArtifactCreateView(MessageMixin, CreateView):
-    model = WraithArtifact
-    fields = [
-        "name",
-        "description",
-        "level",
-        "artifact_type",
-        "material",
-        "corpus",
-        "pathos_cost",
-    ]
-    template_name = "items/wraith/artifact/form.html"
-
-
-class WraithArtifactUpdateView(UpdateView):
-    model = WraithArtifact
-    fields = [
-        "name",
-        "description",
-        "level",
-        "artifact_type",
-        "material",
-        "corpus",
-        "pathos_cost",
-    ]
-    template_name = "items/wraith/artifact/form.html"
-
-
-class WraithArtifactListView(ListView):
-    model = WraithArtifact
-    ordering = ["name"]
-    template_name = "items/wraith/artifact/list.html"
+WraithRelicDetailView = registry.view("items.WraithRelic", "detail")
+WraithRelicListView = registry.view("items.WraithRelic", "list")
+WraithRelicCreateView = registry.view("items.WraithRelic", "create")
+WraithRelicUpdateView = registry.view("items.WraithRelic", "update")
+WraithArtifactDetailView = registry.view("items.WraithArtifact", "detail")
+WraithArtifactListView = registry.view("items.WraithArtifact", "list")
+WraithArtifactCreateView = registry.view("items.WraithArtifact", "create")
+WraithArtifactUpdateView = registry.view("items.WraithArtifact", "update")

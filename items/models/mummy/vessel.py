@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 
 from items.models.core.item import ItemModel
 
@@ -175,16 +174,6 @@ class Vessel(ItemModel):
     # ========================================
     # URLS
     # ========================================
-
-    def get_absolute_url(self):
-        return reverse("items:mummy:vessel", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("items:mummy:update:vessel", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:mummy:create:vessel")
 
     class Meta:
         verbose_name = "Vessel"

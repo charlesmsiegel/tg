@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 
@@ -33,16 +32,6 @@ class UndergroundSanctuary(LocationModel):
         validators=[MinValueValidator(0), MaxValueValidator(5)],
         help_text="How well hidden is this sanctuary?",
     )
-
-    def get_absolute_url(self):
-        return reverse("locations:mummy:sanctuary", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("locations:mummy:update:sanctuary", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mummy:create:sanctuary")
 
     class Meta:
         verbose_name = "Underground Sanctuary"

@@ -1,7 +1,3 @@
-from django.urls import path
+from locations.registry import registry
 
-from locations import views
-
-urls = [
-    path("city/", views.core.CityListView.as_view(), name="city"),
-]
+urls = registry.urls("core", "list")

@@ -1,24 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin
 from core.permissions import PermissionManager
 from items.forms.vampire import LimitedVampireArtifactEditForm, VampireArtifactForm
-from items.models.vampire import Bloodstone, VampireArtifact
-
 
 # VampireArtifact Views
-class VampireArtifactDetailView(ViewPermissionMixin, DetailView):
-    model = VampireArtifact
-    template_name = "items/vampire/artifact/detail.html"
+from items.registry import registry
 
 
-class VampireArtifactCreateView(LoginRequiredMixin, MessageMixin, CreateView):
-    model = VampireArtifact
-    form_class = VampireArtifactForm
-    template_name = "items/vampire/artifact/form.html"
-    success_message = "Vampire Artifact '{name}' created successfully!"
-    error_message = "Failed to create Vampire Artifact. Please correct the errors below."
+class _VampireArtifactCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
     def form_valid(self, form):
         # Set owner to current user if not already set
@@ -27,12 +18,10 @@ class VampireArtifactCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class VampireArtifactUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = VampireArtifact
-    form_class = VampireArtifactForm
-    template_name = "items/vampire/artifact/form.html"
-    success_message = "Vampire Artifact '{name}' updated successfully!"
-    error_message = "Failed to update Vampire Artifact. Please correct the errors below."
+VampireArtifactCreateView = registry.view("items.VampireArtifact", "create")
+
+
+class _VampireArtifactUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
 
     def get_form_class(self):
         """
@@ -53,47 +42,15 @@ class VampireArtifactUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
             return LimitedVampireArtifactEditForm
 
 
-class VampireArtifactListView(ListView):
-    model = VampireArtifact
-    ordering = ["name"]
-    template_name = "items/vampire/artifact/list.html"
+VampireArtifactUpdateView = registry.view("items.VampireArtifact", "update")
 
 
 # Bloodstone Views
-class BloodstoneDetailView(DetailView):
-    model = Bloodstone
-    template_name = "items/vampire/bloodstone/detail.html"
 
 
-class BloodstoneCreateView(MessageMixin, CreateView):
-    model = Bloodstone
-    fields = [
-        "name",
-        "description",
-        "blood_stored",
-        "max_blood",
-        "is_active",
-        "created_by_generation",
-        "stone_type",
-    ]
-    template_name = "items/vampire/bloodstone/form.html"
-
-
-class BloodstoneUpdateView(UpdateView):
-    model = Bloodstone
-    fields = [
-        "name",
-        "description",
-        "blood_stored",
-        "max_blood",
-        "is_active",
-        "created_by_generation",
-        "stone_type",
-    ]
-    template_name = "items/vampire/bloodstone/form.html"
-
-
-class BloodstoneListView(ListView):
-    model = Bloodstone
-    ordering = ["name"]
-    template_name = "items/vampire/bloodstone/list.html"
+VampireArtifactDetailView = registry.view("items.VampireArtifact", "detail")
+VampireArtifactListView = registry.view("items.VampireArtifact", "list")
+BloodstoneDetailView = registry.view("items.Bloodstone", "detail")
+BloodstoneListView = registry.view("items.Bloodstone", "list")
+BloodstoneCreateView = registry.view("items.Bloodstone", "create")
+BloodstoneUpdateView = registry.view("items.Bloodstone", "update")

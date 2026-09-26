@@ -14,6 +14,13 @@ def resolve_object_type_url(category, type_name, action="create", gameline=None)
     if category not in APP_NAMES or action not in {"create", "list"} or not type_name:
         raise Http404("Unknown object type")
 
+    if category in {"obj", "loc"}:
+        from core.model_registry import get_registry
+
+        registry = get_registry(APP_NAMES[category])
+        entry = registry.resolve(type_name, gameline)
+        return registry.selection_url(entry, action)
+
     queryset = ObjectType.objects.filter(type=category, name=type_name)
     if gameline is not None:
         queryset = queryset.filter(gameline=gameline)

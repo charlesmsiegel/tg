@@ -1,7 +1,7 @@
 """Explicit, reviewed route policies. Missing entries deny in production."""
 
 POLICIES = {
-    'ACCOUNT': frozenset("""
+    "ACCOUNT": frozenset("""
 accounts.views.FreebieAwardView
 accounts.views.ImageApprovalView
 accounts.views.MarkSceneReadView
@@ -14,7 +14,7 @@ accounts.views.SceneXPAwardView
 accounts.views.WeeklyXPApprovalView
 accounts.views.WeeklyXPRequestView
     """.split()),
-    'CHARGEN_STEP': frozenset("""
+    "CHARGEN_STEP": frozenset("""
 characters.views.changeling.changeling.ChangelingAbilityView
 characters.views.changeling.changeling.ChangelingAlliesView
 characters.views.changeling.changeling.ChangelingArtsRealmsView
@@ -256,7 +256,7 @@ locations.views.mage.chantry.ChantryNodeView
 locations.views.mage.chantry.ChantryPointsView
 locations.views.mage.chantry.ChantrySanctumView
     """.split()),
-    'GAME': frozenset("""
+    "GAME": frozenset("""
 game.views.ChronicleCreateView
 game.views.ChronicleDetailView
 game.views.ChronicleListView
@@ -299,7 +299,7 @@ game.views.XPSpendingRequestDetailView
 game.views.XPSpendingRequestListView
 game.views.XPSpendingRequestUpdateView
     """.split()),
-    'LOGIN': frozenset("""
+    "LOGIN": frozenset("""
 characters.views.changeling.changeling.ChangelingBasicsView
 characters.views.changeling.ctdhuman.CtDHumanBasicsView
 characters.views.changeling.ctdhuman.CtDHumanTemplateSelectView
@@ -328,19 +328,11 @@ characters.views.wraith.wtohuman.WtOHumanBasicsView
 characters.views.wraith.wtohuman.WtOHumanTemplateSelectView
 core.views.character_template.CharacterTemplateImportView
 core.views.character_template.CharacterTemplateQuickNPCView
-items.views.mage.wonder.WonderCreateView
-locations.views.changeling.freehold.FreeholdCreateView
 locations.views.mage.chantry.LoadExamplesView
-locations.views.mage.demesne.DemesneCreateView
-locations.views.mage.library.LibraryCreateView
-locations.views.mage.node.NodeCreateView
-locations.views.mage.paradox_realm.ParadoxRealmCreateView
-locations.views.mage.sanctum.SanctumCreateView
     """.split()),
-    'OBJECT_ACTION': frozenset("""
-locations.views.mage.paradox_realm.ParadoxRealmUpdateView
+    "OBJECT_ACTION": frozenset("""
     """.split()),
-    'OBJECT_CREATE': frozenset("""
+    "OBJECT_CREATE": frozenset("""
 characters.views.changeling.autumn_person.AutumnPersonCreateView
 characters.views.changeling.chimera.ChimeraCreateView
 characters.views.changeling.inanimae.InanimaeCreateView
@@ -369,63 +361,10 @@ characters.views.werewolf.pack.PackCreateView
 characters.views.werewolf.spirit.SpiritCreateView
 characters.views.wraith.circle.CircleCreateView
 core.views.character_template.CharacterTemplateCreateView
-items.views.changeling.DrossCreateView
-items.views.changeling.TreasureCreateView
-items.views.core.item.ItemCreateView
-items.views.core.meleeweapon.MeleeWeaponCreateView
-items.views.core.rangedweapon.RangedWeaponCreateView
-items.views.core.thrownweapon.ThrownWeaponCreateView
-items.views.core.weapon.WeaponCreateView
-items.views.demon.relic.RelicCreateView
-items.views.hunter.gear.HunterGearCreateView
-items.views.hunter.relic.HunterRelicCreateView
-items.views.mage.artifact.ArtifactCreateView
-items.views.mage.charm.CharmCreateView
-items.views.mage.grimoire.GrimoireCreateView
-items.views.mage.periapt.PeriaptCreateView
-items.views.mage.sorcerer_artifact.SorcererArtifactCreateView
-items.views.mage.talisman.TalismanCreateView
-items.views.mummy.MummyRelicCreateView
-items.views.mummy.UshabtiCreateView
-items.views.mummy.VesselCreateView
-items.views.vampire.BloodstoneCreateView
-items.views.vampire.VampireArtifactCreateView
-items.views.werewolf.fetish.FetishCreateView
-items.views.werewolf.talen.TalenCreateView
-items.views.wraith.WraithArtifactCreateView
-items.views.wraith.WraithRelicCreateView
 locations.views.changeling.creation.FreeholdBasicsView
-locations.views.changeling.dream_realm.DreamRealmCreateView
-locations.views.changeling.holding.HoldingCreateView
-locations.views.changeling.trod.TrodCreateView
-locations.views.core.city.CityCreateView
-locations.views.core.location.LocationCreateView
-locations.views.demon.bastion.BastionCreateView
-locations.views.demon.reliquary.ReliquaryCreateView
-locations.views.hunter.huntingground.HuntingGroundCreateView
-locations.views.hunter.safehouse.SafehouseCreateView
 locations.views.mage.chantry.ChantryBasicsView
-locations.views.mage.chantry.ChantryCreateView
-locations.views.mage.realm.RealmCreateView
-locations.views.mage.sector.SectorCreateView
-locations.views.mummy.CultTempleCreateView
-locations.views.mummy.TombCreateView
-locations.views.mummy.UndergroundSanctuaryCreateView
-locations.views.vampire.BarrensCreateView
-locations.views.vampire.DomainCreateView
-locations.views.vampire.ElysiumCreateView
-locations.views.vampire.HavenCreateView
-locations.views.vampire.RackCreateView
-locations.views.vampire.TremereChantryCreateView
-locations.views.werewolf.caern.CaernCreateView
-locations.views.wraith.byway.BywayCreateView
-locations.views.wraith.citadel.CitadelCreateView
-locations.views.wraith.freehold.WraithFreeholdCreateView
-locations.views.wraith.haunt.HauntCreateView
-locations.views.wraith.necropolis.NecropolisCreateView
-locations.views.wraith.nihil.NihilCreateView
     """.split()),
-    'OBJECT_DETAIL': frozenset("""
+    "OBJECT_DETAIL": frozenset("""
 characters.views.changeling.autumn_person.AutumnPersonDetailView
 characters.views.changeling.chimera.ChimeraDetailView
 characters.views.changeling.changeling.ChangelingDetailView
@@ -469,68 +408,8 @@ characters.views.wraith.wraith.WraithDetailView
 characters.views.wraith.wtohuman.WtOHumanDetailView
 core.views.character_template.CharacterTemplateDetailView
 core.views.character_template.CharacterTemplateExportView
-items.views.changeling.DrossDetailView
-items.views.changeling.TreasureDetailView
-items.views.core.item.ItemDetailView
-items.views.core.meleeweapon.MeleeWeaponDetailView
-items.views.core.rangedweapon.RangedWeaponDetailView
-items.views.core.thrownweapon.ThrownWeaponDetailView
-items.views.core.weapon.WeaponDetailView
-items.views.demon.relic.RelicDetailView
-items.views.hunter.gear.HunterGearDetailView
-items.views.hunter.relic.HunterRelicDetailView
-items.views.mage.artifact.ArtifactDetailView
-items.views.mage.charm.CharmDetailView
-items.views.mage.grimoire.GrimoireDetailView
-items.views.mage.periapt.PeriaptDetailView
-items.views.mage.sorcerer_artifact.SorcererArtifactDetailView
-items.views.mage.talisman.TalismanDetailView
-items.views.mage.wonder.WonderDetailView
-items.views.mummy.MummyRelicDetailView
-items.views.mummy.UshabtiDetailView
-items.views.mummy.VesselDetailView
-items.views.vampire.BloodstoneDetailView
-items.views.vampire.VampireArtifactDetailView
-items.views.werewolf.fetish.FetishDetailView
-items.views.werewolf.talen.TalenDetailView
-items.views.wraith.WraithArtifactDetailView
-items.views.wraith.WraithRelicDetailView
-locations.views.changeling.dream_realm.DreamRealmDetailView
-locations.views.changeling.freehold.FreeholdDetailView
-locations.views.changeling.holding.HoldingDetailView
-locations.views.changeling.trod.TrodDetailView
-locations.views.core.city.CityDetailView
-locations.views.core.location.LocationDetailView
-locations.views.demon.bastion.BastionDetailView
-locations.views.demon.reliquary.ReliquaryDetailView
-locations.views.hunter.huntingground.HuntingGroundDetailView
-locations.views.hunter.safehouse.SafehouseDetailView
-locations.views.mage.chantry.ChantryDetailView
-locations.views.mage.demesne.DemesneDetailView
-locations.views.mage.library.LibraryDetailView
-locations.views.mage.node.NodeDetailView
-locations.views.mage.paradox_realm.ParadoxRealmDetailView
-locations.views.mage.realm.RealmDetailView
-locations.views.mage.sanctum.SanctumDetailView
-locations.views.mage.sector.SectorDetailView
-locations.views.mummy.CultTempleDetailView
-locations.views.mummy.TombDetailView
-locations.views.mummy.UndergroundSanctuaryDetailView
-locations.views.vampire.BarrensDetailView
-locations.views.vampire.DomainDetailView
-locations.views.vampire.ElysiumDetailView
-locations.views.vampire.HavenDetailView
-locations.views.vampire.RackDetailView
-locations.views.vampire.TremereChantryDetailView
-locations.views.werewolf.caern.CaernDetailView
-locations.views.wraith.byway.BywayDetailView
-locations.views.wraith.citadel.CitadelDetailView
-locations.views.wraith.freehold.WraithFreeholdDetailView
-locations.views.wraith.haunt.HauntDetailView
-locations.views.wraith.necropolis.NecropolisDetailView
-locations.views.wraith.nihil.NihilDetailView
     """.split()),
-    'OBJECT_LIST': frozenset("""
+    "OBJECT_LIST": frozenset("""
 characters.views.changeling.motley.MotleyListView
 characters.views.changeling.chimera.ChimeraListView
 characters.views.core.DeceasedCharacterIndex
@@ -552,69 +431,10 @@ characters.views.vampire.coterie.CoterieListView
 characters.views.werewolf.pack.PackListView
 characters.views.wraith.circle.CircleListView
 core.views.character_template.CharacterTemplateListView
-items.views.changeling.DrossListView
-items.views.changeling.TreasureListView
-items.views.core.meleeweapon.MeleeWeaponListView
-items.views.core.rangedweapon.RangedWeaponListView
-items.views.core.thrownweapon.ThrownWeaponListView
-items.views.core.weapon.WeaponListView
-items.views.demon.relic.RelicListView
-items.views.hunter.gear.HunterGearListView
-items.views.hunter.relic.HunterRelicListView
-items.views.mage.artifact.ArtifactListView
-items.views.mage.charm.CharmListView
-items.views.mage.grimoire.GrimoireListView
-items.views.mage.periapt.PeriaptListView
-items.views.mage.sorcerer_artifact.SorcererArtifactListView
-items.views.mage.talisman.TalismanListView
-items.views.mage.wonder.WonderListView
-items.views.mummy.MummyRelicListView
-items.views.mummy.UshabtiListView
-items.views.mummy.VesselListView
-items.views.vampire.BloodstoneListView
-items.views.vampire.VampireArtifactListView
-items.views.werewolf.fetish.FetishListView
-items.views.werewolf.talen.TalenListView
-items.views.wraith.WraithArtifactListView
-items.views.wraith.WraithRelicListView
-locations.views.changeling.dream_realm.DreamRealmListView
-locations.views.changeling.freehold.FreeholdListView
-locations.views.changeling.holding.HoldingListView
-locations.views.changeling.trod.TrodListView
-locations.views.core.city.CityListView
-locations.views.demon.bastion.BastionListView
-locations.views.demon.reliquary.ReliquaryListView
-locations.views.hunter.huntingground.HuntingGroundListView
-locations.views.hunter.safehouse.SafehouseListView
-locations.views.mage.chantry.ChantryListView
-locations.views.mage.demesne.DemesneListView
-locations.views.mage.library.LibraryListView
-locations.views.mage.node.NodeListView
-locations.views.mage.paradox_realm.ParadoxRealmListView
-locations.views.mage.realm.RealmListView
-locations.views.mage.sanctum.SanctumListView
-locations.views.mage.sector.SectorListView
-locations.views.mummy.CultTempleListView
-locations.views.mummy.TombListView
-locations.views.mummy.UndergroundSanctuaryListView
-locations.views.vampire.BarrensListView
-locations.views.vampire.DomainListView
-locations.views.vampire.ElysiumListView
-locations.views.vampire.HavenListView
-locations.views.vampire.RackListView
-locations.views.vampire.TremereChantryListView
-locations.views.werewolf.caern.CaernListView
-locations.views.wraith.byway.BywayListView
-locations.views.wraith.citadel.CitadelListView
-locations.views.wraith.freehold.WraithFreeholdListView
-locations.views.wraith.haunt.HauntListView
-locations.views.wraith.necropolis.NecropolisListView
-locations.views.wraith.nihil.NihilListView
     """.split()),
-    'OBJECT_ST_WRITE': frozenset("""
-locations.views.mage.chantry.ChantryUpdateView
+    "OBJECT_ST_WRITE": frozenset("""
     """.split()),
-    'OBJECT_WRITE': frozenset("""
+    "OBJECT_WRITE": frozenset("""
 characters.views.changeling.autumn_person.AutumnPersonUpdateView
 characters.views.changeling.chimera.ChimeraUpdateView
 characters.views.changeling.changeling.ChangelingUpdateView
@@ -659,74 +479,16 @@ characters.views.wraith.wraith.WraithUpdateView
 characters.views.wraith.wtohuman.WtOHumanUpdateView
 core.views.character_template.CharacterTemplateDeleteView
 core.views.character_template.CharacterTemplateUpdateView
-items.views.changeling.DrossUpdateView
-items.views.changeling.TreasureUpdateView
-items.views.core.item.ItemUpdateView
-items.views.core.meleeweapon.MeleeWeaponUpdateView
-items.views.core.rangedweapon.RangedWeaponUpdateView
-items.views.core.thrownweapon.ThrownWeaponUpdateView
-items.views.core.weapon.WeaponUpdateView
-items.views.demon.relic.RelicUpdateView
-items.views.hunter.gear.HunterGearUpdateView
-items.views.hunter.relic.HunterRelicUpdateView
-items.views.mage.artifact.ArtifactUpdateView
-items.views.mage.charm.CharmUpdateView
-items.views.mage.grimoire.GrimoireUpdateView
-items.views.mage.periapt.PeriaptUpdateView
-items.views.mage.sorcerer_artifact.SorcererArtifactUpdateView
-items.views.mage.talisman.TalismanUpdateView
-items.views.mage.wonder.WonderUpdateView
-items.views.mummy.MummyRelicUpdateView
-items.views.mummy.UshabtiUpdateView
-items.views.mummy.VesselUpdateView
-items.views.vampire.BloodstoneUpdateView
-items.views.vampire.VampireArtifactUpdateView
-items.views.werewolf.fetish.FetishUpdateView
-items.views.werewolf.talen.TalenUpdateView
-items.views.wraith.WraithArtifactUpdateView
-items.views.wraith.WraithRelicUpdateView
-locations.views.changeling.dream_realm.DreamRealmUpdateView
-locations.views.changeling.freehold.FreeholdUpdateView
-locations.views.changeling.holding.HoldingUpdateView
-locations.views.changeling.trod.TrodUpdateView
-locations.views.core.city.CityUpdateView
-locations.views.core.location.LocationUpdateView
-locations.views.demon.bastion.BastionUpdateView
-locations.views.demon.reliquary.ReliquaryUpdateView
-locations.views.hunter.huntingground.HuntingGroundUpdateView
-locations.views.hunter.safehouse.SafehouseUpdateView
-locations.views.mage.demesne.DemesneUpdateView
-locations.views.mage.library.LibraryUpdateView
-locations.views.mage.node.NodeUpdateView
-locations.views.mage.realm.RealmUpdateView
-locations.views.mage.sanctum.SanctumUpdateView
-locations.views.mage.sector.SectorUpdateView
-locations.views.mummy.CultTempleUpdateView
-locations.views.mummy.TombUpdateView
-locations.views.mummy.UndergroundSanctuaryUpdateView
-locations.views.vampire.BarrensUpdateView
-locations.views.vampire.DomainUpdateView
-locations.views.vampire.ElysiumUpdateView
-locations.views.vampire.HavenUpdateView
-locations.views.vampire.RackUpdateView
-locations.views.vampire.TremereChantryUpdateView
-locations.views.werewolf.caern.CaernUpdateView
-locations.views.wraith.byway.BywayUpdateView
-locations.views.wraith.citadel.CitadelUpdateView
-locations.views.wraith.freehold.WraithFreeholdUpdateView
-locations.views.wraith.haunt.HauntUpdateView
-locations.views.wraith.necropolis.NecropolisUpdateView
-locations.views.wraith.nihil.NihilUpdateView
     """.split()),
-    'PUBLIC_CARD': frozenset("""
+    "PUBLIC_CARD": frozenset("""
 core.views.public_object.PublicObjectDetailView
     """.split()),
-    'PUBLIC_INDEX': frozenset("""
+    "PUBLIC_INDEX": frozenset("""
 characters.views.core.CharacterIndexView
 items.views.core.ItemIndexView
 locations.views.core.LocationIndexView
     """.split()),
-    'PUBLIC_READ': frozenset("""
+    "PUBLIC_READ": frozenset("""
 accounts.views.CustomLoginView
 accounts.views.CustomPasswordResetView
 accounts.views.SignUp
@@ -847,14 +609,8 @@ core.views.language.LanguageDetailView
 core.views.language.LanguageListView
 core.views.newsitem.NewsItemDetailView
 core.views.newsitem.NewsItemListView
-items.views.core.material.MaterialDetailView
-items.views.core.material.MaterialListView
-items.views.core.medium.MediumDetailView
-items.views.core.medium.MediumListView
-locations.views.mage.reality_zone.RealityZoneDetailView
-locations.views.mage.reality_zone.RealityZoneListView
     """.split()),
-    'ROUTER': frozenset("""
+    "ROUTER": frozenset("""
 characters.views.changeling.changeling.ChangelingCharacterCreationView
 characters.views.changeling.ctdhuman.CtDHumanCharacterCreationView
 characters.views.core.GenericCharacterDetailView
@@ -884,7 +640,7 @@ locations.views.changeling.creation.FreeholdCreationView
 locations.views.core.GenericLocationDetailView
 locations.views.mage.chantry.ChantryCreationView
     """.split()),
-    'STAFF_WRITE': frozenset("""
+    "STAFF_WRITE": frozenset("""
 characters.views.changeling.cantrip.CantripCreateView
 characters.views.changeling.cantrip.CantripUpdateView
 characters.views.changeling.house.HouseCreateView
@@ -1000,14 +756,8 @@ core.views.language.LanguageCreateView
 core.views.language.LanguageUpdateView
 core.views.newsitem.NewsItemCreateView
 core.views.newsitem.NewsItemUpdateView
-items.views.core.material.MaterialCreateView
-items.views.core.material.MaterialUpdateView
-items.views.core.medium.MediumCreateView
-items.views.core.medium.MediumUpdateView
-locations.views.mage.reality_zone.RealityZoneCreateView
-locations.views.mage.reality_zone.RealityZoneUpdateView
     """.split()),
-    'WIDGET': frozenset("""
+    "WIDGET": frozenset("""
 widgets.views.auto_chained_ajax_view
     """.split()),
 }

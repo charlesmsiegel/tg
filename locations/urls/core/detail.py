@@ -1,8 +1,8 @@
 from django.urls import path
 
 from locations import views
+from locations.registry import registry
 
-urls = [
-    path("city/<pk>/", views.core.CityDetailView.as_view(), name="city"),
-    path("<pk>/", views.core.GenericLocationDetailView.as_view(), name="location"),
+urls = registry.urls("core", "detail") + [
+    path("<int:pk>/", views.core.GenericLocationDetailView.as_view(), name="location")
 ]

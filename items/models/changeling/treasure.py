@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -79,13 +78,6 @@ class Treasure(ItemModel):
                 violation_error_message="Glamour storage must be between 0 and 50",
             ),
         ]
-
-    def get_update_url(self):
-        return reverse("items:changeling:update:treasure", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:changeling:create:treasure")
 
     def __str__(self):
         if self.name and self.rating:

@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -69,10 +68,3 @@ class Elysium(LocationModel):
     class Meta:
         verbose_name = "Elysium"
         verbose_name_plural = "Elysiums"
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:elysium", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:elysium")

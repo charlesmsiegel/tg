@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from characters.models.core import Character
 
@@ -24,10 +23,3 @@ class City(LocationModel):
     def add_character(self, character):
         self.characters.add(character)
         self.save()
-
-    def get_update_url(self):
-        return reverse("locations:update:city", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:create:city")

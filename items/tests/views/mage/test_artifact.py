@@ -56,36 +56,24 @@ class TestArtifactDetailViewQueryOptimization(TestCase):
 class TestArtifactCreateView(TestCase):
     """Test ArtifactCreateView functionality."""
 
-    def test_create_view_has_get_success_url_method(self):
-        """Test that ArtifactCreateView has explicit get_success_url method."""
+    def test_create_view_redirects_to_saved_object(self):
+        from items.models.mage.artifact import Artifact
         from items.views.mage.artifact import ArtifactCreateView
 
-        self.assertTrue(
-            hasattr(ArtifactCreateView, "get_success_url"),
-            "ArtifactCreateView should have get_success_url method",
-        )
-        # Verify it's defined on the class itself, not inherited
-        self.assertIn(
-            "get_success_url",
-            ArtifactCreateView.__dict__,
-            "get_success_url should be explicitly defined on ArtifactCreateView",
-        )
+        obj = Artifact.objects.create(name="Saved Artifact")
+        view = ArtifactCreateView()
+        view.object = obj
+        self.assertEqual(view.get_success_url(), obj.get_absolute_url())
 
 
 class TestArtifactUpdateView(TestCase):
     """Test ArtifactUpdateView functionality."""
 
-    def test_update_view_has_get_success_url_method(self):
-        """Test that ArtifactUpdateView has explicit get_success_url method."""
+    def test_update_view_redirects_to_saved_object(self):
+        from items.models.mage.artifact import Artifact
         from items.views.mage.artifact import ArtifactUpdateView
 
-        self.assertTrue(
-            hasattr(ArtifactUpdateView, "get_success_url"),
-            "ArtifactUpdateView should have get_success_url method",
-        )
-        # Verify it's defined on the class itself, not inherited
-        self.assertIn(
-            "get_success_url",
-            ArtifactUpdateView.__dict__,
-            "get_success_url should be explicitly defined on ArtifactUpdateView",
-        )
+        obj = Artifact.objects.create(name="Saved Artifact")
+        view = ArtifactUpdateView()
+        view.object = obj
+        self.assertEqual(view.get_success_url(), obj.get_absolute_url())

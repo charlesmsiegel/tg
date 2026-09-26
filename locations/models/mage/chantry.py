@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 from characters.models.core.background_block import BackgroundBlock
 from characters.models.core.character import CharacterModel
@@ -166,13 +165,6 @@ class Chantry(BackgroundBlock, LocationModel):
     class Meta:
         verbose_name = "Chantry"
         verbose_name_plural = "Chantries"
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:chantry", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:chantry")
 
     @property
     def points(self):

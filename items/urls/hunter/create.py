@@ -1,16 +1,3 @@
-from django.urls import path
+from items.registry import registry
 
-from items import views
-
-urls = [
-    path(
-        "gear/",
-        views.hunter.HunterGearCreateView.as_view(),
-        name="gear",
-    ),
-    path(
-        "relic/",
-        views.hunter.HunterRelicCreateView.as_view(),
-        name="relic",
-    ),
-]
+urls = registry.urls("hunter", "create")

@@ -26,7 +26,7 @@ def route_name(view):
 
 
 def route_policy(view):
-    return VIEW_POLICIES.get(route_name(view))
+    return view.__dict__.get("access_policy", VIEW_POLICIES.get(route_name(view)))
 
 
 def _object(model, kwargs):
@@ -103,7 +103,9 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
         if request.method not in {"GET", "HEAD"}:
             raise Http404("Object not found")
 
-        return PublicObjectDetailView.as_view(model_class=model)(request, *args, **kwargs)
+        return PublicObjectDetailView.as_view(model_class=model, resolved_object=obj)(
+            request, *args, **kwargs
+        )
     if policy in {"OBJECT_WRITE", "OBJECT_ACTION", "OBJECT_ST_WRITE"}:
         if policy == "OBJECT_ST_WRITE" and not PermissionManager.user_has_scoped_editor_role(
             request.user, obj, request=request

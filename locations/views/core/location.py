@@ -1,35 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
     prepare_created_object,
 )
 from core.permissions import PermissionManager
 from locations.forms.core.limited_edit import LimitedLocationEditForm
-from locations.models import LocationModel
+from locations.registry import registry
 
 
-class LocationDetailView(ViewPermissionMixin, DetailView):
-    model = LocationModel
-    template_name = "locations/core/location/detail.html"
-
-
-class LocationCreateView(LoginRequiredMixin, CreateView):
-    model = LocationModel
-    fields = [
-        "name",
-        "contained_within",
-        "gauntlet",
-        "shroud",
-        "dimension_barrier",
-        "description",
-    ]
-    template_name = "locations/core/location/form.html"
-    success_message = "Location '{name}' created successfully!"
-    error_message = "Failed to create location. Please correct the errors below."
+class _LocationCreateView(LoginRequiredMixin, CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -43,19 +25,10 @@ class LocationCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = LocationModel
-    fields = [
-        "name",
-        "contained_within",
-        "gauntlet",
-        "shroud",
-        "dimension_barrier",
-        "description",
-    ]
-    template_name = "locations/core/location/form.html"
-    success_message = "Location '{name}' updated successfully!"
-    error_message = "Failed to update location. Please correct the errors below."
+LocationCreateView = registry.view("locations.LocationModel", "create")
+
+
+class _LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
 
     def get_form_class(self):
         """
@@ -87,3 +60,10 @@ class LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         if "contained_within" in form.fields:
             form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
+
+
+LocationUpdateView = registry.view("locations.LocationModel", "update")
+
+
+LocationDetailView = registry.view("locations.LocationModel", "detail")
+LocationListView = registry.view("locations.LocationModel", "list")

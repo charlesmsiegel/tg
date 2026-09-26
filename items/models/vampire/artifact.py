@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from items.models.core import ItemModel
 
@@ -53,13 +52,3 @@ class VampireArtifact(ItemModel):
     class Meta:
         verbose_name = "Vampire Artifact"
         verbose_name_plural = "Vampire Artifacts"
-
-    def get_absolute_url(self):
-        return reverse("items:vampire:artifact", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("items:vampire:update:artifact", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:vampire:create:artifact")

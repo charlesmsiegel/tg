@@ -1,16 +1,3 @@
-from django.urls import path
+from items.registry import registry
 
-from items import views
-
-urls = [
-    path(
-        "artifacts/",
-        views.vampire.VampireArtifactListView.as_view(),
-        name="artifact",
-    ),
-    path(
-        "bloodstones/",
-        views.vampire.BloodstoneListView.as_view(),
-        name="bloodstone",
-    ),
-]
+urls = registry.urls("vampire", "list")

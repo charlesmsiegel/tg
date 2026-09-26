@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core import LocationModel
 
@@ -56,16 +55,6 @@ class Domain(LocationModel):
     class Meta:
         verbose_name = "Domain"
         verbose_name_plural = "Domains"
-
-    def get_absolute_url(self):
-        return reverse("locations:vampire:domain", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("locations:vampire:update:domain", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:vampire:create:domain")
 
     def calculate_total_rating(self):
         """Calculate total Domain Background rating."""

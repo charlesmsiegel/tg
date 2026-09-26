@@ -1,22 +1,19 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView
 from django.views.generic.edit import FormView
 
 from core.mixins import (
-    EditPermissionMixin,
     MessageMixin,
     ViewPermissionMixin,
     prepare_created_object,
 )
-from locations.forms.mage.node import NodeForm
-from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
+from locations.models.mage import NodeMeritFlawRating, NodeResonanceRating
+from locations.registry import registry
 
 
-class NodeDetailView(ViewPermissionMixin, DetailView):
-    model = Node
-    template_name = "locations/mage/node/detail.html"
+class _NodeDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -33,30 +30,22 @@ class NodeDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class NodeListView(ListView):
-    model = Node
-    ordering = ["name"]
-    template_name = "locations/mage/node/list.html"
+NodeDetailView = registry.view("locations.Node", "detail")
 
 
-class NodeCreateView(LoginRequiredMixin, MessageMixin, FormView):
-    template_name = "locations/mage/node/form.html"
-    form_class = NodeForm
-    success_message = "Node '{name}' created successfully!"
-    error_message = "Failed to create node. Please correct the errors below."
+class _NodeCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
         self.object = form.save()
-        return super(NodeCreateView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
 
 
-class NodeUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
-    model = Node
-    form_class = NodeForm
-    template_name = "locations/mage/node/form.html"
-    success_message = "Node '{name}' updated successfully!"
-    error_message = "Failed to update node. Please correct the errors below."
+NodeCreateView = registry.view("locations.Node", "create")
+
+
+NodeListView = registry.view("locations.Node", "list")
+NodeUpdateView = registry.view("locations.Node", "update")

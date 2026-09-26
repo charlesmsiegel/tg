@@ -1,15 +1,13 @@
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView
 
-from core.mixins import MessageMixin
-from items.forms.mage.wonder import WonderForm
-from items.models.mage import Wonder, WonderResonanceRating
+from core.mixins import prepare_created_object
+from items.models.mage import WonderResonanceRating
+from items.registry import registry
 
 
-class WonderDetailView(DetailView):
-    model = Wonder
-    template_name = "items/mage/wonder/detail.html"
+class _WonderDetailView(DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -21,28 +19,20 @@ class WonderDetailView(DetailView):
         return context
 
 
-class WonderListView(ListView):
-    model = Wonder
-    ordering = ["name"]
-    template_name = "items/mage/wonder/list.html"
+WonderDetailView = registry.view("items.Wonder", "detail")
 
 
-class WonderCreateView(MessageMixin, CreateView):
-    form_class = WonderForm
-    template_name = "items/mage/wonder/form.html"
-    success_message = "Wonder '{name}' created successfully!"
-    error_message = "Failed to create wonder. Please correct the errors below."
+class _WonderCreateView(CreateView):
+    """WonderForm selects its concrete model only after validation."""
 
-    def get_success_url(self):
-        return self.object.get_absolute_url()
+    def form_valid(self, form):
+        form.instance = form.save(commit=False)
+        prepare_created_object(form, self.request)
+        return super().form_valid(form)
 
 
-class WonderUpdateView(MessageMixin, UpdateView):
-    model = Wonder
-    form_class = WonderForm
-    template_name = "items/mage/wonder/form.html"
-    success_message = "Wonder '{name}' updated successfully!"
-    error_message = "Failed to update wonder. Please correct the errors below."
+WonderCreateView = registry.view("items.Wonder", "create")
 
-    def get_success_url(self):
-        return self.object.get_absolute_url()
+
+WonderListView = registry.view("items.Wonder", "list")
+WonderUpdateView = registry.view("items.Wonder", "update")

@@ -3,9 +3,11 @@ from django.shortcuts import redirect, render
 from django.views import View
 
 from core.create_redirects import resolve_object_type_url
+from core.model_registry import get_registry
 from core.utils import get_gameline_name
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
+from core.views.registry import RegistryDetailView
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
 from locations.models.core.location import LocationModel
@@ -15,63 +17,10 @@ from .city import CityCreateView, CityDetailView, CityListView, CityUpdateView
 from .location import LocationCreateView, LocationDetailView, LocationUpdateView
 
 
-class GenericLocationDetailView(DictView):
+class GenericLocationDetailView(RegistryDetailView):
+    registry_app = "locations"
     model_class = LocationModel
-    protected_object = True
     public_view_class = PublicObjectDetailView
-    key_property = "type"
-    default_redirect = "locations:index"
-
-    @property
-    def view_mapping(self):
-        from locations.views import changeling, demon, hunter, mummy, vampire, wraith
-
-        return {
-            # Core
-            "location": LocationDetailView,
-            "city": CityDetailView,
-            # Mage
-            "node": mage.NodeDetailView,
-            "sector": mage.SectorDetailView,
-            "library": mage.LibraryDetailView,
-            "horizon_realm": mage.RealmDetailView,
-            "paradox_realm": mage.ParadoxRealmDetailView,
-            "sanctum": mage.SanctumDetailView,
-            "chantry": mage.ChantryCreationView,
-            "reality_zone": mage.RealityZoneDetailView,
-            "demesne": mage.DemesneDetailView,
-            # Werewolf
-            "caern": werewolf.CaernDetailView,
-            # Vampire
-            "haven": vampire.HavenDetailView,
-            "domain": vampire.DomainDetailView,
-            "elysium": vampire.ElysiumDetailView,
-            "rack": vampire.RackDetailView,
-            "tremere_chantry": vampire.TremereChantryDetailView,
-            "barrens": vampire.BarrensDetailView,
-            # Wraith
-            "haunt": wraith.HauntDetailView,
-            "necropolis": wraith.NecropolisDetailView,
-            "citadel": wraith.CitadelDetailView,
-            "nihil": wraith.NihilDetailView,
-            "byway": wraith.BywayDetailView,
-            "wraith_freehold": wraith.WraithFreeholdDetailView,
-            # Changeling
-            "freehold": changeling.FreeholdDetailView,
-            "dream_realm": changeling.DreamRealmDetailView,
-            "trod": changeling.TrodDetailView,
-            "holding": changeling.HoldingDetailView,
-            # Demon
-            "bastion": demon.BastionDetailView,
-            "reliquary": demon.ReliquaryDetailView,
-            # Hunter
-            "hunting_ground": hunter.HuntingGroundDetailView,
-            "safehouse": hunter.SafehouseDetailView,
-            # Mummy
-            "tomb": mummy.TombDetailView,
-            "cult_temple": mummy.CultTempleDetailView,
-            "underground_sanctuary": mummy.UndergroundSanctuaryDetailView,
-        }
 
 
 class LocationIndexView(View):
@@ -109,7 +58,7 @@ class LocationIndexView(View):
         )
 
     def get_context(self):
-        game_locations = ObjectType.objects.filter(type="loc")
+        game_locations = get_registry("locations").menu(self.request.user)
         context = {
             "objects": game_locations,
         }

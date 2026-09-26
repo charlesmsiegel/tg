@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from locations.models.core.location import LocationModel
 from locations.models.mage.reality_zone import RealityZone
@@ -156,13 +155,6 @@ class Sector(LocationModel):
     class Meta:
         verbose_name = "Sector"
         verbose_name_plural = "Sectors"
-
-    def get_update_url(self):
-        return reverse("locations:mage:update:sector", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("locations:mage:create:sector")
 
     def get_effective_difficulty(self, paradigm_match=True):
         """
