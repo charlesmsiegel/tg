@@ -28,7 +28,10 @@ from characters.views.core.human import (
     HumanCharacterCreationView,
     HumanDetailView,
 )
-from characters.views.mage.background_views import MtAEnhancementView
+from characters.views.mage.background_views import (
+    CharacterChantryBackgroundView,
+    MtAEnhancementView,
+)
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
@@ -45,7 +48,6 @@ from core.models import Language
 from core.permissions import Permission, PermissionManager
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
-from locations.forms.mage.chantry import ChantrySelectOrCreateForm
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
@@ -668,27 +670,9 @@ class CompanionSanctumView(GenericBackgroundView):
     template_name = "characters/mage/companion/chargen.html"
 
 
-class CompanionChantryView(GenericBackgroundView):
+class CompanionChantryView(CharacterChantryBackgroundView):
     primary_object_class = Companion
-    background_name = "chantry"
-    form_class = ChantrySelectOrCreateForm
     template_name = "characters/mage/companion/chargen.html"
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["character"] = get_object_or_404(self.primary_object_class, pk=self.kwargs["pk"])
-        return kwargs
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.chantry_creation_form.fields["total_points"].initial = self.current_background.rating
-        form.chantry_creation_form.fields["total_points"].widget.attrs.update(
-            {
-                "min": self.current_background.rating,
-                "max": self.current_background.rating,
-            }
-        )
-        return form
 
 
 class CopanionCharacterCreationView(HumanCharacterCreationView):

@@ -2,20 +2,18 @@
     <h2 class="col-sm">Chantry Background</h2>
 </div>
 <div class="row">
-    <div class="col-sm"></div>
-</div>
-<div class="row">
     <div class="col-sm">Create New? {{ form.create_new }}</div>
 </div>
 <div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="select">
     <div class="row">
         <div class="col-sm">Add {{ current_background.rating }} points to existing Chantry:</div>
-        <div class="col-sm">{{ form.existing_chantry }}</div>
+        <div class="col-sm">{{ form.existing_chantry }} {{ form.existing_chantry.errors }}</div>
     </div>
 </div>
 <div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="create" class="d-none">
     <div class="row">
         <h3 class="col-sm">{{ form.name }}</h3>
+        {{ form.name.errors }}
     </div>
     <div class="row">
         <div class="col-sm">{{ form.contained_within }}</div>
@@ -37,17 +35,12 @@
         <div class="col-sm">{{ form.chantry_type }}</div>
     </div>
     <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <div class="col-sm">{{ form.chronicle }}</div>
         <div class="col-sm">Leadership Type</div>
         <div class="col-sm">{{ form.leadership_type }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
     </div>
-    <h3 class="row {{ object.get_heading }}">
-        <div class="col-sm">Points</div>
-        <div class="col-sm">{{ form.total_points }}</div>
-    </h3>
+    <div class="row">
+        <div class="col-sm">The new Chantry starts with {{ current_background.rating }} points. You will spend them in the Chantry wizard.</div>
+    </div>
     <div class="row">
         <div class="col-sm">{{ form.description }}</div>
     </div>
