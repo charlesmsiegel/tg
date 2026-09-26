@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import ListView, UpdateView
+from django.views.generic import UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.ghoul import Ghoul
@@ -60,9 +60,3 @@ class GhoulUpdateView(MessageMixin, UpdateView):
             return super().get_form_class()
         else:
             return LimitedHumanEditForm
-
-
-class GhoulListView(ListView):
-    model = Ghoul
-    ordering = ["name"]
-    template_name = "characters/vampire/ghoul/list.html"

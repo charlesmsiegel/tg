@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView
 
 from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
 from characters.models.core import Character
@@ -12,7 +12,6 @@ from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
 from core.mixins import (
     EditPermissionMixin,
     ViewPermissionMixin,
-    VisibilityFilterMixin,
     prepare_created_object,
 )
 from core.permissions import Permission, PermissionManager, Role
@@ -102,25 +101,6 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                     self.object.save()
 
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-
-class CharacterListView(VisibilityFilterMixin, ListView):
-    """
-    List view for characters.
-    Automatically filters to only characters the user can view.
-    """
-
-    model = Character
-    template_name = "characters/core/character/list.html"
-    context_object_name = "characters"
-    paginate_by = 50
-
-    def get_queryset(self):
-        """Get filtered queryset based on permissions."""
-        qs = super().get_queryset()
-        # Additional filtering can be added here (e.g., by status, chronicle, etc.)
-        # Include polymorphic_ctype for subclass-specific method calls in templates
-        return qs.select_related("polymorphic_ctype", "owner", "chronicle").order_by("name")
 
 
 class CharacterCreateView(LoginRequiredMixin, CreateView):

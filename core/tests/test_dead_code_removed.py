@@ -524,3 +524,25 @@ class D7RemovedTests(SimpleTestCase):
         self.assertIn("kenning", ctdhuman.CTDHUMAN_FORM_FIELDS)
         self.assertIn("finance", vtmhuman.VTMHUMAN_FORM_FIELDS)
 
+    def test_unrouted_list_views_removed(self):
+        self.assert_names_absent(
+            {
+                "characters.views.core.character": ["CharacterListView"],
+                "characters.views.vampire.vampire": ["VampireListView"],
+                "characters.views.vampire.ghoul": ["GhoulListView"],
+                "characters.views.vampire.revenant": ["RevenantListView"],
+                "characters.views.vampire": [
+                    "VampireListView",
+                    "GhoulListView",
+                    "RevenantListView",
+                ],
+            }
+        )
+        self.assert_templates_absent(
+            [
+                "characters/core/character/list.html",
+                "characters/vampire/vampire/list.html",
+                "characters/vampire/ghoul/list.html",
+                "characters/vampire/revenant/list.html",
+            ]
+        )
