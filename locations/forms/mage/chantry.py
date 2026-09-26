@@ -145,6 +145,57 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
         return None
 
 
+class ChantryRemoveForm(forms.Form):
+    """Undo one purchase: a background dot, an Integrated Effects dot or an effect.
+
+    POST ``action=remove`` plus exactly one of ``rating=<ChantryBackgroundRating
+    pk>``, ``ie=on`` or ``effect=<Effect pk>``.
+    """
+
+    ACTION = "remove"
+
+    rating = forms.ModelChoiceField(
+        queryset=ChantryBackgroundRating.objects.none(),
+        required=False,
+        widget=forms.HiddenInput,
+    )
+    ie = forms.BooleanField(required=False, widget=forms.HiddenInput)
+    effect = forms.ModelChoiceField(
+        queryset=Effect.objects.none(), required=False, widget=forms.HiddenInput
+    )
+
+    def __init__(self, *args, chantry, **kwargs):
+        self.chantry = chantry
+        super().__init__(*args, **kwargs)
+        self.fields["rating"].queryset = chantry.backgrounds.select_related("bg")
+        self.fields["effect"].queryset = chantry.integrated_effects.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.errors:
+            return cleaned_data
+        chosen = [name for name in ("rating", "ie", "effect") if cleaned_data.get(name)]
+        if len(chosen) != 1:
+            raise forms.ValidationError("Choose exactly one thing to remove.")
+        if chosen == ["rating"]:
+            error = chantry_points.background_removal_error(cleaned_data["rating"])
+        elif chosen == ["ie"]:
+            error = chantry_points.ie_removal_error(self.chantry)
+        else:
+            error = None
+        if error:
+            raise forms.ValidationError(error)
+        return cleaned_data
+
+    def save(self):
+        """Apply the removal through the service; may raise ``ValidationError``."""
+        if self.cleaned_data.get("rating"):
+            return chantry_points.remove_background_dot(self.cleaned_data["rating"])
+        if self.cleaned_data.get("ie"):
+            return chantry_points.remove_ie_dot(self.chantry)
+        return chantry_points.remove_effect(self.chantry, self.cleaned_data["effect"])
+
+
 # Form for choosing effects
 class ChantryEffectsForm(EffectCreateOrSelectForm):
     def __init__(self, *args, **kwargs):
