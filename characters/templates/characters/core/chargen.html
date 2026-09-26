@@ -1,0 +1,18 @@
+{% extends "core/form.html" %}
+{% block progress %}
+    {% include "characters/core/chargen_progress.html" %}
+{% endblock progress %}
+{% block contents %}
+    <h2 class="{{ object.get_heading }}">{{ step.label }}</h2>
+    {% if skip_step %}
+        {% include "characters/core/chargen/skip.html" %}
+    {% else %}
+        {{ form.media }}
+        {% include step.template %}
+    {% endif %}
+{% endblock contents %}
+{% block buttons %}
+    {% if step.key != "freebies" or object.freebies_approved %}
+        {{ block.super }}
+    {% endif %}
+{% endblock buttons %}

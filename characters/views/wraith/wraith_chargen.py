@@ -4,9 +4,11 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.wraith.fetter import FetterForm
@@ -19,6 +21,7 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -97,7 +100,7 @@ class WraithBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithArcanosView(SpecialUserMixin, UpdateView):
+class WraithArcanosView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "argos",
@@ -140,7 +143,7 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
                 messages.error(self.request, "Each Arcanos cannot exceed 5 dots.")
                 return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Arcanoi allocated successfully!")
         return super().form_valid(form)
@@ -151,7 +154,7 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithShadowView(SpecialUserMixin, UpdateView):
+class WraithShadowView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = ["shadow_archetype"]
     template_name = "characters/wraith/wraith/chargen.html"
@@ -169,7 +172,7 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
             messages.error(self.request, "You must select a Shadow Archetype to continue.")
             return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Shadow Archetype selected successfully!")
         return super().form_valid(form)
@@ -180,7 +183,9 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WraithPassionsView(
+    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
+):
     form_class = PassionForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -189,17 +194,6 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Wraith, pk=kwargs.get("pk"))
-        # If they already have the right number of passion points, skip this
-        if obj.has_passions():
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -244,7 +238,7 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
 
         # If we've hit the exact total, move to next stage
         if wraith.has_passions():
-            wraith.creation_status += 1
+            advance(wraith, user=self.request.user)
             wraith.save()
             messages.success(self.request, "All Passions allocated successfully!")
         else:
@@ -261,7 +255,7 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
         return super().form_invalid(form)
 
 
-class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WraithFettersView(ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = FetterForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -270,17 +264,6 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Wraith, pk=kwargs.get("pk"))
-        # If they already have the right number of fetter points, skip this
-        if obj.has_fetters():
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -324,7 +307,7 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
 
         # If we've hit the exact total, move to next stage
         if wraith.has_fetters():
-            wraith.creation_status += 1
+            advance(wraith, user=self.request.user)
             wraith.save()
             messages.success(self.request, "All Fetters allocated successfully!")
         else:
@@ -341,7 +324,7 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
         return super().form_invalid(form)
 
 
-class WraithExtrasView(SpecialUserMixin, UpdateView):
+class WraithExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "date_of_birth",
@@ -369,7 +352,7 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
             messages.error(self.request, "Death description is required for Wraith characters.")
             return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
@@ -420,7 +403,9 @@ class WraithFreebiesView(HumanFreebiesView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WraithLanguagesView(
+    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
+):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -429,18 +414,6 @@ class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVi
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -460,7 +433,7 @@ class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVi
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         messages.success(self.request, "Languages added successfully!")
         return HttpResponseRedirect(human.get_absolute_url())
@@ -495,7 +468,9 @@ class WraithContactsView(GenericBackgroundView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WraithSpecialtiesView(
+    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
+):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -533,22 +508,7 @@ class WraithSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, Form
 
 
 class WraithCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: WraithAttributeView,
-        2: WraithAbilityView,
-        3: WraithBackgroundsView,
-        4: WraithArcanosView,
-        5: WraithShadowView,
-        6: WraithPassionsView,
-        7: WraithFettersView,
-        8: WraithExtrasView,
-        9: WraithFreebiesView,
-        10: WraithLanguagesView,
-        11: WraithAlliesView,
-        12: WraithMentorView,
-        13: WraithContactsView,
-        14: WraithSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Wraith
     key_property = "creation_status"
     default_redirect = WraithDetailView

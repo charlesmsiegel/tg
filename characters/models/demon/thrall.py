@@ -12,8 +12,6 @@ class Thrall(DtFHuman):
     type = "thrall"
     gameline = "dtf"
 
-    freebie_step = 6
-
     # Faith Potential (1-5 dots, measures spiritual/emotional capacity)
     faith_potential = models.IntegerField(default=1)
 

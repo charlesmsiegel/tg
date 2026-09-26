@@ -2,11 +2,14 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.chained_freebies import ChainedGhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -77,7 +80,7 @@ class GhoulBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/ghoul/chargen.html"
 
 
-class GhoulDisciplinesView(SpecialUserMixin, UpdateView):
+class GhoulDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Ghoul
     fields = [
         "potence",
@@ -151,12 +154,12 @@ class GhoulDisciplinesView(SpecialUserMixin, UpdateView):
                 )
                 return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class GhoulExtrasView(SpecialUserMixin, UpdateView):
+class GhoulExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Ghoul
     fields = [
         "age",
@@ -187,7 +190,7 @@ class GhoulExtrasView(SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -211,6 +214,8 @@ class GhoulLanguagesView(HumanLanguagesView):
 
 
 class GhoulAlliesView(GenericBackgroundView):
+    background_name = "allies"
+    primary_object_class = Ghoul
     model = Ghoul
     template_name = "characters/vampire/ghoul/chargen.html"
     form_class = LinkedNPCForm
@@ -227,17 +232,7 @@ class GhoulSpecialtiesView(HumanSpecialtiesView):
 
 
 class GhoulCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: GhoulAttributeView,
-        2: GhoulAbilityView,
-        3: GhoulBackgroundsView,
-        4: GhoulDisciplinesView,
-        5: GhoulExtrasView,
-        6: GhoulFreebiesView,
-        7: GhoulLanguagesView,
-        8: GhoulAlliesView,
-        9: GhoulSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Ghoul
     key_property = "creation_status"
     default_redirect = DetailView

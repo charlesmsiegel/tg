@@ -9,8 +9,6 @@ class DtFHuman(Human):
 
     type = "dtf_human"
 
-    freebie_step = 5
-
     allowed_backgrounds = [
         "contacts",
         "mentor",

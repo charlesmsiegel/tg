@@ -3,9 +3,11 @@ from typing import Any
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -15,6 +17,7 @@ from characters.models.core.specialty import Specialty
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.fomoripower import FomoriPower
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -162,7 +165,7 @@ class FomorBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorPowersView(SpecialUserMixin, UpdateView):
+class FomorPowersView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Fomor
     fields = ["powers", "rage", "gnosis"]
     template_name = "characters/werewolf/fomor/chargen.html"
@@ -179,12 +182,12 @@ class FomorPowersView(SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class FomorExtrasView(SpecialUserMixin, UpdateView):
+class FomorExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Fomor
     fields = [
         "date_of_birth",
@@ -199,7 +202,7 @@ class FomorExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -232,7 +235,7 @@ class FomorFreebiesView(HumanFreebiesView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorLanguagesView(EditPermissionMixin, FormView):
+class FomorLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
@@ -241,18 +244,6 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Fomor, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Fomor, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -272,7 +263,7 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 fomor.languages.add(language)
-        fomor.creation_status += 1
+        advance(fomor, user=self.request.user)
         fomor.save()
         return HttpResponseRedirect(fomor.get_absolute_url())
 
@@ -296,7 +287,7 @@ class FomorContactsView(GenericBackgroundView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorSpecialtiesView(EditPermissionMixin, FormView):
+class FomorSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
@@ -330,18 +321,7 @@ class FomorSpecialtiesView(EditPermissionMixin, FormView):
 
 
 class FomorCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: FomorAttributeView,
-        2: FomorAbilityView,
-        3: FomorBackgroundsView,
-        4: FomorPowersView,
-        5: FomorExtrasView,
-        6: FomorFreebiesView,
-        7: FomorLanguagesView,
-        8: FomorAlliesView,
-        9: FomorContactsView,
-        10: FomorSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Fomor
     key_property = "creation_status"
     default_redirect = FomorDetailView

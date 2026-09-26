@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.costs import get_freebie_cost
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -21,6 +23,7 @@ from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.faction import MageFaction
 from characters.models.werewolf.charm import SpiritCharm
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -225,7 +228,7 @@ class CompanionBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/companion/chargen.html"
 
 
-class CompanionExtrasView(SpecialUserMixin, UpdateView):
+class CompanionExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Companion
     fields = [
         "date_of_birth",
@@ -240,7 +243,7 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/mage/companion/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         if self.object.companion_type in ["acoylte", "backup"]:
             self.object.freebies = 15
         elif self.object.companion_type in ["consor", "ally"]:
@@ -299,7 +302,7 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
         return form
 
 
-class CompanionFreebiesView(SpecialUserMixin, UpdateView):
+class CompanionFreebiesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Companion
     form_class = CompanionFreebiesForm
     template_name = "characters/mage/companion/chargen.html"
@@ -404,36 +407,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
         if self.object.companion_type == "familiar":
             self.object.essence = self.object.willpower * 5
         if self.object.freebies == 0:
-            self.object.creation_status += 1
-            if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
-                self.object.creation_status += 1
-                english, _ = Language.objects.get_or_create(name="English")
-                self.object.languages.add(english)
-            for step in [
-                "node",
-                "library",
-                "wonder",
-                "enhancement",
-                "sanctum",
-                "allies",
-            ]:
-                bg, _ = Background.objects.get_or_create(
-                    property_name=step,
-                    defaults={"name": step.replace("_", " ").title()},
-                )
-                if (
-                    BackgroundRating.objects.filter(
-                        bg=bg,
-                        char=self.object,
-                        complete=False,
-                    ).count()
-                    == 0
-                ):
-                    self.object.creation_status += 1
-                else:
-                    self.object.save()
-                    break
-                self.object.save()
+            advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -455,7 +429,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
         return self.form_valid(form)
 
 
-class CompanionLanguagesView(SpendFreebiesPermissionMixin, FormView):
+class CompanionLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/companion/chargen.html"
 
@@ -486,7 +460,7 @@ class CompanionLanguagesView(SpendFreebiesPermissionMixin, FormView):
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         return HttpResponseRedirect(human.get_absolute_url())
 
@@ -496,7 +470,7 @@ class CompanionLanguagesView(SpendFreebiesPermissionMixin, FormView):
         return context
 
 
-class CompanionSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
+class CompanionSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/companion/chargen.html"
 
@@ -575,9 +549,7 @@ class CompanionLibraryView(GenericBackgroundView):
         form = super().get_form(form_class)
         obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
         form.fields["name"].initial = self.current_background.note or f"{obj.name}'s Library"
-        tmp = [obj.affiliation, obj.faction, obj.subfaction]
-        tmp = [x.pk for x in tmp if hasattr(x, "pk")]
-        form.fields["faction"].queryset = MageFaction.objects.filter(pk__in=tmp)
+        form.fields["faction"].queryset = MageFaction.objects.all()
         return form
 
 
@@ -609,22 +581,7 @@ class CompanionChantryView(CharacterChantryBackgroundView):
 
 
 class CopanionCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: CompanionAttributeView,
-        2: CompanionAbilityView,
-        3: CompanionBackgroundsView,
-        4: CompanionExtrasView,
-        5: CompanionFreebiesView,
-        6: CompanionLanguagesView,
-        7: CompanionNodeView,
-        8: CompanionLibraryView,
-        9: CompanionWonderView,
-        10: CompanionEnhancementView,
-        11: CompanionSanctumView,
-        12: CompanionAlliesView,
-        13: CompanionChantryView,
-        14: CompanionSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
 
     model_class = Companion
     key_property = "creation_status"

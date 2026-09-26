@@ -16,8 +16,6 @@ from core.utils import add_dot
 class Wraith(WtOHuman):
     type = "wraith"
 
-    freebie_step = 7
-
     allowed_backgrounds = [
         "contacts",
         "mentor",

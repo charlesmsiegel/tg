@@ -1,0 +1,15 @@
+<p>Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across Talents, Skills and Knowledges.</p>
+<div class="row">
+    <h3 class="col-sm">Talents</h3>
+    <h3 class="col-sm">Skills</h3>
+    <h3 class="col-sm">Knowledges</h3>
+</div>
+{% for row in ability_rows %}
+    <div class="row">
+        {% for field in row %}
+            <div class="col-sm">{{ field.label }}</div>
+            <div class="col-sm dots">{{ field.errors }}{{ field }}</div>
+        {% endfor %}
+    </div>
+{% endfor %}
+{% include "characters/core/ability_block/validation.html" %}

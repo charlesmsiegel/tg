@@ -9,7 +9,6 @@ class HtRHuman(Human):
 
     type = "htr_human"
     gameline = "htr"
-    freebie_step = 5
 
     # Standard WoD abilities (Hunters are primarily mortals)
     talents = [

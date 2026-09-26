@@ -1,0 +1,23 @@
+{% load dots sanitize_text %}
+<div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Fetters ({{ fetter_points_spent }}/{{ fetter_points_total }})</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Fetters are your anchors to the mortal world - people, places, and things that tie you to existence. You have {{ fetter_points_remaining }} points remaining.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if object.fetters.all %}
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <h4>Current Fetters:</h4>
+                            {% for fetter in object.fetters.all %}
+                                <div class="mb-2">
+                                    <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }} ({{ fetter.rating|dots }})
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}

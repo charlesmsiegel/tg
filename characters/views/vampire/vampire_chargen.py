@@ -4,11 +4,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.chained_freebies import ChainedVampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -88,7 +91,7 @@ class VampireBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/vampire/chargen.html"
 
 
-class VampireDisciplinesView(SpecialUserMixin, UpdateView):
+class VampireDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = [
         "celerity",
@@ -176,13 +179,13 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
                     )
                     return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Disciplines allocated successfully!")
         return super().form_valid(form)
 
 
-class VampireVirtuesView(SpecialUserMixin, UpdateView):
+class VampireVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = ["conscience", "self_control", "courage", "conviction", "instinct"]
     template_name = "characters/vampire/vampire/chargen.html"
@@ -258,13 +261,13 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
             self.object.humanity = virtue_1 + virtue_2
             self.object.path_rating = 0
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Virtues allocated successfully!")
         return super().form_valid(form)
 
 
-class VampireExtrasView(SpecialUserMixin, UpdateView):
+class VampireExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = [
         "age",
@@ -293,7 +296,7 @@ class VampireExtrasView(SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
@@ -351,21 +354,7 @@ class VampireSpecialtiesView(HumanSpecialtiesView):
 
 
 class VampireCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: VampireAttributeView,
-        2: VampireAbilityView,
-        3: VampireBackgroundsView,
-        4: VampireDisciplinesView,
-        5: VampireVirtuesView,
-        6: VampireExtrasView,
-        7: VampireFreebiesView,
-        8: VampireLanguagesView,
-        9: VampireAlliesView,
-        10: VampireMentorView,
-        11: VampireContactsView,
-        12: VampireRetainersView,
-        13: VampireSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Vampire
     key_property = "creation_status"
     default_redirect = DetailView

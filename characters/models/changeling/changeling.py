@@ -12,8 +12,6 @@ from core.utils import add_dot
 class Changeling(CtDHuman):
     type = "changeling"
 
-    freebie_step = 6
-
     court = models.CharField(
         default="",
         max_length=20,

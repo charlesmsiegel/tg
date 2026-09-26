@@ -16,8 +16,6 @@ class Fera(WtAHuman):
 
     type = "fera"
 
-    freebie_step = 8
-
     # Fera breed - varies by type
     breed = models.CharField(default="", max_length=100, blank=True)
 

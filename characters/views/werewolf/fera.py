@@ -2,11 +2,12 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
-from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.werewolf.ajaba import Ajaba
 from characters.models.werewolf.ananasi import Ananasi
 from characters.models.werewolf.bastet import Bastet
@@ -22,6 +23,7 @@ from characters.models.werewolf.nuwisha import Nuwisha
 from characters.models.werewolf.ratkin import Ratkin
 from characters.models.werewolf.rokea import Rokea
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -160,7 +162,7 @@ class FeraBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class FeraBreedFactionView(SpecialUserMixin, UpdateView):
+class FeraBreedFactionView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     """
     Stage for setting breed and faction-specific choices.
     This handles the different structures for each Fera type.
@@ -202,13 +204,7 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
             # Generic Fera
             fields = ["breed", "faction"]
 
-        # Create a dynamic form class
-        class FeraBreedFactionForm(forms.ModelForm):
-            class Meta:
-                model = type(obj)
-                fields = fields
-
-        return FeraBreedFactionForm
+        return forms.modelform_factory(type(obj), fields=fields)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -313,7 +309,7 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
             if "auspice" in form.changed_data:
                 obj.set_auspice(form.cleaned_data["auspice"])
 
-        obj.creation_status += 1
+        advance(obj, user=self.request.user)
         obj.save()
         return super().form_valid(form)
 
@@ -336,7 +332,7 @@ class FeraBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/fera/chargen.html"
 
 
-class FeraGiftsView(SpecialUserMixin, UpdateView):
+class FeraGiftsView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Fera
     fields = ["gifts"]
     template_name = "characters/werewolf/fera/chargen.html"
@@ -518,12 +514,12 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
                 form.add_error("gifts", f"{gift.name} is not available to your character.")
                 return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class FeraHistoryView(SpecialUserMixin, UpdateView):
+class FeraHistoryView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "first_change",
@@ -568,12 +564,12 @@ class FeraHistoryView(SpecialUserMixin, UpdateView):
             )
             return self.form_invalid(form)
 
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class FeraExtrasView(SpecialUserMixin, UpdateView):
+class FeraExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "date_of_birth",
@@ -588,7 +584,7 @@ class FeraExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/werewolf/fera/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -636,50 +632,12 @@ class FeraAlliesView(GenericBackgroundView):
     template_name = "characters/werewolf/fera/chargen.html"
 
 
-class FeraFetishView(GenericBackgroundView):
-    primary_object_class = Fera
-    background_name = "fetish"
-    form_class = None  # We'll handle this specially
-    template_name = "characters/werewolf/fera/chargen.html"
-    multiple_ownership = True
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get the current background rating for fetish
-        fetish_rating = BackgroundRating.objects.filter(
-            char=self.object, bg__property_name="fetish"
-        ).first()
-        if fetish_rating:
-            context["max_fetish_rating"] = fetish_rating.rating
-            context["current_fetish_total"] = self.object.total_fetish_rating()
-        else:
-            context["max_fetish_rating"] = 0
-            context["current_fetish_total"] = 0
-        context["available_fetishes"] = self.object.filter_fetishes(
-            min_rating=0,
-            max_rating=(fetish_rating.rating if fetish_rating else 0),
-        )
-        return context
-
-
 class FeraSpecialtiesView(HumanSpecialtiesView):
     template_name = "characters/werewolf/fera/chargen.html"
 
 
 class FeraCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: FeraBreedFactionView,
-        2: FeraAttributeView,
-        3: FeraAbilityView,
-        4: FeraBackgroundsView,
-        5: FeraGiftsView,
-        6: FeraHistoryView,
-        7: FeraExtrasView,
-        8: FeraFreebiesView,
-        9: FeraLanguagesView,
-        10: FeraAlliesView,
-        11: FeraSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Fera
     key_property = "creation_status"
     default_redirect = FeraDetailView

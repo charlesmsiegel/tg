@@ -6,7 +6,6 @@ from characters.models.core.human import Human
 class VtMHuman(Human):
     type = "vtm_human"
     gameline = "vtm"
-    freebie_step = 5
 
     talents = [
         "alertness",

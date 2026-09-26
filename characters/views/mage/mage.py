@@ -1,6 +1,9 @@
 import logging
 from typing import Any
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from core.mixins import ScopedCreationFormMixin
 
 logger = logging.getLogger(__name__)
@@ -25,7 +28,6 @@ from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
 from characters.forms.mage.xp import MageXPForm
-from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
@@ -468,7 +470,7 @@ class MageBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mage/chargen.html"
 
 
-class MageFocusView(SpecialUserMixin, UpdateView):
+class MageFocusView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "metaphysical_tenet",
@@ -540,7 +542,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
                             "You must have at least 2 dots in associated abilities for each dot of a Practice",
                         )
                         return self.form_invalid(form)
-            self.object.creation_status += 1
+            advance(self.object, user=self.request.user)
             self.object.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
@@ -551,7 +553,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
         return response
 
 
-class MageSpheresView(SpecialUserMixin, UpdateView):
+class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Mage
     form_class = MageSpheresForm
     template_name = "characters/mage/mage/chargen.html"
@@ -583,7 +585,7 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
         self.object.add_resonance(resonance)
 
         # Update creation status
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
 
         # Handle freebie spending for Arete above 1
         for i in range(arete - 1):
@@ -605,7 +607,7 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class MageExtrasView(SpecialUserMixin, UpdateView):
+class MageExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "date_of_birth",
@@ -622,7 +624,7 @@ class MageExtrasView(SpecialUserMixin, UpdateView):
     template_name = "characters/mage/mage/chargen.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -675,7 +677,7 @@ class MageLanguagesView(HumanLanguagesView):
     template_name = "characters/mage/mage/chargen.html"
 
 
-class MageRoteView(SpecialUserMixin, CreateView):
+class MageRoteView(ChargenStepMixin, SpecialUserMixin, CreateView):
     model = Rote
     form_class = RoteCreationForm
     template_name = "characters/mage/mage/chargen.html"
@@ -751,34 +753,7 @@ class MageRoteView(SpecialUserMixin, CreateView):
 
         if form.save(mage):
             if mage.rote_points == 0:
-                mage.creation_status += 1
-                mage.save()
-                for step in [
-                    "node",
-                    "library",
-                    "familiar",
-                    "wonder",
-                    "enhancement",
-                    "sanctum",
-                    "allies",
-                ]:
-                    bg, _ = Background.objects.get_or_create(
-                        property_name=step,
-                        defaults={"name": step.replace("_", " ").title()},
-                    )
-                    if (
-                        BackgroundRating.objects.filter(
-                            bg=bg,
-                            char=mage,
-                            complete=False,
-                        ).count()
-                        == 0
-                    ):
-                        mage.creation_status += 1
-                    else:
-                        mage.save()
-                        break
-                    mage.save()
+                advance(mage, user=self.request.user)
             return HttpResponseRedirect(mage.get_absolute_url())
         return super().form_invalid(form)
 
@@ -858,11 +833,6 @@ class MageSpecialtiesView(HumanSpecialtiesView):
 class MageWonderView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "wonder"
-    potential_skip = [
-        "enhancement",
-        "sanctum",
-        "allies",
-    ]
     form_class = WonderForm
     template_name = "characters/mage/mage/chargen.html"
     multiple_ownership = True
@@ -871,9 +841,6 @@ class MageWonderView(GenericBackgroundView):
 class MageSanctumView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "sanctum"
-    potential_skip = [
-        "allies",
-    ]
     form_class = SanctumForm
     template_name = "characters/mage/mage/chargen.html"
 
@@ -884,29 +851,7 @@ class MageChantryView(CharacterChantryBackgroundView):
 
 
 class MageCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: MageAttributeView,
-        2: MageAbilityView,
-        3: MageBackgroundsView,
-        4: MageSpheresView,
-        5: MageFocusView,
-        6: MageExtrasView,
-        7: MageFreebiesView,
-        8: MageLanguagesView,
-        9: MageRoteView,
-        10: MageNodeView,
-        11: MageLibraryView,
-        12: MageFamiliarView,
-        13: MageWonderView,
-        14: MageEnhancementView,
-        15: MageSanctumView,
-        16: MageAlliesView,
-        17: MageMentorView,
-        18: MageContactsView,
-        19: MageRetainersView,
-        20: MageChantryView,
-        21: MageSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Mage
     key_property = "creation_status"
     default_redirect = MageDetailView

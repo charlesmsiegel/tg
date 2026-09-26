@@ -20,7 +20,6 @@ class Vampire(VtMHuman):
     """
 
     type = "vampire"
-    freebie_step = 7
 
     # Minimum starting values for morality traits (V20 rules)
     MIN_STARTING_PATH_RATING = 4

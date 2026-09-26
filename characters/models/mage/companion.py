@@ -57,8 +57,6 @@ class Advantage(Model):
 class Companion(MtAHuman):
     type = "companion"
 
-    freebie_step = 5
-
     allowed_backgrounds = [
         "contacts",
         "mentor",

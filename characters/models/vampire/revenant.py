@@ -43,7 +43,6 @@ class Revenant(VtMHuman):
     """
 
     type = "revenant"
-    freebie_step = 6
 
     allowed_backgrounds = [
         "contacts",

@@ -8,8 +8,6 @@ class WtOHuman(Human):
 
     gameline = "wto"
 
-    freebie_step = 5
-
     talents = [
         "alertness",
         "athletics",

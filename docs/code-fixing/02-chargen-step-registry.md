@@ -1,5 +1,11 @@
 # Task: Design a single source of truth for character-creation steps in `tg` (Step 2)
 
+> Implementation follow-up: the user requested both planning and implementation.
+> The current design is [the registry spec](../superpowers/specs/2026-09-25-chargen-step-registry-design.md)
+> and the executable task breakdown and verification record are in
+> [the implementation plan](../superpowers/plans/2026-09-25-chargen-step-registry.md).
+> The original design-only brief below is retained as the historical audit input.
+
 You are designing, **not implementing**, a registry that defines each character type's creation wizard ("chargen") steps in exactly one place. The repository is `charlesmsiegel/tg`: Django 5.2 with django-polymorphic 4.1, a World of Darkness manager with 8 gamelines and about 30 character types. The registry is the keystone of the view refactor: Steps 3 (generic step views), 4 (rules out of views) and 10 (htmx chargen) all build on it. You produce a design doc and an implementation plan that another engineer can execute as a series of small PRs.
 
 ## Before you start

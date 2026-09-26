@@ -1,0 +1,10 @@
+{% load dots sanitize_text %}
+<div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Arcanoi (Select 5 dots)</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>

@@ -12,7 +12,6 @@ class Ghoul(VtMHuman):
     """
 
     type = "ghoul"
-    freebie_step = 6
 
     allowed_backgrounds = [
         "contacts",

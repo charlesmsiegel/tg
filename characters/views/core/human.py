@@ -5,6 +5,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
 
+from characters.chargen import get_workflow
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
@@ -13,7 +16,7 @@ from characters.models.core.specialty import Specialty
 from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.character import CharacterDetailView
-from characters.views.core.chargen_mixins import ChargenProgressMixin
+from characters.views.core.chargen_mixins import ChargenProgressMixin, ChargenStepMixin
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
@@ -127,7 +130,7 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanAttributeView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
     """
     Character creation step: allocating attribute points.
     Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
@@ -189,7 +192,7 @@ class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
                 f"Attributes must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -201,7 +204,7 @@ class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
         return context
 
 
-class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanAbilityView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = Human.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -235,12 +238,12 @@ class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
             return self.form_invalid(form)
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
+class HumanBiographicalInformation(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = [
         "age",
@@ -253,12 +256,12 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
     template_name = "characters/core/human/bio.html"
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
 
-class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanFreebiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
     """View for spending freebie points during character creation.
 
     Uses FreebieSpendingServiceFactory to get the appropriate service
@@ -323,16 +326,8 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
     def form_invalid(self, form):
         return super().form_invalid(form)
 
-    def post(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if obj.freebies == 0:
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().post(request, *args, **kwargs)
 
-
-class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
+class HumanLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/core/human/chargen_form.html"
 
@@ -341,16 +336,6 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
         return self.object
-
-    def post(self, request, *args, **kwargs):
-        obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            english, _ = Language.objects.get_or_create(name="English")
-            obj.languages.add(english)
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().post(request, *args, **kwargs)
 
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
@@ -374,7 +359,7 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
             if language_name:
                 language, created = Language.objects.get_or_create(name=language_name)
                 human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         return HttpResponseRedirect(human.get_absolute_url())
 
@@ -384,7 +369,7 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
         return context
 
 
-class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
+class HumanSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/core/human/chargen.html"
 
@@ -417,17 +402,8 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
         return HttpResponseRedirect(mage.get_absolute_url())
 
 
-# Step numbers must stay in sync with HumanCharacterCreationView.view_mapping
-# below; a mismatch silently miscolors the progress bar.
-HUMAN_CHARGEN_STEPS = [
-    (1, "Attributes"),
-    (2, "Abilities"),
-    (3, "Backgrounds"),
-    (4, "Biography"),
-    (5, "Freebies"),
-    (6, "Languages"),
-    (7, "Specialties"),
-]
+# Compatibility for existing callers; order and labels belong to the registry.
+HUMAN_CHARGEN_STEPS = [(i, step.label) for i, step in enumerate(get_workflow("human").steps, 1)]
 
 
 class HumanAttributeChargenView(ChargenProgressMixin, HumanAttributeView):
@@ -460,15 +436,7 @@ class HumanSpecialtiesChargenView(ChargenProgressMixin, HumanSpecialtiesView):
 
 class HumanCharacterCreationView(DictView):
     chargen_router = True
-    view_mapping = {
-        1: HumanAttributeChargenView,
-        2: HumanAbilityChargenView,
-        3: HumanBackgroundsChargenView,
-        4: HumanBiographicalInformationChargenView,
-        5: HumanFreebiesChargenView,
-        6: HumanLanguagesChargenView,
-        7: HumanSpecialtiesChargenView,
-    }
+    view_mapping = WorkflowViews()
     model_class = Human
     key_property = "creation_status"
     default_redirect = HumanDetailView

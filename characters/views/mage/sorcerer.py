@@ -3,9 +3,11 @@ from typing import Any
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -19,7 +21,6 @@ from characters.forms.mage.numina import (
 from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
 from characters.models.mage.fellowship import SorcererFellowship
@@ -32,6 +33,7 @@ from characters.models.mage.sorcerer import (
 )
 from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -160,23 +162,13 @@ class SorcererBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
-class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPsychicView(ChargenStepMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
     formsets = {
         "numina_form": PsychicPathRatingFormSet,
     }
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
-        if obj.sorcerer_type == "hedge_mage":
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -204,29 +196,19 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
                 practice=None,
                 ability=None,
             )
-        self.object.creation_status += 3
+        advance(self.object, user=self.request.user)
         self.object.freebies = 21
         self.object.save()
         return super().form_valid(form)
 
 
-class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPathView(ChargenStepMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
     formsets = {
         "numina_form": NuminaPathRatingFormSet,
     }
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
-        if obj.sorcerer_type != "hedge_mage":
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -253,16 +235,14 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
                 practice=numina["practice"],
                 ability=numina["ability"],
             )
-        self.object.creation_status += 1
-        if self.object.sorcerer_type != "hedge_mage":
-            self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.willpower = 5
         self.object.freebies = 21
         self.object.save()
         return super().form_valid(form)
 
 
-class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
+class SorcererRitualView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = NuminaRitualForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -271,16 +251,6 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Sorcerer, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
-        if obj.sorcerer_type != "hedge_mage":
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -350,12 +320,12 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
                 for x in sorcerer.paths.all()
             ]
         ):
-            sorcerer.creation_status += 1
+            advance(sorcerer, user=self.request.user)
             sorcerer.save()
         return HttpResponseRedirect(context["object"].get_absolute_url())
 
 
-class SorcererExtrasView(SpecialUserMixin, UpdateView):
+class SorcererExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Sorcerer
     fields = [
         "date_of_birth",
@@ -374,7 +344,7 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.creation_status += 1
+        advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
 
@@ -405,7 +375,7 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
         return form
 
 
-class SorcererFreebiesView(SpecialUserMixin, UpdateView):
+class SorcererFreebiesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     """Freebie spending view for Sorcerer characters.
 
     Uses FreebieSpendingServiceFactory to get the SorcererFreebieSpendingService
@@ -496,37 +466,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
 
         # Post-spending logic: advance creation status when freebies exhausted
         if self.object.freebies == 0:
-            self.object.creation_status += 1
-            if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
-                self.object.creation_status += 1
-                english, _ = Language.objects.get_or_create(name="English")
-                self.object.languages.add(english)
-                for step in [
-                    "node",
-                    "library",
-                    "familiar",
-                    "artifact",
-                    "enhancement",
-                    "sanctum",
-                    "allies",
-                ]:
-                    bg, _ = Background.objects.get_or_create(
-                        property_name=step,
-                        defaults={"name": step.replace("_", " ").title()},
-                    )
-                    if (
-                        BackgroundRating.objects.filter(
-                            bg=bg,
-                            char=self.object,
-                            complete=False,
-                        ).count()
-                        == 0
-                    ):
-                        self.object.creation_status += 1
-                    else:
-                        self.object.save()
-                        break
-                    self.object.save()
+            advance(self.object, user=self.request.user)
             self.object.save()
 
         return super().form_valid(form)
@@ -549,7 +489,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
         return self.form_valid(form)
 
 
-class SorcererLanguagesView(SpendFreebiesPermissionMixin, FormView):
+class SorcererLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -580,7 +520,7 @@ class SorcererLanguagesView(SpendFreebiesPermissionMixin, FormView):
                 if language_name:
                     language, _ = Language.objects.get_or_create(name=language_name)
                     human.languages.add(language)
-        human.creation_status += 1
+        advance(human, user=self.request.user)
         human.save()
         return HttpResponseRedirect(human.get_absolute_url())
 
@@ -590,7 +530,7 @@ class SorcererLanguagesView(SpendFreebiesPermissionMixin, FormView):
         return context
 
 
-class SorcererSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
+class SorcererSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -695,31 +635,15 @@ class SorcererNodeView(GenericBackgroundView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
-class SorcererArtifactView(EditPermissionMixin, FormView):
+class SorcererArtifactView(ChargenStepMixin, EditPermissionMixin, FormView):
     form_class = ArtifactCreateOrSelectForm
     template_name = "characters/mage/sorcerer/chargen.html"
-
-    potential_skip = [
-        "enhancement",
-        "sanctum",
-        "allies",
-    ]
 
     def get_object(self):
         """Return the Sorcerer object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
             self.object = get_object_or_404(Sorcerer, pk=self.kwargs.get("pk"))
         return self.object
-
-    def dispatch(self, request, *args, **kwargs):
-        obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
-        if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
-            if request.method != "POST":
-                return render(request, "characters/core/skip_background.html", {"object": obj})
-            obj.creation_status += 1
-            obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -752,20 +676,7 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
             .count()
             == 0
         ):
-            context["object"].creation_status += 1
-            context["object"].save()
-            for step in self.potential_skip:
-                if (
-                    context["object"]
-                    .backgrounds.filter(bg__property_name=step, complete=False)
-                    .count()
-                    == 0
-                ):
-                    context["object"].creation_status += 1
-                else:
-                    context["object"].save()
-                    break
-            context["object"].save()
+            advance(context["object"], user=self.request.user)
         return HttpResponseRedirect(context["object"].get_absolute_url())
 
     def get_form(self, form_class=None):
@@ -799,26 +710,7 @@ class SorcererChantryView(CharacterChantryBackgroundView):
 
 
 class SorcererCharacterCreationView(HumanCharacterCreationView):
-    view_mapping = {
-        1: SorcererAttributeView,
-        2: SorcererAbilityView,
-        3: SorcererBackgroundsView,
-        4: SorcererPsychicView,
-        5: SorcererPathView,
-        6: SorcererRitualView,
-        7: SorcererExtrasView,
-        8: SorcererFreebiesView,
-        9: SorcererLanguagesView,
-        10: SorcererNodeView,
-        11: SorcererLibraryView,
-        12: SorcererFamiliarView,
-        13: SorcererArtifactView,
-        14: SorcererEnhancementView,
-        15: SorcererSanctumView,
-        16: SorcererAlliesView,
-        17: SorcererChantryView,
-        18: SorcererSpecialtiesView,
-    }
+    view_mapping = WorkflowViews()
 
     model_class = Sorcerer
     key_property = "creation_status"
