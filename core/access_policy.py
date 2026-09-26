@@ -62,25 +62,6 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
         ) and request.method in {"GET", "HEAD"}:
             return render_public_object_list(request, view.model)
         return None
-    if policy == "OBJECT_AJAX":
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "Authentication required"}, status=401)
-        object_id = request.GET.get("object")
-        if object_id:
-            if (
-                len(object_id) > 20
-                or not object_id.isascii()
-                or not object_id.isdecimal()
-                or int(object_id) < 1
-            ):
-                raise Http404("Object not found")
-
-            subject = _object(CharacterModel, {"pk": object_id})
-            if not PermissionManager.user_has_permission(
-                request.user, subject, Permission.VIEW_FULL, request=request
-            ):
-                raise Http404("Object not found")
-        return None
     if policy in {"LOGIN", "ACCOUNT", "GAME", "OBJECT_CREATE"}:
         if (
             policy == "GAME"

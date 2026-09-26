@@ -37,15 +37,6 @@ PLAYER_MODELS = (CharacterModel, Group, Chimera, Effect, Rote, ItemModel, Locati
 
 
 def classify(name, view, step_names):
-    if name in {
-        "characters.views.core.human.LoadExamplesView",
-        "characters.views.core.human.LoadValuesView",
-        "characters.views.mage.companion.LoadExamplesView",
-        "characters.views.mage.mage.GetAbilitiesView",
-        "characters.views.mage.mage.LoadXPExamplesView",
-        "characters.views.mage.sorcerer.LoadExamplesView",
-    }:
-        return "OBJECT_AJAX"
     if name == "core.views.public_object.PublicObjectDetailView":
         return "PUBLIC_CARD"
     if name == "characters.views.core.CharacterIndexView":
