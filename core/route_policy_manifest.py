@@ -249,6 +249,12 @@ characters.views.wraith.wtohuman.WtOHumanSpecialtiesView
 locations.views.changeling.creation.FreeholdDetailsView
 locations.views.changeling.creation.FreeholdFeaturesView
 locations.views.changeling.creation.FreeholdPowersView
+locations.views.mage.chantry.ChantryAlliesView
+locations.views.mage.chantry.ChantryIntegratedEffectsView
+locations.views.mage.chantry.ChantryLibrarysView
+locations.views.mage.chantry.ChantryNodeView
+locations.views.mage.chantry.ChantryPointsView
+locations.views.mage.chantry.ChantrySanctumView
     """.split()),
     'GAME': frozenset("""
 game.views.ChronicleCreateView
@@ -876,6 +882,7 @@ characters.views.wraith.wtohuman.WtOHumanCharacterCreationView
 items.views.core.GenericItemDetailView
 locations.views.changeling.creation.FreeholdCreationView
 locations.views.core.GenericLocationDetailView
+locations.views.mage.chantry.ChantryCreationView
     """.split()),
     'STAFF_WRITE': frozenset("""
 characters.views.changeling.cantrip.CantripCreateView
