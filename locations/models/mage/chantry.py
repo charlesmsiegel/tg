@@ -328,6 +328,62 @@ class Chantry(BackgroundBlock, LocationModel):
     def has_faction(self):
         return self.faction is not None
 
+    # Ratings for these backgrounds are finished by creating an object in wizard steps 3-6.
+    WIZARD_RESOURCES = ("node", "library", "allies", "sanctum")
+    FINAL_WIZARD_STEP = 6
+
+    def submission_errors(self):
+        """Reasons this chantry cannot be submitted yet; empty when it can."""
+        from locations.services.chantry_points import (
+            has_affordable_effect,
+            has_affordable_purchase,
+        )
+
+        def plural(count, word):
+            return f"{count} {word}{'' if count == 1 else 's'}"
+
+        errors = []
+        if self.creation_status <= self.FINAL_WIZARD_STEP:
+            errors.append(
+                f"Finish every creation step (the chantry is on step "
+                f"{self.creation_status} of {self.FINAL_WIZARD_STEP})."
+            )
+        if self.points < 0:
+            errors.append(f"{plural(-self.points, 'more point')} spent than the chantry has.")
+        if has_affordable_purchase(self):
+            errors.append(
+                f"{plural(self.points, 'unspent point')} can still buy a background "
+                "or Integrated Effects dot."
+            )
+        ie_points = self.current_ie_points()
+        if ie_points < 0:
+            errors.append(
+                f"Integrated effects cost {plural(-ie_points, 'more point')} than the "
+                "Integrated Effects score allows."
+            )
+        if has_affordable_effect(self):
+            errors.append(
+                f"{plural(ie_points, 'Integrated Effects point')} can still buy an effect."
+            )
+        for rating in self.backgrounds.select_related("bg"):
+            name = rating.bg.name if rating.bg else "A deleted background"
+            if rating.bg is None or rating.bg.property_name not in self.allowed_backgrounds:
+                errors.append(f"{name} is not a chantry background.")
+            elif not 1 <= rating.rating <= 5:
+                errors.append(f"{name} must be rated 1 to 5.")
+            if (
+                rating.bg is not None
+                and rating.bg.property_name in self.WIZARD_RESOURCES
+                and not rating.complete
+            ):
+                errors.append(f"{name} has not been set up yet.")
+        return errors
+
+    def on_returned_for_revision(self):
+        """ApprovalService hook: a returned chantry re-enters the wizard at step 1."""
+        self.creation_status = 1
+        return ["creation_status"]
+
     def get_independent_members(self):
         """Returns members who aren't part of any cabals in this chantry."""
         cabal_member_ids = set()
