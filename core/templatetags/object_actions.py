@@ -2,9 +2,9 @@
 
 from django import template
 
+from characters.models.changeling.chimera import Chimera
 from characters.models.core.character import Character
 from characters.models.core.group import Group
-from characters.models.changeling.chimera import Chimera
 from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.models import CharacterTemplate
@@ -39,9 +39,15 @@ def object_actions(context):
         return {}
     can_edit = PermissionManager.user_has_permission(user, obj, Permission.EDIT_FULL)
     can_approve = PermissionManager.user_has_permission(user, obj, Permission.APPROVE)
+    can_submit = can_edit and obj.status in {"Un", "Rev"}
+    # Models may opt in to listing what blocks submission (see ApprovalService).
+    submission_errors = []
+    if can_submit and hasattr(obj, "submission_errors"):
+        submission_errors = obj.submission_errors()
     return {
         "object_type": object_type,
         "object_pk": obj.pk,
-        "can_submit": can_edit and obj.status in {"Un", "Rev"},
+        "can_submit": can_submit and not submission_errors,
+        "submission_errors": submission_errors,
         "can_review": can_approve and obj.status == "Sub",
     }
