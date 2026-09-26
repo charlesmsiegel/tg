@@ -7,7 +7,7 @@ The `core` app provides foundational components used throughout the TG project. 
 Core serves as the foundation layer for the entire application, providing:
 - Base polymorphic models for Characters, Items, and Locations
 - Shared utilities and helper functions
-- Permission systems and decorators
+- Permission system
 - Template tags and filters
 - Common constants and enumerations
 - Context processors for global template data
@@ -30,9 +30,6 @@ Helper functions for common operations across the project.
 - Object-level permissions
 - Storyteller verification
 - Approval workflows
-
-### Decorators (`decorators.py`)
-Custom decorators for views, including permission checks.
 
 ### Constants (`constants.py`)
 Shared enumerations and constant values:
@@ -57,7 +54,6 @@ core/
 ├── apps.py                     # App configuration
 ├── constants.py                # Shared constants and enumerations
 ├── context_processors.py       # Global template context
-├── decorators.py               # Custom decorators
 ├── migrations/                 # Database migrations
 ├── mixins.py                   # Reusable model/view mixins
 ├── models.py                   # Base polymorphic models
@@ -107,12 +103,6 @@ class MyCustomModel(Model):
 
 ```python
 from core.permissions import user_can_edit_object
-from core.decorators import require_storyteller
-
-@require_storyteller
-def storyteller_only_view(request):
-    # Only accessible to storytellers
-    pass
 
 def edit_view(request, pk):
     obj = MyModel.objects.get(pk=pk)
