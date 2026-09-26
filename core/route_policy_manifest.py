@@ -965,6 +965,7 @@ characters.views.werewolf.renownincident.RenownIncidentUpdateView
 characters.views.werewolf.rite.RiteCreateView
 characters.views.werewolf.rite.RiteUpdateView
 characters.views.werewolf.septposition.SeptPositionCreateView
+characters.views.werewolf.septposition.SeptPositionUpdateView
 characters.views.werewolf.totem.TotemCreateView
 characters.views.werewolf.totem.TotemUpdateView
 characters.views.werewolf.tribe.TribeCreateView

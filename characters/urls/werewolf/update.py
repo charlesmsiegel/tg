@@ -44,6 +44,11 @@ urls = [
         name="renownincident",
     ),
     path(
+        "septposition/<pk>/",
+        views.werewolf.SeptPositionUpdateView.as_view(),
+        name="septposition",
+    ),
+    path(
         "battlescar/<pk>/",
         views.werewolf.BattleScarUpdateView.as_view(),
         name="battlescar",
