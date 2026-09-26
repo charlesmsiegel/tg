@@ -173,3 +173,28 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
 
         match = resolve("/locations/mage/ajax/load_chantry_examples/")
         self.assertIs(match.func.view_class, LoadExamplesView)
+
+    def test_empty_gameline_ajax_modules_removed(self):
+        for namespace in (
+            "characters:changeling:ajax",
+            "characters:vampire:ajax",
+            "characters:werewolf:ajax",
+            "characters:wraith:ajax",
+            "locations:vampire:ajax",
+        ):
+            app, gameline, _ = namespace.split(":")
+            self.assertModuleRemoved(f"{app}.urls.{gameline}.ajax")
+            self.assertUrlNamespaceRemoved(namespace)
+
+    def test_every_gameline_urlconf_still_mounted(self):
+        # characters/urls/__init__.py and locations/urls/__init__.py swallow ImportError,
+        # so a dangling "from . import ajax" would silently drop a whole gameline.
+        from core.constants import GameLine
+
+        for app in ("characters", "locations"):
+            mounted = get_resolver().namespace_dict[app][1].namespace_dict
+            for _url_path, module_name, namespace in GameLine.URL_PATTERNS:
+                with self.subTest(app=app, gameline=module_name):
+                    module = importlib.import_module(f"{app}.urls.{module_name}")
+                    self.assertTrue(hasattr(module, "urls"))
+                    self.assertIn(namespace, mounted)
