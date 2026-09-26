@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import FormView
@@ -7,9 +8,11 @@ from django.views.generic import FormView
 from characters.forms.mage.enhancements import EnhancementForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
+from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
     SpendFreebiesPermissionMixin,
 )
+from locations.forms.mage.chantry import ChantrySelectOrCreateForm
 
 
 class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
@@ -105,3 +108,38 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
                     break
             obj.save()
         return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class CharacterChantryBackgroundView(GenericBackgroundView):
+    """Chantry background step shared by the Mage-family character wizards.
+
+    Subclasses set only ``primary_object_class`` and ``template_name``.
+    ``form_valid`` replaces the generic version, which would overwrite the
+    owner, chronicle and status of a chantry the character merely joins.
+    """
+
+    background_name = "chantry"
+    form_class = ChantrySelectOrCreateForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = self.get_object()
+        rating = getattr(self, "current_background", None)
+        kwargs["points"] = rating.rating if rating is not None else 0
+        return kwargs
+
+    def form_valid(self, form):
+        character = self.get_object()
+        with transaction.atomic():
+            chantry = form.save()
+            chantry.members.add(character)
+            self.current_background.note = chantry.name
+            self.current_background.url = chantry.get_absolute_url()
+            self.current_background.complete = True
+            self.current_background.save()
+            if not character.backgrounds.filter(
+                bg__property_name=self.background_name, complete=False
+            ).exists():
+                character.creation_status += 1
+                character.save()
+        return HttpResponseRedirect(character.get_absolute_url())
