@@ -10,7 +10,7 @@ from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
 from characters.models.mage.sorcerer import Sorcerer
 from characters.models.werewolf.wtahuman import WtAHuman
-from game.models import Chronicle, Gameline, ObjectType, STRelationship
+from game.models import Chronicle, Gameline, STRelationship
 
 
 class PublicCharacterDetailTests(TestCase):
@@ -228,20 +228,3 @@ class MageStepAuthorizationTests(TestCase):
         self.assertEqual(self.client.post(self.url, {"decease": "1"}).status_code, 302)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.status, "Dec")
-
-    def test_character_dependent_ajax_requires_full_read(self):
-        url = f"/characters/mage/ajax/load_xp_examples/?object={self.mage.pk}&category=unknown"
-        self.assertEqual(self.client.get(url).status_code, 401)
-        self.client.force_login(self.other)
-        self.assertEqual(self.client.get(url).status_code, 404)
-        self.client.force_login(self.owner)
-        self.assertEqual(self.client.get(url).status_code, 200)
-
-    def test_ajax_read_does_not_seed_object_types(self):
-        self.client.force_login(self.owner)
-        before = ObjectType.objects.count()
-        response = self.client.get(
-            f"/characters/mage/ajax/load_xp_examples/?object={self.mage.pk}&category=MeritFlaw"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(ObjectType.objects.count(), before)

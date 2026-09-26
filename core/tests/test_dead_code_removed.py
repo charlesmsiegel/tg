@@ -15,7 +15,7 @@ from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.test import SimpleTestCase
-from django.urls import NoReverseMatch, get_resolver, reverse
+from django.urls import NoReverseMatch, get_resolver, resolve, reverse
 
 REPO_ROOT = Path(settings.BASE_DIR)
 
@@ -114,3 +114,62 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
             "characters/mage/sorcerer/load_affinity_dropdown_list.html",
             "characters/mage/sorcerer/load_attribute_dropdown_list.html",
         )
+
+    REMOVED_AJAX_URL_NAMES = (
+        "characters:ajax:load_examples",
+        "characters:ajax:load_values",
+        "characters:mage:ajax:load_mf_ratings",
+        "characters:mage:ajax:load_xp_examples",
+        "characters:mage:ajax:get_abilities",
+        "characters:mage:ajax:load_companion_examples",
+        "characters:mage:ajax:load_advantage_values",
+        "characters:mage:ajax:load_sorcerer_examples",
+        "characters:mage:ajax:get_practice_abilities",
+        "characters:mage:ajax:load_attributes",
+        "characters:mage:ajax:load_affinities",
+    )
+    REMOVED_AJAX_VIEWS = (
+        "characters.views.core.human.LoadExamplesView",
+        "characters.views.core.human.LoadValuesView",
+        "characters.views.mage.mage.LoadMFRatingsView",
+        "characters.views.mage.mage.LoadXPExamplesView",
+        "characters.views.mage.mage.GetAbilitiesView",
+        "characters.views.mage.companion.LoadExamplesView",
+        "characters.views.mage.companion.LoadCompanionValuesView",
+        "characters.views.mage.sorcerer.LoadExamplesView",
+        "characters.views.mage.sorcerer.GetPracticeAbilitiesView",
+        "characters.views.mage.sorcerer.LoadAttributesView",
+        "characters.views.mage.sorcerer.LoadAffinitiesView",
+    )
+
+    def test_ajax_url_names_removed(self):
+        self.assertUrlNamesRemoved(*self.REMOVED_AJAX_URL_NAMES)
+        self.assertUrlNamespaceRemoved("characters:ajax")
+        self.assertUrlNamespaceRemoved("characters:mage:ajax")
+        self.assertModuleRemoved("characters.urls.core.ajax")
+        self.assertModuleRemoved("characters.urls.mage.ajax")
+
+    def test_ajax_views_removed(self):
+        from core.route_policy_manifest import VIEW_POLICIES
+
+        for dotted in self.REMOVED_AJAX_VIEWS:
+            module_path, name = dotted.rsplit(".", 1)
+            self.assertAttributesRemoved(module_path, name)
+            self.assertNotIn(dotted, VIEW_POLICIES)
+        self.assertAttributesRemoved(
+            "characters.views.mage",
+            "LoadCompanionValuesView",
+            "GetAbilitiesView",
+            "LoadMFRatingsView",
+            "GetPracticeAbilitiesView",
+            "LoadAffinitiesView",
+            "LoadAttributesView",
+        )
+
+    def test_chantry_ajax_endpoint_kept_until_c5(self):
+        # resolve() a path and never spell the URL name, so find_dead_code.py still reports
+        # the route as dead until chantry PR C5 deletes it together with this test.
+        from locations.views.mage.chantry import LoadExamplesView
+
+        match = resolve("/locations/mage/ajax/load_chantry_examples/")
+        self.assertIs(match.func.view_class, LoadExamplesView)

@@ -8,10 +8,7 @@ from django.views.generic import CreateView, FormView, UpdateView
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -19,10 +16,8 @@ from characters.views.core.character import CharacterDetailView
 from characters.views.core.chargen_mixins import ChargenProgressMixin
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    DropdownOptionsView,
     EditPermissionMixin,
     MessageMixin,
-    SimpleValuesView,
     SpendFreebiesPermissionMixin,
     prepare_created_object,
 )
@@ -261,69 +256,6 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
         self.object.creation_status += 1
         self.object.save()
         return super().form_valid(form)
-
-
-class LoadExamplesView(DropdownOptionsView):
-    """AJAX view to load examples for dropdown options (Attribute, Ability, Background, MeritFlaw)."""
-
-    label_attr = "__str__"
-
-    def get_options(self):
-        category_choice = self.request.GET.get("category")
-        if category_choice == "Attribute":
-            return Attribute.objects.all()
-        elif category_choice == "Ability":
-            return Ability.objects.all()
-        elif category_choice == "Background":
-            return Background.objects.all()
-        elif category_choice == "MeritFlaw":
-            return MeritFlaw.objects.all()
-        return []
-
-
-class LoadValuesView(SimpleValuesView):
-    """AJAX view to load merit/flaw rating values filtered by affordability."""
-
-    def get_values(self):
-        mf = get_object_or_404(MeritFlaw, pk=self.request.GET.get("example"))
-        character_id = self.request.GET.get("object")
-        is_xp = self.request.GET.get("xp", "false").lower() == "true"
-
-        ratings = [x.value for x in mf.ratings.all()]
-        ratings.sort()
-
-        # Filter ratings based on character's available freebies/XP and flaw limit
-        if character_id:
-            character = get_object_or_404(Human, pk=character_id)
-            current_rating = character.mf_rating(mf)
-
-            affordable_ratings = []
-
-            if is_xp:
-                # For XP spending: cost = 3 × |new_rating - current_rating|
-                available_xp = character.xp
-                for rating in ratings:
-                    cost = 3 * abs(rating - current_rating)
-                    if cost <= available_xp and rating != current_rating:
-                        affordable_ratings.append(rating)
-            else:
-                # For freebie spending: cost = rating value
-                current_flaws = character.total_flaws()
-                available_freebies = character.freebies
-
-                for rating in ratings:
-                    # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
-                    if rating < 0:
-                        if current_flaws + rating >= -7:
-                            affordable_ratings.append(rating)
-                    # Merits and neutral (0) ratings are affordable if we have enough freebies
-                    else:
-                        if rating <= available_freebies:
-                            affordable_ratings.append(rating)
-
-            ratings = affordable_ratings
-
-        return ratings
 
 
 class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):

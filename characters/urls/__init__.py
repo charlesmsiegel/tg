@@ -5,7 +5,7 @@ from django.urls import include, path
 from characters import views
 from core.constants import GameLine
 
-from .core import ajax, create, detail, index, update
+from .core import create, detail, index, update
 
 # Generate gameline URL patterns programmatically
 urlpatterns = []
@@ -26,7 +26,6 @@ for url_path, module_name, namespace in GameLine.URL_PATTERNS:
 # Add core URL patterns
 urlpatterns.extend(
     [
-        path("ajax/", include((ajax.urls, "characters_ajax"), namespace="ajax")),
         path("create/", include((create.urls, "characters_create"), namespace="create")),
         path("update/", include((update.urls, "characters_update"), namespace="update")),
         path("list/", include((index.urls, "characters_list"), namespace="list")),

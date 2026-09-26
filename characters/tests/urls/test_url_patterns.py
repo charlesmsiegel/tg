@@ -108,15 +108,6 @@ class CharactersGamelineUrlsTest(TestCase):
             # This is expected behavior
 
 
-class CharactersAjaxUrlsTest(TestCase):
-    """Tests for AJAX URL patterns."""
-
-    def test_ajax_namespace_exists(self):
-        """Test that ajax namespace is accessible."""
-        resolver = resolve("/characters/ajax/")
-        self.assertIsNotNone(resolver)
-
-
 class CharactersCreateUrlsTest(TestCase):
     """Tests for create URL patterns."""
 

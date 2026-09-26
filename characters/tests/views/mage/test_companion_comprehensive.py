@@ -1,7 +1,5 @@
 """Comprehensive tests for companion views module."""
 
-import unittest
-
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -10,7 +8,7 @@ from characters.models.core.archetype import Archetype
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
-from characters.models.mage.companion import Advantage, Companion
+from characters.models.mage.companion import Companion
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
 from game.models import Chronicle, ObjectType
@@ -217,96 +215,6 @@ class TestCompanionFreebiesView(TestCase):
         """Test that freebies view is accessible."""
         self.client.login(username="owner", password="password")
         response = self.client.get(self.companion.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-
-@unittest.skip("URL 'companion_load_examples' not implemented yet")
-class TestCompanionExamplesView(TestCase):
-    """Test LoadExamplesView for companion freebie spending."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.companion = Companion.objects.create(
-            name="Test Companion",
-            owner=self.owner,
-            companion_type="familiar",
-            freebies=25,
-            willpower=5,
-        )
-
-    def test_load_examples_attribute(self):
-        """Test loading attribute examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:companion_load_examples"),
-            {"category": "Attribute", "object": self.companion.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_ability(self):
-        """Test loading ability examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:companion_load_examples"),
-            {"category": "Ability", "object": self.companion.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_new_background(self):
-        """Test loading new background examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:companion_load_examples"),
-            {"category": "New Background", "object": self.companion.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_meritflaw(self):
-        """Test loading merit/flaw examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:companion_load_examples"),
-            {"category": "MeritFlaw", "object": self.companion.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_advantage(self):
-        """Test loading advantage examples."""
-        self.client.login(username="owner", password="password")
-        # Create an advantage for testing
-        advantage = Advantage.objects.create(name="Test Advantage", min_rating=1)
-        response = self.client.get(
-            reverse("characters:mage:ajax:companion_load_examples"),
-            {"category": "Advantage", "object": self.companion.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-@unittest.skip("URL 'load_companion_values' not implemented yet")
-class TestCompanionValuesView(TestCase):
-    """Test LoadCompanionValuesView for advantage ratings."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.advantage = Advantage.objects.create(name="Test Advantage", min_rating=1)
-        # Add valid ratings to the advantage (uses Number objects internally)
-        self.advantage.add_ratings([1, 2, 3])
-
-    def test_load_companion_values(self):
-        """Test loading advantage rating values."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_companion_values"),
-            {"example": self.advantage.id},
-        )
         self.assertEqual(response.status_code, 200)
 
 

@@ -303,14 +303,9 @@ characters.views.demon.demon_chargen.DemonBasicsView
 characters.views.demon.dtfhuman_chargen.DtFHumanBasicsView
 characters.views.demon.dtfhuman_chargen.DtFHumanTemplateSelectView
 characters.views.demon.thrall_chargen.ThrallBasicsView
-characters.views.mage.companion.LoadCompanionValuesView
-characters.views.mage.mage.LoadMFRatingsView
 characters.views.mage.mage.MageBasicsView
 characters.views.mage.mtahuman.MtAHumanBasicsView
 characters.views.mage.mtahuman.MtAHumanTemplateSelectView
-characters.views.mage.sorcerer.GetPracticeAbilitiesView
-characters.views.mage.sorcerer.LoadAffinitiesView
-characters.views.mage.sorcerer.LoadAttributesView
 characters.views.vampire.ghoul_chargen.GhoulBasicsView
 characters.views.vampire.vampire_chargen.VampireBasicsView
 characters.views.vampire.vtmhuman.VtMHumanBasicsView
@@ -338,14 +333,6 @@ locations.views.mage.sanctum.SanctumCreateView
     """.split()),
     'OBJECT_ACTION': frozenset("""
 locations.views.mage.paradox_realm.ParadoxRealmUpdateView
-    """.split()),
-    'OBJECT_AJAX': frozenset("""
-characters.views.core.human.LoadExamplesView
-characters.views.core.human.LoadValuesView
-characters.views.mage.companion.LoadExamplesView
-characters.views.mage.mage.GetAbilitiesView
-characters.views.mage.mage.LoadXPExamplesView
-characters.views.mage.sorcerer.LoadExamplesView
     """.split()),
     'OBJECT_CREATE': frozenset("""
 characters.views.changeling.autumn_person.AutumnPersonCreateView

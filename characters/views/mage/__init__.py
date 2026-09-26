@@ -5,7 +5,6 @@ from .companion import (
     CompanionCreateView,
     CompanionUpdateView,
     CopanionCharacterCreationView,
-    LoadCompanionValuesView,
 )
 from .effect import EffectCreateView, EffectDetailView, EffectListView, EffectUpdateView
 from .faction import (
@@ -58,8 +57,6 @@ from .hedge_magic import (
     RitualUpdateView,
 )
 from .mage import (
-    GetAbilitiesView,
-    LoadMFRatingsView,
     MageBasicsView,
     MageCharacterCreationView,
     MageCreateView,
@@ -83,9 +80,6 @@ from .resonance import (
 )
 from .rote import RoteCreateView, RoteDetailView, RoteListView, RoteUpdateView
 from .sorcerer import (
-    GetPracticeAbilitiesView,
-    LoadAffinitiesView,
-    LoadAttributesView,
     SorcererBasicsView,
     SorcererCharacterCreationView,
     SorcererDetailView,
@@ -103,7 +97,6 @@ __all__ = [
     "CompanionCreateView",
     "CompanionUpdateView",
     "CopanionCharacterCreationView",
-    "LoadCompanionValuesView",
     "EffectCreateView",
     "EffectDetailView",
     "EffectListView",
@@ -149,8 +142,6 @@ __all__ = [
     "RitualDetailView",
     "RitualListView",
     "RitualUpdateView",
-    "GetAbilitiesView",
-    "LoadMFRatingsView",
     "MageBasicsView",
     "MageCharacterCreationView",
     "MageCreateView",
@@ -171,9 +162,6 @@ __all__ = [
     "RoteDetailView",
     "RoteListView",
     "RoteUpdateView",
-    "GetPracticeAbilitiesView",
-    "LoadAffinitiesView",
-    "LoadAttributesView",
     "SorcererBasicsView",
     "SorcererCharacterCreationView",
     "SorcererDetailView",
