@@ -311,3 +311,37 @@ class D5RemovedTests(SimpleTestCase):
                 self.assertFalse(hasattr(module, name))
         self.assertIn("pprint", json_filters.register.filters)
         self.assertIn("formset_add_btn", formset_tags.register.tags)
+
+    def test_item_and_location_tag_libraries_are_gone(self):
+        from django.template import TemplateDoesNotExist
+        from django.template.loader import get_template
+
+        self._assert_libraries_removed(
+            ("item_filters", "location_tags"),
+            ("items.templatetags.item_filters", "locations.templatetags.location_tags"),
+        )
+        with self.assertRaises(TemplateDoesNotExist):
+            get_template("locations/location_recursive.html")
+
+    def test_leftover_loads_are_removed_and_templates_compile(self):
+        import re
+        from pathlib import Path
+
+        from django.conf import settings
+        from django.template.loader import get_template
+
+        leftover_loads = (
+            ("items/templates/items/index.html", "items/index.html", "item_filters"),
+            ("locations/templates/locations/index.html", "locations/index.html", "location_tags"),
+            (
+                "game/templates/game/chronicle/detail.html",
+                "game/chronicle/detail.html",
+                "location_tags",
+            ),
+        )
+        base_dir = Path(settings.BASE_DIR)
+        for relative_path, template_name, library in leftover_loads:
+            with self.subTest(template=template_name, library=library):
+                source = (base_dir / relative_path).read_text(encoding="utf-8")
+                self.assertIsNone(re.search(r"{%\s*load\b[^%]*\b" + library + r"\b", source))
+                get_template(template_name)
