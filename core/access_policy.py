@@ -104,7 +104,11 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
             raise Http404("Object not found")
 
         return PublicObjectDetailView.as_view(model_class=model)(request, *args, **kwargs)
-    if policy in {"OBJECT_WRITE", "OBJECT_ACTION"}:
+    if policy in {"OBJECT_WRITE", "OBJECT_ACTION", "OBJECT_ST_WRITE"}:
+        if policy == "OBJECT_ST_WRITE" and not PermissionManager.user_has_scoped_editor_role(
+            request.user, obj, request=request
+        ):
+            raise PermissionDenied("A storyteller for this chronicle is required")
         if (
             isinstance(obj, CharacterTemplate)
             and obj.is_official
@@ -132,7 +136,7 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
                 "approved_by",
             }
             submitted = forbidden.intersection(request.POST)
-            if policy == "OBJECT_WRITE":
+            if policy in {"OBJECT_WRITE", "OBJECT_ST_WRITE"}:
                 form_class = getattr(view, "form_class", None)
                 form_fields = set(getattr(form_class, "base_fields", {}))
                 form_fields.update(getattr(view, "fields", ()) or ())
