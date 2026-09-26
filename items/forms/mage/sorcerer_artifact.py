@@ -4,17 +4,6 @@ from items.models.mage import SorcererArtifact
 from widgets import CreateOrSelectField, CreateOrSelectMixin
 
 
-class SorcererArtifactForm(forms.ModelForm):
-    class Meta:
-        model = SorcererArtifact
-        fields = ["name", "rank", "description"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-
-
 class ArtifactCreateOrSelectForm(CreateOrSelectMixin, forms.ModelForm):
     """Form for selecting an existing Artifact or creating a new one."""
 

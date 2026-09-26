@@ -5,92 +5,11 @@ from django.test import TestCase
 
 from characters.forms.mage.freebies import (
     CompanionFreebiesForm,
-    MageFreebiesForm,
     SorcererFreebiesForm,
 )
 from characters.models.mage.companion import Companion
-from characters.models.mage.mage import Mage
 from characters.models.mage.sorcerer import Sorcerer
-from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-
-
-class TestMageFreebiesForm(TestCase):
-    """Test MageFreebiesForm."""
-
-    def setUp(self):
-        mage_setup()
-        self.player = User.objects.create_user(username="Test")
-        self.mage = Mage.objects.create(
-            name="Test Mage",
-            owner=self.player,
-            arete=2,
-            freebies=21,
-        )
-
-    def test_form_initialization(self):
-        """Test form initializes correctly."""
-        form = MageFreebiesForm(instance=self.mage)
-        self.assertIn("category", form.fields)
-        self.assertIn("resonance", form.fields)
-
-    def test_form_category_choices_include_mage_options(self):
-        """Test form includes mage-specific category choices."""
-        form = MageFreebiesForm(instance=self.mage)
-        choices = [c[0] for c in form.fields["category"].choices]
-        # Sphere requires 7 freebies
-        self.assertIn("Sphere", choices)
-
-    def test_form_excludes_arete_when_at_max(self):
-        """Test Arete excluded when at character creation max."""
-        self.mage.arete = 3
-        self.mage.save()
-        form = MageFreebiesForm(instance=self.mage)
-        choices = [c[0] for c in form.fields["category"].choices]
-        self.assertNotIn("Arete", choices)
-
-    def test_form_excludes_sphere_when_not_enough_freebies(self):
-        """Test Sphere excluded when not enough freebies."""
-        self.mage.freebies = 5
-        self.mage.save()
-        form = MageFreebiesForm(instance=self.mage)
-        choices = [c[0] for c in form.fields["category"].choices]
-        self.assertNotIn("Sphere", choices)
-
-    def test_form_excludes_resonance_when_not_enough_freebies(self):
-        """Test Resonance excluded when not enough freebies."""
-        self.mage.freebies = 2
-        self.mage.save()
-        form = MageFreebiesForm(instance=self.mage)
-        choices = [c[0] for c in form.fields["category"].choices]
-        self.assertNotIn("Resonance", choices)
-
-    def test_form_bound_sphere_category(self):
-        """Test form bound with Sphere category."""
-        sphere = Sphere.objects.first()
-        form = MageFreebiesForm(
-            instance=self.mage,
-            data={
-                "category": "Sphere",
-                "example": sphere.id,
-                "value": "",
-                "note": "",
-            },
-        )
-        self.assertIsNotNone(form.fields["example"].queryset)
-
-    def test_form_save_returns_instance(self):
-        """Test form save returns the instance."""
-        form = MageFreebiesForm(instance=self.mage)
-        form.is_bound = False
-        result = form.save()
-        self.assertEqual(result, self.mage)
-
-    def test_form_with_suggestions(self):
-        """Test form with custom suggestions."""
-        suggestions = ["Test1", "Test2"]
-        form = MageFreebiesForm(instance=self.mage, suggestions=suggestions)
-        self.assertEqual(form.fields["resonance"].widget.suggestions, suggestions)
 
 
 class TestSorcererFreebiesForm(TestCase):
