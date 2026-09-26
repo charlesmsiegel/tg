@@ -1,5 +1,6 @@
 from django import forms
 from django.db import transaction
+from django.db.models import F
 
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
@@ -13,6 +14,24 @@ from widgets import (
     CreateOrSelectField,
     CreateOrSelectMixin,
 )
+
+# Fields (and widgets) shared by ChantryCreateForm and ChantrySelectOrCreateForm's Meta,
+# after each form's own leading fields.
+_CHANTRY_DETAIL_FIELDS = [
+    "contained_within",
+    "description",
+    "faction",
+    "leadership_type",
+    "season",
+    "chantry_type",
+    "gauntlet",
+    "shroud",
+    "dimension_barrier",
+]
+_CHANTRY_WIDGETS = {
+    "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
+    "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
+}
 
 
 class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
@@ -144,23 +163,8 @@ class ChantryCreateForm(forms.ModelForm):
 
     class Meta:
         model = Chantry
-        fields = [
-            "name",
-            "chronicle",
-            "contained_within",
-            "description",
-            "faction",
-            "leadership_type",
-            "season",
-            "chantry_type",
-            "gauntlet",
-            "shroud",
-            "dimension_barrier",
-        ]
-        widgets = {
-            "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
-            "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
-        }
+        fields = ["name", "chronicle", *_CHANTRY_DETAIL_FIELDS]
+        widgets = _CHANTRY_WIDGETS
 
     def save(self, commit=True):
         chantry = super().save(commit=commit)
@@ -193,24 +197,8 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
 
     class Meta:
         model = Chantry
-        fields = [
-            "create_new",
-            "existing_chantry",
-            "name",
-            "contained_within",
-            "description",
-            "faction",
-            "leadership_type",
-            "season",
-            "chantry_type",
-            "gauntlet",
-            "shroud",
-            "dimension_barrier",
-        ]
-        widgets = {
-            "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
-            "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
-        }
+        fields = ["create_new", "existing_chantry", "name", *_CHANTRY_DETAIL_FIELDS]
+        widgets = _CHANTRY_WIDGETS
 
     def __init__(self, *args, character, points=0, **kwargs):
         self.character = character
@@ -218,9 +206,13 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required = False
-        self.fields["existing_chantry"].queryset = Chantry.objects.filter(
-            chronicle=character.chronicle
-        ).exclude(status__in=["Ret", "Dec"])
+        if character.chronicle is None:
+            # A chronicle-less character may only join their own chronicle-less
+            # chantries, not pool points into another player's.
+            queryset = Chantry.objects.filter(chronicle__isnull=True, owner=character.owner)
+        else:
+            queryset = Chantry.objects.filter(chronicle=character.chronicle)
+        self.fields["existing_chantry"].queryset = queryset.exclude(status__in=["Ret", "Dec"])
 
     def clean(self):
         cleaned_data = super().clean()
@@ -241,9 +233,8 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
                 chantry.save()
                 self.save_m2m()
                 return chantry
-            chantry = Chantry.objects.select_for_update().get(
-                pk=self.cleaned_data["existing_chantry"].pk
-            )
-            chantry.total_points += self.points
-            chantry.save(update_fields=["total_points"])
-            return chantry
+            pk = self.cleaned_data["existing_chantry"].pk
+            # A single atomic UPDATE, not select_for_update() (a no-op on SQLite): two
+            # concurrent joins each add their own points instead of racing on a read.
+            Chantry.objects.filter(pk=pk).update(total_points=F("total_points") + self.points)
+            return Chantry.objects.get(pk=pk)
