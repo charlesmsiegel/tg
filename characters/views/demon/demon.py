@@ -1,17 +1,18 @@
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import ListView, UpdateView
 
+from characters.forms.core.crud_fields import DEMON_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Demon
+from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
-class DemonDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class DemonDetailView(XPApprovalMixin, HumanDetailView):
     model = Demon
     template_name = "characters/demon/demon/detail.html"
 
@@ -20,107 +21,14 @@ class DemonDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
         return context
 
 
-class DemonUpdateView(EditPermissionMixin, UpdateView):
+class DemonUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Demon
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "intuition",
-        "leadership",
-        "seduction",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "performance",
-        "security",
-        "survival",
-        "technology",
-        "animal_ken",
-        "demolitions",
-        "academics",
-        "computer",
-        "finance",
-        "investigation",
-        "law",
-        "enigmas",
-        "medicine",
-        "occult",
-        "politics",
-        "religion",
-        "research",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "house",
-        "faction",
-        "visage",
-        "faith",
-        "temporary_faith",
-        "torment",
-        "temporary_torment",
-        "conviction",
-        "courage",
-        "conscience",
-        "apocalyptic_form",
-        "days_until_consumption",
-        "celestial_name",
-        "age_of_fall",
-        "abyss_duration",
-    ]
+    fields = DEMON_UPDATE_FIELDS
     template_name = "characters/demon/demon/form.html"
     success_message = "Demon '{name}' updated successfully!"
     error_message = "Failed to update demon. Please correct the errors below."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields (notes, description, etc.) via LimitedDemonEditForm.
-        STs and admins get full access to all fields via the default form.
-        """
-        # Check if user has full edit permission
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-
-        if has_full_edit:
-            # STs and admins get all fields
-            return super().get_form_class()
-        else:
-            # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,41 +1,37 @@
-from typing import Any
-
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
-from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
+from characters.forms.core.crud_fields import WT_O_HUMAN_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.template_selection import (
+    CharacterTemplateSelectionForm as SharedCharacterTemplateSelectionForm,
+)
 from characters.forms.wraith.wtohuman import WtOHumanCreationForm
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
 from characters.models.wraith.wtohuman import WtOHuman
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
+    HumanAbilityView,
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
-from core.forms.language import HumanLanguageForm
+from characters.views.core.template_selection import CharacterTemplateSelectView
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
-    SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
+    ScopedEditFormMixin,
     XPApprovalMixin,
 )
-from core.models import CharacterTemplate, Language
 from core.permissions import PermissionManager
 
 
@@ -44,81 +40,14 @@ class WtOHumanDetailView(XPApprovalMixin, HumanDetailView):
     template_name = "characters/wraith/wtohuman/detail.html"
 
 
-class WtOHumanUpdateView(EditPermissionMixin, UpdateView):
+class WtOHumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = WtOHuman
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "awareness",
-        "persuasion",
-        "larceny",
-        "meditation",
-        "performance",
-        "bureaucracy",
-        "enigmas",
-        "occult",
-        "politics",
-        "technology",
-    ]
+    fields = WT_O_HUMAN_UPDATE_FIELDS
     template_name = "characters/wraith/wtohuman/form.html"
     success_message = "Wraith Human '{name}' updated successfully!"
     error_message = "Failed to update wraith human. Please correct the errors below."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class WtOHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -154,71 +83,16 @@ class WtOHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return reverse("characters:wraith:wtohuman_template", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateSelectionForm(forms.Form):
-    """Form for selecting optional character template"""
-
-    template = forms.ModelChoiceField(
-        queryset=CharacterTemplate.objects.none(),
-        required=False,
-        empty_label="No template - build from scratch",
-        widget=forms.RadioSelect,
-        help_text="Select a pre-made character concept to speed up creation",
-    )
-
-    def __init__(self, *args, character=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if character:
-            self.fields["template"].queryset = CharacterTemplate.objects.filter(
-                gameline="wto", character_type="wraith", is_public=True, status="App"
-            ).order_by("name")
+class CharacterTemplateSelectionForm(SharedCharacterTemplateSelectionForm):
+    gameline = "wto"
+    character_type = "wraith"
 
 
-class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
-    """Step 0.5: Optional template selection after basics"""
-
+class WtOHumanTemplateSelectView(CharacterTemplateSelectView):
+    model = WtOHuman
     form_class = CharacterTemplateSelectionForm
     template_name = "characters/wraith/wtohuman/template_select.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        # Check login first via parent dispatch
-        if not request.user.is_authenticated:
-            return self.handle_no_permission()
-        self.object = get_object_or_404(WtOHuman, pk=kwargs["pk"], owner_id=request.user.pk)
-        # Only allow template selection if character creation hasn't started yet
-        if self.object.creation_status > 0:
-            return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.object
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["character"] = self.object
-        context["available_templates"] = CharacterTemplate.objects.filter(
-            gameline="wto", character_type="wraith", is_public=True, status="App"
-        ).order_by("name")
-        return context
-
-    def form_valid(self, form):
-        template = form.cleaned_data.get("template")
-        if template:
-            # Apply template
-            template.apply_to_character(self.object)
-            messages.success(
-                self.request,
-                f"Applied template '{template.name}'. You can now customize the character further.",
-            )
-        else:
-            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
-
-        # Set creation_status to 1 to proceed to attribute allocation
-        self.object.creation_status = 1
-        self.object.save()
-
-        return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
+    creation_route = "characters:wraith:wtohuman_creation"
 
 
 class WtOHumanAttributeView(HumanAttributeView):
@@ -230,53 +104,18 @@ class WtOHumanAttributeView(HumanAttributeView):
     tertiary = 3
 
 
-class WtOHumanAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class WtOHumanAbilityView(HumanAbilityView):
     model = WtOHuman
     fields = WtOHuman.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
-
     primary = 11
     secondary = 7
     tertiary = 4
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["primary"] = self.primary
-        context["secondary"] = self.secondary
-        context["tertiary"] = self.tertiary
-        # The chargen template gates on is_approved_user; the global context
-        # processor only sets it for staff (see #1459), so without this the
-        # owner sees the not-owner fallback instead of the ability form.
-        context["is_approved_user"] = self.get_is_approved_user(self.object)
-        return context
-
-    def form_valid(self, form):
-        for ability in self.model.primary_abilities:
-            if form.cleaned_data.get(ability) < 0 or form.cleaned_data.get(ability) > 3:
-                form.add_error(None, "Abilities must range from 0-3")
-                messages.error(self.request, "All abilities must be between 0 and 3 dots.")
-                return self.form_invalid(form)
-
-        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
-        skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
-
-        triple = [talents, skills, knowledges]
-        triple.sort()
-        if triple != [self.tertiary, self.secondary, self.primary]:
-            form.add_error(
-                None,
-                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
-            )
-            messages.error(
-                self.request,
-                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}. Current: {talents} talents, {skills} skills, {knowledges} knowledges.",
-            )
-            return self.form_invalid(form)
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        messages.success(self.request, "Abilities allocated successfully!")
-        return super().form_valid(form)
+    success_message = "Abilities allocated successfully!"
+    rating_error_message = "All abilities must be between 0 and 3 dots."
+    allocation_error_message = (
+        "{allocation}. Current: {talents} talents, {skills} skills, {knowledges} knowledges."
+    )
 
     def form_invalid(self, form):
         if not self.request._messages._queued_messages:
@@ -288,7 +127,7 @@ class WtOHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class WtOHumanExtrasView(CharacterExtrasView):
     model = WtOHuman
     fields = [
         "date_of_birth",
@@ -301,42 +140,16 @@ class WtOHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/wraith/wtohuman/chargen.html"
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        messages.success(self.request, "Character details saved successfully!")
-        return super().form_valid(form)
+    success_message = "Character details saved successfully!"
+    field_widget_attrs = {
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
+        }
+    }
 
     def form_invalid(self, form):
         messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appeareance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with wraith society since, particularly mentioning important backgrounds."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
-            }
-        )
-        return form
 
 
 class WtOHumanFreebiesView(HumanFreebiesView):
@@ -345,51 +158,10 @@ class WtOHumanFreebiesView(HumanFreebiesView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanLanguagesView(
-    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
-):
-    form_class = HumanLanguageForm
+class WtOHumanLanguagesView(HumanLanguagesView):
+    model = WtOHuman
     template_name = "characters/wraith/wtohuman/chargen.html"
-
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
-
-    # Overriding `get_form_kwargs` to pass custom arguments to the form
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    # Overriding `form_valid` to handle saving the data
-    def form_valid(self, form):
-        # Get the human instance from the pased `pk`
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        english, _ = Language.objects.get_or_create(name="English")
-        human.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        messages.success(self.request, "Languages added successfully!")
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        return context
+    success_message = "Languages added successfully!"
 
 
 class WtOHumanAlliesView(GenericBackgroundView):
@@ -399,43 +171,10 @@ class WtOHumanAlliesView(GenericBackgroundView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanSpecialtiesView(
-    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
-):
-    form_class = SpecialtiesForm
+class WtOHumanSpecialtiesView(HumanSpecialtiesView):
+    model = WtOHuman
     template_name = "characters/wraith/wtohuman/chargen.html"
-
-    def get_object(self):
-        """Return the WtOHuman object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = WtOHuman.objects.get(id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        wraith = WtOHuman.objects.get(id=self.kwargs["pk"])
-        kwargs["object"] = wraith
-        kwargs["specialties_needed"] = wraith.needed_specialties()
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        wraith = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            wraith.specialties.add(spec)
-        wraith.status = "Sub"
-        wraith.save()
-        messages.success(self.request, f"Wraith Human '{wraith.name}' submitted for approval!")
-        return HttpResponseRedirect(wraith.get_absolute_url())
+    success_message = "Wraith Human '{name}' submitted for approval!"
 
 
 class WtOHumanCharacterCreationView(HumanCharacterCreationView):

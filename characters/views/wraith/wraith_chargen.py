@@ -1,42 +1,35 @@
-from typing import Any
-
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.wraith.fetter import FetterForm
 from characters.forms.wraith.freebies import WraithFreebiesForm
 from characters.forms.wraith.passion import PassionForm
 from characters.forms.wraith.wraith import WraithCreationForm
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
+from characters.views.core.allocations import PointAllocationView
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
 from characters.views.wraith.wraith import WraithDetailView
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     ScopedCreationFormMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
 )
-from core.models import Language
 from core.permissions import PermissionManager
 
 
@@ -183,148 +176,44 @@ class WraithShadowView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithPassionsView(
-    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
-):
+class WraithPassionsView(PointAllocationView):
+    model = Wraith
     form_class = PassionForm
     template_name = "characters/wraith/wraith/chargen.html"
+    allocation_name = "passion"
+    total_attribute = "passion_points"
+    spent_method = "total_passion_rating"
+    complete_method = "has_passions"
+    completion_message = "All Passions allocated successfully!"
 
-    def get_object(self):
-        """Return the Wraith object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        return self.object
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        context["passion_points_total"] = context["object"].passion_points
-        context["passion_points_spent"] = context["object"].total_passion_rating()
-        context["passion_points_remaining"] = (
-            context["passion_points_total"] - context["passion_points_spent"]
-        )
-        return context
-
-    def form_valid(self, form):
-        wraith = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-
-        # Check if adding this passion would exceed the limit
-        current_total = wraith.total_passion_rating()
-        new_rating = form.cleaned_data["rating"]
-
-        if current_total + new_rating > wraith.passion_points:
-            form.add_error(
-                "rating",
-                f"Cannot exceed {wraith.passion_points} total passion points. "
-                f"You have {wraith.passion_points - current_total} remaining.",
-            )
-            messages.error(
-                self.request,
-                f"Cannot exceed {wraith.passion_points} total passion points. "
-                f"You have {wraith.passion_points - current_total} remaining.",
-            )
-            return self.form_invalid(form)
-
-        # Add the passion
-        wraith.add_passion(
-            emotion=form.cleaned_data["emotion"],
-            description=form.cleaned_data["description"],
-            rating=new_rating,
-            is_dark=form.cleaned_data.get("is_dark_passion", False),
+    def add_record(self, obj, data):
+        obj.add_passion(
+            emotion=data["emotion"],
+            description=data["description"],
+            rating=data["rating"],
+            is_dark=data.get("is_dark_passion", False),
         )
 
-        # If we've hit the exact total, move to next stage
-        if wraith.has_passions():
-            advance(wraith, user=self.request.user)
-            wraith.save()
-            messages.success(self.request, "All Passions allocated successfully!")
-        else:
-            messages.success(
-                self.request,
-                f"Passion added successfully! {wraith.passion_points - wraith.total_passion_rating()} points remaining.",
-            )
 
-        return HttpResponseRedirect(wraith.get_absolute_url())
-
-    def form_invalid(self, form):
-        if not self.request._messages._queued_messages:
-            messages.error(self.request, "Please correct the errors in the form below.")
-        return super().form_invalid(form)
-
-
-class WraithFettersView(ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
+class WraithFettersView(PointAllocationView):
+    model = Wraith
     form_class = FetterForm
     template_name = "characters/wraith/wraith/chargen.html"
+    allocation_name = "fetter"
+    total_attribute = "fetter_points"
+    spent_method = "total_fetter_rating"
+    complete_method = "has_fetters"
+    completion_message = "All Fetters allocated successfully!"
 
-    def get_object(self):
-        """Return the Wraith object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        return self.object
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        context["fetter_points_total"] = context["object"].fetter_points
-        context["fetter_points_spent"] = context["object"].total_fetter_rating()
-        context["fetter_points_remaining"] = (
-            context["fetter_points_total"] - context["fetter_points_spent"]
-        )
-        return context
-
-    def form_valid(self, form):
-        wraith = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-
-        # Check if adding this fetter would exceed the limit
-        current_total = wraith.total_fetter_rating()
-        new_rating = form.cleaned_data["rating"]
-
-        if current_total + new_rating > wraith.fetter_points:
-            form.add_error(
-                "rating",
-                f"Cannot exceed {wraith.fetter_points} total fetter points. "
-                f"You have {wraith.fetter_points - current_total} remaining.",
-            )
-            messages.error(
-                self.request,
-                f"Cannot exceed {wraith.fetter_points} total fetter points. "
-                f"You have {wraith.fetter_points - current_total} remaining.",
-            )
-            return self.form_invalid(form)
-
-        # Add the fetter
-        wraith.add_fetter(
-            fetter_type=form.cleaned_data["fetter_type"],
-            description=form.cleaned_data["description"],
-            rating=new_rating,
+    def add_record(self, obj, data):
+        obj.add_fetter(
+            fetter_type=data["fetter_type"],
+            description=data["description"],
+            rating=data["rating"],
         )
 
-        # If we've hit the exact total, move to next stage
-        if wraith.has_fetters():
-            advance(wraith, user=self.request.user)
-            wraith.save()
-            messages.success(self.request, "All Fetters allocated successfully!")
-        else:
-            messages.success(
-                self.request,
-                f"Fetter added successfully! {wraith.fetter_points - wraith.total_fetter_rating()} points remaining.",
-            )
 
-        return HttpResponseRedirect(wraith.get_absolute_url())
-
-    def form_invalid(self, form):
-        if not self.request._messages._queued_messages:
-            messages.error(self.request, "Please correct the errors in the form below.")
-        return super().form_invalid(form)
-
-
-class WraithExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class WraithExtrasView(CharacterExtrasView):
     model = Wraith
     fields = [
         "date_of_birth",
@@ -339,55 +228,37 @@ class WraithExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/wraith/wraith/chargen.html"
+    success_message = "Character details saved successfully!"
+    field_widget_attrs = {
+        "description": {
+            "placeholder": "Describe your character's physical appearance (as a wraith). Be detailed, this will be visible to other players."
+        },
+        "death_description": {
+            "placeholder": "Describe how your character died. This is crucial for understanding your wraith's nature."
+        },
+        "history": {
+            "placeholder": "Describe character history/backstory from when they were alive and how they've adapted to being a wraith."
+        },
+        "goals": {
+            "placeholder": "Describe your character's long and short term goals as a wraith."
+        },
+    }
 
-    def form_valid(self, form):
-        # Validate that death-related fields are filled
+    def validate_extras(self, form):
         if not form.cleaned_data.get("age_at_death"):
             form.add_error("age_at_death", "Age at death is required")
             messages.error(self.request, "Age at death is required for Wraith characters.")
-            return self.form_invalid(form)
-
+            return False
         if not form.cleaned_data.get("death_description"):
             form.add_error("death_description", "Death description is required")
             messages.error(self.request, "Death description is required for Wraith characters.")
-            return self.form_invalid(form)
-
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        messages.success(self.request, "Character details saved successfully!")
-        return super().form_valid(form)
+            return False
+        return True
 
     def form_invalid(self, form):
         if not self.request._messages._queued_messages:
             messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appearance (as a wraith). Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["death_description"].widget.attrs.update(
-            {
-                "placeholder": "Describe how your character died. This is crucial for understanding your wraith's nature."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory from when they were alive and how they've adapted to being a wraith."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {"placeholder": "Describe your character's long and short term goals as a wraith."}
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {"placeholder": "This will be displayed to all players who look at your character."}
-        )
-        return form
 
 
 class WraithFreebiesView(HumanFreebiesView):
@@ -403,48 +274,10 @@ class WraithFreebiesView(HumanFreebiesView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithLanguagesView(
-    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
-):
-    form_class = HumanLanguageForm
+class WraithLanguagesView(HumanLanguagesView):
+    model = Wraith
     template_name = "characters/wraith/wraith/chargen.html"
-
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    def form_valid(self, form):
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        english, _ = Language.objects.get_or_create(name="English")
-        human.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        messages.success(self.request, "Languages added successfully!")
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        return context
+    success_message = "Languages added successfully!"
 
 
 class WraithAlliesView(GenericBackgroundView):
@@ -468,43 +301,10 @@ class WraithContactsView(GenericBackgroundView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithSpecialtiesView(
-    ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
-):
-    form_class = SpecialtiesForm
+class WraithSpecialtiesView(HumanSpecialtiesView):
+    model = Wraith
     template_name = "characters/wraith/wraith/chargen.html"
-
-    def get_object(self):
-        """Return the Wraith object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = Wraith.objects.get(id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        wraith = Wraith.objects.get(id=self.kwargs["pk"])
-        kwargs["object"] = wraith
-        kwargs["specialties_needed"] = wraith.needed_specialties()
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        wraith = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            wraith.specialties.add(spec)
-        wraith.status = "Sub"
-        wraith.save()
-        messages.success(self.request, f"Wraith '{wraith.name}' submitted for approval!")
-        return HttpResponseRedirect(wraith.get_absolute_url())
+    success_message = "Wraith '{name}' submitted for approval!"
 
 
 class WraithCharacterCreationView(HumanCharacterCreationView):

@@ -1,114 +1,30 @@
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import ListView, UpdateView
 
+from characters.forms.core.crud_fields import THRALL_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Thrall
+from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
-class ThrallDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class ThrallDetailView(XPApprovalMixin, HumanDetailView):
     model = Thrall
     template_name = "characters/demon/thrall/detail.html"
 
 
-class ThrallUpdateView(EditPermissionMixin, UpdateView):
+class ThrallUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Thrall
     success_message = "Thrall updated successfully."
     error_message = "Error updating thrall."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "intuition",
-        "leadership",
-        "seduction",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "performance",
-        "security",
-        "survival",
-        "technology",
-        "animal_ken",
-        "demolitions",
-        "academics",
-        "computer",
-        "finance",
-        "investigation",
-        "law",
-        "enigmas",
-        "medicine",
-        "occult",
-        "politics",
-        "religion",
-        "research",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "faith_potential",
-        "daily_faith_offered",
-        "master",
-        "enhancements",
-        "conviction",
-        "courage",
-        "conscience",
-    ]
+    fields = THRALL_UPDATE_FIELDS
     template_name = "characters/demon/thrall/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields (notes, description, etc.) via LimitedThrallEditForm.
-        STs and admins get full access to all fields via the default form.
-        """
-        # Check if user has full edit permission
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-
-        if has_full_edit:
-            # STs and admins get all fields
-            return super().get_form_class()
-        else:
-            # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class ThrallListView(VisibilityFilterMixin, ListView):

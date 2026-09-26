@@ -111,12 +111,17 @@ class SkipStepReadOnlyTests(TestCase):
         self.assertEqual(character.languages.count(), 0)
         self.assertEqual(self.client.post(url, {}).status_code, 302)
         character.refresh_from_db()
-        self.assertEqual(character.creation_status, 7)
+        # The registry also skips the empty Allies step before Specialties.
+        self.assertEqual(character.creation_status, 8)
+        self.assertTrue(character.languages.filter(name="English").exists())
 
     def test_sorcerer_skip_requires_post_to_advance(self):
         character = Sorcerer.objects.create(
-            name="Psychic skip", owner=self.owner, status="Un",
-            creation_status=4, sorcerer_type="hedge_mage",
+            name="Psychic skip",
+            owner=self.owner,
+            status="Un",
+            creation_status=4,
+            sorcerer_type="hedge_mage",
         )
         url = reverse("characters:character", args=[character.pk])
         response = self.client.get(url)
@@ -146,8 +151,10 @@ class CreatedObjectPublicCardTests(TestCase):
                         ),
                     }
                 obj = model.objects.create(
-                    name=f"Private {model.__name__}", owner=owner,
-                    status="App", public_info="Public description",
+                    name=f"Private {model.__name__}",
+                    owner=owner,
+                    status="App",
+                    public_info="Public description",
                     description="OWNER ONLY DETAIL",
                     **extra,
                 )
@@ -161,9 +168,9 @@ class CreatedObjectPublicCardTests(TestCase):
                 self.client.force_login(owner)
                 full = self.client.get(obj.get_absolute_url())
                 self.assertEqual(full.status_code, 200)
-                self.assertNotIn("core/public_object_detail.html", [
-                    template.name for template in full.templates
-                ])
+                self.assertNotIn(
+                    "core/public_object_detail.html", [template.name for template in full.templates]
+                )
                 self.assertEqual(full.context["object"].pk, obj.pk)
 
 
@@ -184,8 +191,12 @@ class MageStepAuthorizationTests(TestCase):
             user=self.wrong_line_st, chronicle=self.chronicle, gameline=vampire
         )
         self.mage = Mage.objects.create(
-            name="Unfinished mage", owner=self.owner, chronicle=self.chronicle,
-            status="Un", creation_status=5, st_notes="PRIVATE MAGE NOTES",
+            name="Unfinished mage",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="Un",
+            creation_status=5,
+            st_notes="PRIVATE MAGE NOTES",
         )
         self.url = reverse("characters:character", args=[self.mage.pk])
 

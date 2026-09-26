@@ -1,45 +1,39 @@
-from typing import Any
-
-from django import forms
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
-from characters.chargen.transitions import advance
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.template_selection import (
+    CharacterTemplateSelectionForm as SharedCharacterTemplateSelectionForm,
+)
 from characters.models.changeling.ctdhuman import CtDHuman
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAbilityView,
     HumanAttributeView,
     HumanCharacterCreationView,
+    HumanDetailView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
-from core.forms.language import HumanLanguageForm
+from characters.views.core.template_selection import CharacterTemplateSelectView
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
-    SpecialUserMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     XPApprovalMixin,
 )
-from core.models import CharacterTemplate, Language
 from core.permissions import PermissionManager
 
 
-class CtDHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class CtDHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/detail.html"
 
@@ -95,26 +89,14 @@ CTDHUMAN_FORM_FIELDS = [
 ]
 
 
-class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
+class CtDHumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = CtDHuman
     success_message = "CtD Human updated successfully."
     error_message = "Error updating CtD Human."
     fields = CTDHUMAN_FORM_FIELDS
     template_name = "characters/changeling/ctdhuman/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class CtDHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -142,71 +124,16 @@ class CtDHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateSelectionForm(forms.Form):
-    """Form for selecting optional character template"""
-
-    template = forms.ModelChoiceField(
-        queryset=CharacterTemplate.objects.none(),
-        required=False,
-        empty_label="No template - build from scratch",
-        widget=forms.RadioSelect,
-        help_text="Select a pre-made character concept to speed up creation",
-    )
-
-    def __init__(self, *args, character=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if character:
-            self.fields["template"].queryset = CharacterTemplate.objects.filter(
-                gameline="ctd", character_type="changeling", is_public=True, status="App"
-            ).order_by("name")
+class CharacterTemplateSelectionForm(SharedCharacterTemplateSelectionForm):
+    gameline = "ctd"
+    character_type = "changeling"
 
 
-class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
-    """Step 0.5: Optional template selection after basics"""
-
+class CtDHumanTemplateSelectView(CharacterTemplateSelectView):
+    model = CtDHuman
     form_class = CharacterTemplateSelectionForm
     template_name = "characters/changeling/ctdhuman/template_select.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        # Check login first via parent dispatch
-        if not request.user.is_authenticated:
-            return self.handle_no_permission()
-        self.object = get_object_or_404(CtDHuman, pk=kwargs["pk"], owner_id=request.user.pk)
-        # Only allow template selection if character creation hasn't started yet
-        if self.object.creation_status > 0:
-            return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.object
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["character"] = self.object
-        context["available_templates"] = CharacterTemplate.objects.filter(
-            gameline="ctd", character_type="changeling", is_public=True, status="App"
-        ).order_by("name")
-        return context
-
-    def form_valid(self, form):
-        template = form.cleaned_data.get("template")
-        if template:
-            # Apply template
-            template.apply_to_character(self.object)
-            messages.success(
-                self.request,
-                f"Applied template '{template.name}'. You can now customize the character further.",
-            )
-        else:
-            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
-
-        # Set creation_status to 1 to proceed to attribute allocation
-        self.object.creation_status = 1
-        self.object.save()
-
-        return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
+    creation_route = "characters:changeling:ctdhuman_creation"
 
 
 class CtDHumanAttributeView(HumanAttributeView):
@@ -228,7 +155,7 @@ class CtDHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class CtDHumanExtrasView(CharacterExtrasView):
     model = CtDHuman
     fields = [
         "date_of_birth",
@@ -241,37 +168,11 @@ class CtDHumanExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/changeling/ctdhuman/chargen.html"
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appeareance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with changeling society since, particularly mentioning important backgrounds."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
-            }
-        )
-        return form
+    field_widget_attrs = {
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
+        }
+    }
 
 
 class CtDHumanFreebiesView(HumanFreebiesView):
@@ -280,45 +181,9 @@ class CtDHumanFreebiesView(HumanFreebiesView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = HumanLanguageForm
+class CtDHumanLanguagesView(HumanLanguagesView):
+    model = CtDHuman
     template_name = "characters/changeling/ctdhuman/chargen.html"
-
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
-
-    # Overriding `get_form_kwargs` to pass custom arguments to the form
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    # Overriding `form_valid` to handle saving the data
-    def form_valid(self, form):
-        # Get the human instance from the pased `pk`
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        english, _ = Language.objects.get_or_create(name="English")
-        human.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
 
 
 class CtDHumanAlliesView(GenericBackgroundView):
@@ -328,37 +193,9 @@ class CtDHumanAlliesView(GenericBackgroundView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = SpecialtiesForm
+class CtDHumanSpecialtiesView(HumanSpecialtiesView):
+    model = CtDHuman
     template_name = "characters/changeling/ctdhuman/chargen.html"
-
-    def get_object(self):
-        """Return the CtDHuman object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = CtDHuman.objects.get(id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        changeling = self.get_object()
-        kwargs["object"] = changeling
-        kwargs["specialties_needed"] = changeling.needed_specialties()
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        changeling = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            changeling.specialties.add(spec)
-        changeling.status = "Sub"
-        changeling.save()
-        return HttpResponseRedirect(changeling.get_absolute_url())
 
 
 class CtDHumanCharacterCreationView(HumanCharacterCreationView):

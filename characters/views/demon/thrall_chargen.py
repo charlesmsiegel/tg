@@ -9,8 +9,10 @@ from characters.forms.demon.thrall import ThrallCreationForm
 from characters.models.demon.thrall import Thrall
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
+    HumanAbilityView,
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanFreebiesView,
@@ -59,43 +61,13 @@ class ThrallAttributeView(HumanAttributeView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class ThrallAbilityView(HumanAbilityView):
     model = Thrall
     fields = Thrall.primary_abilities
     template_name = "characters/demon/thrall/chargen.html"
-
     primary = 13
     secondary = 9
     tertiary = 5
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["primary"] = self.primary
-        context["secondary"] = self.secondary
-        context["tertiary"] = self.tertiary
-        return context
-
-    def form_valid(self, form):
-        for ability in self.model.primary_abilities:
-            if form.cleaned_data.get(ability) < 0 or form.cleaned_data.get(ability) > 3:
-                form.add_error(None, "Abilities must range from 0-3")
-                return self.form_invalid(form)
-
-        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
-        skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
-
-        triple = [talents, skills, knowledges]
-        triple.sort()
-        if triple != [self.tertiary, self.secondary, self.primary]:
-            form.add_error(
-                None,
-                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
-            )
-            return self.form_invalid(form)
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
 
 
 class ThrallBackgroundsView(HumanBackgroundsView):
@@ -135,38 +107,19 @@ class ThrallVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ThrallExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class ThrallExtrasView(CharacterExtrasView):
     model = Thrall
-    fields = [
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "history",
-        "goals",
-        "notes",
-    ]
+    fields = ["age", "apparent_age", "date_of_birth", "history", "goals", "notes"]
     template_name = "characters/demon/thrall/chargen.html"
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's history, including how they became bound to a demon.",
-                "rows": 6,
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {"placeholder": "What does your character hope to achieve?", "rows": 3}
-        )
-        form.fields["notes"].required = False
-        form.fields["history"].required = False
-        form.fields["goals"].required = False
-        return form
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
+    date_fields = ()
+    optional_fields = ("notes", "history", "goals")
+    field_widget_attrs = {
+        "history": {
+            "placeholder": "Describe your character's history, including how they became bound to a demon.",
+            "rows": 6,
+        },
+        "goals": {"placeholder": "What does your character hope to achieve?", "rows": 3},
+    }
 
 
 class ThrallFreebiesView(HumanFreebiesView):

@@ -1,27 +1,27 @@
-from typing import Any
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.chargen import get_workflow
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
+from characters.forms.core.crud_fields import HUMAN_CREATE_FIELDS, HUMAN_UPDATE_FIELDS
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
-from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
-from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.character import CharacterDetailView
 from characters.views.core.chargen_mixins import ChargenProgressMixin, ChargenStepMixin
+from characters.views.core.form_steps import CharacterFormStepView
+from characters.views.core.spending import FreebieSpendingView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    SpecialUserMixin,
     SpendFreebiesPermissionMixin,
+    SuccessMessageMixin,
     prepare_created_object,
 )
 from core.models import Language
@@ -39,32 +39,7 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create view for Human characters."""
 
     model = Human
-    fields = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "specialties",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-    ]
+    fields = HUMAN_CREATE_FIELDS
     template_name = "characters/core/human/form.html"
     success_message = "Human created successfully."
     error_message = "Error creating Human."
@@ -82,32 +57,7 @@ class HumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     """
 
     model = Human
-    fields = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "specialties",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-    ]
+    fields = HUMAN_UPDATE_FIELDS
     template_name = "characters/core/human/form.html"
     success_message = "Human updated successfully."
     error_message = "Error updating Human."
@@ -204,42 +154,62 @@ class HumanAttributeView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateV
         return context
 
 
-class HumanAbilityView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
+class HumanAbilityView(
+    ChargenStepMixin,
+    SpendFreebiesPermissionMixin,
+    SpecialUserMixin,
+    SuccessMessageMixin,
+    UpdateView,
+):
     model = Human
     fields = Human.primary_abilities
-    template_name = "characters/wraith/wtohuman/chargen.html"
-
+    template_name = "characters/core/human/chargen.html"
     primary = 11
     secondary = 7
     tertiary = 4
+    rating_error_message = ""
+    allocation_error_message = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["primary"] = self.primary
-        context["secondary"] = self.secondary
-        context["tertiary"] = self.tertiary
+        context.update(primary=self.primary, secondary=self.secondary, tertiary=self.tertiary)
+        context["is_approved_user"] = self.get_is_approved_user(self.object)
         return context
 
     def form_valid(self, form):
         for ability in self.model.primary_abilities:
-            if form.cleaned_data.get(ability) < 0 or form.cleaned_data.get(ability) > 3:
+            if not 0 <= form.cleaned_data[ability] <= 3:
                 form.add_error(None, "Abilities must range from 0-3")
+                if self.rating_error_message:
+                    messages.error(self.request, self.rating_error_message)
                 return self.form_invalid(form)
 
-        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
-        skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
-
-        triple = [talents, skills, knowledges]
-        triple.sort()
-        if triple != [self.tertiary, self.secondary, self.primary]:
-            form.add_error(
-                None,
-                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
+        # Mage groups include secondary abilities which are not allocated here.
+        totals = [
+            sum(
+                form.cleaned_data[name]
+                for name in getattr(self.model, group)
+                if name in form.fields
             )
+            for group in ("talents", "skills", "knowledges")
+        ]
+        if sorted(totals) != [self.tertiary, self.secondary, self.primary]:
+            allocation = (
+                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}"
+            )
+            form.add_error(None, allocation)
+            if self.allocation_error_message:
+                messages.error(
+                    self.request,
+                    self.allocation_error_message.format(
+                        allocation=allocation,
+                        talents=totals[0],
+                        skills=totals[1],
+                        knowledges=totals[2],
+                    ),
+                )
             return self.form_invalid(form)
         advance(self.object, user=self.request.user)
-        self.object.save()
         return super().form_valid(form)
 
 
@@ -261,145 +231,60 @@ class HumanBiographicalInformation(ChargenStepMixin, SpendFreebiesPermissionMixi
         return super().form_valid(form)
 
 
-class HumanFreebiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
-    """View for spending freebie points during character creation.
-
-    Uses FreebieSpendingServiceFactory to get the appropriate service
-    for the character type and delegates all spending logic to the service.
-    """
+class HumanFreebiesView(FreebieSpendingView):
+    """Human adapter for the shared service-based spending lifecycle."""
 
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/core/human/chargen_form.html"
 
-    def form_valid(self, form):
-        if form.is_valid():
-            # Get the spending service for this character type
-            service = FreebieSpendingServiceFactory.get_service(self.object)
 
-            # Extract form data
-            category = form.data["category"]
-            example = form.cleaned_data.get("example")
-            value = form.cleaned_data.get("value")
-            note = form.cleaned_data.get("note", "")
-            pooled = form.cleaned_data.get("pooled", False)
-
-            # Handle Background with prefixed values (bg_123 or br_456)
-            if category == "Background":
-                example_value = form.data.get("example", "")
-                if example_value.startswith("bg_"):
-                    # New background - load Background object
-                    bg_pk = example_value[3:]  # Remove "bg_" prefix
-                    example = get_object_or_404(Background, pk=bg_pk)
-                elif example_value.startswith("br_"):
-                    # Existing background - load BackgroundRating object
-                    br_pk = example_value[3:]  # Remove "br_" prefix
-                    example = get_object_or_404(BackgroundRating, pk=br_pk)
-                else:
-                    form.add_error(None, "Invalid background selection")
-                    return super().form_invalid(form)
-
-            # Convert value to int if present (for MeritFlaw ratings)
-            if value and value != "":
-                try:
-                    value = int(value)
-                except (ValueError, TypeError):
-                    pass
-
-            # Use the service to handle the spending
-            result = service.spend(
-                category=category,
-                example=example,
-                value=value,
-                note=note,
-                pooled=pooled,
-            )
-
-            if result.success:
-                return HttpResponseRedirect(self.get_success_url())
-            else:
-                form.add_error(None, result.error)
-                return super().form_invalid(form)
-
-        return super().form_invalid(form)
-
-    def form_invalid(self, form):
-        return super().form_invalid(form)
-
-
-class HumanLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
+class HumanLanguagesView(CharacterFormStepView):
     form_class = HumanLanguageForm
     template_name = "characters/core/human/chargen_form.html"
 
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
-
-    # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
+        character = self.get_object()
+        kwargs.update(pk=character.pk, num_languages=int(character.num_languages()))
         return kwargs
 
-    # Overriding `form_valid` to handle saving the data
     def form_valid(self, form):
-        # Get the human instance from the pased `pk`
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
+        character = self.get_object()
         english, _ = Language.objects.get_or_create(name="English")
-        human.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
+        character.languages.add(english)
+        for field in form.fields:
+            name = form.cleaned_data[field]
+            if name:
+                language, _ = Language.objects.get_or_create(name=name)
+                character.languages.add(language)
+        advance(character, user=self.request.user)
+        return super().form_valid(form)
 
 
-class HumanSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
+class HumanSpecialtiesView(CharacterFormStepView):
     form_class = SpecialtiesForm
     template_name = "characters/core/human/chargen.html"
 
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
+    def get_specialties_needed(self):
+        return self.get_object().needed_specialties()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        obj = self.get_object()
-        kwargs["object"] = obj
-        kwargs["specialties_needed"] = obj.needed_specialties()
+        kwargs["object"] = self.get_object()
+        kwargs["specialties_needed"] = self.get_specialties_needed()
         return kwargs
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        mage = context["object"]
+        character = self.get_object()
         for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            mage.specialties.add(spec)
-        mage.status = "Sub"
-        mage.save()
-        return HttpResponseRedirect(mage.get_absolute_url())
+            specialty, _ = Specialty.objects.get_or_create(
+                name=form.cleaned_data[field], stat=field
+            )
+            character.specialties.add(specialty)
+        character.status = "Sub"
+        character.save()
+        return super().form_valid(form)
 
 
 # Compatibility for existing callers; order and labels belong to the registry.

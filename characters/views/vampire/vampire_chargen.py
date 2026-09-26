@@ -12,6 +12,7 @@ from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
@@ -267,39 +268,20 @@ class VampireVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class VampireExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class VampireExtrasView(CharacterExtrasView):
     model = Vampire
-    fields = [
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "history",
-        "goals",
-        "notes",
-    ]
+    fields = ["age", "apparent_age", "date_of_birth", "history", "goals", "notes"]
     template_name = "characters/vampire/vampire/chargen.html"
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's history, including mortal life and the circumstances of the Embrace.",
-                "rows": 6,
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {"placeholder": "What does your character hope to achieve?", "rows": 3}
-        )
-        form.fields["notes"].required = False
-        form.fields["history"].required = False
-        form.fields["goals"].required = False
-        return form
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        messages.success(self.request, "Character details saved successfully!")
-        return super().form_valid(form)
+    success_message = "Character details saved successfully!"
+    date_fields = ()
+    optional_fields = ("notes", "history", "goals")
+    field_widget_attrs = {
+        "history": {
+            "placeholder": "Describe your character's history, including mortal life and the circumstances of the Embrace.",
+            "rows": 6,
+        },
+        "goals": {"placeholder": "What does your character hope to achieve?", "rows": 3},
+    }
 
 
 class VampireFreebiesView(HumanFreebiesView):

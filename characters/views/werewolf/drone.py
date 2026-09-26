@@ -1,109 +1,45 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
+from characters.forms.core.crud_fields import DRONE_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.werewolf.drone import DroneCreationForm
 from characters.models.werewolf.drone import Drone
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
+from characters.views.core.human import (
+    HumanAttributeView,
+    HumanCharacterCreationView,
+    HumanDetailView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
+)
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
     WtAHumanExtrasView,
     WtAHumanFreebiesView,
-    WtAHumanLanguagesView,
-    WtAHumanSpecialtiesView,
 )
-from core.mixins import EditPermissionMixin, ScopedCreationFormMixin, ViewPermissionMixin
+from core.mixins import (
+    EditPermissionMixin,
+    ScopedCreationFormMixin,
+    ScopedEditFormMixin,
+)
 from core.permissions import PermissionManager
 
 
-class DroneDetailView(ViewPermissionMixin, DetailView):
+class DroneDetailView(HumanDetailView):
     model = Drone
     template_name = "characters/werewolf/drone/detail.html"
 
 
-class DroneUpdateView(EditPermissionMixin, UpdateView):
+class DroneUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Drone
     success_message = "Drone updated successfully."
     error_message = "Error updating drone."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "bane_name",
-        "bane_type",
-        "rage",
-        "gnosis",
-        "willpower_per_turn",
-    ]
+    fields = DRONE_UPDATE_FIELDS
     template_name = "characters/werewolf/drone/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class DroneBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -159,11 +95,13 @@ class DroneFreebiesView(WtAHumanFreebiesView):
     template_name = "characters/werewolf/drone/chargen.html"
 
 
-class DroneLanguagesView(WtAHumanLanguagesView):
+class DroneLanguagesView(HumanLanguagesView):
+    model = Drone
     template_name = "characters/werewolf/drone/chargen.html"
 
 
-class DroneSpecialtiesView(WtAHumanSpecialtiesView):
+class DroneSpecialtiesView(HumanSpecialtiesView):
+    model = Drone
     template_name = "characters/werewolf/drone/chargen.html"
 
 

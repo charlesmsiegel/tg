@@ -1,14 +1,14 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.werewolf.spirit_character import SpiritCharacter
+from characters.views.core.character import CharacterDetailView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
 )
 
 
-class SpiritDetailView(ViewPermissionMixin, DetailView):
+class SpiritDetailView(CharacterDetailView):
     model = SpiritCharacter
     template_name = "characters/werewolf/spirit/detail.html"
 

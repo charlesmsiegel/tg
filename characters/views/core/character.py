@@ -11,10 +11,11 @@ from characters.models.core import Character
 from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
 from core.mixins import (
     EditPermissionMixin,
+    ScopedEditFormMixin,
     ViewPermissionMixin,
     prepare_created_object,
 )
-from core.permissions import Permission, PermissionManager, Role
+from core.permissions import Permission, PermissionManager
 from game.models import Scene
 from game.security import filter_scenes
 
@@ -27,6 +28,9 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
 
     model = Character
     template_name = "characters/core/character/detail.html"
+
+    def can_transition_to(self, status):
+        return status in self.object.STATUS_TRANSITIONS.get(self.object.status, ())
 
     @staticmethod
     @cache_function(timeout=CACHE_TIMEOUT_MEDIUM, key_prefix="character_scenes")
@@ -61,11 +65,13 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         can_edit = PermissionManager.user_has_permission(
             self.request.user, self.object, Permission.EDIT_FULL, request=self.request
         )
-        context["can_retire"] = self.object.status != "Dec" and (
+        context["can_retire"] = self.can_transition_to("Ret") and (
             can_edit or self.object.owner_id == self.request.user.pk
         )
-        context["can_decease"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.object, request=self.request
+        context["can_decease"] = self.can_transition_to("Dec") and (
+            PermissionManager.user_has_scoped_editor_role(
+                self.request.user, self.object, request=self.request
+            )
         )
         return context
 
@@ -84,7 +90,7 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                 if (
                     "retire" in request.POST
                     and self.object.owner == request.user
-                    and self.object.status != "Dec"
+                    and self.can_transition_to("Ret")
                 ):
                     self.object.status = "Ret"
                     self.object.save()
@@ -93,10 +99,10 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                     return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
             else:
                 # Handle retirement and death status changes
-                if "retire" in request.POST and self.object.status != "Dec":
+                if "retire" in request.POST and self.can_transition_to("Ret"):
                     self.object.status = "Ret"
                     self.object.save()
-                if "decease" in request.POST:
+                if "decease" in request.POST and self.can_transition_to("Dec"):
                     self.object.status = "Dec"
                     self.object.save()
 
@@ -123,7 +129,7 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CharacterUpdateView(EditPermissionMixin, UpdateView):
+class CharacterUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     """
     Update view for characters.
     Automatically enforces edit permissions.
@@ -153,13 +159,4 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
     success_message = "Character '{name}' updated successfully!"
     error_message = "Failed to update Character. Please correct the errors below."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get draft fields without approval or ST-only fields.
-        STs and admins get full access via the default form with ST_EDIT_FIELDS.
-        """
-        roles = PermissionManager.get_user_roles(self.request.user, self.get_object())
-        if roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}:
-            return super().get_form_class()
-        return OwnerUnapprovedCharacterEditForm
+    limited_form_class = OwnerUnapprovedCharacterEditForm

@@ -1,44 +1,42 @@
 from typing import Any
 
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.changeling.chained_freebies import ChainedChangelingFreebiesForm
 from characters.forms.changeling.changeling import ChangelingCreationForm
+from characters.forms.core.crud_fields import CHANGELING_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.core.merit_flaw_block import MeritFlawRating
-from characters.models.core.specialty import Specialty
 from characters.views.changeling.ctdhuman import CtDHumanAbilityView
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
+    HumanDetailView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
-    ViewPermissionMixin,
     XPApprovalMixin,
 )
-from core.models import Language
 from core.permissions import PermissionManager
 
 
-class ChangelingDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class ChangelingDetailView(XPApprovalMixin, HumanDetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 
@@ -62,110 +60,14 @@ class ChangelingDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
         return context
 
 
-class ChangelingUpdateView(EditPermissionMixin, UpdateView):
+class ChangelingUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Changeling
-    fields = [
-        "name",
-        "description",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "willpower",
-        "age",
-        "apparent_age",
-        "history",
-        "goals",
-        "notes",
-        "kenning",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "gremayre",
-        "law",
-        "politics",
-        "technology",
-        "court",
-        "seeming",
-        "autumn",
-        "chicanery",
-        "chronos",
-        "contract",
-        "dragons_ire",
-        "legerdemain",
-        "metamorphosis",
-        "naming",
-        "oneiromancy",
-        "primal",
-        "pyretics",
-        "skycraft",
-        "soothsay",
-        "sovereign",
-        "spring",
-        "summer",
-        "wayfare",
-        "winter",
-        "actor",
-        "fae",
-        "nature_realm",
-        "prop",
-        "scene",
-        "time",
-        "banality",
-        "glamour",
-        "musing_threshold",
-        "ravaging_threshold",
-        "antithesis",
-        "true_name",
-        "date_ennobled",
-        "crysalis",
-        "date_of_crysalis",
-        "fae_mien",
-    ]
+    fields = CHANGELING_UPDATE_FIELDS
     template_name = "characters/changeling/changeling/form.html"
     success_message = "Changeling '{name}' updated successfully!"
     error_message = "Failed to update changeling. Please correct the errors below."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -340,7 +242,7 @@ class ChangelingArtsRealmsView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ChangelingExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class ChangelingExtrasView(CharacterExtrasView):
     model = Changeling
     fields = [
         "date_of_birth",
@@ -360,57 +262,22 @@ class ChangelingExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "ravaging_threshold",
     ]
     template_name = "characters/changeling/changeling/chargen.html"
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        messages.success(self.request, "Character details saved successfully!")
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["date_of_birth"].required = False
-        form.fields["date_of_crysalis"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["date_of_crysalis"].required = False
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appearance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their mortal life and their Chrysalis."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {"placeholder": "Describe your character's long and short term goals."}
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {"placeholder": "This will be displayed to all players who look at your character."}
-        )
-        form.fields["true_name"].widget.attrs.update(
-            {"placeholder": "Your character's fae true name"}
-        )
-        form.fields["crysalis"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's Chrysalis - how they awakened to their fae nature."
-            }
-        )
-        form.fields["fae_mien"].widget.attrs.update(
-            {"placeholder": "Describe your character's fae appearance."}
-        )
-        form.fields["antithesis"].widget.attrs.update(
-            {
-                "placeholder": "What is your character's Antithesis? What causes them to gain Banality?"
-            }
-        )
-        return form
+    success_message = "Character details saved successfully!"
+    date_fields = ("date_of_birth", "date_of_crysalis")
+    optional_fields = ("date_of_birth", "date_of_crysalis")
+    field_widget_attrs = {
+        "history": {
+            "placeholder": "Describe character history/backstory. Include information about their mortal life and their Chrysalis."
+        },
+        "true_name": {"placeholder": "Your character's fae true name"},
+        "crysalis": {
+            "placeholder": "Describe your character's Chrysalis - how they awakened to their fae nature."
+        },
+        "fae_mien": {"placeholder": "Describe your character's fae appearance."},
+        "antithesis": {
+            "placeholder": "What is your character's Antithesis? What causes them to gain Banality?"
+        },
+    }
 
 
 class ChangelingFreebiesView(HumanFreebiesView):
@@ -426,43 +293,10 @@ class ChangelingFreebiesView(HumanFreebiesView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = HumanLanguageForm
+class ChangelingLanguagesView(HumanLanguagesView):
+    model = Changeling
     template_name = "characters/changeling/changeling/chargen.html"
-
-    def get_object(self):
-        """Return the Changeling object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Changeling, pk=self.kwargs.get("pk"))
-        return self.object
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        changeling_pk = self.kwargs.get("pk")
-        num_languages = Changeling.objects.get(pk=changeling_pk).num_languages()
-        kwargs.update({"pk": changeling_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    def form_valid(self, form):
-        changeling_pk = self.kwargs.get("pk")
-        changeling = get_object_or_404(Changeling, pk=changeling_pk)
-        num_languages = changeling.num_languages()
-        english, _ = Language.objects.get_or_create(name="English")
-        changeling.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                changeling.languages.add(language)
-        advance(changeling, user=self.request.user)
-        changeling.save()
-        messages.success(self.request, "Languages added successfully!")
-        return HttpResponseRedirect(changeling.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
+    success_message = "Languages added successfully!"
 
 
 class ChangelingAlliesView(GenericBackgroundView):
@@ -472,38 +306,10 @@ class ChangelingAlliesView(GenericBackgroundView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = SpecialtiesForm
+class ChangelingSpecialtiesView(HumanSpecialtiesView):
+    model = Changeling
     template_name = "characters/changeling/changeling/chargen.html"
-
-    def get_object(self):
-        """Return the Changeling object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = Changeling.objects.get(id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        changeling = self.get_object()
-        kwargs["object"] = changeling
-        kwargs["specialties_needed"] = changeling.needed_specialties()
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        changeling = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            changeling.specialties.add(spec)
-        changeling.status = "Sub"
-        changeling.save()
-        messages.success(self.request, f"Changeling '{changeling.name}' submitted for approval!")
-        return HttpResponseRedirect(changeling.get_absolute_url())
+    success_message = "Changeling '{name}' submitted for approval!"
 
 
 class ChangelingCharacterCreationView(HumanCharacterCreationView):

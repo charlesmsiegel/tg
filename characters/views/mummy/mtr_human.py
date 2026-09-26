@@ -1,4 +1,3 @@
-
 from django.views.generic import CreateView, ListView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -8,10 +7,10 @@ from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
 class MtRHumanDetailView(XPApprovalMixin, HumanDetailView):
@@ -32,7 +31,7 @@ class MtRHumanCreateView(MessageMixin, CreateView):
         return kwargs
 
 
-class MtRHumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+class MtRHumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
     model = MtRHuman
     fields = [
         "name",
@@ -49,14 +48,7 @@ class MtRHumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     success_message = "Human (Mummy) '{name}' updated successfully!"
     error_message = "Failed to update human. Please correct the errors below."
 
-    def get_form_class(self):
-        """Return different form based on user permissions."""
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class MtRHumanListView(VisibilityFilterMixin, ListView):

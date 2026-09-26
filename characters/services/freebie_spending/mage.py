@@ -8,6 +8,7 @@ This module provides freebie spending services for Mage: The Ascension character
 - CompanionFreebieSpendingService - Consors (unawakened helpers)
 """
 
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
@@ -703,12 +704,22 @@ class CompanionFreebieSpendingService(MtAHumanFreebieSpendingService):
     to standard human traits plus Special Advantages and Charms.
     """
 
+    willpower_cost_multiplier = 2
+
+    def _deduct_freebies(self, cost):
+        # Keep the familiar's derived Essence synchronized on every purchase.
+        if self.character.companion_type == "familiar":
+            self.character.essence = self.character.willpower * 5
+        super()._deduct_freebies(cost)
+
     @handler("Advantage")
     def _handle_advantage(self, example, value=None, **kwargs) -> FreebieSpendResult:
         """Handle Special Advantage freebie spending."""
         trait = example.name
         current_value = self.character.advantage_rating(example)
         new_value = value if value is not None else current_value + 1
+        if new_value <= current_value or new_value not in example.get_ratings():
+            raise ValidationError("Choose a supported Advantage rating above the current rating")
         # Advantage cost is typically by rating
         cost = new_value - current_value
 
@@ -722,7 +733,10 @@ class CompanionFreebieSpendingService(MtAHumanFreebieSpendingService):
             )
 
         # Apply the change
-        self.character.add_advantage(example, new_value)
+        if not self.character.add_advantage(example, new_value):
+            raise ValidationError("Could not increase this Advantage")
+        if trait == "Ferocity":
+            self.character.rage = new_value // 2
         self.character.save()
 
         # Record and deduct

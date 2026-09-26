@@ -1,18 +1,19 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView
 
+from characters.forms.core.crud_fields import HUNTER_CREATE_FIELDS, HUNTER_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import Hunter
+from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
-class HunterDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class HunterDetailView(XPApprovalMixin, HumanDetailView):
     model = Hunter
     template_name = "characters/hunter/hunter/detail.html"
 
@@ -24,95 +25,7 @@ class HunterDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
 
 class HunterCreateView(MessageMixin, CreateView):
     model = Hunter
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "leadership",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "repair",
-        "survival",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "creed",
-        "conviction",
-        "vision",
-        "zeal",
-        "temporary_conviction",
-        "temporary_vision",
-        "temporary_zeal",
-        "primary_virtue",
-        "imbuing_date",
-        "safehouse",
-        "discern",
-        "burden",
-        "balance",
-        "expose",
-        "investigate",
-        "witness",
-        "prosecute",
-        "illuminate",
-        "ward",
-        "cleave",
-        "hide",
-        "blaze",
-        "radiate",
-        "vengeance",
-        "demand",
-        "confront",
-        "donate",
-        "becalm",
-        "respire",
-        "rejuvenate",
-        "redeem",
-    ]
+    fields = HUNTER_CREATE_FIELDS
     template_name = "characters/hunter/hunter/form.html"
     success_message = "Hunter '{name}' created successfully!"
     error_message = "Failed to create hunter. Please correct the errors below."
@@ -121,110 +34,14 @@ class HunterCreateView(MessageMixin, CreateView):
         return self.object.get_absolute_url()
 
 
-class HunterUpdateView(EditPermissionMixin, UpdateView):
+class HunterUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Hunter
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "leadership",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "repair",
-        "survival",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "creed",
-        "conviction",
-        "vision",
-        "zeal",
-        "temporary_conviction",
-        "temporary_vision",
-        "temporary_zeal",
-        "primary_virtue",
-        "imbuing_date",
-        "safehouse",
-        "discern",
-        "burden",
-        "balance",
-        "expose",
-        "investigate",
-        "witness",
-        "prosecute",
-        "illuminate",
-        "ward",
-        "cleave",
-        "hide",
-        "blaze",
-        "radiate",
-        "vengeance",
-        "demand",
-        "confront",
-        "donate",
-        "becalm",
-        "respire",
-        "rejuvenate",
-        "redeem",
-    ]
+    fields = HUNTER_UPDATE_FIELDS
     template_name = "characters/hunter/hunter/form.html"
     success_message = "Hunter '{name}' updated successfully!"
     error_message = "Failed to update hunter. Please correct the errors below."
 
-    def get_form_class(self):
-        """Return different form based on user permissions."""
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class HunterListView(VisibilityFilterMixin, ListView):

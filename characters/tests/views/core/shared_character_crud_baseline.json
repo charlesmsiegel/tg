@@ -1,0 +1,206 @@
+{
+  "characters.views.changeling.autumn_person.AutumnPersonCreateView": {
+    "fields_sha256": "677a10524bd1bbbc250094ab9c8a8b7c6bfb5e2b46c5497f8e3f4ca7714eb34f",
+    "field_count": 10
+  },
+  "characters.views.changeling.autumn_person.AutumnPersonUpdateView": {
+    "fields_sha256": "2907f4775f56ec8bc992bc9fcc38ab325dc26ecbc4dc286e34a491638d5db231",
+    "field_count": 15,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.changeling.changeling.ChangelingUpdateView": {
+    "fields_sha256": "84f399af97f8b4f8e109883dcc37ec6d3faed647c4a901dda0c889e51169b54c",
+    "field_count": 83,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.changeling.ctdhuman.CtDHumanUpdateView": {
+    "fields_sha256": "2eddb85d8bf89fdf4223235048bd0b2f339ecbe762ff9c8e829113e252413e8c",
+    "field_count": 47,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.changeling.inanimae.InanimaeCreateView": {
+    "fields_sha256": "4be6fcda2ace110c1ff0f97b558a2350894b079b6faa373796943d64551a1baf",
+    "field_count": 10
+  },
+  "characters.views.changeling.inanimae.InanimaeUpdateView": {
+    "fields_sha256": "99378dcff5df87b8937eb619e6c2489f79d3d13405eade8dd81f2f1adef7fe15",
+    "field_count": 14,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.changeling.nunnehi.NunnehiCreateView": {
+    "fields_sha256": "249d5f98783fd862ebd9e46b293cd0c7b1ddf12313c97e1f893b292709a9942e",
+    "field_count": 10
+  },
+  "characters.views.changeling.nunnehi.NunnehiUpdateView": {
+    "fields_sha256": "e6dc51647ca88083c4ae3b12b15d5acb4fcefe1543424db2561c8812be5cffda",
+    "field_count": 14,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.core.character.CharacterCreateView": {
+    "fields_sha256": "efa3163f6fff75bed1a0086843653598c0c041b98c996c9dcd6bd4a37be8b22b",
+    "field_count": 6
+  },
+  "characters.views.core.character.CharacterUpdateView": {
+    "fields_sha256": "e5dfe9ffb90b0cf094121cafe0323134f93ce7557fc837d0aa3354b3b03bfbb4",
+    "field_count": 9,
+    "limited_form": "OwnerUnapprovedCharacterEditForm"
+  },
+  "characters.views.core.human.HumanCreateView": {
+    "fields_sha256": "6ee33e673cf49d33fddfd21966a44156a887bb481feb0367b2b0caa8123967c1",
+    "field_count": 24
+  },
+  "characters.views.core.human.HumanUpdateView": {
+    "fields_sha256": "6ee33e673cf49d33fddfd21966a44156a887bb481feb0367b2b0caa8123967c1",
+    "field_count": 24
+  },
+  "characters.views.demon.demon.DemonUpdateView": {
+    "fields_sha256": "b602ed48a0ef41615423957d4d53919e850df57effbc4ddb6e8d5b3c8384227c",
+    "field_count": 76,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.demon.dtfhuman.DtFHumanUpdateView": {
+    "fields_sha256": "fa88cebd30d83a945fe951fe21c4634a1337777b33c205394787f0a2ccc2bec6",
+    "field_count": 61,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.demon.earthbound.EarthboundCreateView": {
+    "fields_sha256": "e3ce6537f0feb76878c8c1f87575ca7405c7b4000f81f1bfe8c5c8c14e19b752",
+    "field_count": 92
+  },
+  "characters.views.demon.earthbound.EarthboundUpdateView": {
+    "fields_sha256": "e3ce6537f0feb76878c8c1f87575ca7405c7b4000f81f1bfe8c5c8c14e19b752",
+    "field_count": 92,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.demon.thrall.ThrallUpdateView": {
+    "fields_sha256": "6d95cecca51301bc9879a6ecdc907e96d72df99b5818fe9d95eb4f2c2dba3102",
+    "field_count": 68,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.hunter.htrhuman.HtRHumanCreateView": {
+    "fields_sha256": "0f68826003828cb37661baf0585962e90caa677473c885b115a2d4570c6388d4",
+    "field_count": 60
+  },
+  "characters.views.hunter.htrhuman.HtRHumanUpdateView": {
+    "fields_sha256": "0f68826003828cb37661baf0585962e90caa677473c885b115a2d4570c6388d4",
+    "field_count": 60,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.hunter.hunter.HunterCreateView": {
+    "fields_sha256": "3ad96769b2aa4d0edf980ee991420e9434f632d517426010039888a34d19b056",
+    "field_count": 87
+  },
+  "characters.views.hunter.hunter.HunterUpdateView": {
+    "fields_sha256": "3ad96769b2aa4d0edf980ee991420e9434f632d517426010039888a34d19b056",
+    "field_count": 87,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mage.companion.CompanionCreateView": {
+    "fields_sha256": "2f61ca9fc0cd13c44ebb264ff50cd97b2c28723ec383461a37b45b60bf953948",
+    "field_count": 10
+  },
+  "characters.views.mage.companion.CompanionUpdateView": {
+    "fields_sha256": "4b9396595622ce6f444269b0ae7b3e2b8d4d4893a61cc0c6855025c103098134",
+    "field_count": 24,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mage.mage.MageCreateView": {
+    "fields_sha256": "45abb2d9f192e8c516660e630bd1e1458f44764474a45ebf3c114ebb7c4ec69b",
+    "field_count": 130
+  },
+  "characters.views.mage.mage.MageUpdateView": {
+    "fields_sha256": "45abb2d9f192e8c516660e630bd1e1458f44764474a45ebf3c114ebb7c4ec69b",
+    "field_count": 130,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mage.mtahuman.MtAHumanUpdateView": {
+    "fields_sha256": "f47470d29478621c060f3b205c375843733a22c5ad66ae7e451a82a38734d9e0",
+    "field_count": 105,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mummy.mtr_human.MtRHumanUpdateView": {
+    "fields_sha256": "4dbfaa7b2c7e014947eb0bca4d5d9a07776b73626a01501459fb0065b6565eae",
+    "field_count": 9,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mummy.mummy.MummyUpdateView": {
+    "fields_sha256": "1b1b3e0391e03c2cb6118487c469dfe2ec81ded4c7d802829bd0c8b9ce9f173b",
+    "field_count": 33,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.vampire.ghoul.GhoulUpdateView": {
+    "fields_sha256": "b248fe7896780e4bfae7b90e8a0d589a8cc1cf7319e2efb8e17c9644907e682e",
+    "field_count": 19,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.vampire.revenant.RevenantCreateView": {
+    "fields_sha256": "66a5dcbd5acf5f2c264e23b357180f51b20c1adf5fd2cfa86265a238c5c97376",
+    "field_count": 9
+  },
+  "characters.views.vampire.revenant.RevenantUpdateView": {
+    "fields_sha256": "8c2a9c32278dbf89a3d24349569d805334154fe506785e552382eb2151e7c203",
+    "field_count": 24,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.vampire.vampire.VampireUpdateView": {
+    "fields_sha256": "8bcccb79f030ebae5020be7c0cd1d6db97b44fee7567c8d65c286dba778da55e",
+    "field_count": 47,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.vampire.vtmhuman.VtMHumanUpdateView": {
+    "fields_sha256": "b720a76ad7ed7373c48328045df9dbf6f7aef4543d5b10fac458875b4b9ba73d",
+    "field_count": 56,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.drone.DroneUpdateView": {
+    "fields_sha256": "eaf2b91d2568e154ce579bfc7f7e6589a2c6190af69da11fdee14f0c45c54d99",
+    "field_count": 60,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.fera.FeraUpdateView": {
+    "fields_sha256": "81c9efea47d2aa8464e3088378e229463146ed9d2af5155486968435ce4a404d",
+    "field_count": 66,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.fomor.FomorUpdateView": {
+    "fields_sha256": "463b8329927a5c6633b4fee87807b94cb039f04d790e25aa0ae977cdd660daf3",
+    "field_count": 58,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.garou.WerewolfUpdateView": {
+    "fields_sha256": "51b96a70a62bea54e867964d83100e66ae4db08c09d837ae71a9723c21241174",
+    "field_count": 74,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.kinfolk.KinfolkUpdateView": {
+    "fields_sha256": "9e98518a5e99c59c3b73fe4b49e8048f4a7a31661997b1fdb90ee18274787aa4",
+    "field_count": 67,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.werewolf.spirit.SpiritCreateView": {
+    "fields_sha256": "d5d60b7c28a1595b26ec33e85f6bdbb7497192ee80a3bd7d3200e2729c76c683",
+    "field_count": 7
+  },
+  "characters.views.werewolf.spirit.SpiritUpdateView": {
+    "fields_sha256": "d5d60b7c28a1595b26ec33e85f6bdbb7497192ee80a3bd7d3200e2729c76c683",
+    "field_count": 7
+  },
+  "characters.views.werewolf.wtahuman.WtAHumanUpdateView": {
+    "fields_sha256": "9b0e56aeee9ff03031dbe9a7c354edf9179ee71ff626f70fb46957bb3d19fa4c",
+    "field_count": 55,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.wraith.wraith.WraithUpdateView": {
+    "fields_sha256": "c2f9731ddaa2f9b2fc3bb5a827b6579ebad0869ca5ea400258e1e25d92427d7c",
+    "field_count": 18,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.wraith.wtohuman.WtOHumanUpdateView": {
+    "fields_sha256": "0ab5c86af58c8ca38a83d91d1e6ec46f4f588b8aac8b8a4080933125efba6f9c",
+    "field_count": 54,
+    "limited_form": "LimitedHumanEditForm"
+  },
+  "characters.views.mage.sorcerer.SorcererUpdateView": {
+    "limited_form": "LimitedHumanEditForm"
+  }
+}

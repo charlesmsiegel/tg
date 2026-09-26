@@ -2,11 +2,11 @@ from typing import Any
 
 from django.views.generic import CreateView, UpdateView
 
+from characters.forms.core.crud_fields import REVENANT_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.revenant import Revenant
 from characters.views.core.human import HumanDetailView
-from core.mixins import MessageMixin, XPApprovalMixin
-from core.permissions import PermissionManager
+from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin, XPApprovalMixin
 
 
 class RevenantDetailView(XPApprovalMixin, HumanDetailView):
@@ -38,49 +38,11 @@ class RevenantCreateView(MessageMixin, CreateView):
     error_message = "Error creating revenant."
 
 
-class RevenantUpdateView(MessageMixin, UpdateView):
+class RevenantUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
     model = Revenant
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "chronicle",
-        "image",
-        "npc",
-        "family",
-        "pseudo_generation",
-        "blood_pool",
-        "max_blood_pool",
-        "actual_age",
-        "apparent_age",
-        "family_flaw",
-        # Disciplines
-        "potence",
-        "celerity",
-        "fortitude",
-        "auspex",
-        "dominate",
-        "obfuscate",
-        "presence",
-        "animalism",
-        "necromancy",
-        "vicissitude",
-    ]
+    fields = REVENANT_UPDATE_FIELDS
     template_name = "characters/vampire/revenant/form.html"
     success_message = "Revenant updated successfully."
     error_message = "Error updating revenant."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm

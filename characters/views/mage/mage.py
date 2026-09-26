@@ -3,8 +3,10 @@ from typing import Any
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
+from characters.forms.core.crud_fields import MAGE_CREATE_FIELDS
 from characters.views.core.chargen_mixins import ChargenStepMixin
-from core.mixins import ScopedCreationFormMixin
+from characters.views.core.human import HumanLanguagesView, HumanSpecialtiesView
+from core.mixins import ScopedCreationFormMixin, ScopedEditFormMixin
 
 logger = logging.getLogger(__name__)
 
@@ -36,14 +38,13 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.services.xp_spending import XPSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
     HumanFreebiesView,
-    HumanLanguagesView,
-    HumanSpecialtiesView,
 )
 from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
@@ -129,6 +130,8 @@ class MageDetailView(HumanDetailView):
             raise PermissionDenied("Cannot retire this character")
         if "decease" in request.POST and not can_edit:
             raise PermissionDenied("Cannot mark this character deceased")
+        if "retire" in request.POST or "decease" in request.POST:
+            return super().post(request, *args, **kwargs)
         context = self.get_context_data()
         form = MageXPForm(request.POST, request.FILES, character=self.object)
         rote_form = RoteCreationForm(request.POST, instance=self.object)
@@ -236,12 +239,6 @@ class MageDetailView(HumanDetailView):
                 spec = Specialty.objects.get_or_create(name=spec, stat=stat)[0]
                 self.object.specialties.add(spec)
             self.object.save()
-        if "retire" in form.data.keys():
-            self.object.status = "Ret"
-            self.object.save()
-        if "decease" in form.data.keys():
-            self.object.status = "Dec"
-            self.object.save()
         if form_errors:
             return self.render_to_response(context)
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
@@ -249,139 +246,7 @@ class MageDetailView(HumanDetailView):
 
 class MageCreateView(MessageMixin, CreateView):
     model = Mage
-    FORM_FIELDS = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "specialties",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "awareness",
-        "art",
-        "leadership",
-        "animal_kinship",
-        "blatancy",
-        "carousing",
-        "flying",
-        "high_ritual",
-        "lucid_dreaming",
-        "search",
-        "seduction",
-        "larceny",
-        "meditation",
-        "research",
-        "survival",
-        "technology",
-        "acrobatics",
-        "archery",
-        "biotech",
-        "energy_weapons",
-        "jetpack",
-        "riding",
-        "torture",
-        "cosmology",
-        "enigmas",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "area_knowledge",
-        "belief_systems",
-        "cryptography",
-        "demolitions",
-        "lore",
-        "media",
-        "pharmacopeia",
-        "cooking",
-        "diplomacy",
-        "instruction",
-        "intrigue",
-        "intuition",
-        "mimicry",
-        "negotiation",
-        "newspeak",
-        "scan",
-        "scrounging",
-        "style",
-        "blind_fighting",
-        "climbing",
-        "disguise",
-        "elusion",
-        "escapology",
-        "fast_draw",
-        "fast_talk",
-        "fencing",
-        "fortune_telling",
-        "gambling",
-        "gunsmith",
-        "heavy_weapons",
-        "hunting",
-        "hypnotism",
-        "jury_rigging",
-        "microgravity_operations",
-        "misdirection",
-        "networking",
-        "pilot",
-        "psychology",
-        "security",
-        "speed_reading",
-        "swimming",
-        "conspiracy_theory",
-        "chantry_politics",
-        "covert_culture",
-        "cultural_savvy",
-        "helmsman",
-        "history_knowledge",
-        "power_brokering",
-        "propaganda",
-        "theology",
-        "unconventional_warface",
-        "vice",
-        "essence",
-        "correspondence",
-        "time",
-        "spirit",
-        "mind",
-        "entropy",
-        "time",
-        "forces",
-        "matter",
-        "life",
-        "arete",
-        "affinity_sphere",
-        "corr_name",
-        "prime_name",
-        "spirit_name",
-        "age_of_awakening",
-        "avatar_description",
-        "rote_points",
-        "quintessence",
-        "paradox",
-        "quiet",
-        "quiet_type",
-        "affiliation",
-        "faction",
-        "subfaction",
-        "public_info",
-    ]
+    FORM_FIELDS = MAGE_CREATE_FIELDS
     fields = FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
     success_message = "Mage '{name}' created successfully!"
@@ -395,26 +260,14 @@ class MageCreateView(MessageMixin, CreateView):
         return form
 
 
-class MageUpdateView(EditPermissionMixin, UpdateView):
+class MageUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Mage
     fields = MageCreateView.FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
     success_message = "Mage '{name}' updated successfully!"
     error_message = "Failed to update mage. Please correct the errors below."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class MageBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -607,7 +460,7 @@ class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class MageExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class MageExtrasView(CharacterExtrasView):
     model = Mage
     fields = [
         "date_of_birth",
@@ -622,42 +475,20 @@ class MageExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/mage/chargen.html"
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appeareance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with mage society since, particularly mentioning important backgrounds."
-            }
-        )
-        form.fields["avatar_description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your Avatar. Both how it appears to you, how you relate to it, and anything it is, in particular, pushing you towards."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
-            }
-        )
-        return form
+    field_widget_attrs = {
+        "history": {
+            "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with mage society since, particularly mentioning important backgrounds."
+        },
+        "avatar_description": {
+            "placeholder": "Describe your Avatar. Both how it appears to you, how you relate to it, and anything it is, in particular, pushing you towards."
+        },
+        "goals": {
+            "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
+        },
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
+        },
+    }
 
 
 class MageFreebiesView(HumanFreebiesView):
@@ -674,6 +505,7 @@ class MageFreebiesView(HumanFreebiesView):
 
 
 class MageLanguagesView(HumanLanguagesView):
+    model = Mage
     template_name = "characters/mage/mage/chargen.html"
 
 
@@ -827,6 +659,7 @@ class MageNodeView(GenericBackgroundView):
 
 
 class MageSpecialtiesView(HumanSpecialtiesView):
+    model = Mage
     template_name = "characters/mage/mage/chargen.html"
 
 

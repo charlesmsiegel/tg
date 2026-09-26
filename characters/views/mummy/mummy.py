@@ -2,6 +2,7 @@ from typing import Any
 
 from django.views.generic import CreateView, ListView, UpdateView
 
+from characters.forms.core.crud_fields import MUMMY_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.mummy.mummy import MummyCreationForm
 from characters.models.mummy.mummy import Mummy
@@ -9,10 +10,10 @@ from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
 class MummyDetailView(XPApprovalMixin, HumanDetailView):
@@ -40,57 +41,14 @@ class MummyCreateView(MessageMixin, CreateView):
         return kwargs
 
 
-class MummyUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+class MummyUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
     model = Mummy
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "chronicle",
-        "image",
-        "npc",
-        "dynasty",
-        "web",
-        "ancient_name",
-        "balance",
-        "sekhem",
-        "ba",
-        "conviction",
-        "restraint",
-        "incarnation",
-        "years_since_rebirth",
-        "mummified_appearance",
-        "can_pass_as_mortal",
-        # Hekau
-        "alchemy",
-        "celestial",
-        "effigy",
-        "necromancy",
-        "nomenclature",
-        "ushabti",
-        "judge",
-        "phoenix",
-        "vision",
-        "divination",
-        # Text fields
-        "death_in_first_life",
-        "past_lives_memory",
-        "description",
-        "notes",
-    ]
+    fields = MUMMY_UPDATE_FIELDS
     template_name = "characters/mummy/mummy/form.html"
     success_message = "Mummy '{name}' updated successfully!"
     error_message = "Failed to update mummy. Please correct the errors below."
 
-    def get_form_class(self):
-        """Return different form based on user permissions."""
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class MummyListView(VisibilityFilterMixin, ListView):

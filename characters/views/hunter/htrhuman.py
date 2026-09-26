@@ -1,86 +1,26 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView
 
+from characters.forms.core.crud_fields import HT_R_HUMAN_CREATE_FIELDS, HT_R_HUMAN_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import HtRHuman
+from characters.views.core.human import HumanDetailView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import PermissionManager
 
 
-class HtRHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class HtRHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = HtRHuman
     template_name = "characters/hunter/htrhuman/detail.html"
 
 
 class HtRHumanCreateView(MessageMixin, CreateView):
     model = HtRHuman
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "leadership",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "repair",
-        "survival",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "allies",
-        "influence",
-        "resources",
-        "status_background",
-    ]
+    fields = HT_R_HUMAN_CREATE_FIELDS
     template_name = "characters/hunter/htrhuman/form.html"
     success_message = "Human (Hunter) '{name}' created successfully!"
     error_message = "Failed to create human. Please correct the errors below."
@@ -89,83 +29,14 @@ class HtRHumanCreateView(MessageMixin, CreateView):
         return self.object.get_absolute_url()
 
 
-class HtRHumanUpdateView(EditPermissionMixin, UpdateView):
+class HtRHumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = HtRHuman
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "awareness",
-        "leadership",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "repair",
-        "survival",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "allies",
-        "influence",
-        "resources",
-        "status_background",
-    ]
+    fields = HT_R_HUMAN_UPDATE_FIELDS
     template_name = "characters/hunter/htrhuman/form.html"
     success_message = "Human (Hunter) '{name}' updated successfully!"
     error_message = "Failed to update human. Please correct the errors below."
 
-    def get_form_class(self):
-        """Return different form based on user permissions."""
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class HtRHumanListView(VisibilityFilterMixin, ListView):

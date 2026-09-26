@@ -114,6 +114,26 @@ class EditPermissionMixin(PermissionRequiredMixin):
     raise_404_on_deny = False
 
 
+class ScopedEditFormMixin:
+    """Select the reviewed full form only for an editor of this object's scope.
+
+    Keep the supplied limited form intact: its model and widgets are deliberate,
+    even when the view edits a subclass. EditPermissionMixin still controls access
+    to the endpoint; this mixin limits what an authorized owner may submit.
+    """
+
+    limited_form_class = None
+
+    def get_form_class(self):
+        if PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
+        ):
+            return super().get_form_class()
+        if self.limited_form_class is None:
+            raise ValueError("limited_form_class must be set")
+        return self.limited_form_class
+
+
 class SpendFreebiesPermissionMixin(PermissionRequiredMixin):
     """
     Require freebie spending permission for CBV.
