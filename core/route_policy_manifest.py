@@ -634,6 +634,7 @@ characters.views.vampire.ghoul.GhoulUpdateView
 characters.views.vampire.revenant.RevenantUpdateView
 characters.views.vampire.vampire.VampireUpdateView
 characters.views.vampire.vtmhuman.VtMHumanUpdateView
+characters.views.werewolf.drone.DroneUpdateView
 characters.views.werewolf.fera.FeraUpdateView
 characters.views.werewolf.fomor.FomorUpdateView
 characters.views.werewolf.garou.WerewolfUpdateView
