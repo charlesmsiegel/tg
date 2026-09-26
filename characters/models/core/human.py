@@ -172,7 +172,7 @@ class Human(
         return self._background_manager
 
     # ========================================================================
-    # URL Methods (formerly from HumanUrlBlock)
+    # URL Methods
     # ========================================================================
 
     @staticmethod

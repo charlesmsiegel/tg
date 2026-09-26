@@ -1,69 +1,68 @@
-"""Tests for human_url_block module."""
+"""Tests for the URL methods on Human (formerly HumanUrlBlock)."""
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 from characters.models.core.human import Human
-from characters.models.core.human_url_block import HumanUrlBlock
 from characters.tests.utils import human_setup
 
 
 class TestGetGamelineForUrl(TestCase):
-    """Tests for HumanUrlBlock.get_gameline_for_url() static method."""
+    """Tests for Human.get_gameline_for_url() static method."""
 
     def test_wod_gameline_returns_empty_string(self):
         """WoD gameline returns empty string (no namespace prefix)."""
-        result = HumanUrlBlock.get_gameline_for_url("wod")
+        result = Human.get_gameline_for_url("wod")
         self.assertEqual(result, "")
 
     def test_vtm_gameline_returns_vampire_prefix(self):
         """VtM gameline returns 'vampire:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("vtm")
+        result = Human.get_gameline_for_url("vtm")
         self.assertEqual(result, "vampire:")
 
     def test_wta_gameline_returns_werewolf_prefix(self):
         """WtA gameline returns 'werewolf:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("wta")
+        result = Human.get_gameline_for_url("wta")
         self.assertEqual(result, "werewolf:")
 
     def test_mta_gameline_returns_mage_prefix(self):
         """MtA gameline returns 'mage:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("mta")
+        result = Human.get_gameline_for_url("mta")
         self.assertEqual(result, "mage:")
 
     def test_wto_gameline_returns_wraith_prefix(self):
         """WtO gameline returns 'wraith:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("wto")
+        result = Human.get_gameline_for_url("wto")
         self.assertEqual(result, "wraith:")
 
     def test_ctd_gameline_returns_changeling_prefix(self):
         """CtD gameline returns 'changeling:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("ctd")
+        result = Human.get_gameline_for_url("ctd")
         self.assertEqual(result, "changeling:")
 
     def test_dtf_gameline_returns_demon_prefix(self):
         """DtF gameline returns 'demon:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("dtf")
+        result = Human.get_gameline_for_url("dtf")
         self.assertEqual(result, "demon:")
 
     def test_mtr_gameline_returns_mummy_prefix(self):
         """MtR gameline returns 'mummy:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("mtr")
+        result = Human.get_gameline_for_url("mtr")
         self.assertEqual(result, "mummy:")
 
     def test_htr_gameline_returns_hunter_prefix(self):
         """HtR gameline returns 'hunter:' prefix."""
-        result = HumanUrlBlock.get_gameline_for_url("htr")
+        result = Human.get_gameline_for_url("htr")
         self.assertEqual(result, "hunter:")
 
     def test_unknown_gameline_returns_empty_string(self):
         """Unknown gameline returns empty string."""
-        result = HumanUrlBlock.get_gameline_for_url("unknown")
+        result = Human.get_gameline_for_url("unknown")
         self.assertEqual(result, "")
 
 
-class TestHumanUrlBlockOnHuman(TestCase):
+class TestHumanUrlMethods(TestCase):
     """Tests for URL generation methods on Human model."""
 
     def setUp(self):
@@ -123,7 +122,7 @@ class TestHumanUrlBlockOnHuman(TestCase):
         self.assertIn(response.status_code, [200, 302, 403])
 
 
-class TestHumanUrlBlockWithMultipleCharacters(TestCase):
+class TestHumanUrlsWithMultipleCharacters(TestCase):
     """Tests for URL generation with multiple characters."""
 
     def setUp(self):
