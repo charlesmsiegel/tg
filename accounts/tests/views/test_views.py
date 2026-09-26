@@ -3,6 +3,7 @@
 from datetime import date
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
@@ -22,12 +23,13 @@ from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
 
-class TestSignUpView(TestCase):
-    """Class that Tests SignUpView"""
+class TestAccountsRootRedirect(TestCase):
+    """/accounts/ (accounts:user) redirects to the home page."""
 
-    def test_correct_template(self):
-        self.client.get("/accounts/")
-        self.assertTemplateUsed("registration/login.html")
+    def test_accounts_root_redirects_to_home(self):
+        self.assertEqual(reverse("accounts:user"), "/accounts/")
+        response = self.client.get("/accounts/")
+        self.assertRedirects(response, reverse("core:home"))
 
 
 class TestProfileView(TestCase):
@@ -59,7 +61,10 @@ class TestProfileView(TestCase):
         self.assertTemplateUsed(response, "accounts/detail.html")
 
     def test_template_logged_out(self):
+        # "/" is cache_page'd; a response cached by an earlier test renders no templates.
+        cache.clear()
         response = self.client.get("/accounts/", follow=True)
+        self.assertEqual(response.redirect_chain, [(reverse("core:home"), 302)])
         self.assertTemplateUsed(response, "core/index.html")
 
     def test_character_list(self):
