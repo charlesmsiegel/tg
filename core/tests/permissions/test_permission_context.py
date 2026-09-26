@@ -413,3 +413,15 @@ class PermissionContextTests(TestCase):
         view.object_list = Human.objects.all()
         with self.assertNumQueries(0):
             view.get_context_data()
+
+    def test_snapshot_loses_st_grants_when_live_chronicle_changes(self):
+        from core.permission_context import get_object_permissions
+
+        request = self.request(self.editor)
+        self.assertTrue(get_object_permissions(request, self.character).can_approve)
+        self.character.chronicle = Chronicle.objects.create(name="Different scope")
+        with self.assertNumQueries(0):
+            snapshot = get_object_permissions(request, self.character)
+            self.assertFalse(snapshot.can_approve)
+            self.assertFalse(snapshot.can_edit)
+            self.assertFalse(snapshot.can_view_full)
