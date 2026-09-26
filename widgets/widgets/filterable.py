@@ -416,11 +416,6 @@ FILTERABLE_LIST_JS = """
 """
 
 
-def get_filterable_list_js():
-    """Return the FilterableList JavaScript code."""
-    return FILTERABLE_LIST_JS
-
-
 def render_filterable_list_script():
     """
     Render the FilterableList JavaScript as a script tag.

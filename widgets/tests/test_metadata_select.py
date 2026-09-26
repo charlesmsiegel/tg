@@ -5,7 +5,7 @@ Tests for the OptionMetadataSelect widget.
 from django import forms
 from django.test import TestCase
 
-from widgets import OptionMetadataSelect, OptionMetadataSelectMultiple
+from widgets import OptionMetadataSelect
 from widgets.utils import normalize_choices
 
 
@@ -80,15 +80,6 @@ class TestOptionMetadataSelect(TestCase):
 
         self.assertIn('data-extra="yes"', html)
         self.assertIn("Without Metadata", html)
-
-
-class TestOptionMetadataSelectMultiple(TestCase):
-    """Tests for OptionMetadataSelectMultiple widget."""
-
-    def test_multiple_select_inherits_metadata_select(self):
-        """Test OptionMetadataSelectMultiple inherits from OptionMetadataSelect."""
-        widget = OptionMetadataSelectMultiple()
-        self.assertIsInstance(widget, OptionMetadataSelect)
 
 
 class TestNormalizeChoicesWithMetadata(TestCase):
@@ -225,7 +216,6 @@ class TestImports(TestCase):
 
     def test_option_metadata_exports(self):
         """Test OptionMetadataSelect exports are available from widgets package."""
-        from widgets import OptionMetadataSelect, OptionMetadataSelectMultiple
+        from widgets import OptionMetadataSelect
 
         self.assertIsNotNone(OptionMetadataSelect)
-        self.assertIsNotNone(OptionMetadataSelectMultiple)

@@ -253,12 +253,6 @@ class OptionMetadataSelect(forms.Select):
         cls._js_rendered = False
 
 
-class OptionMetadataSelectMultiple(OptionMetadataSelect, forms.SelectMultiple):
-    """Multiple-select variant of OptionMetadataSelect."""
-
-    pass
-
-
 # Reset flag between requests using Django's request_finished signal
 try:
     from django.core.signals import request_finished

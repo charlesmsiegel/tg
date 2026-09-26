@@ -8,15 +8,16 @@ The JavaScript behavior would be tested via browser/integration tests.
 from django.template import Context, Template
 from django.test import TestCase
 
-from widgets import get_filterable_list_js, render_filterable_list_script
+from widgets import render_filterable_list_script
+from widgets.widgets.filterable import FILTERABLE_LIST_JS
 
 
 class TestFilterableListScript(TestCase):
     """Tests for the filterable list script rendering."""
 
-    def test_get_filterable_list_js_returns_string(self):
-        """Test that get_filterable_list_js returns JavaScript code."""
-        js = get_filterable_list_js()
+    def test_filterable_list_js_is_string(self):
+        """Test that FILTERABLE_LIST_JS holds the JavaScript code."""
+        js = FILTERABLE_LIST_JS
         self.assertIsInstance(js, str)
         self.assertIn("FilterableListManager", js)
         self.assertIn("window.FilterableList", js)
@@ -30,7 +31,7 @@ class TestFilterableListScript(TestCase):
 
     def test_script_contains_key_features(self):
         """Test that the JavaScript includes key functionality."""
-        js = get_filterable_list_js()
+        js = FILTERABLE_LIST_JS
 
         # Core manager class
         self.assertIn("class FilterableListManager", js)
@@ -57,14 +58,14 @@ class TestFilterableListScript(TestCase):
 
     def test_script_handles_htmx_turbo(self):
         """Test that the script re-initializes for htmx/Turbo."""
-        js = get_filterable_list_js()
+        js = FILTERABLE_LIST_JS
         self.assertIn("htmx:afterSwap", js)
         self.assertIn("turbo:render", js)
         self.assertIn("turbo:frame-load", js)
 
     def test_script_prevents_double_init(self):
         """Test that the script prevents double initialization."""
-        js = get_filterable_list_js()
+        js = FILTERABLE_LIST_JS
         self.assertIn("if (window.FilterableList) return", js)
 
 
@@ -118,17 +119,16 @@ class TestFilterableListImports(TestCase):
 
     def test_imports_from_widgets_package(self):
         """Test that functions can be imported from widgets package."""
-        from widgets import get_filterable_list_js, render_filterable_list_script
+        from widgets import render_filterable_list_script
 
-        self.assertIsNotNone(get_filterable_list_js)
         self.assertIsNotNone(render_filterable_list_script)
 
     def test_imports_from_widgets_filterable_module(self):
         """Test direct import from filterable module."""
         from widgets.widgets.filterable import (
-            get_filterable_list_js,
+            FILTERABLE_LIST_JS,
             render_filterable_list_script,
         )
 
-        self.assertIsNotNone(get_filterable_list_js)
+        self.assertIsNotNone(FILTERABLE_LIST_JS)
         self.assertIsNotNone(render_filterable_list_script)

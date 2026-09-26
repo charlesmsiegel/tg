@@ -75,7 +75,7 @@ Template (add status displays):
 
 # Chained Select exports (primary widget functionality)
 from .fields.chained import ChainedChoiceField, ChainedModelChoiceField
-from .fields.create_or_select import CreateOrSelectField, CreateOrSelectModelChoiceField
+from .fields.create_or_select import CreateOrSelectField
 from .mixins.chained import ChainedSelectMixin
 from .mixins.conditional import ConditionalFieldsMixin
 from .mixins.create_or_select import CreateOrSelectMixin
@@ -85,8 +85,8 @@ from .widgets.chained import ChainedSelect
 from .widgets.create_or_select import CreateOrSelectWidget
 
 # FilterableList exports
-from .widgets.filterable import get_filterable_list_js, render_filterable_list_script
-from .widgets.metadata_select import OptionMetadataSelect, OptionMetadataSelectMultiple
+from .widgets.filterable import render_filterable_list_script
+from .widgets.metadata_select import OptionMetadataSelect
 from .widgets.point_pool import PointPoolInput, PointPoolSelect
 
 __all__ = [
@@ -94,7 +94,6 @@ __all__ = [
     "ChainedSelect",
     "CreateOrSelectWidget",
     "OptionMetadataSelect",
-    "OptionMetadataSelectMultiple",
     # Point Pool Widgets
     "PointPoolInput",
     "PointPoolSelect",
@@ -102,7 +101,6 @@ __all__ = [
     "ChainedChoiceField",
     "ChainedModelChoiceField",
     "CreateOrSelectField",
-    "CreateOrSelectModelChoiceField",
     # Mixins
     "ChainedSelectMixin",
     "ConditionalFieldsMixin",
@@ -113,7 +111,6 @@ __all__ = [
     # Views
     "auto_chained_ajax_view",
     # FilterableList
-    "get_filterable_list_js",
     "render_filterable_list_script",
 ]
 
