@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -45,6 +46,35 @@ class Periapt(Wonder):
                 violation_error_message="Periapt current charges must be between 0 and 100",
             ),
         ]
+
+    def clean(self):
+        """Periapt rules (formerly only in the deleted Periapt form): arete >= rank, charges <= max.
+
+        Raised as non-field errors so any ModelForm shows them, whichever
+        fields it includes.
+        """
+        super().clean()
+        errors = []
+        if self.arete is not None and self.rank is not None and self.arete < self.rank:
+            errors.append(
+                ValidationError(
+                    "Periapt Arete rating must be at least equal to rank",
+                    code="arete_below_rank",
+                )
+            )
+        if (
+            self.current_charges is not None
+            and self.max_charges is not None
+            and self.current_charges > self.max_charges
+        ):
+            errors.append(
+                ValidationError(
+                    "Current charges cannot exceed maximum charges",
+                    code="charges_exceed_max",
+                )
+            )
+        if errors:
+            raise ValidationError(errors)
 
     def get_update_url(self):
         return reverse("items:mage:update:periapt", args=[str(self.id)])
