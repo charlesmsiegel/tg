@@ -175,6 +175,7 @@ def main():
             "LOGIN",
             "OBJECT_ACTION",
             "OBJECT_CREATE",
+            "OBJECT_ST_WRITE",
             "OBJECT_WRITE",
             "STAFF_WRITE",
             "WIDGET",
