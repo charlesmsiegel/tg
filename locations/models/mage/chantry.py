@@ -42,6 +42,8 @@ class Chantry(BackgroundBlock, LocationModel):
         10: 90,
     }
 
+    LIBRARY_TYPE_FREE_DOTS = 3
+
     type = "chantry"
     gameline = "mta"
 
@@ -176,12 +178,24 @@ class Chantry(BackgroundBlock, LocationModel):
     def points(self):
         return self.total_points - self.total_cost()
 
+    def free_dots(self, property_name):
+        """Dots of a background this chantry holds at no cost.
+
+        A library-type chantry gets ``LIBRARY_TYPE_FREE_DOTS`` free Library dots,
+        which also act as a floor that cannot be removed.
+        """
+        if property_name == "library" and self.chantry_type == "library":
+            return self.LIBRARY_TYPE_FREE_DOTS
+        return 0
+
     def bg_cost(self, background_rating):
-        return self.trait_cost(background_rating.bg.property_name) * background_rating.rating
+        property_name = background_rating.bg.property_name
+        paid_dots = max(0, background_rating.rating - self.free_dots(property_name))
+        return self.trait_cost(property_name) * paid_dots
 
     def total_cost(self):
         tot = 0
-        for bgr in self.backgrounds.all():
+        for bgr in self.backgrounds.select_related("bg"):
             tot += self.bg_cost(bgr)
         tot += self.integrated_effects_score * 2
         return tot
