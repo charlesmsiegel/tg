@@ -37,13 +37,14 @@ Usage:
             },
         }
 
-Template:
+Template (wrap each conditional field in a container whose id is
+"<field>_wrap"; add "d-none" when the field starts hidden):
     <div class="row">
         {{ form.category }}
-        {{ form.example|conditional_wrap }}
-        {{ form.value|conditional_wrap }}
-        {{ form.note|conditional_wrap }}
-        {{ form.pooled|conditional_wrap:"Pooled?" }}
+        <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
+        <div class="col-sm d-none" id="value_wrap">{{ form.value }}</div>
+        <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
+        <div class="col-sm d-none" id="pooled_wrap">Pooled? {{ form.pooled }}</div>
     </div>
     {{ form.conditional_js }}
 """

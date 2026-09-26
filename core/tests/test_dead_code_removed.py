@@ -222,3 +222,47 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
         )
         # dropdown_options_response stays until chantry PR C5 removes its last caller.
         self.assertAttributesRemoved("core.ajax", "simple_values_response")
+
+
+class D5RemovedTests(SimpleTestCase):
+    """Unit D5: dead template tag libraries, tags, filters and templates stay deleted."""
+
+    @staticmethod
+    def _module_exists(dotted_path):
+        """Return True when ``dotted_path`` can be imported (parents included)."""
+        import importlib.util
+
+        try:
+            return importlib.util.find_spec(dotted_path) is not None
+        except ModuleNotFoundError:
+            return False
+
+    def _assert_libraries_removed(self, libraries, modules):
+        from django.template.backends.django import get_installed_libraries
+
+        installed = get_installed_libraries()
+        for name in libraries:
+            with self.subTest(library=name):
+                self.assertNotIn(name, installed)
+        for dotted_path in modules:
+            with self.subTest(module=dotted_path):
+                self.assertFalse(self._module_exists(dotted_path))
+
+    def test_never_loaded_libraries_are_gone(self):
+        self._assert_libraries_removed(
+            ("resonance", "conditional_fields"),
+            ("core.templatetags.resonance", "widgets.templatetags.conditional_fields"),
+        )
+
+    def test_conditional_mixin_docstring_no_longer_shows_deleted_filter(self):
+        from widgets.mixins import conditional
+
+        self.assertNotIn("conditional_wrap", conditional.__doc__)
+
+    def test_kept_step6_library_and_render_post_html_survive(self):
+        from django.template.backends.django import get_installed_libraries
+
+        from core.templatetags import sanitize_text
+
+        self.assertIn("permissions", get_installed_libraries())
+        self.assertTrue(callable(sanitize_text.render_post_html))
