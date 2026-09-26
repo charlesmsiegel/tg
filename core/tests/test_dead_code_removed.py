@@ -266,3 +266,32 @@ class D5RemovedTests(SimpleTestCase):
 
         self.assertIn("permissions", get_installed_libraries())
         self.assertTrue(callable(sanitize_text.render_post_html))
+
+    def test_dots_pool_and_linked_stat_tags_are_gone(self):
+        from django.template import TemplateDoesNotExist
+        from django.template.loader import get_template
+
+        from core.templatetags import dots
+
+        for name in ("pool", "pool_dots"):
+            with self.subTest(filter=name):
+                self.assertNotIn(name, dots.register.filters)
+        for name in ("pool_rows", "linked_stat", "linked_stat_row"):
+            with self.subTest(tag=name):
+                self.assertNotIn(name, dots.register.tags)
+        for name in (
+            "pool",
+            "pool_dots",
+            "pool_rows",
+            "linked_stat_tag",
+            "linked_stat_row",
+            "_extract_pool_values",
+            "_render_pool_rows",
+        ):
+            with self.subTest(attribute=name):
+                self.assertFalse(hasattr(dots, name))
+        with self.assertRaises(TemplateDoesNotExist):
+            get_template("core/templatetags/linked_stat_row.html")
+        for name in ("dots", "boxes", "abs", "lore_name", "linked_dots"):
+            with self.subTest(kept_filter=name):
+                self.assertIn(name, dots.register.filters)
