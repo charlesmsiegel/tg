@@ -3,27 +3,13 @@ Tests for the widgets app create-or-select functionality.
 """
 
 from django import forms
-from django.db import models
 from django.test import TestCase
 
 from widgets import (
     CreateOrSelectField,
     CreateOrSelectMixin,
-    CreateOrSelectModelChoiceField,
     CreateOrSelectWidget,
 )
-
-
-# Test model for ModelChoiceField tests
-class TestItem(models.Model):
-    """Test model for create-or-select tests."""
-
-    name = models.CharField(max_length=100)
-    value = models.IntegerField(default=0)
-
-    class Meta:
-        app_label = "widgets"
-        managed = False  # Don't create table
 
 
 class TestCreateOrSelectWidget(TestCase):
@@ -134,27 +120,6 @@ class TestCreateOrSelectField(TestCase):
         self.assertEqual(field.create_error_message, msg)
 
 
-class TestCreateOrSelectModelChoiceField(TestCase):
-    """Tests for CreateOrSelectModelChoiceField."""
-
-    def test_field_is_model_choice_field(self):
-        """Test field is a ModelChoiceField."""
-        field = CreateOrSelectModelChoiceField(queryset=TestItem.objects.none())
-        self.assertIsInstance(field, forms.ModelChoiceField)
-
-    def test_field_not_required_by_default(self):
-        """Test field is not required by default."""
-        field = CreateOrSelectModelChoiceField(queryset=TestItem.objects.none())
-        self.assertFalse(field.required)
-
-    def test_field_toggle_field_config(self):
-        """Test field stores toggle_field configuration."""
-        field = CreateOrSelectModelChoiceField(
-            queryset=TestItem.objects.none(), toggle_field="create_new"
-        )
-        self.assertEqual(field.toggle_field, "create_new")
-
-
 class TestCreateOrSelectMixin(TestCase):
     """Tests for CreateOrSelectMixin with ModelForms."""
 
@@ -249,14 +214,12 @@ class TestWidgetsCreateOrSelectImports(TestCase):
         from widgets import (
             CreateOrSelectField,
             CreateOrSelectMixin,
-            CreateOrSelectModelChoiceField,
             CreateOrSelectWidget,
         )
 
         # Just verify imports work
         self.assertIsNotNone(CreateOrSelectWidget)
         self.assertIsNotNone(CreateOrSelectField)
-        self.assertIsNotNone(CreateOrSelectModelChoiceField)
         self.assertIsNotNone(CreateOrSelectMixin)
 
 

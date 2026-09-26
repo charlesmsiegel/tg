@@ -428,3 +428,23 @@ class D6RemovedTests(SimpleTestCase):
             with self.subTest(module="locations.views.core", name=name):
                 self.assertFalse(hasattr(locations.views.core, name))
                 self.assertNotIn(name, locations.views.core.__all__)
+
+    def test_dead_widgets_leftovers_are_gone(self):
+        import widgets
+        import widgets.widgets
+        from widgets.fields import create_or_select
+        from widgets.widgets import filterable, metadata_select
+
+        gone = (
+            (widgets, "CreateOrSelectModelChoiceField"),
+            (widgets, "get_filterable_list_js"),
+            (widgets, "OptionMetadataSelectMultiple"),
+            (widgets.widgets, "OptionMetadataSelectMultiple"),
+            (create_or_select, "CreateOrSelectModelChoiceField"),
+            (filterable, "get_filterable_list_js"),
+            (metadata_select, "OptionMetadataSelectMultiple"),
+        )
+        for module, name in gone:
+            with self.subTest(module=module.__name__, name=name):
+                self.assertFalse(hasattr(module, name))
+                self.assertNotIn(name, getattr(module, "__all__", ()))

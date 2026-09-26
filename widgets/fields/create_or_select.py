@@ -71,24 +71,3 @@ class CreateOrSelectField(forms.BooleanField):
         """Clean the value - boolean for create mode."""
         # Convert to boolean (checkbox values can be various truthy things)
         return bool(value)
-
-
-class CreateOrSelectModelChoiceField(forms.ModelChoiceField):
-    """
-    A ModelChoiceField variant designed to work with CreateOrSelectField.
-
-    Provides automatic required validation based on the toggle state.
-    """
-
-    def __init__(self, queryset, *, toggle_field="select_or_create", **kwargs):
-        """
-        Initialize the field.
-
-        Args:
-            queryset: The queryset for available selections.
-            toggle_field: Name of the CreateOrSelectField that controls this field.
-            **kwargs: Standard ModelChoiceField arguments.
-        """
-        self.toggle_field = toggle_field
-        kwargs.setdefault("required", False)
-        super().__init__(queryset, **kwargs)
