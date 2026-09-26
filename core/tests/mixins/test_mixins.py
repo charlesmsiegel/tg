@@ -240,8 +240,8 @@ class PermissionRequiredMixinTest(TestCase):
             view.has_permission()
         self.assertIn("required_permission must be set", str(cm.exception))
 
-    def test_get_context_data_adds_is_approved_user(self):
-        """Test that get_context_data adds is_approved_user flag."""
+    def test_get_context_data_adds_object_permissions(self):
+        """The permission context exposes explicit full-read capability."""
 
         class TestView(PermissionRequiredMixin, DetailView):
             model = Character
@@ -257,7 +257,7 @@ class PermissionRequiredMixinTest(TestCase):
         view.object = view.get_object()
 
         context = view.get_context_data()
-        self.assertTrue(context["is_approved_user"])
+        self.assertTrue(context["object_perms"].can_view_full)
 
 
 class ViewPermissionMixinTest(TestCase):
@@ -764,6 +764,7 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
         class UserOwnedModel:
             """Mock model with 'user' attribute instead of 'owner'."""
+
             def __init__(self, user):
                 self.user = user
                 self.pk = 999

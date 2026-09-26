@@ -111,6 +111,42 @@ class RegistryTestCase(TestCase):
 
 
 class RegistryBehaviorTests(RegistryTestCase):
+    def test_generated_object_lists_filter_private_querysets(self):
+        from items.models.core import Weapon
+        from locations.models.mage.chantry import Chantry
+
+        for model in (Weapon, Chantry):
+            with self.subTest(model=model._meta.label):
+                owned = model.objects.create(name="Owned", owner=self.owner)
+                model.objects.create(name="Other", owner=self.other)
+                model.objects.create(name="Unowned")
+                view = get_registry(model._meta.app_label).view(model, "list")()
+                request = RequestFactory().get("/")
+                request.user = self.owner
+                view.setup(request)
+                self.assertEqual(list(view.get_queryset()), [owned])
+
+    def test_reference_lists_remain_public(self):
+        from django.contrib.auth.models import AnonymousUser
+
+        from items.models.core import Material
+
+        material = Material.objects.create(name="Public reference")
+        request = RequestFactory().get("/")
+        request.user = AnonymousUser()
+        response = get_registry("items").view(Material, "list").as_view()(request)
+        self.assertEqual(list(response.context_data["object_list"]), [material])
+
+    def test_direct_registry_detail_includes_permission_snapshot(self):
+        from items.models.core import Weapon
+
+        weapon = Weapon.objects.create(name="Owned weapon", owner=self.owner)
+        request = RequestFactory().get("/")
+        request.user = self.owner
+        response = get_registry("items").view(Weapon, "detail").as_view()(request, pk=weapon.pk)
+        self.assertTrue(response.context_data["object_perms"].can_view_full)
+        self.assertTrue(response.context_data["object_perms"].can_edit)
+
     def test_collision_dispatch_renders_the_correct_concrete_object(self):
         self.client.force_login(self.staff)
         for label in ("items.Artifact", "items.WraithArtifact", "items.Relic", "items.WraithRelic"):

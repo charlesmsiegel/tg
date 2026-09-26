@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import Q
+from django.db.models import OuterRef, Q
 
 
 class Role(Enum):
@@ -118,6 +118,110 @@ class PermissionManager:
     }
 
     @staticmethod
+    def invalidate_request_cache(request):
+        """Call after membership/observer/ST writes before checking again.
+
+        Owner and status are live inputs, not cached facts. A new request
+        always starts fresh; nothing is stored globally or on ORM instances.
+        """
+        for name in (
+            "_tg_permission_facts",
+            "_tg_role_cache",
+            "_tg_permission_snapshots",
+            "_tg_scoped_role_cache",
+            "_tg_permission_subjects",
+        ):
+            request.__dict__.pop(name, None)
+
+    @staticmethod
+    def _user_key(user):
+        return (user.pk, bool(user.is_authenticated), bool(user.is_staff), bool(user.is_superuser))
+
+    @staticmethod
+    def _request_facts(user, request):
+        """Five set-based reads, shared by every object on this request."""
+        from characters.models.core.character import Character
+        from core.models import Observer
+        from game.models import Chronicle, STRelationship
+
+        cache = request.__dict__.setdefault("_tg_permission_facts", {})
+        key = PermissionManager._user_key(user)
+        if key not in cache:
+            cache[key] = {
+                "head": set(Chronicle.objects.filter(head_st=user).values_list("pk", flat=True)),
+                "game": set(
+                    Chronicle.objects.filter(game_storytellers=user).values_list("pk", flat=True)
+                ),
+                "st": set(
+                    STRelationship.objects.filter(user=user).values_list(
+                        "chronicle_id", "gameline__name"
+                    )
+                ),
+                "player": set(
+                    Character.objects.filter(owner=user)
+                    .exclude(chronicle=None)
+                    .values_list("chronicle_id", flat=True)
+                ),
+                "observer": set(
+                    Observer.objects.filter(user=user).values_list(
+                        "content_type__app_label", "content_type__model", "object_id"
+                    )
+                ),
+            }
+        return cache[key]
+
+    @staticmethod
+    def _roles_from_facts(user, chronicle_id, gameline, facts):
+        roles = {Role.AUTHENTICATED}
+        if user.is_staff or user.is_superuser:
+            roles.add(Role.ADMIN)
+        if chronicle_id is not None:
+            if chronicle_id in facts["head"]:
+                roles.add(Role.CHRONICLE_HEAD_ST)
+            if chronicle_id in facts["game"]:
+                roles.add(Role.GAME_ST)
+            if any(pk == chronicle_id for pk, _ in facts["st"]):
+                roles.add(Role.CHRONICLE_ST_VIEW)
+            name = settings.GAMELINES.get(gameline, {}).get("name")
+            if name and (chronicle_id, name) in facts["st"]:
+                roles.add(Role.CHRONICLE_ST)
+        return roles
+
+    @staticmethod
+    def permission_subject(obj):
+        """Do not mistake reverse inheritance links for record subjects."""
+        from core.models import Model
+
+        return obj if isinstance(obj, Model) else getattr(obj, "character", None) or obj
+
+    @staticmethod
+    def _real_subject(obj, request=None):
+        """Resolve a base polymorphic row once; concrete rows need no fetch."""
+        if not hasattr(obj, "get_real_instance_class") or obj.pk is None:
+            return obj
+        key = (obj._meta.label_lower, obj.pk)
+        cache = (
+            request.__dict__.setdefault("_tg_permission_subjects", {})
+            if request is not None
+            else {}
+        )
+        if key not in cache:
+            cache[key] = (
+                obj if obj.get_real_instance_class() is type(obj) else obj.get_real_instance()
+            )
+        # A caller can mutate a base row without saving it. Resolve its type,
+        # but retain those live permission inputs rather than a stale DB copy.
+        if type(cache[key]) is type(obj):
+            return obj
+        from copy import copy
+
+        resolved = copy(cache[key])
+        for name in ("owner_id", "user_id", "chronicle_id", "status", "gameline", "npc"):
+            if name in obj.__dict__:
+                setattr(resolved, name, obj.__dict__[name])
+        return resolved
+
+    @staticmethod
     def can_manage_scope(user, chronicle, gameline, request=None):
         """Whether a user can mutate a chronicle and gameline pair."""
         if not user.is_authenticated:
@@ -185,11 +289,13 @@ class PermissionManager:
         """Resolve ST roles once per request for a chronicle and gameline."""
         if not user.is_authenticated:
             return {Role.ANONYMOUS}
-        key = (user.pk, getattr(chronicle, "pk", None), gameline)
-        cache = getattr(request, "_tg_scoped_role_cache", None) if request else None
-        if cache is not None and key in cache:
-            return set(cache[key])
-
+        if request is not None:
+            return PermissionManager._roles_from_facts(
+                user,
+                getattr(chronicle, "pk", None),
+                gameline,
+                PermissionManager._request_facts(user, request),
+            )
         roles = {Role.AUTHENTICATED}
         if user.is_staff or user.is_superuser:
             roles.add(Role.ADMIN)
@@ -215,10 +321,6 @@ class PermissionManager:
                 ):
                     roles.add(Role.CHRONICLE_ST)
 
-        if cache is not None:
-            cache[key] = frozenset(roles)
-        elif request is not None:
-            request._tg_scoped_role_cache = {key: frozenset(roles)}
         return roles
 
     @staticmethod
@@ -233,41 +335,62 @@ class PermissionManager:
         Returns:
             Set of Role enums
         """
-        # Related records expose a CharacterModel base row. Its class-level
-        # gameline is ``wod``, so resolve it before deriving the scoped role.
-        scope_obj = getattr(obj, "character", None) or obj
-        if hasattr(scope_obj, "get_real_instance"):
-            scope_obj = scope_obj.get_real_instance()
-        chronicle = getattr(obj, "chronicle", None)
-        if chronicle is None:
-            chronicle = getattr(scope_obj, "chronicle", None)
+        if not user.is_authenticated:
+            return {Role.ANONYMOUS}
+        scope_obj = PermissionManager._real_subject(
+            PermissionManager.permission_subject(obj), request
+        )
         gameline = getattr(scope_obj, "gameline", None)
         if not isinstance(gameline, str) and hasattr(scope_obj, "get_gameline"):
             gameline = scope_obj.get_gameline()
         if not isinstance(gameline, str):
             gameline = None
-        roles = PermissionManager.get_scoped_roles(user, chronicle, gameline, request=request)
-        if not user.is_authenticated:
-            return roles
+        chronicle_id = getattr(obj, "chronicle_id", getattr(scope_obj, "chronicle_id", None))
+        owner_id = getattr(obj, "owner_id", None)
+        if owner_id is None and not hasattr(obj, "owner_id"):
+            owner_id = getattr(getattr(obj, "owner", None), "pk", None)
+        user_id = getattr(obj, "user_id", None)
+        if user_id is None and not hasattr(obj, "user_id"):
+            user_id = getattr(getattr(obj, "user", None), "pk", None)
 
-        # Owner check
-        if hasattr(obj, "owner") and obj.owner == user:
-            roles.add(Role.OWNER)
-        elif hasattr(obj, "user") and obj.user == user:
-            roles.add(Role.OWNER)
+        if request is not None:
+            facts = PermissionManager._request_facts(user, request)
+            key = (
+                PermissionManager._user_key(user),
+                getattr(getattr(obj, "_meta", None), "label_lower", type(obj)),
+                getattr(obj, "pk", None) if getattr(obj, "pk", None) is not None else id(obj),
+                owner_id,
+                user_id,
+                chronicle_id,
+                gameline,
+            )
+            cache = request.__dict__.setdefault("_tg_role_cache", {})
+            if key not in cache:
+                roles = PermissionManager._roles_from_facts(user, chronicle_id, gameline, facts)
+                if owner_id == user.pk or user_id == user.pk:
+                    roles.add(Role.OWNER)
+                if chronicle_id is not None and chronicle_id in facts["player"]:
+                    roles.add(Role.PLAYER)
+                if (
+                    hasattr(obj, "observers")
+                    and (scope_obj._meta.app_label, scope_obj._meta.model_name, obj.pk)
+                    in facts["observer"]
+                ):
+                    roles.add(Role.OBSERVER)
+                cache[key] = frozenset(roles)
+            return set(cache[key])
 
+        chronicle = getattr(obj, "chronicle", None) or getattr(scope_obj, "chronicle", None)
+        roles = PermissionManager.get_scoped_roles(user, chronicle, gameline)
+        if owner_id == user.pk or user_id == user.pk:
+            roles.add(Role.OWNER)
         if chronicle is not None:
-            # Player check - user has a character in same chronicle
             from characters.models.core.character import Character
 
             if Character.objects.filter(owner=user, chronicle=chronicle).exists():
                 roles.add(Role.PLAYER)
-
-        # Observer check (uses generic relation)
-        if hasattr(obj, "observers"):
-            if obj.observers.filter(user=user).exists():
-                roles.add(Role.OBSERVER)
-
+        if hasattr(obj, "observers") and scope_obj.observers.filter(user=user).exists():
+            roles.add(Role.OBSERVER)
         return roles
 
     @staticmethod
@@ -387,7 +510,7 @@ class PermissionManager:
         return True
 
     @staticmethod
-    def get_visibility_tier(user: User, obj) -> VisibilityTier:
+    def get_visibility_tier(user: User, obj, request=None) -> VisibilityTier:
         """
         Determine what visibility tier user has for object.
 
@@ -395,44 +518,54 @@ class PermissionManager:
             VisibilityTier enum
         """
         # Check if user can view at all
-        if not PermissionManager.user_can_view(user, obj):
+        if not PermissionManager.user_can_view(user, obj, request=request):
             return VisibilityTier.NONE
 
         # Check if user has full access
-        if PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL):
+        if PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL, request=request):
             return VisibilityTier.FULL
 
         # Check if user has partial access
-        if PermissionManager.user_has_permission(user, obj, Permission.VIEW_PARTIAL):
+        if PermissionManager.user_has_permission(
+            user, obj, Permission.VIEW_PARTIAL, request=request
+        ):
             return VisibilityTier.PARTIAL
 
         return VisibilityTier.NONE
 
     @staticmethod
-    def user_can_view(user: User, obj) -> bool:
+    def user_can_view(user: User, obj, request=None) -> bool:
         """Simplified view check."""
         return PermissionManager.user_has_permission(
-            user, obj, Permission.VIEW_FULL
-        ) or PermissionManager.user_has_permission(user, obj, Permission.VIEW_PARTIAL)
+            user, obj, Permission.VIEW_FULL, request=request
+        ) or PermissionManager.user_has_permission(
+            user, obj, Permission.VIEW_PARTIAL, request=request
+        )
 
     @staticmethod
-    def user_can_edit(user: User, obj) -> bool:
+    def user_can_edit(user: User, obj, request=None) -> bool:
         """
         Simplified edit check.
         Returns True if user has EDIT_FULL permission.
         For limited editing (owner), use user_has_permission(EDIT_LIMITED).
         """
-        return PermissionManager.user_has_permission(user, obj, Permission.EDIT_FULL)
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.EDIT_FULL, request=request
+        )
 
     @staticmethod
-    def user_can_spend_xp(user: User, obj) -> bool:
+    def user_can_spend_xp(user: User, obj, request=None) -> bool:
         """Check if user can spend XP on this object."""
-        return PermissionManager.user_has_permission(user, obj, Permission.SPEND_XP)
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.SPEND_XP, request=request
+        )
 
     @staticmethod
-    def user_can_spend_freebies(user: User, obj) -> bool:
+    def user_can_spend_freebies(user: User, obj, request=None) -> bool:
         """Check if user can spend freebie points on this object."""
-        return PermissionManager.user_has_permission(user, obj, Permission.SPEND_FREEBIES)
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.SPEND_FREEBIES, request=request
+        )
 
     def check_permission(self, user: User, obj, permission: str) -> bool:
         """
@@ -508,9 +641,11 @@ class PermissionManager:
         Returns:
             Q object or empty Q() if no owner field
         """
-        if PermissionManager._model_has_field(model, "owner"):
-            return Q(owner=user)
-        return Q()
+        filters = Q(pk__in=[])
+        for field in ("owner", "user"):
+            if PermissionManager._model_has_field(model, field):
+                filters |= Q(**{field: user})
+        return filters
 
     @staticmethod
     def _build_chronicle_st_filters(user: User, chronicle_model) -> Q:
@@ -543,23 +678,10 @@ class PermissionManager:
 
     @staticmethod
     def filter_queryset_for_user(user: User, queryset):
-        """
-        Filter queryset to only objects user can view.
+        """Filter private VIEW_FULL/VIEW_PARTIAL audiences, not public cards.
 
-        Uses a two-pass approach for performance:
-        1. Build Q filters for owner and ST access (efficient joins)
-        2. Fetch player chronicle IDs and observer IDs with simple queries
-        3. Combine all filters using pk__in for set-based lookups
-
-        This avoids adding subquery annotations to every queryset which
-        caused exponential query complexity when filter was called repeatedly.
-
-        Args:
-            user: Django User instance
-            queryset: QuerySet to filter
-
-        Returns:
-            Filtered QuerySet
+        SQL mirrors the role predicates; fixture matrices pin their parity.
+        Observer subqueries correlate content type as well as object identity.
         """
         # Full/partial legacy querysets never render the public projection.
         # Anonymous public cards are handled by the route policy instead.
@@ -573,7 +695,7 @@ class PermissionManager:
         model = queryset.model
 
         # Build Q-based filters for owner and ST access (these are efficient joins)
-        filters = Q()
+        filters = Q(pk__in=[])
 
         # 1. Objects user owns
         filters |= PermissionManager._build_owner_filter(user, model)
@@ -584,9 +706,7 @@ class PermissionManager:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
         # 3. Player chronicle access - fetch IDs once, then use pk__in
-        if PermissionManager._model_has_field(
-            model, "chronicle"
-        ) and PermissionManager._model_has_field(model, "status"):
+        if PermissionManager._model_has_field(model, "chronicle"):
             from characters.models import Character
 
             # PLAYER is based on any owned character in the chronicle.
@@ -598,14 +718,21 @@ class PermissionManager:
             if player_chronicle_ids:
                 filters |= Q(chronicle_id__in=player_chronicle_ids)
 
-        # 4. Observer access - fetch observed IDs directly instead of subquery
-        from core.models import Observer
+        # A generic relation's identity is (content type, PK), not PK alone.
+        # Polymorphic rows carry their concrete type even in a base queryset.
+        if PermissionManager._model_has_field(model, "observers"):
+            from core.models import Observer
 
-        ct = ContentType.objects.get_for_model(model)
-        observed_ids = list(
-            Observer.objects.filter(content_type=ct, user=user).values_list("object_id", flat=True)
-        )
-        if observed_ids:
-            filters |= Q(pk__in=observed_ids)
+            content_type = (
+                OuterRef("polymorphic_ctype_id")
+                if PermissionManager._model_has_field(model, "polymorphic_ctype")
+                else ContentType.objects.get_for_model(model).pk
+            )
+            filters |= Q(
+                pk__in=Observer.objects.filter(
+                    user=user,
+                    content_type_id=content_type,
+                ).values("object_id")
+            )
 
         return queryset.filter(filters).distinct()

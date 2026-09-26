@@ -17,6 +17,7 @@ from django.views.generic import CreateView
 
 from characters.models.core import CharacterModel
 from core.models import Model
+from core.permission_context import add_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
 from game.models import Chronicle, STRelationship
 from game.security import readable_chronicles
@@ -46,7 +47,14 @@ class ObjectCachingMixin:
         return self._cached_object
 
 
-class PermissionRequiredMixin(ObjectCachingMixin):
+class PermissionContextMixin:
+    """Expose the primary object's immutable, request-local capabilities."""
+
+    def get_context_data(self, **kwargs):
+        return add_object_permissions(self.request, super().get_context_data(**kwargs))
+
+
+class PermissionRequiredMixin(PermissionContextMixin, ObjectCachingMixin):
     """
     Mixin for CBVs requiring permission checks.
 
@@ -82,17 +90,6 @@ class PermissionRequiredMixin(ObjectCachingMixin):
             self.request.user, obj, self.required_permission, request=self.request
         )
 
-    def get_context_data(self, **kwargs):
-        """Expose full-read capability to legacy detail templates."""
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = PermissionManager.user_has_permission(
-            self.request.user,
-            self.get_object(),
-            Permission.VIEW_FULL,
-            request=self.request,
-        )
-        return context
-
 
 class ViewPermissionMixin(PermissionRequiredMixin):
     """
@@ -124,7 +121,7 @@ class SpendFreebiesPermissionMixin(PermissionRequiredMixin):
     raise_404_on_deny = False
 
 
-class VisibilityFilterMixin:
+class VisibilityFilterMixin(PermissionContextMixin):
     """
     Mixin to filter querysets by user permissions.
 
@@ -145,19 +142,22 @@ class VisibilityFilterMixin:
         """Add visibility tier to context."""
         context = super().get_context_data(**kwargs)
 
+        if context.get("paginator") is not None:
+            prepare_permission_objects(self.request, list(context["object_list"]))
+
         # For detail views, add visibility information
         if hasattr(self, "object") and self.object:
             context["visibility_tier"] = PermissionManager.get_visibility_tier(
-                self.request.user, self.object
+                self.request.user, self.object, request=self.request
             )
             context["user_can_edit"] = PermissionManager.user_can_edit(
-                self.request.user, self.object
+                self.request.user, self.object, request=self.request
             )
             context["user_can_spend_xp"] = PermissionManager.user_can_spend_xp(
-                self.request.user, self.object
+                self.request.user, self.object, request=self.request
             )
             context["user_can_spend_freebies"] = PermissionManager.user_can_spend_freebies(
-                self.request.user, self.object
+                self.request.user, self.object, request=self.request
             )
             # Add the VisibilityTier enum to context for template comparisons
             context["VisibilityTier"] = VisibilityTier
@@ -234,25 +234,8 @@ class OwnerRequiredMixin(ObjectCachingMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class SpecialUserMixin:
-    """
-    Mixin for checking if a user has special access to an object.
-
-    Special users are users with VIEW_FULL for this object.
-
-    Templates gating on ``is_approved_user`` should set it via
-    get_is_approved_user(); auto-setting it for all such views is in #1459.
-    """
-
-    def get_is_approved_user(self, obj):
-        """is_approved_user value for templates: staff OR special-user access.
-
-        Combines the middleware/context-processor staff flag with the
-        per-object special-user check so neither audience is excluded.
-        """
-        return getattr(self.request, "is_approved_user", False) or (
-            self.check_if_special_user(obj, self.request.user)
-        )
+class SpecialUserMixin(PermissionContextMixin):
+    """Compatibility helper for full-read checks, plus explicit capabilities."""
 
     def check_if_special_user(self, obj, user):
         """
@@ -265,7 +248,9 @@ class SpecialUserMixin:
         Returns:
             bool: True if user has special access
         """
-        return PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL)
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.VIEW_FULL, request=getattr(self, "request", None)
+        )
 
 
 class SuccessMessageMixin:
@@ -461,7 +446,7 @@ class StorytellerRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class CharacterOwnerOrSTMixin(ObjectCachingMixin):
+class CharacterOwnerOrSTMixin(PermissionContextMixin, ObjectCachingMixin):
     """
     Mixin that restricts access to character owners, storytellers, and admins.
 

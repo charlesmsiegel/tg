@@ -18,7 +18,7 @@
                         <a href="?filter=mine" class="btn {% if current_filter == 'mine' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                             My Journals
                         </a>
-                        {% if request.user.profile.is_st %}
+                        {% if show_chronicle_filter %}
                             <a href="?filter=st" class="btn {% if current_filter == 'st' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                 My Chronicles
                             </a>

@@ -25,6 +25,7 @@ from core.forms.character_template import (
 )
 from core.mixins import MessageMixin
 from core.models import CharacterTemplate
+from core.permission_context import prepare_permission_objects
 from core.permissions import PermissionManager
 from game.security import staffed_chronicles
 
@@ -43,8 +44,7 @@ class CharacterTemplateListView(LoginRequiredMixin, ListView):
         qs = CharacterTemplate.objects.all().select_related("owner", "chronicle")
         if not (self.request.user.is_staff or self.request.user.is_superuser):
             qs = qs.filter(
-                Q(owner=self.request.user)
-                | Q(chronicle__in=staffed_chronicles(self.request.user))
+                Q(owner=self.request.user) | Q(chronicle__in=staffed_chronicles(self.request.user))
             ).distinct()
 
         # Filter by gameline if specified
@@ -70,6 +70,7 @@ class CharacterTemplateListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        prepare_permission_objects(self.request, list(context["object_list"]))
         context["filter"] = self.request.GET.get("filter", "all")
         context["gameline"] = self.request.GET.get("gameline", "")
         context["character_type"] = self.request.GET.get("character_type", "")

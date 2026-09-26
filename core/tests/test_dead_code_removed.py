@@ -380,10 +380,10 @@ class D6RemovedTests(SimpleTestCase):
 
         self.assertFalse(hasattr(character_template, "STRequiredMixin"))
 
-    def test_kept_step6_context_processor_survives(self):
+    def test_step6_retires_unused_permission_context_processor(self):
         from core import context_processors
 
-        self.assertTrue(callable(context_processors.permissions))
+        self.assertFalse(hasattr(context_processors, "permissions"))
 
     def test_decorators_and_cache_middleware_modules_are_gone(self):
         from django.conf import settings

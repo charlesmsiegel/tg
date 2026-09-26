@@ -23,6 +23,13 @@ class AuthorizationMiddleware:
     def __call__(self, request):
         return self.get_response(request)
 
+    def process_template_response(self, request, response):
+        from core.permission_context import add_object_permissions
+
+        if getattr(response, "context_data", None) is not None:
+            add_object_permissions(request, response.context_data)
+        return response
+
     def process_view(self, request, view_func, view_args, view_kwargs):
         view_class = getattr(view_func, "view_class", None)
         target = view_class or view_func

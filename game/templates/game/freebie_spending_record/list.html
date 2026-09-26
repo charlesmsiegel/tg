@@ -15,7 +15,7 @@
                             <thead>
                                 <tr>
                                     <th>Character</th>
-                                    {% if is_st %}
+                                    {% if show_owner_column %}
                                         <th>Player</th>
                                     {% endif %}
                                     <th>Trait</th>
@@ -30,7 +30,7 @@
                                 {% for record in object_list %}
                                     <tr>
                                         <td><a href="{{ record.character.get_absolute_url }}">{{ record.character.name }}</a></td>
-                                        {% if is_st %}
+                                        {% if show_owner_column %}
                                             <td>{{ record.character.owner.username }}</td>
                                         {% endif %}
                                         <td>{{ record.trait_name }}</td>

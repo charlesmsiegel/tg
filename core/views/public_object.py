@@ -12,7 +12,8 @@ from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.constants import ImageStatus
 from core.models import CharacterTemplate
-from game.security import readable_chronicles, staffed_chronicles
+from core.permissions import PermissionManager
+from game.security import readable_chronicles
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
@@ -64,8 +65,10 @@ def render_public_object_list(request, model_class, extra_context=None):
         if issubclass(model_class, CharacterTemplate):
             visible &= Q(is_public=True)
         if user.is_authenticated:
-            visible |= Q(owner=user)
-            visible |= Q(chronicle_id__in=staffed_chronicles(user).values("pk"))
+            # Private read/discovery roles and public cards share identities,
+            # but public rows always remain an allowlisted projection.
+            readable = PermissionManager.filter_queryset_for_user(user, model_class.objects.all())
+            visible |= Q(pk__in=readable.values("pk"))
             visible |= Q(
                 visibility="CHR",
                 chronicle_id__in=readable_chronicles(user).values("pk"),

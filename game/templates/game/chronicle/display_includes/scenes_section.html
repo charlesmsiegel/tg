@@ -85,7 +85,7 @@
 {% endif %}
 
 <!-- Story Creation Form (ST and Admin only) -->
-{% if request.user.profile.is_st or request.user.is_staff %}
+{% if can_manage_chronicle %}
     <div class="row mt-4">
         <div class="col-12 col-md-8 col-lg-6 mx-auto">
             <div class="tg-card">

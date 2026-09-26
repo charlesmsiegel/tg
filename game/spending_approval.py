@@ -14,14 +14,14 @@ class SpendingDecisionError(Exception):
     """The spending service rejected an attempted decision."""
 
 
-def can_approve_spending(user, character):
+def can_approve_spending(user, character, request=None):
     """Return the same scoped decision used by all spending endpoints."""
     if character is None or not PermissionManager.user_has_permission(
-        user, character, Permission.APPROVE
+        user, character, Permission.APPROVE, request=request
     ):
         return False
     if character.owner_id == user.pk:
-        roles = PermissionManager.get_user_roles(user, character)
+        roles = PermissionManager.get_user_roles(user, character, request=request)
         if not getattr(character, "npc", False) or not roles & {
             Role.CHRONICLE_HEAD_ST,
             Role.CHRONICLE_ST,

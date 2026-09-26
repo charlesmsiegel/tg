@@ -5,7 +5,7 @@
 {% block content %}
     {% load sanitize_text %}
     {% load field %}
-    {% if is_approved_user %}
+    {% if object_perms.can_view_full %}
         <div class="container py-4">
             <!-- Journal Header -->
             <div class="tg-card header-card mb-4" data-gameline="{{ object.character.gameline }}">
@@ -117,7 +117,7 @@
                                         </div>
                                     {% endif %}
                                 {% else %}
-                                    {% if request.user.profile.is_st %}
+                                    {% if object_perms.can_approve %}
                                         <div style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
                                             <form method="post" action="">
                                                 {% csrf_token %}

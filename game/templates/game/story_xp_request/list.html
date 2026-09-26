@@ -16,7 +16,7 @@
                                 <tr>
                                     <th>Story</th>
                                     <th>Character</th>
-                                    {% if is_st %}
+                                    {% if show_owner_column %}
                                         <th>Player</th>
                                     {% endif %}
                                     <th>Success</th>
@@ -32,7 +32,7 @@
                                     <tr>
                                         <td><a href="{{ request.story.get_absolute_url }}">{{ request.story.name }}</a></td>
                                         <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                        {% if is_st %}
+                                        {% if show_owner_column %}
                                             <td>{{ request.character.owner.username }}</td>
                                         {% endif %}
                                         <td>{% if request.success %}✓{% endif %}</td>

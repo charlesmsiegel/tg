@@ -13,7 +13,7 @@
     </div>
 {% endblock objectname %}
 {% block contents %}
-    {% if is_approved_user %}
+    {% if object_perms.can_view_full %}
         {% block statistics %}
             {% block basics %}
                 <div class="row mb-4">

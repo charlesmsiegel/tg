@@ -9,7 +9,7 @@
                 <h3 class="tg-card-title wod_heading">Weekly XP Requests</h3>
             </div>
             <div class="tg-card-body" style="padding: 24px;">
-                {% if is_st and pending_count > 0 %}
+                {% if show_owner_column and pending_count > 0 %}
                     <div class="alert alert-info mb-4 text-center">
                         <strong>{{ pending_count }}</strong> pending request{{ pending_count|pluralize }} awaiting review
                     </div>
@@ -22,7 +22,7 @@
                                 <tr>
                                     <th>Week</th>
                                     <th>Character</th>
-                                    {% if is_st %}
+                                    {% if show_owner_column %}
                                         <th>Player</th>
                                     {% endif %}
                                     <th>Status</th>
@@ -35,7 +35,7 @@
                                     <tr>
                                         <td><a href="{{ request.week.get_absolute_url }}">{{ request.week }}</a></td>
                                         <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                        {% if is_st %}
+                                        {% if show_owner_column %}
                                             <td>{{ request.character.owner.username }}</td>
                                         {% endif %}
                                         <td>

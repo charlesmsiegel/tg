@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        {% if is_st %}
+        {% if can_manage_global_records %}
             <div class="tg-card mb-4">
                 <div class="tg-card-body text-center" style="padding: 16px;">
                     <a href="{% url 'game:week:update' object.pk %}" class="btn btn-primary">Edit Week</a>
@@ -88,7 +88,7 @@
                 <h5 class="tg-card-title wod_heading">XP Requests</h5>
             </div>
             <div class="tg-card-body" style="padding: 20px;">
-                {% if is_st %}
+                {% if can_manage_global_records %}
                     <!-- Pending Requests -->
                     {% if pending_requests %}
                         <div class="d-flex justify-content-between align-items-center mb-3">
