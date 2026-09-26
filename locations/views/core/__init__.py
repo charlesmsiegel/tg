@@ -37,7 +37,7 @@ class GenericLocationDetailView(DictView):
             "horizon_realm": mage.RealmDetailView,
             "paradox_realm": mage.ParadoxRealmDetailView,
             "sanctum": mage.SanctumDetailView,
-            "chantry": mage.ChantryDetailView,
+            "chantry": mage.ChantryCreationView,
             "reality_zone": mage.RealityZoneDetailView,
             "demesne": mage.DemesneDetailView,
             # Werewolf

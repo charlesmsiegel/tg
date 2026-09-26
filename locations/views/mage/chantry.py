@@ -242,7 +242,14 @@ class ChantryBasicsView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(chantry.get_absolute_url())
 
 
-class ChantryPointsView(EditPermissionMixin, FormView):
+class ChantryObjectMixin:
+    """Wizard steps 1-2 are FormViews; resolve the chantry for permission checks."""
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Chantry, pk=self.kwargs["pk"])
+
+
+class ChantryPointsView(EditPermissionMixin, ChantryObjectMixin, FormView):
     form_class = ChantryPointForm
     template_name = "locations/mage/chantry/locgen.html"
 
@@ -274,7 +281,7 @@ class ChantryPointsView(EditPermissionMixin, FormView):
         return super().post(request, *args, **kwargs)
 
 
-class ChantryIntegratedEffectsView(EditPermissionMixin, FormView):
+class ChantryIntegratedEffectsView(EditPermissionMixin, ChantryObjectMixin, FormView):
     form_class = ChantryEffectsForm
     template_name = "locations/mage/chantry/locgen.html"
 
