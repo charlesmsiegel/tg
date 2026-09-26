@@ -571,3 +571,6 @@ class D7RemovedTests(SimpleTestCase):
         from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
 
         self.assertTrue(callable(ArtifactCreateOrSelectForm))
+
+    def test_human_url_block_removed(self):
+        self.assert_modules_absent(["characters.models.core.human_url_block"])
