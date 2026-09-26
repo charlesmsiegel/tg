@@ -602,6 +602,72 @@ class D7RemovedTests(SimpleTestCase):
 class D8RemovedTests(SimpleTestCase):
     """Unit D8: URL and index hygiene."""
 
+    REMOVED_ITEM_VIEW_NAMES = [
+        "Artifact",
+        "Bloodstone",
+        "Charm",
+        "DemonRelic",
+        "Dross",
+        "Fetish",
+        "Grimoire",
+        "HunterGear",
+        "HunterRelic",
+        "Material",
+        "Medium",
+        "MeleeWeapon",
+        "MummyRelic",
+        "Periapt",
+        "RangedWeapon",
+        "SorcererArtifact",
+        "Talen",
+        "Talisman",
+        "ThrownWeapon",
+        "Treasure",
+        "Ushabti",
+        "VampireArtifact",
+        "Vessel",
+        "Weapon",
+        "Wonder",
+        "WraithArtifact",
+        "WraithRelic",
+    ]
+    REMOVED_LOCATION_VIEW_NAMES = [
+        "Barrens",
+        "Bastion",
+        "Byway",
+        "Caern",
+        "Chantry",
+        "Citadel",
+        "City",
+        "CultTemple",
+        "Demesne",
+        "Domain",
+        "DreamRealm",
+        "Elysium",
+        "Freehold",
+        "Haunt",
+        "Haven",
+        "Holding",
+        "HorizonRealm",
+        "HuntingGround",
+        "Library",
+        "Necropolis",
+        "Nihil",
+        "Node",
+        "ParadoxRealm",
+        "Rack",
+        "RealityZone",
+        "Reliquary",
+        "Safehouse",
+        "Sanctum",
+        "Sector",
+        "Tomb",
+        "TremereChantry",
+        "Trod",
+        "UndergroundSanctuary",
+        "WraithFreehold",
+    ]
+
     def test_list_included_url_modules_have_no_app_name(self):
         from pathlib import Path
 
@@ -641,3 +707,20 @@ class D8RemovedTests(SimpleTestCase):
         self.assertFalse(hasattr(errors, "error_401"))
         # AuthErrorHandlerMiddleware still renders this template directly.
         get_template("core/errors/401.html")
+
+    def test_index_view_type_maps_removed(self):
+        from items.views import core as item_views
+        from locations.views import core as location_views
+
+        self.assertFalse(hasattr(item_views.ItemIndexView, "items"))
+        self.assertFalse(hasattr(location_views.LocationIndexView, "locs"))
+        for module, names in (
+            (item_views, self.REMOVED_ITEM_VIEW_NAMES),
+            (location_views, self.REMOVED_LOCATION_VIEW_NAMES),
+        ):
+            for name in names:
+                with self.subTest(module=module.__name__, name=name):
+                    self.assertFalse(hasattr(module, name))
+                    self.assertNotIn(name, module.__all__)
+        self.assertIn("ItemModel", item_views.__all__)
+        self.assertIn("LocationModel", location_views.__all__)
