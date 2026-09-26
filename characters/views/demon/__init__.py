@@ -14,7 +14,6 @@ from .demon import DemonCreateView, DemonDetailView, DemonListView, DemonUpdateV
 from .demon_chargen import (
     DemonBasicsView,
     DemonCharacterCreationView,
-    DemonFreebieFormPopulationView,
 )
 from .dtfhuman import (
     DtFHumanCreateView,
@@ -25,7 +24,6 @@ from .dtfhuman import (
 from .dtfhuman_chargen import (
     DtFHumanBasicsView,
     DtFHumanCharacterCreationView,
-    DtFHumanFreebieFormPopulationView,
     DtFHumanTemplateSelectView,
 )
 from .earthbound import (
@@ -53,7 +51,6 @@ from .thrall import ThrallCreateView, ThrallDetailView, ThrallListView, ThrallUp
 from .thrall_chargen import (
     ThrallBasicsView,
     ThrallCharacterCreationView,
-    ThrallFreebieFormPopulationView,
 )
 from .visage import VisageCreateView, VisageDetailView, VisageListView, VisageUpdateView
 
@@ -72,14 +69,12 @@ __all__ = [
     "DemonUpdateView",
     "DemonBasicsView",
     "DemonCharacterCreationView",
-    "DemonFreebieFormPopulationView",
     "DtFHumanCreateView",
     "DtFHumanDetailView",
     "DtFHumanListView",
     "DtFHumanUpdateView",
     "DtFHumanBasicsView",
     "DtFHumanCharacterCreationView",
-    "DtFHumanFreebieFormPopulationView",
     "DtFHumanTemplateSelectView",
     "EarthboundCreateView",
     "EarthboundDetailView",
@@ -111,7 +106,6 @@ __all__ = [
     "ThrallUpdateView",
     "ThrallBasicsView",
     "ThrallCharacterCreationView",
-    "ThrallFreebieFormPopulationView",
     "VisageCreateView",
     "VisageDetailView",
     "VisageListView",

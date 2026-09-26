@@ -3,7 +3,6 @@ from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views import View
 from django.views.generic import CreateView, FormView, UpdateView
 
 from characters.forms.core.freebies import HumanFreebiesForm
@@ -325,123 +324,6 @@ class LoadValuesView(SimpleValuesView):
             ratings = affordable_ratings
 
         return ratings
-
-
-class HumanFreebieFormPopulationView(View):
-    primary_class = Human
-
-    def get(self, request, *args, **kwargs):
-
-        category_choice = request.GET.get("category")
-        self.character = get_object_or_404(self.primary_class, pk=request.GET.get("object"))
-
-        if category_choice == "Background":
-            # Return combined Background and BackgroundRating objects with prefixed values
-            return self._get_combined_backgrounds()
-
-        from core.ajax import dropdown_options_response
-
-        examples = []
-        if category_choice in self.category_method_map().keys():
-            examples = self.category_method_map()[category_choice]()
-        else:
-            examples = []
-
-        return dropdown_options_response(examples, label_attr="__str__")
-
-    def _get_combined_backgrounds(self):
-        """Return combined new and existing backgrounds with prefixed values."""
-        from django.http import JsonResponse
-
-        options = []
-
-        # New backgrounds (Background objects) - prefixed with "bg_"
-        new_backgrounds = Background.objects.filter(
-            property_name__in=self.character.allowed_backgrounds
-        ).order_by("name")
-        for bg in new_backgrounds:
-            options.append(
-                {
-                    "value": f"bg_{bg.pk}",
-                    "label": f"{bg.name} (new)",
-                    "poolable": bg.poolable if hasattr(bg, "poolable") else False,
-                    "is_new": True,
-                }
-            )
-
-        # Existing backgrounds (BackgroundRating objects) - prefixed with "br_"
-        existing_backgrounds = BackgroundRating.objects.filter(char=self.character, rating__lt=5)
-        for br in existing_backgrounds:
-            label = str(br)
-            options.append(
-                {
-                    "value": f"br_{br.pk}",
-                    "label": label,
-                    "poolable": False,  # Existing backgrounds don't change poolable status
-                    "is_new": False,
-                }
-            )
-
-        return JsonResponse({"options": options})
-
-    def category_method_map(self):
-        return {
-            "Attribute": self.attribute_options,
-            "Ability": self.ability_options,
-            "Background": self.background_options,
-            "MeritFlaw": self.meritflaw_options,
-        }
-
-    def attribute_options(self):
-        return [
-            x for x in Attribute.objects.all() if getattr(self.character, x.property_name, 0) < 5
-        ]
-
-    def ability_options(self):
-        return [
-            x
-            for x in Ability.objects.order_by("name")
-            if getattr(self.character, x.property_name, 0) < 5
-            and hasattr(self.character, x.property_name)
-        ]
-
-    def background_options(self):
-        """Return combined backgrounds - handled specially in get() method."""
-        # This is handled by _get_combined_backgrounds() but we need the method
-        # to exist for the category_method_map
-        return []
-
-    def meritflaw_options(self):
-        from characters.utils import get_character_object_type
-
-        chartype = get_character_object_type(self.primary_class.type)
-        examples = MeritFlaw.objects.filter(allowed_types=chartype)
-
-        # Filter to only show merit/flaws with at least one affordable rating
-        affordable_mfs = []
-        current_flaws = self.character.total_flaws()
-        available_freebies = self.character.freebies
-
-        for mf in examples:
-            ratings = mf.get_ratings()
-            has_affordable = False
-
-            for rating in ratings:
-                # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
-                if rating < 0:
-                    if current_flaws + rating >= -7:
-                        has_affordable = True
-                        break
-                # Merits and neutral (0) ratings are affordable if we have enough freebies
-                else:
-                    if rating <= available_freebies:
-                        has_affordable = True
-                        break
-
-            if has_affordable:
-                affordable_mfs.append(mf.id)
-
-        return examples.filter(id__in=affordable_mfs)
 
 
 class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):

@@ -12,13 +12,11 @@ from characters.models.demon.apocalyptic_form import (
     ApocalypticFormTrait,
 )
 from characters.models.demon.demon import Demon
-from characters.models.demon.lore import Lore
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -447,22 +445,6 @@ class DemonFollowersView(GenericBackgroundView):
 class DemonSpecialtiesView(HumanSpecialtiesView):
     model = Demon
     template_name = "characters/demon/demon/chargen.html"
-
-
-class DemonFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Demon
-
-    def category_method_map(self):
-        d = super().category_method_map()
-        d.update(
-            {
-                "Lore": self.lore_options,
-            }
-        )
-        return d
-
-    def lore_options(self):
-        return Lore.objects.all().order_by("name")
 
 
 class DemonCharacterCreationView(HumanCharacterCreationView):

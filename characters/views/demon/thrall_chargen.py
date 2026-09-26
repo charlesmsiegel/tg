@@ -10,7 +10,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -199,10 +198,6 @@ class ThrallAlliesView(GenericBackgroundView):
 class ThrallSpecialtiesView(HumanSpecialtiesView):
     model = Thrall
     template_name = "characters/demon/thrall/chargen.html"
-
-
-class ThrallFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Thrall
 
 
 class ThrallCharacterCreationView(HumanCharacterCreationView):

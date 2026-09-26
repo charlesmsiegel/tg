@@ -19,7 +19,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -396,10 +395,6 @@ class WerewolfExtrasView(SpecialUserMixin, UpdateView):
             }
         )
         return form
-
-
-class WerewolfFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Werewolf
 
 
 class WerewolfFreebiesView(HumanFreebiesView):

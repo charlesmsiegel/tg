@@ -403,22 +403,6 @@ class TestWraithFreebiesView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestWraithFreebieFormPopulationView(TestCase):
-    """Test WraithFreebieFormPopulationView for populating freebie options."""
-
-    def setUp(self):
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.wraith = Wraith.objects.create(
-            name="Test Wraith",
-            owner=self.owner,
-            creation_status=9,
-            freebies=15,
-        )
-
-
 class TestWraithLanguagesView(TestCase):
     """Test WraithLanguagesView for language selection."""
 
