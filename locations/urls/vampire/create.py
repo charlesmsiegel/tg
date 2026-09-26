@@ -29,6 +29,11 @@ urls = [
         name="chantry",
     ),
     path(
+        "tremere_chantry/",
+        views.vampire.TremereChantryCreateView.as_view(),
+        name="tremere_chantry",
+    ),
+    path(
         "barrens/",
         views.vampire.BarrensCreateView.as_view(),
         name="barrens",
