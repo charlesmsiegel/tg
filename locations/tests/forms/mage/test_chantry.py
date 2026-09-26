@@ -9,6 +9,7 @@ Tests cover:
 """
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.core.background_block import Background
@@ -598,3 +599,105 @@ class TestChantrySelectOrCreateFormTypeGrants(TestChantrySelectOrCreateFormSetup
         rating = chantry.backgrounds.get(bg__property_name="library")
         self.assertEqual(rating.rating, 3)
         self.assertEqual(chantry.points, 4)
+
+
+class TestChantryPointFormRules(TestChantryPointFormSetup):
+    """Choices and validation follow the points service."""
+
+    def form(self, data=None, **chantry_fields):
+        Chantry.objects.filter(pk=self.chantry.pk).update(**chantry_fields)
+        return ChantryPointForm(data=data, pk=self.chantry.pk)
+
+    def examples(self, form, category):
+        return {value for value, _ in form.fields["example"].choices_map[category]}
+
+    def test_new_background_choices_are_allowed_and_affordable(self):
+        form = self.form(total_points=4)
+        examples = self.examples(form, "New Background")
+        self.assertIn(str(self.background.pk), examples)
+        requisitions = Background.objects.get(property_name="requisitions")
+        self.assertIn(str(requisitions.pk), examples)
+        for property_name in ["sanctum", "fame", "avatar"]:
+            bg = Background.objects.get(property_name=property_name)
+            self.assertNotIn(str(bg.pk), examples)
+
+    def test_capped_rating_not_offered_as_existing(self):
+        capped = ChantryBackgroundRating.objects.create(
+            bg=self.background, chantry=self.chantry, rating=5
+        )
+        form = self.form()
+        self.assertNotIn("Existing Background", dict(form.fields["category"].choices))
+        self.assertNotIn(str(capped.pk), self.examples(form, "Existing Background"))
+        self.assertNotIn(str(self.background.pk), self.examples(form, "New Background"))
+
+    def test_no_points_leaves_only_placeholder(self):
+        form = self.form(total_points=1)
+        self.assertEqual([value for value, _ in form.fields["category"].choices], ["-----"])
+
+    def test_forged_disallowed_background_fails(self):
+        fame = Background.objects.get(property_name="fame")
+        form = self.form({"category": "New Background", "example": str(fame.pk)})
+        self.assertFalse(form.is_valid())
+
+    def test_forged_unaffordable_background_fails(self):
+        sanctum = Background.objects.get(property_name="sanctum")
+        form = self.form({"category": "New Background", "example": str(sanctum.pk)}, total_points=4)
+        self.assertFalse(form.is_valid())
+
+    def test_forged_ie_at_cap_fails(self):
+        form = self.form({"category": "Integrated Effects"}, integrated_effects_score=10)
+        self.assertFalse(form.is_valid())
+
+    def test_forged_other_chantrys_rating_fails(self):
+        other = Chantry.objects.create(name="Other", total_points=20)
+        foreign = ChantryBackgroundRating.objects.create(
+            bg=self.background, chantry=other, rating=1
+        )
+        form = self.form({"category": "Existing Background", "example": str(foreign.pk)})
+        self.assertFalse(form.is_valid())
+
+    def test_forged_non_numeric_example_fails(self):
+        form = self.form({"category": "New Background", "example": "allies"})
+        self.assertFalse(form.is_valid())
+
+    def test_save_new_background_keeps_note_and_alt_name(self):
+        form = self.form(
+            {
+                "category": "New Background",
+                "example": str(self.background.pk),
+                "note": "Old friends",
+                "display_alt_name": True,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        rating = form.save()
+        self.assertEqual(
+            (rating.rating, rating.note, rating.display_alt_name), (1, "Old friends", True)
+        )
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.points, 18)
+
+    def test_save_raises_when_points_were_spent_meanwhile(self):
+        form = self.form({"category": "Integrated Effects"}, total_points=2)
+        self.assertTrue(form.is_valid())
+        Chantry.objects.filter(pk=self.chantry.pk).update(total_points=0)
+        with self.assertRaises(ValidationError):
+            form.save()
+
+
+class TestChantryEffectsFormCostLimit(TestCase):
+    """Only effects that fit the remaining IE points and chantry rank are offered."""
+
+    @classmethod
+    def setUpTestData(cls):
+        mage_setup()
+        cls.chantry = Chantry.objects.create(
+            name="Ward Chantry", total_points=20, integrated_effects_score=1
+        )  # rank 2, 4 IE points
+        cls.fits = Effect.objects.create(name="Small Ward", forces=2, prime=2)  # cost 4
+        cls.too_costly = Effect.objects.create(name="Big Ward", forces=2, prime=2, mind=1)
+
+    def test_queryset_respects_remaining_ie_points(self):
+        form = ChantryEffectsForm(pk=self.chantry.pk)
+        self.assertIn(self.fits, form.fields["select"].queryset)
+        self.assertNotIn(self.too_costly, form.fields["select"].queryset)

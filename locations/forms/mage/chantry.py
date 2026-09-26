@@ -50,6 +50,10 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
         10: 90,
     }
 
+    IE = "Integrated Effects"
+    NEW = "New Background"
+    EXISTING = "Existing Background"
+
     category = ChainedChoiceField(choices=[])
     example = ChainedChoiceField(parent_field="category", choices_map={}, required=False)
     note = forms.CharField(max_length=300, required=False)
@@ -69,38 +73,20 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
         self.object = Chantry.objects.get(pk=pk)
         super().__init__(*args, **kwargs)
 
-        # Build category choices
-        category_choices = [
-            ("-----", "-----"),
-            ("Integrated Effects", "Integrated Effects"),
-            ("New Background", "New Background"),
-            ("Existing Background", "Existing Background"),
-        ]
-
-        if not self.object.backgrounds.exists():
-            category_choices = [
-                ("-----", "-----"),
-                ("Integrated Effects", "Integrated Effects"),
-                ("New Background", "New Background"),
-            ]
-
-        if self.object.integrated_effects_score == 10:
-            category_choices = [x for x in category_choices if x[0] != "Integrated Effects"]
-
+        # Only options the points service says are allowed and affordable.
+        new, existing = chantry_points.affordable_backgrounds(self.object)
+        category_choices = [("-----", "-----")]
+        if chantry_points.can_buy_ie(self.object):
+            category_choices.append((self.IE, self.IE))
+        if new:
+            category_choices.append((self.NEW, self.NEW))
+        if existing:
+            category_choices.append((self.EXISTING, self.EXISTING))
         self.fields["category"].choices = category_choices
 
-        # Build example choices_map based on category
-        example_choices_map = {}
-        for cat_value, cat_label in category_choices:
-            if cat_value == "New Background":
-                examples = Background.objects.all().order_by("name")
-                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
-            elif cat_value == "Existing Background":
-                examples = self.object.backgrounds.all()
-                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
-            else:
-                example_choices_map[cat_value] = []
-
+        example_choices_map = {value: [] for value, _ in category_choices}
+        example_choices_map[self.NEW] = [(str(bg.pk), str(bg)) for bg in new]
+        example_choices_map[self.EXISTING] = [(str(r.pk), str(r)) for r in existing]
         self.fields["example"].choices_map = example_choices_map
 
         # Re-run chain setup after choices configured
@@ -109,36 +95,54 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         category = cleaned_data.get("category")
-        example = cleaned_data.get("example")
+        example = str(cleaned_data.get("example") or "")
+        self.background = None
 
-        if category == "New Background" and not example:
-            raise forms.ValidationError("Need to choose a Background")
-        if category == "Existing Background" and not example:
-            raise forms.ValidationError("Need to choose a Background")
-
+        if category == self.IE:
+            error = chantry_points.ie_purchase_error(self.object)
+        elif category in (self.NEW, self.EXISTING):
+            if not example:
+                raise forms.ValidationError("Need to choose a Background")
+            if not example.isdigit():
+                raise forms.ValidationError("Choose a valid Background.")
+            if category == self.NEW:
+                self.background = Background.objects.filter(pk=example).first()
+                current = None
+            else:
+                rating = self.object.backgrounds.select_related("bg").filter(pk=example).first()
+                self.background = rating.bg if rating is not None else None
+                current = rating.rating if rating is not None else None
+            if self.background is None:
+                raise forms.ValidationError("Choose a valid Background.")
+            error = chantry_points.background_purchase_error(
+                self.object, self.background, current_rating=current
+            )
+        else:
+            error = None
+        if error:
+            raise forms.ValidationError(error)
         return cleaned_data
 
     def save(self, commit=True):
+        """Spend the points through the service.
+
+        Returns the new Integrated Effects score, the bought
+        ``ChantryBackgroundRating``, or None for "-----". Raises
+        ``ValidationError`` if a concurrent purchase used the points first.
+        """
         category = self.cleaned_data["category"]
-        example_pk = self.cleaned_data["example"]
-        if category == "Integrated Effects":
-            self.object.integrated_effects_score += 1
-            self.object.save()
-        elif "New Background" == category:
-            bg = Background.objects.get(pk=example_pk)
-            ChantryBackgroundRating.objects.create(
-                bg=bg,
+        if category == self.IE:
+            return chantry_points.buy_ie_dot(self.object)
+        if category == self.NEW:
+            return chantry_points.buy_background_dot(
+                self.object,
+                self.background,
                 note=self.cleaned_data["note"],
-                chantry=self.object,
                 display_alt_name=self.cleaned_data["display_alt_name"],
-                rating=1,
             )
-        elif "Existing Background" == category:
-            bg_rating = ChantryBackgroundRating.objects.get(pk=example_pk)
-            bg_rating.rating += 1
-            bg_rating.save()
-        else:
-            pass
+        if category == self.EXISTING:
+            return chantry_points.buy_background_dot(self.object, self.background)
+        return None
 
 
 # Form for choosing effects
