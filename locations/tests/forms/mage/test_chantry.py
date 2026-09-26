@@ -514,3 +514,73 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
         self.assertEqual(chantry.chronicle, self.chronicle)
         self.assertEqual(chantry.status, "Un")
         self.assertEqual(chantry.creation_status, 1)
+
+    def test_save_join_adds_points_to_database_value_even_if_form_instance_stale(self):
+        """The join is a single atomic UPDATE, so it uses the DB value, not a stale read."""
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.existing_chantry.pk},
+            character=self.character,
+            points=5,
+        )
+        self.assertTrue(form.is_valid())
+        # Simulate another request changing total_points after this form validated but
+        # before it saves (the instance the form's cleaned_data holds is now stale).
+        Chantry.objects.filter(pk=self.existing_chantry.pk).update(total_points=100)
+
+        chantry = form.save()
+
+        self.assertEqual(chantry.total_points, 105)
+        self.existing_chantry.refresh_from_db()
+        self.assertEqual(self.existing_chantry.total_points, 105)
+
+
+class TestChantrySelectOrCreateFormChronicleLess(TestCase):
+    """A chronicle-less character may only join their own chronicle-less chantries."""
+
+    @classmethod
+    def setUpTestData(cls):
+        mage_setup()
+        cls.user = User.objects.create_user(username="homeless", password="password")
+        cls.other = User.objects.create_user(username="other_homeless", password="password")
+        cls.character = Mage.objects.create(name="Homeless Mage", owner=cls.user, chronicle=None)
+        cls.own_chantry = Chantry.objects.create(
+            name="Own Chantry-less",
+            owner=cls.user,
+            chronicle=None,
+            status="App",
+            total_points=5,
+        )
+        cls.other_chantry = Chantry.objects.create(
+            name="Other Chantry-less",
+            owner=cls.other,
+            chronicle=None,
+            status="App",
+            total_points=5,
+        )
+
+    def test_own_chronicle_less_chantry_is_offered(self):
+        queryset = (
+            ChantrySelectOrCreateForm(character=self.character, points=3)
+            .fields["existing_chantry"]
+            .queryset
+        )
+        self.assertIn(self.own_chantry, queryset)
+
+    def test_other_players_chronicle_less_chantry_is_not_offered(self):
+        queryset = (
+            ChantrySelectOrCreateForm(character=self.character, points=3)
+            .fields["existing_chantry"]
+            .queryset
+        )
+        self.assertNotIn(self.other_chantry, queryset)
+
+    def test_post_choosing_other_players_chantry_is_invalid(self):
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.other_chantry.pk},
+            character=self.character,
+            points=3,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("existing_chantry", form.errors)
+        self.other_chantry.refresh_from_db()
+        self.assertEqual(self.other_chantry.total_points, 5)

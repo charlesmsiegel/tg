@@ -130,7 +130,16 @@ class CharacterChantryBackgroundView(GenericBackgroundView):
 
     def form_valid(self, form):
         character = self.get_object()
+        rating_model = type(self.current_background)
         with transaction.atomic():
+            # Claim the rating before saving anything else, so a second near-simultaneous
+            # POST that also passed GenericBackgroundView's pre-check finds it already
+            # complete and backs off instead of double-adding points or double-creating.
+            claimed = rating_model.objects.filter(
+                pk=self.current_background.pk, complete=False
+            ).update(complete=True)
+            if not claimed:
+                return HttpResponseRedirect(character.get_absolute_url())
             chantry = form.save()
             chantry.members.add(character)
             self.current_background.note = chantry.name
