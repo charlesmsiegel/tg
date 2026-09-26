@@ -276,12 +276,6 @@ def formset_add_btn(prefix, label="Add", **kwargs):
 
 
 @register.simple_tag
-def formset_remove_btn(prefix):
-    """Return data attributes for a remove button (advanced use)."""
-    return mark_safe(f'data-formset-remove="{prefix}"')
-
-
-@register.simple_tag
 def formset_form_wrapper():
     """Return data attribute to mark a form row (advanced use)."""
     return mark_safe('data-formset-form=""')

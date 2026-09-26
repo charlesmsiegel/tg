@@ -295,3 +295,19 @@ class D5RemovedTests(SimpleTestCase):
         for name in ("dots", "boxes", "abs", "lore_name", "linked_dots"):
             with self.subTest(kept_filter=name):
                 self.assertIn(name, dots.register.filters)
+
+    def test_unused_single_tags_and_filters_are_gone(self):
+        from core.templatetags import json_filters, sanitize_text
+        from widgets.templatetags import formset_tags
+
+        cases = (
+            (json_filters, json_filters.register.filters, "get_item"),
+            (sanitize_text, sanitize_text.register.filters, "badge_text"),
+            (formset_tags, formset_tags.register.tags, "formset_remove_btn"),
+        )
+        for module, registry, name in cases:
+            with self.subTest(module=module.__name__, name=name):
+                self.assertNotIn(name, registry)
+                self.assertFalse(hasattr(module, name))
+        self.assertIn("pprint", json_filters.register.filters)
+        self.assertIn("formset_add_btn", formset_tags.register.tags)

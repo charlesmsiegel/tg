@@ -10,7 +10,6 @@ from widgets.templatetags.formset_tags import (
     formset_add_btn,
     formset_container,
     formset_form_wrapper,
-    formset_remove_btn,
     formset_script,
 )
 from widgets.widgets.formset_manager import (
@@ -115,11 +114,6 @@ class TestFormsetTemplateTags(TestCase):
         """Test formset_add_btn with custom attributes."""
         result = formset_add_btn("my_prefix", "Add", **{"class": "btn btn-primary"})
         self.assertIn('class="btn btn-primary"', result)
-
-    def test_formset_remove_btn(self):
-        """Test formset_remove_btn returns correct attribute."""
-        result = formset_remove_btn("my_prefix")
-        self.assertIn('data-formset-remove="my_prefix"', result)
 
     def test_formset_form_wrapper(self):
         """Test formset_form_wrapper returns correct attribute."""
@@ -331,14 +325,6 @@ class TestFormsetTemplateTagsInTemplate(TestCase):
         result = template.render(Context({}))
         self.assertIn("<button", result)
         self.assertIn("Add Row", result)
-
-    def test_formset_remove_btn_in_template(self):
-        """Test formset_remove_btn tag works in template context."""
-        template = Template(
-            '{% load formset_tags %}<button {% formset_remove_btn "test" %}>Remove</button>'
-        )
-        result = template.render(Context({}))
-        self.assertIn('data-formset-remove="test"', result)
 
 
 class TestFormsetManagerIntegration(TestCase):
