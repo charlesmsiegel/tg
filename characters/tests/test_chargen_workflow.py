@@ -28,12 +28,37 @@ class WorkflowRenderingTests(TestCase):
                     Character.objects.filter(pk=character.pk).update(creation_status=position)
                     response = self.client.get(reverse("characters:character", args=[character.pk]))
                     self.assertEqual(response.status_code, 200)
+                    self.assertContains(response, f"Edit {character.name}")
                     self.assertEqual(response.context["step"].key, step.key)
                     self.assertEqual(
                         len(response.context["chargen_steps"]), len(router.view_mapping)
                     )
                     character.refresh_from_db()
                     self.assertEqual(character.creation_status, position)
+
+    def test_unequal_ability_groups_keep_empty_cells_without_none_text(self):
+        from unittest.mock import patch
+
+        from django.template.loader import render_to_string
+
+        vampire = Vampire.objects.create(name="Unequal groups", owner=self.owner, creation_status=2)
+        self.client.force_login(self.owner)
+        with patch.multiple(
+            Vampire, talents=["alertness"], skills=["crafts", "drive"], knowledges=["academics"]
+        ):
+            response = self.client.get(reverse("characters:character", args=[vampire.pk]))
+        rows = response.context["ability_rows"]
+        self.assertEqual(len(rows), 2)
+        self.assertIsNone(rows[1][0])
+        self.assertEqual(rows[1][1].name, "drive")
+        self.assertIsNone(rows[1][2])
+        html = render_to_string("characters/core/chargen/abilities.html", {"ability_rows": rows})
+        self.assertInHTML(
+            '<div class="row"><div class="col-sm"></div><div class="col-sm dots"></div>'
+            f'<div class="col-sm">Drive</div><div class="col-sm dots">{rows[1][1]}</div>'
+            '<div class="col-sm"></div><div class="col-sm dots"></div></div>',
+            html,
+        )
 
     def test_vampire_late_forms_match_their_views(self):
         from characters.models.core.background_block import Background, BackgroundRating

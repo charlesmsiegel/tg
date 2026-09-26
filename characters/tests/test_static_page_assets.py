@@ -31,6 +31,34 @@ class ScriptParser(HTMLParser):
 
 
 class StaticPageConfigurationTests(SimpleTestCase):
+    def test_chargen_templates_do_not_display_developer_comments(self):
+        from django.contrib.auth.models import AnonymousUser
+
+        for template in (
+            "core/form.html",
+            "characters/core/ability_block/validation.html",
+            "characters/core/background_block/form.html",
+        ):
+            with self.subTest(template=template):
+                html = render_to_string(
+                    template,
+                    {
+                        "form": forms.formset_factory(forms.Form, extra=0)(),
+                        "request": SimpleNamespace(user=AnonymousUser()),
+                    },
+                )
+                self.assertNotIn("{#", html)
+                self.assertNotIn("#}", html)
+
+    def test_registered_vampire_virtues_loads_static_validator(self):
+        from characters.chargen import get_workflow
+
+        step = next(step for step in get_workflow("vampire").steps if step.key == "virtues")
+        scripts = ScriptParser(render_to_string(step.template)).scripts
+        self.assertEqual(len(scripts), 1)
+        self.assertTrue(scripts[0]["attrs"]["src"].endswith("characters/js/vampire-virtues.js"))
+        self.assertEqual(scripts[0]["body"], "")
+
     def test_ability_validation_requires_all_targets(self):
         template = "characters/core/ability_block/validation.html"
         for context in (

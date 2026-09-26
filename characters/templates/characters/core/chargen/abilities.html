@@ -7,8 +7,8 @@
 {% for row in ability_rows %}
     <div class="row">
         {% for field in row %}
-            <div class="col-sm">{{ field.label }}</div>
-            <div class="col-sm dots">{{ field.errors }}{{ field }}</div>
+            <div class="col-sm">{% if field %}{{ field.label }}{% endif %}</div>
+            <div class="col-sm dots">{% if field %}{{ field.errors }}{{ field }}{% endif %}</div>
         {% endfor %}
     </div>
 {% endfor %}
