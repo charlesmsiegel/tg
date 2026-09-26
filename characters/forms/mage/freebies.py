@@ -1,4 +1,3 @@
-from django import forms
 from django.db.models import Q
 
 from characters.forms.constants import BASE_CATEGORY_CHOICES
@@ -8,11 +7,9 @@ from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.companion import Advantage
-from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.focus import Practice
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
-from characters.models.mage.sphere import Sphere
-from core.widgets import AutocompleteTextInput
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
@@ -234,46 +231,3 @@ class SorcererFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
 
         # Re-run chain setup after choices configured
         self._setup_chains()
-
-
-class MageFreebiesForm(HumanFreebiesForm):
-    category = forms.ChoiceField(choices=MAGE_CATEGORY_CHOICES)
-    resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
-
-    def __init__(self, *args, suggestions=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if suggestions is None:
-            suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
-        self.fields["resonance"].widget.suggestions = suggestions
-        ADDITIONAL_CATS = [
-            ("Sphere", "Sphere"),
-            ("Rotes", "Rotes"),
-            ("Resonance", "Resonance"),
-            ("Tenet", "Tenet"),
-            ("Practice", "Practice"),
-            ("Arete", "Arete"),
-            ("Quintessence", "Quintessence"),
-        ]
-        if (
-            self.instance.freebies < 4
-            or (self.instance.total_freebies() == 45 and self.instance.arete >= 4)
-            or (self.instance.total_freebies() != 45 and self.instance.arete >= 3)
-            or (self.instance.other_tenets.count() + 3 == self.instance.arete)
-        ):
-            ADDITIONAL_CATS = [x for x in ADDITIONAL_CATS if x[0] != "Arete"]
-        if self.instance.freebies < 7:
-            ADDITIONAL_CATS = [x for x in ADDITIONAL_CATS if x[0] != "Sphere"]
-        if self.instance.freebies < 3:
-            ADDITIONAL_CATS = [x for x in ADDITIONAL_CATS if x[0] != "Resonance"]
-        self.fields["category"].choices += ADDITIONAL_CATS
-        self.fields["category"].choices = [
-            x for x in self.fields["category"].choices if self.validator(x[0])
-        ]
-
-        if self.is_bound:
-            if self.data["category"] == "Sphere":
-                self.fields["example"].queryset = Sphere.objects.all()
-            if self.data["category"] == "Tenet":
-                self.fields["example"].queryset = Tenet.objects.all()
-            if self.data["category"] == "Practice" or self.data["category"] == "Arete":
-                self.fields["example"].queryset = Practice.objects.all()

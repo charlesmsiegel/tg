@@ -2,7 +2,7 @@
 Tests for character forms.
 
 Tests cover:
-- LimitedCharacterEditForm field restrictions
+- LimitedHumanEditForm field restrictions
 - Full character forms
 - Form validation
 - XP spending forms
@@ -12,95 +12,8 @@ Tests cover:
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from characters.forms.core import LimitedCharacterEditForm, LimitedHumanEditForm
-from characters.models.core import Character, Human
-
-
-class TestLimitedCharacterEditForm(TestCase):
-    """Test the limited character edit form for owners."""
-
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-        self.character = Character.objects.create(
-            name="Test Character",
-            owner=self.user,
-            concept="Detective",
-            description="Original description",
-            notes="Original notes",
-        )
-
-    def test_form_includes_only_safe_fields(self):
-        """Test that form only includes descriptive fields."""
-        form = LimitedCharacterEditForm(instance=self.character)
-
-        # Should include safe descriptive fields
-        self.assertIn("description", form.fields)
-        self.assertIn("notes", form.fields)
-        self.assertIn("public_info", form.fields)
-        self.assertIn("image", form.fields)
-
-        # Should NOT include mechanical or security-sensitive fields
-        self.assertNotIn("name", form.fields)
-        self.assertNotIn("owner", form.fields)
-        self.assertNotIn("chronicle", form.fields)
-        self.assertNotIn("status", form.fields)
-        self.assertNotIn("xp", form.fields)
-        self.assertNotIn("spent_xp", form.fields)
-        self.assertNotIn("freebies", form.fields)
-        self.assertNotIn("npc", form.fields)
-
-    def test_form_saves_valid_data(self):
-        """Test that form saves valid descriptive data."""
-        form_data = {
-            "description": "Updated description",
-            "notes": "Updated notes",
-            "public_info": "Public information",
-        }
-        form = LimitedCharacterEditForm(data=form_data, instance=self.character)
-
-        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
-
-        updated = form.save()
-        updated.refresh_from_db()
-
-        self.assertEqual(updated.description, "Updated description")
-        self.assertEqual(updated.notes, "Updated notes")
-        self.assertEqual(updated.public_info, "Public information")
-
-    def test_form_does_not_change_restricted_fields(self):
-        """Test that form cannot change restricted fields."""
-        original_name = self.character.name
-        original_status = self.character.status
-
-        form_data = {
-            "description": "New description",
-        }
-        form = LimitedCharacterEditForm(data=form_data, instance=self.character)
-
-        if form.is_valid():
-            form.save()
-            self.character.refresh_from_db()
-
-            # Name and status should remain unchanged
-            self.assertEqual(self.character.name, original_name)
-            self.assertEqual(self.character.status, original_status)
-
-    def test_form_has_helpful_placeholders(self):
-        """Test that form fields have helpful placeholders."""
-        form = LimitedCharacterEditForm(instance=self.character)
-
-        self.assertIn("placeholder", form.fields["description"].widget.attrs)
-        self.assertIn("placeholder", form.fields["notes"].widget.attrs)
-
-    def test_form_has_helpful_help_text(self):
-        """Test that form fields have helpful help text."""
-        form = LimitedCharacterEditForm(instance=self.character)
-
-        # Help text should guide users
-        self.assertTrue(form.fields["public_info"].help_text)
-        self.assertTrue(form.fields["notes"].help_text)
+from characters.forms.core import LimitedHumanEditForm
+from characters.models.core import Human
 
 
 class TestLimitedHumanEditForm(TestCase):
@@ -242,35 +155,6 @@ class TestCharacterFormValidation(TestCase):
             saved = form.save()
             self.assertIn("émojis", saved.description)
             self.assertIn("日本語", saved.notes)
-
-
-class TestImageUploadForm(TestCase):
-    """Test image upload functionality in character forms."""
-
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-        self.character = Character.objects.create(
-            name="Test",
-            owner=self.user,
-        )
-
-    def test_image_field_is_optional(self):
-        """Test that image field is optional."""
-        form_data = {
-            "description": "Test description",
-        }
-        form = LimitedCharacterEditForm(data=form_data, instance=self.character)
-
-        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
-
-    def test_image_field_exists_in_form(self):
-        """Test that image field is present in the form."""
-        form = LimitedCharacterEditForm(instance=self.character)
-
-        self.assertIn("image", form.fields)
-        self.assertFalse(form.fields["image"].required)
 
 
 class TestXPSpendingForm(TestCase):

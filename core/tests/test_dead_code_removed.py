@@ -546,3 +546,28 @@ class D7RemovedTests(SimpleTestCase):
                 "characters/vampire/revenant/list.html",
             ]
         )
+
+    def test_superseded_forms_removed(self):
+        self.assert_names_absent(
+            {
+                "characters.forms.core": ["LimitedCharacterForm", "LimitedCharacterEditForm"],
+                "characters.forms.core.limited_edit": ["LimitedCharacterEditForm"],
+                "characters.forms.mage": ["MageFreebiesForm"],
+                "characters.forms.mage.freebies": ["MageFreebiesForm"],
+                "characters.forms.vampire": ["GhoulFreebiesForm", "VampireFreebiesForm"],
+                "items.forms.mage": ["SorcererArtifactForm"],
+                "items.forms.mage.sorcerer_artifact": ["SorcererArtifactForm"],
+                "items.forms.mage.wonder": ["WonderCreateOrSelectForm"],
+            }
+        )
+        self.assert_modules_absent(
+            [
+                "characters.forms.core.character",
+                "characters.forms.demon.earthbound",
+                "characters.forms.vampire.freebies",
+                "characters.forms.vampire.revenant",
+            ]
+        )
+        from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
+
+        self.assertTrue(callable(ArtifactCreateOrSelectForm))

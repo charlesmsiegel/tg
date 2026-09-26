@@ -2,145 +2,14 @@
 Tests for Sorcerer Artifact forms.
 
 Tests cover:
-- SorcererArtifactForm initialization and field configuration
-- SorcererArtifactForm validation
 - ArtifactCreateOrSelectForm for creating/selecting artifacts
-- Save behavior for both form types
+- ArtifactCreateOrSelectForm save behavior
 """
 
 from django.test import TestCase
 
-from items.forms.mage.sorcerer_artifact import (
-    ArtifactCreateOrSelectForm,
-    SorcererArtifactForm,
-)
+from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
 from items.models.mage import SorcererArtifact
-
-
-class TestSorcererArtifactFormBasics(TestCase):
-    """Test basic SorcererArtifactForm structure and fields."""
-
-    def test_form_has_required_fields(self):
-        """Test that form has all required fields."""
-        form = SorcererArtifactForm()
-
-        self.assertIn("name", form.fields)
-        self.assertIn("rank", form.fields)
-        self.assertIn("description", form.fields)
-
-    def test_name_placeholder(self):
-        """Test that name field has correct placeholder."""
-        form = SorcererArtifactForm()
-
-        self.assertEqual(form.fields["name"].widget.attrs.get("placeholder"), "Enter name here")
-
-    def test_description_placeholder(self):
-        """Test that description field has correct placeholder."""
-        form = SorcererArtifactForm()
-
-        self.assertEqual(
-            form.fields["description"].widget.attrs.get("placeholder"),
-            "Enter description here",
-        )
-
-
-class TestSorcererArtifactFormValidation(TestCase):
-    """Test SorcererArtifactForm validation."""
-
-    def test_valid_data(self):
-        """Test that form validates with valid data."""
-        form_data = {
-            "name": "Test Artifact",
-            "rank": 2,
-            "description": "A magical artifact",
-        }
-
-        form = SorcererArtifactForm(data=form_data)
-
-        self.assertTrue(form.is_valid())
-
-    def test_name_required(self):
-        """Test that name is required."""
-        form_data = {
-            "rank": 2,
-            "description": "A magical artifact",
-        }
-
-        form = SorcererArtifactForm(data=form_data)
-
-        self.assertFalse(form.is_valid())
-        self.assertIn("name", form.errors)
-
-    def test_empty_description_valid(self):
-        """Test that empty description is valid."""
-        form_data = {
-            "name": "Test Artifact",
-            "rank": 2,
-            "description": "",
-        }
-
-        form = SorcererArtifactForm(data=form_data)
-
-        self.assertTrue(form.is_valid())
-
-
-class TestSorcererArtifactFormSave(TestCase):
-    """Test SorcererArtifactForm save method."""
-
-    def test_save_creates_artifact(self):
-        """Test that save creates a sorcerer artifact."""
-        form_data = {
-            "name": "Test Artifact",
-            "rank": 3,
-            "description": "A powerful artifact",
-        }
-
-        form = SorcererArtifactForm(data=form_data)
-        self.assertTrue(form.is_valid())
-
-        artifact = form.save()
-
-        self.assertIsNotNone(artifact)
-        self.assertEqual(artifact.name, "Test Artifact")
-        self.assertEqual(artifact.rank, 3)
-        self.assertEqual(artifact.description, "A powerful artifact")
-
-    def test_save_updates_existing_artifact(self):
-        """Test that save updates an existing artifact."""
-        existing = SorcererArtifact.objects.create(
-            name="Old Name", rank=1, description="Old description"
-        )
-
-        form_data = {
-            "name": "New Name",
-            "rank": 2,
-            "description": "New description",
-        }
-
-        form = SorcererArtifactForm(data=form_data, instance=existing)
-        self.assertTrue(form.is_valid())
-
-        artifact = form.save()
-
-        self.assertEqual(artifact.pk, existing.pk)
-        self.assertEqual(artifact.name, "New Name")
-        self.assertEqual(artifact.rank, 2)
-        self.assertEqual(artifact.description, "New description")
-
-    def test_save_commit_false(self):
-        """Test that save(commit=False) does not save to database."""
-        form_data = {
-            "name": "Test Artifact",
-            "rank": 2,
-            "description": "A magical artifact",
-        }
-
-        form = SorcererArtifactForm(data=form_data)
-        self.assertTrue(form.is_valid())
-
-        artifact = form.save(commit=False)
-
-        self.assertIsNone(artifact.pk)
 
 
 class TestArtifactCreateOrSelectFormBasics(TestCase):
@@ -332,26 +201,3 @@ class TestArtifactCreateOrSelectFormEdgeCases(TestCase):
         form = ArtifactCreateOrSelectForm()
 
         self.assertFalse(form.is_bound)
-
-
-class TestSorcererArtifactFormWithInstance(TestCase):
-    """Test SorcererArtifactForm with existing instances."""
-
-    def test_form_populates_from_instance(self):
-        """Test that form is populated with instance data."""
-        artifact = SorcererArtifact.objects.create(
-            name="Instance Artifact", rank=3, description="Instance description"
-        )
-
-        form = SorcererArtifactForm(instance=artifact)
-
-        self.assertEqual(form.initial["name"], "Instance Artifact")
-        self.assertEqual(form.initial["rank"], 3)
-        self.assertEqual(form.initial["description"], "Instance description")
-
-    def test_form_meta_model(self):
-        """Test that form's Meta is correctly configured."""
-        form = SorcererArtifactForm()
-
-        self.assertEqual(form.Meta.model, SorcererArtifact)
-        self.assertEqual(form.Meta.fields, ["name", "rank", "description"])
