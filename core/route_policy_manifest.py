@@ -792,6 +792,7 @@ characters.views.vampire.discipline.DisciplineListView
 characters.views.vampire.path.PathDetailView
 characters.views.vampire.path.PathListView
 characters.views.vampire.revenant_family.RevenantFamilyDetailView
+characters.views.vampire.revenant_family.RevenantFamilyListView
 characters.views.vampire.sect.VampireSectDetailView
 characters.views.vampire.sect.VampireSectListView
 characters.views.vampire.title.VampireTitleDetailView
