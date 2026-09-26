@@ -363,12 +363,17 @@ class TestChantrySelectOrCreateFormSetup(TestCase):
         """Create test data for ChantrySelectOrCreateForm tests."""
         mage_setup()
         cls.user = User.objects.create_user(username="testuser", password="password")
+        cls.other = User.objects.create_user(username="other", password="password")
         cls.chronicle = Chronicle.objects.create(name="Test Chronicle")
         cls.character = Mage.objects.create(
             name="Test Mage", owner=cls.user, chronicle=cls.chronicle
         )
         cls.existing_chantry = Chantry.objects.create(
-            name="Existing Chantry", chronicle=cls.chronicle, total_points=20
+            name="Existing Chantry",
+            owner=cls.other,
+            chronicle=cls.chronicle,
+            status="App",
+            total_points=20,
         )
 
 
@@ -376,28 +381,43 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
     """Test basic ChantrySelectOrCreateForm structure and fields."""
 
     def test_form_has_required_fields(self):
-        """Test that form has all required fields."""
-        form = ChantrySelectOrCreateForm(character=self.character)
+        """The form offers create/select and basics, but no points field."""
+        form = ChantrySelectOrCreateForm(character=self.character, points=3)
 
         self.assertIn("create_new", form.fields)
         self.assertIn("existing_chantry", form.fields)
         self.assertIn("name", form.fields)
-        self.assertIn("total_points", form.fields)
         self.assertIn("description", form.fields)
+        self.assertNotIn("total_points", form.fields)
+        self.assertNotIn("chronicle", form.fields)
 
     def test_existing_chantry_queryset_filtered_by_chronicle(self):
         """Test that existing_chantry queryset is filtered by character's chronicle."""
         other_chronicle = Chronicle.objects.create(name="Other Chronicle")
         other_chantry = Chantry.objects.create(name="Other Chantry", chronicle=other_chronicle)
 
-        form = ChantrySelectOrCreateForm(character=self.character)
+        form = ChantrySelectOrCreateForm(character=self.character, points=3)
 
         self.assertIn(self.existing_chantry, form.fields["existing_chantry"].queryset)
         self.assertNotIn(other_chantry, form.fields["existing_chantry"].queryset)
 
+    def test_existing_chantry_queryset_excludes_retired_and_deceased(self):
+        retired = Chantry.objects.create(name="Retired", chronicle=self.chronicle, status="Ret")
+        dead = Chantry.objects.create(name="Dead", chronicle=self.chronicle, status="Dec")
+
+        queryset = (
+            ChantrySelectOrCreateForm(character=self.character, points=3)
+            .fields["existing_chantry"]
+            .queryset
+        )
+
+        self.assertNotIn(retired, queryset)
+        self.assertNotIn(dead, queryset)
+        self.assertIn(self.existing_chantry, queryset)
+
     def test_all_fields_optional(self):
         """Test that all fields are optional."""
-        form = ChantrySelectOrCreateForm(character=self.character)
+        form = ChantrySelectOrCreateForm(character=self.character, points=3)
 
         for field in form.fields.values():
             self.assertFalse(field.required)
@@ -408,40 +428,38 @@ class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup
 
     def test_valid_select_existing(self):
         """Test that selecting existing chantry is valid."""
-        form_data = {
-            "create_new": False,
-            "existing_chantry": self.existing_chantry.pk,
-            "total_points": "5",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.existing_chantry.pk},
+            character=self.character,
+            points=5,
+        )
 
         self.assertTrue(form.is_valid())
 
     def test_invalid_no_selection_when_not_creating(self):
         """Test that not creating and no selection is invalid."""
-        form_data = {
-            "create_new": False,
-            "existing_chantry": "",
-            "total_points": "5",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": ""}, character=self.character, points=5
+        )
 
         self.assertFalse(form.is_valid())
         self.assertIn("existing_chantry", form.errors)
 
+    def test_invalid_create_without_name(self):
+        form = ChantrySelectOrCreateForm(
+            data={"create_new": "on", "name": "   "}, character=self.character, points=5
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
     def test_valid_create_new_with_valid_data(self):
         """Test that creating new with valid data is valid."""
-        form_data = {
-            "create_new": "on",
-            "existing_chantry": "",
-            "name": "New Chantry",
-            "total_points": "10",
-            "description": "Test description",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        form = ChantrySelectOrCreateForm(
+            data={"create_new": "on", "name": "New Chantry", "description": "Test"},
+            character=self.character,
+            points=10,
+        )
 
         self.assertTrue(form.is_valid())
 
@@ -451,50 +469,48 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
 
     def test_save_returns_existing_chantry(self):
         """Test that saving with existing selection returns the existing chantry."""
-        form_data = {
-            "create_new": False,
-            "existing_chantry": self.existing_chantry.pk,
-            "total_points": "5",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.existing_chantry.pk},
+            character=self.character,
+            points=5,
+        )
         self.assertTrue(form.is_valid())
         chantry = form.save()
 
         self.assertEqual(chantry.pk, self.existing_chantry.pk)
 
-    def test_save_adds_points_to_existing_chantry(self):
-        """Test that saving adds points to existing chantry."""
-        initial_points = self.existing_chantry.total_points
-
-        form_data = {
-            "create_new": False,
-            "existing_chantry": self.existing_chantry.pk,
-            "total_points": "5",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+    def test_save_adds_points_to_existing_chantry_and_nothing_else(self):
+        """Joining adds the points; owner, chronicle and status stay."""
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.existing_chantry.pk},
+            character=self.character,
+            points=5,
+        )
         self.assertTrue(form.is_valid())
         form.save()
 
         self.existing_chantry.refresh_from_db()
-        self.assertEqual(self.existing_chantry.total_points, initial_points + 5)
+        self.assertEqual(self.existing_chantry.total_points, 25)
+        self.assertEqual(self.existing_chantry.owner, self.other)
+        self.assertEqual(self.existing_chantry.status, "App")
+        self.assertEqual(self.existing_chantry.chronicle, self.chronicle)
 
     def test_save_creates_new_chantry(self):
-        """Test that save creates a new chantry when in create mode."""
+        """Creating makes an unfinished chantry owned by the character's player."""
         initial_count = Chantry.objects.count()
 
-        form_data = {
-            "create_new": "on",
-            "name": "Created Chantry",
-            "total_points": "15",
-            "description": "A new chantry",
-        }
-
-        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        form = ChantrySelectOrCreateForm(
+            data={"create_new": "on", "name": "Created Chantry", "description": "New"},
+            character=self.character,
+            points=15,
+        )
         self.assertTrue(form.is_valid())
         chantry = form.save()
 
         self.assertEqual(Chantry.objects.count(), initial_count + 1)
         self.assertEqual(chantry.name, "Created Chantry")
         self.assertEqual(chantry.total_points, 15)
+        self.assertEqual(chantry.owner, self.user)
+        self.assertEqual(chantry.chronicle, self.chronicle)
+        self.assertEqual(chantry.status, "Un")
+        self.assertEqual(chantry.creation_status, 1)
