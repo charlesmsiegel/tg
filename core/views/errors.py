@@ -3,16 +3,6 @@
 from django.shortcuts import render
 
 
-def error_401(request, exception=None):
-    """
-    Handle 401 Unauthorized errors.
-
-    This view is called when a user is not authenticated and tries to access
-    a protected resource.
-    """
-    return render(request, "core/errors/401.html", status=401)
-
-
 def error_403(request, exception=None):
     """
     Handle 403 Forbidden errors.

@@ -634,3 +634,10 @@ class D8RemovedTests(SimpleTestCase):
         self.assertEqual(match.view_name, "accounts:user")
         self.assertIs(match.func.view_class, RedirectView)
         self.assertEqual(match.func.view_initkwargs, {"pattern_name": "core:home"})
+
+    def test_error_401_view_removed_but_template_kept(self):
+        from core.views import errors
+
+        self.assertFalse(hasattr(errors, "error_401"))
+        # AuthErrorHandlerMiddleware still renders this template directly.
+        get_template("core/errors/401.html")
