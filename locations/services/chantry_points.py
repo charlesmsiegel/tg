@@ -18,7 +18,16 @@ MAX_IE_SCORE = 10
 
 
 def _lock(chantry):
-    return Chantry.objects.select_for_update().get(pk=chantry.pk)
+    """Lock and return the current row for ``chantry`` (an instance or a pk).
+
+    Raises ``ValidationError`` when the chantry was deleted behind the
+    caller's back, so every mutation refuses a vanished chantry cleanly.
+    """
+    pk = getattr(chantry, "pk", chantry)
+    try:
+        return Chantry.objects.select_for_update().get(pk=pk)
+    except Chantry.DoesNotExist:
+        raise ValidationError("That chantry no longer exists.") from None
 
 
 def _held_rating(chantry, bg):
@@ -133,7 +142,13 @@ def buy_ie_dot(chantry):
 
 
 def background_removal_error(rating):
-    """Why ``rating`` cannot lose a dot, or None when it can."""
+    """Why ``rating`` cannot lose a dot, or None when it can.
+
+    A rating whose ``bg`` was itself deleted (``SET_NULL``) has no property
+    name to look up a floor for, so it has no floor and can always be removed.
+    """
+    if rating.bg is None:
+        return None
     floor = rating.chantry.free_dots(rating.bg.property_name)
     if rating.rating <= floor:
         return f"The first {floor} {rating.bg} dots are free and cannot be removed."
@@ -143,7 +158,10 @@ def background_removal_error(rating):
 def _detach_linked_object(chantry, rating):
     linked_location_id = rating.linked_location_id
     if linked_location_id is not None:
-        chantry.nodes.remove(linked_location_id)
+        # Only a Node lives in ``chantry.nodes``; a linked Library or Sanctum
+        # never does, so skip the M2M query for those.
+        if rating.bg is not None and rating.bg.property_name == "node":
+            chantry.nodes.remove(linked_location_id)
         if chantry.chantry_library_id == linked_location_id:
             chantry.chantry_library.contained_within.remove(chantry)
             chantry.chantry_library = None
@@ -160,14 +178,11 @@ def remove_background_dot(rating):
     A linked Node or Library is detached from the chantry and the link, note
     and URL are cleared so the wizard asks for it again. The linked object
     itself is never deleted. Raises ``ValidationError`` (instead of a bare
-    ``DoesNotExist``/``AttributeError``) when a concurrent request already
-    removed the rating, or its chantry, first.
+    ``DoesNotExist``) when a concurrent request already removed the rating,
+    or its chantry, first.
     """
     with transaction.atomic():
-        try:
-            locked = Chantry.objects.select_for_update().get(pk=rating.chantry_id)
-        except Chantry.DoesNotExist:
-            raise ValidationError("That purchase no longer exists.") from None
+        locked = _lock(rating.chantry_id)
         try:
             rating = ChantryBackgroundRating.objects.select_related("bg").get(
                 pk=rating.pk, chantry=locked
