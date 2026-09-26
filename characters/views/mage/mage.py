@@ -686,9 +686,6 @@ class MageRoteView(ChargenStepMixin, SpecialUserMixin, CreateView):
         context = super().get_context_data(**kwargs)
         mage_id = self.kwargs.get("pk")
         context["object"] = get_object_or_404(Mage, id=mage_id)
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         return context
 
     def get_form_kwargs(self):

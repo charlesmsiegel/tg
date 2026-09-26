@@ -142,7 +142,7 @@
                 </div>
                 <div class="col-sm">{{ request.cost }} XP</div>
                 <div class="col-sm">{{ request.approved }}</div>
-                {% if user.profile.is_st %}
+                {% if object_perms.can_approve_spending %}
                     {% if request.approved != "Approved" %}
                         <div class="col-sm">
                             <input type="submit" name="xp_request_{{ request.id }}_approve" value="Approve" />

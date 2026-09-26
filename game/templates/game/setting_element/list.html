@@ -9,7 +9,7 @@
                 <h3 class="tg-card-title wod_heading">Setting Elements & Common Knowledge</h3>
             </div>
             <div class="tg-card-body" style="padding: 24px;">
-                {% if user.profile.is_st %}
+                {% if user.is_staff or user.is_superuser %}
                     <div class="mb-4 text-center">
                         <a href="{% url 'game:setting_element:create' %}" class="btn btn-primary">Create New Setting Element</a>
                     </div>

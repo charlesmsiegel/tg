@@ -198,9 +198,6 @@ class WraithPassionsView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         context["passion_points_total"] = context["object"].passion_points
         context["passion_points_spent"] = context["object"].total_passion_rating()
         context["passion_points_remaining"] = (
@@ -268,9 +265,6 @@ class WraithFettersView(ChargenStepMixin, SpendFreebiesPermissionMixin, SpecialU
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = get_object_or_404(Wraith, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         context["fetter_points_total"] = context["object"].fetter_points
         context["fetter_points_spent"] = context["object"].total_fetter_rating()
         context["fetter_points_remaining"] = (
@@ -441,9 +435,6 @@ class WraithLanguagesView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         return context
 
 
@@ -483,9 +474,6 @@ class WraithSpecialtiesView(
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["object"] = self.get_object()
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         return context
 
     def get_form_kwargs(self):

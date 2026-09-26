@@ -49,7 +49,6 @@ MIDDLEWARE = [
     "core.middleware.authorization.AuthorizationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "core.middleware.UserListMiddleware",
     "core.middleware.auth_error_handler.AuthErrorHandlerMiddleware",
 ]
 
@@ -68,7 +67,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.all_chronicles",
-                "core.context_processors.add_special_user_flag",
                 "accounts.context_processors.theme_context",
                 "accounts.context_processors.notification_count",
             ],

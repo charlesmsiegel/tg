@@ -102,7 +102,7 @@ class UserCanViewTagTest(TestCase):
         obj = Mock()
         result = user_can_view(context, obj)
         self.assertTrue(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.user_can_view")
     def test_returns_false_when_user_cannot_view(self, mock_perm):
@@ -115,7 +115,7 @@ class UserCanViewTagTest(TestCase):
         obj = Mock()
         result = user_can_view(context, obj)
         self.assertFalse(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class UserCanEditTagTest(TestCase):
@@ -138,7 +138,7 @@ class UserCanEditTagTest(TestCase):
         obj = Mock()
         result = user_can_edit(context, obj)
         self.assertTrue(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.user_can_edit")
     def test_returns_false_when_user_cannot_edit(self, mock_perm):
@@ -151,7 +151,7 @@ class UserCanEditTagTest(TestCase):
         obj = Mock()
         result = user_can_edit(context, obj)
         self.assertFalse(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class UserCanSpendXPTagTest(TestCase):
@@ -174,7 +174,7 @@ class UserCanSpendXPTagTest(TestCase):
         obj = Mock()
         result = user_can_spend_xp(context, obj)
         self.assertTrue(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.user_can_spend_xp")
     def test_returns_false_when_user_cannot_spend_xp(self, mock_perm):
@@ -187,7 +187,7 @@ class UserCanSpendXPTagTest(TestCase):
         obj = Mock()
         result = user_can_spend_xp(context, obj)
         self.assertFalse(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class UserCanSpendFreebiesTagTest(TestCase):
@@ -210,7 +210,7 @@ class UserCanSpendFreebiesTagTest(TestCase):
         obj = Mock()
         result = user_can_spend_freebies(context, obj)
         self.assertTrue(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.user_can_spend_freebies")
     def test_returns_false_when_user_cannot_spend_freebies(self, mock_perm):
@@ -223,7 +223,7 @@ class UserCanSpendFreebiesTagTest(TestCase):
         obj = Mock()
         result = user_can_spend_freebies(context, obj)
         self.assertFalse(result)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class UserHasPermissionTagTest(TestCase):
@@ -306,7 +306,7 @@ class VisibilityTierTagTest(TestCase):
         obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.FULL)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.get_visibility_tier")
     def test_returns_partial_visibility_tier(self, mock_perm):
@@ -319,7 +319,7 @@ class VisibilityTierTagTest(TestCase):
         obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.PARTIAL)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.get_visibility_tier")
     def test_returns_none_visibility_tier(self, mock_perm):
@@ -332,7 +332,7 @@ class VisibilityTierTagTest(TestCase):
         obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.NONE)
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class UserRolesTagTest(TestCase):
@@ -355,7 +355,7 @@ class UserRolesTagTest(TestCase):
         obj = Mock()
         result = user_roles(context, obj)
         self.assertEqual(result, {Role.OWNER, Role.AUTHENTICATED})
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
     @patch("core.templatetags.permissions.PermissionManager.get_user_roles")
     def test_returns_empty_set_when_no_roles(self, mock_perm):
@@ -368,7 +368,7 @@ class UserRolesTagTest(TestCase):
         obj = Mock()
         result = user_roles(context, obj)
         self.assertEqual(result, set())
-        mock_perm.assert_called_once_with(self.user, obj)
+        mock_perm.assert_called_once_with(self.user, obj, request=context["request"])
 
 
 class IsFullFilterTest(TestCase):

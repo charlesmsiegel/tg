@@ -9,7 +9,7 @@
                 <h3 class="tg-card-title wod_heading">Weekly Periods</h3>
             </div>
             <div class="tg-card-body" style="padding: 24px;">
-                {% if is_st %}
+                {% if can_manage_global_records %}
                     <div class="mb-4 text-center">
                         <a href="{% url 'game:week:create' %}" class="btn btn-primary">Create New Week</a>
                     </div>

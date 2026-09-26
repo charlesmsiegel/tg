@@ -587,9 +587,8 @@ class FilterQuerysetForUserTest(TestCase):
         """Filter should handle models without owner field gracefully."""
         # Chronicle model doesn't have an 'owner' field
         qs = PermissionManager.filter_queryset_for_user(self.stranger, Chronicle.objects.all())
-        # Models without owner/visibility fields are visible to all authenticated users
-        # Chronicle is a campaign model that should be publicly accessible
-        self.assertEqual(qs.count(), 1)
+        # Models with no matching permission role fail closed.
+        self.assertEqual(qs.count(), 0)
 
 
 class HelperMethodsTest(TestCase):
@@ -623,8 +622,8 @@ class HelperMethodsTest(TestCase):
         user = User.objects.create_user(username="test2", password="testpass123")
         # Chronicle doesn't have an owner field
         q_filter = PermissionManager._build_owner_filter(user, Chronicle)
-        # Should return empty Q object
-        self.assertEqual(str(q_filter), str(Q()))
+        # No owner field is an impossible ownership predicate.
+        self.assertEqual(str(q_filter), str(Q(pk__in=[])))
 
 
 class ObserverFilterTest(TestCase):

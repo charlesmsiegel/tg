@@ -4,9 +4,8 @@ Template tags for permission checks.
 Usage in templates:
     {% load permissions %}
 
-    {% if user_can_view object %}
-        ...
-    {% endif %}
+    {% object_permissions object as object_perms %}
+    {% if object_perms.can_view_full %}...{% endif %}
 
     {% visibility_tier object as tier %}
     {% if tier|is_full %}
@@ -18,6 +17,7 @@ Usage in templates:
 
 from django import template
 
+from core.permission_context import get_object_permissions
 from core.permissions import Permission, PermissionManager, VisibilityTier
 
 register = template.Library()
@@ -27,28 +27,28 @@ register = template.Library()
 def user_can_view(context, obj):
     """Check if current user can view object."""
     user = context["request"].user
-    return PermissionManager.user_can_view(user, obj)
+    return PermissionManager.user_can_view(user, obj, request=context["request"])
 
 
 @register.simple_tag(takes_context=True)
 def user_can_edit(context, obj):
     """Check if current user can edit object (EDIT_FULL)."""
     user = context["request"].user
-    return PermissionManager.user_can_edit(user, obj)
+    return PermissionManager.user_can_edit(user, obj, request=context["request"])
 
 
 @register.simple_tag(takes_context=True)
 def user_can_spend_xp(context, obj):
     """Check if current user can spend XP on object."""
     user = context["request"].user
-    return PermissionManager.user_can_spend_xp(user, obj)
+    return PermissionManager.user_can_spend_xp(user, obj, request=context["request"])
 
 
 @register.simple_tag(takes_context=True)
 def user_can_spend_freebies(context, obj):
     """Check if current user can spend freebies on object."""
     user = context["request"].user
-    return PermissionManager.user_can_spend_freebies(user, obj)
+    return PermissionManager.user_can_spend_freebies(user, obj, request=context["request"])
 
 
 @register.simple_tag(takes_context=True)
@@ -67,7 +67,9 @@ def user_has_permission(context, obj, permission_name):
     user = context["request"].user
     try:
         permission = Permission[permission_name]
-        return PermissionManager.user_has_permission(user, obj, permission)
+        return PermissionManager.user_has_permission(
+            user, obj, permission, request=context["request"]
+        )
     except KeyError:
         return False
 
@@ -82,7 +84,7 @@ def visibility_tier(context, obj):
         {% if tier|is_full %}...{% endif %}
     """
     user = context["request"].user
-    return PermissionManager.get_visibility_tier(user, obj)
+    return PermissionManager.get_visibility_tier(user, obj, request=context["request"])
 
 
 @register.simple_tag(takes_context=True)
@@ -97,7 +99,7 @@ def user_roles(context, obj):
         {% endfor %}
     """
     user = context["request"].user
-    return PermissionManager.get_user_roles(user, obj)
+    return PermissionManager.get_user_roles(user, obj, request=context["request"])
 
 
 @register.filter
@@ -146,37 +148,19 @@ def is_owner(context, obj):
 
 @register.simple_tag(takes_context=True)
 def is_st(context, obj=None):
-    """
-    Check if current user is a storyteller.
+    """Scoped editor when given an object; global identity otherwise.
 
-    IMPORTANT: This checks if the user is an ST for ANY chronicle, not
-    a specific chronicle. For object-specific ST checks (e.g., "is this
-    user an ST of this character's chronicle?"), use the permission system
-    instead via PermissionManager.get_user_roles() which checks for the
-    CHRONICLE_HEAD_ST or GAME_ST roles.
-
-    This template tag delegates to user.profile.is_st() for consistency.
-
-    Usage in templates:
-        {% is_st as user_is_st %}
-        {% if user_is_st %}
-            <!-- Show ST-only UI -->
-        {% endif %}
-
-    For object-specific checks, use the permission tags instead:
-        {% user_has_permission object 'EDIT_FULL' as can_edit %}
-        {% user_roles object as roles %}
-
-    Args:
-        obj: Optional object parameter (ignored, kept for backwards compatibility)
-
-    Returns:
-        Boolean indicating if user is an ST for any chronicle
+    The no-object form is for presentation only. For actions prefer the
+    explicit booleans returned by ``object_permissions``.
     """
     user = context["request"].user
     if not user.is_authenticated:
         return False
 
+    if obj is not None:
+        return get_object_permissions(context["request"], obj).can_manage_character
+
+    # Global identity is retained only for presentation without an object.
     # Admin users are always considered STs
     if user.is_superuser or user.is_staff:
         return True
@@ -203,3 +187,9 @@ def is_game_st(context, obj):
             return obj.chronicle.game_storytellers.filter(id=user.id).exists()
 
     return False
+
+
+@register.simple_tag(takes_context=True)
+def object_permissions(context, obj):
+    """Use: {% object_permissions row as row_perms %}. Batch rows in the view."""
+    return get_object_permissions(context["request"], obj)

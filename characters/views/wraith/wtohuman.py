@@ -244,10 +244,6 @@ class WtOHumanAbilityView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        # The chargen template gates on is_approved_user; the global context
-        # processor only sets it for staff (see #1459), so without this the
-        # owner sees the not-owner fallback instead of the ability form.
-        context["is_approved_user"] = self.get_is_approved_user(self.object)
         return context
 
     def form_valid(self, form):
@@ -386,9 +382,6 @@ class WtOHumanLanguagesView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         return context
 
 
@@ -414,9 +407,6 @@ class WtOHumanSpecialtiesView(
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["object"] = self.get_object()
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         return context
 
     def get_form_kwargs(self):

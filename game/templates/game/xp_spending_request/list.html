@@ -7,7 +7,7 @@
         <div class="tg-card mb-4">
             <div class="tg-card-header text-center">
                 <h3 class="tg-card-title wod_heading">XP Spending Requests</h3>
-                {% if is_st and pending_count %}
+                {% if show_owner_column and pending_count %}
                     <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
                         {{ pending_count }} pending request{{ pending_count|pluralize }}
                     </div>
@@ -20,7 +20,7 @@
                             <thead>
                                 <tr>
                                     <th>Character</th>
-                                    {% if is_st %}
+                                    {% if show_owner_column %}
                                         <th>Player</th>
                                     {% endif %}
                                     <th>Trait</th>
@@ -36,7 +36,7 @@
                                 {% for request in object_list %}
                                     <tr>
                                         <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                        {% if is_st %}
+                                        {% if show_owner_column %}
                                             <td>{{ request.character.owner.username }}</td>
                                         {% endif %}
                                         <td>{{ request.trait_name }}</td>

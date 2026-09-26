@@ -26,6 +26,7 @@ from core.mixins import (
     StorytellerRequiredMixin,
     ViewPermissionMixin,
 )
+from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
 from core.services import ChronicleDataService
 from game.forms import (
@@ -69,7 +70,6 @@ from game.security import (
 )
 from game.spending_approval import (
     SpendingDecisionError,
-    can_approve_spending,
     decide_spending_request,
     require_spending_approver,
 )
@@ -77,12 +77,11 @@ from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
 
-def _has_st_read_rows(user, rows):
-    """Legacy list column flag, limited to chronicles represented on the page."""
-    if user.is_staff or user.is_superuser:
+def _has_st_read_rows(request, rows):
+    """A presentation flag for the prepared page, never approval authority."""
+    if request.user.is_staff or request.user.is_superuser:
         return True
-    scopes = set(staffed_chronicles(user).values_list("pk", flat=True))
-    return any(row.character is not None and row.character.chronicle_id in scopes for row in rows)
+    return any(get_object_permissions(request, row).is_chronicle_st for row in rows)
 
 
 class ChronicleDetailView(LoginRequiredMixin, DetailView):
@@ -97,6 +96,9 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chronicle = self.object
+        context["can_manage_chronicle"] = PermissionManager.can_manage_chronicle(
+            self.request.user, chronicle, self.request
+        )
 
         # --- Common Knowledge (SettingElements) by gameline ---
         all_setting_elements = chronicle.common_knowledge_elements.all()
@@ -438,9 +440,6 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
         context["st_response_forms"] = [
             STResponseForm(entry=e, prefix=f"entry-{e.pk}") for e in self.object.all_entries()
         ]
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object.character, self.request.user
-        )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -538,6 +537,7 @@ class JournalListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["current_filter"] = self.request.GET.get("filter", "all")
+        context["show_chronicle_filter"] = staffed_chronicles(self.request.user).exists()
         return context
 
 
@@ -587,7 +587,9 @@ class WeekListView(LoginRequiredMixin, ListView):
         from django.db.models import Max
 
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
+        context["can_manage_global_records"] = (
+            self.request.user.is_staff or self.request.user.is_superuser
+        )
 
         # Pre-compute finished scene counts for all weeks in the page to avoid N+1 queries
         # Get all finished scenes with their latest post dates in one query
@@ -623,7 +625,9 @@ class WeekDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
+        context["can_manage_global_records"] = (
+            self.request.user.is_staff or self.request.user.is_superuser
+        )
         context["finished_scenes"] = filter_scenes(
             self.object.finished_scenes().with_location(), self.request.user
         )
@@ -680,8 +684,9 @@ class WeeklyXPRequestListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
-        if context["is_st"]:
+        prepare_permission_objects(self.request, list(context["object_list"]))
+        context["show_owner_column"] = _has_st_read_rows(self.request, context["object_list"])
+        if context["show_owner_column"]:
             context["pending_count"] = self.get_queryset().filter(approved=False).count()
         return context
 
@@ -692,11 +697,11 @@ class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = can_approve_spending(self.request.user, self.object.character)
+        context["object_perms"] = get_object_permissions(self.request, self.object.character)
         context["is_owner"] = self.object.character.owner == self.request.user
 
         # Add approval form for STs
-        if context["is_st"] and not self.object.approved:
+        if context["object_perms"].can_approve_spending and not self.object.approved:
             context["approval_form"] = WeeklyXPRequestForm(
                 instance=self.object,
                 character=self.object.character,
@@ -854,7 +859,8 @@ class StoryXPRequestListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
+        prepare_permission_objects(self.request, list(context["object_list"]))
+        context["show_owner_column"] = _has_st_read_rows(self.request, context["object_list"])
         return context
 
 
@@ -864,12 +870,7 @@ class StoryXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = PermissionManager.user_has_permission(
-            self.request.user,
-            self.object.character,
-            Permission.APPROVE,
-            request=self.request,
-        )
+        context["object_perms"] = get_object_permissions(self.request, self.object.character)
         context["is_owner"] = self.object.character.owner == self.request.user
         return context
 
@@ -888,7 +889,9 @@ class SettingElementDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
+        context["can_manage_global_records"] = (
+            self.request.user.is_staff or self.request.user.is_superuser
+        )
         # Find chronicles that use this setting element
         context["chronicles"] = Chronicle.objects.filter(common_knowledge_elements=self.object)
         return context
@@ -929,8 +932,9 @@ class XPSpendingRequestListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
-        if context["is_st"]:
+        prepare_permission_objects(self.request, list(context["object_list"]))
+        context["show_owner_column"] = _has_st_read_rows(self.request, context["object_list"])
+        if context["show_owner_column"]:
             context["pending_count"] = self.get_queryset().filter(approved="Pending").count()
         return context
 
@@ -944,11 +948,11 @@ class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = can_approve_spending(self.request.user, self.object.character)
+        context["object_perms"] = get_object_permissions(self.request, self.object.character)
         context["is_owner"] = self.object.character.owner == self.request.user
 
         # Add approval form for STs
-        if context["is_st"] and self.object.approved == "Pending":
+        if context["object_perms"].can_approve_spending and self.object.approved == "Pending":
             context["approval_form"] = XPSpendingRequestApprovalForm(instance=self.object)
 
         return context
@@ -1049,7 +1053,8 @@ class FreebieSpendingRecordListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
+        prepare_permission_objects(self.request, list(context["object_list"]))
+        context["show_owner_column"] = _has_st_read_rows(self.request, context["object_list"])
         return context
 
 
@@ -1062,7 +1067,7 @@ class FreebieSpendingRecordDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = can_approve_spending(self.request.user, self.object.character)
+        context["object_perms"] = get_object_permissions(self.request, self.object.character)
         context["is_owner"] = self.object.character.owner == self.request.user
         return context
 

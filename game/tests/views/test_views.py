@@ -113,7 +113,9 @@ class TestChronicleDetailView(TestCase):
         )
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         Human.objects.create(
-            name="Player character", owner=self.user, chronicle=self.chronicle,
+            name="Player character",
+            owner=self.user,
+            chronicle=self.chronicle,
             concept="Test",
         )
 
@@ -790,7 +792,8 @@ class TestXPSpendingRequestViews(TestCase):
         self.assertEqual(response.status_code, 302)
         self.xp_request.refresh_from_db()
         self.assertEqual(
-            self.xp_request.approved, "Approved",
+            self.xp_request.approved,
+            "Approved",
             [str(message) for message in response.wsgi_request._messages],
         )
 
@@ -1291,9 +1294,7 @@ class TestSettingElementViews(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user(
-            "stuser", "st@test.com", "password", is_staff=True
-        )
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password", is_staff=True)
         self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
@@ -1460,7 +1461,9 @@ class TestChronicleDetailViewPost(TestCase):
         )
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         Human.objects.create(
-            name="Player character", owner=self.user, chronicle=self.chronicle,
+            name="Player character",
+            owner=self.user,
+            chronicle=self.chronicle,
             concept="Test",
         )
         # Create object types for character/location/item creation
@@ -1496,9 +1499,7 @@ class TestWeekViews(TestCase):
         from datetime import date
 
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user(
-            "stuser", "st@test.com", "password", is_staff=True
-        )
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password", is_staff=True)
         self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
@@ -1519,10 +1520,10 @@ class TestWeekViews(TestCase):
         self.assertTemplateUsed(response, "game/week/list.html")
 
     def test_week_list_view_context(self):
-        """Test that week list includes is_st context."""
+        """The global week list exposes staff-only management explicitly."""
         self.client.login(username="stuser", password="password")
         response = self.client.get("/game/week/list/")
-        self.assertTrue(response.context["is_st"])
+        self.assertTrue(response.context["can_manage_global_records"])
 
     def test_week_detail_view_accessible(self):
         """Test that week detail is accessible to logged-in users."""
@@ -1555,9 +1556,7 @@ class TestStoryViews(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user(
-            "stuser", "st@test.com", "password", is_staff=True
-        )
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password", is_staff=True)
         self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
@@ -1674,8 +1673,11 @@ class TestChronicleDetailViewQueryOptimization(TestCase):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         Human.objects.create(
-            name="Viewer character", owner=self.user, chronicle=self.chronicle,
-            concept="Test", status="App",
+            name="Viewer character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="App",
         )
 
         # Create multiple characters with different owners to trigger N+1 if not optimized
@@ -1723,8 +1725,10 @@ class TestChronicleListView(TestCase):
         for name in ("Chronicle A", "Chronicle B"):
             chronicle = Chronicle.objects.create(name=name)
             Human.objects.create(
-                name=f"Character in {name}", owner=self.user,
-                chronicle=chronicle, concept="Test",
+                name=f"Character in {name}",
+                owner=self.user,
+                chronicle=chronicle,
+                concept="Test",
             )
 
     def test_list_view_requires_login(self):

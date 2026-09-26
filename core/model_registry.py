@@ -12,7 +12,12 @@ from django.utils.module_loading import import_string
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.access_policy import authorize_route
-from core.mixins import MessageMixin, prepare_created_object
+from core.mixins import (
+    MessageMixin,
+    PermissionContextMixin,
+    VisibilityFilterMixin,
+    prepare_created_object,
+)
 from core.route_policy_manifest import POLICIES
 
 
@@ -55,7 +60,7 @@ class ModelSpec:
         return self.label or self.model._meta.verbose_name.title()
 
 
-class RegistryViewMixin:
+class RegistryViewMixin(PermissionContextMixin):
     """Enforce declared policy before custom logic, even outside URL middleware."""
 
     registry_action = None
@@ -183,6 +188,14 @@ class ModelRegistry:
         )
         if action in {"create", "update"} and not issubclass(base, MessageMixin):
             bases.append(MessageMixin)
+        # Public reference lists retain their declared policy; private object
+        # querysets use the same visibility rules as handwritten list views.
+        if (
+            action == "list"
+            and spec.policy == "OBJECT_LIST"
+            and not issubclass(base, VisibilityFilterMixin)
+        ):
+            bases.append(VisibilityFilterMixin)
         bases.append(base)
         view = type(name, tuple(bases), attrs)
         self._views[(entry.model_label, action)] = view

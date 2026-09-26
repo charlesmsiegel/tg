@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load sanitize_text %}
+{% load sanitize_text permissions %}
 
 {% block heading %}Character Template Management{% endblock %}
 
@@ -59,6 +59,7 @@
         {% if templates %}
             <div class="row">
                 {% for template in templates %}
+                    {% object_permissions template as row_perms %}
                     <div class="col-md-6 mb-3">
                         <div class="tg-card h-100" data-gameline="{{ template.gameline }}">
                             <div class="tg-card-body" style="padding: 20px;">
@@ -102,7 +103,7 @@
                                     </div>
                                     <div style="display: flex; gap: 8px;">
                                         <a href="{% url 'core:character_template_detail' template.pk %}" class="btn btn-sm btn-outline-primary">View</a>
-                                        {% if template.owner == user or user.is_superuser %}
+                                        {% if row_perms.can_edit and not template.is_official or row_perms.can_manage_character %}
                                             <a href="{% url 'core:character_template_update' template.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         {% endif %}
                                     </div>

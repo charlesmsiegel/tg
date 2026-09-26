@@ -136,7 +136,7 @@
         </div>
 
         <!-- ST Approval Form -->
-        {% if is_st and not object.approved %}
+        {% if object_perms.can_approve_spending and not object.approved %}
             <div class="tg-card mb-4">
                 <div class="tg-card-header text-center">
                     <h5 class="tg-card-title wod_heading">Review Request</h5>
@@ -175,7 +175,7 @@
             </div>
         {% endif %}
 
-        {% if object.approved or not is_st %}
+        {% if object.approved or not object_perms.can_approve_spending %}
             <div class="text-center mb-4">
                 <a href="{{ object.week.get_absolute_url }}" class="btn btn-secondary">Back to Week</a>
             </div>

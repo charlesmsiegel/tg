@@ -54,10 +54,6 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
             ).values_list("pk", flat=True)
         )
         context["scenes"] = [scene for scene in scenes if scene.pk in visible_ids]
-        # The legacy sheet template uses this flag for full detail visibility.
-        context["is_approved_user"] = PermissionManager.user_has_permission(
-            self.request.user, self.object, Permission.VIEW_FULL, request=self.request
-        )
         can_edit = PermissionManager.user_has_permission(
             self.request.user, self.object, Permission.EDIT_FULL, request=self.request
         )

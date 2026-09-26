@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        {% if is_st %}
+        {% if can_manage_global_records %}
             <div class="tg-card mb-4">
                 <div class="tg-card-body text-center" style="padding: 16px;">
                     <a href="{% url 'game:setting_element:update' object.pk %}" class="btn btn-primary">Edit Setting Element</a>

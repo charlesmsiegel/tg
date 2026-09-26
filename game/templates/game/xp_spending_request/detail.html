@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        {% if is_st and object.approved == "Pending" %}
+        {% if object_perms.can_approve_spending and object.approved == "Pending" %}
             <!-- Approval Form -->
             <div class="tg-card mb-4">
                 <div class="tg-card-header text-center">
