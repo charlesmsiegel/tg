@@ -23,4 +23,14 @@ urls = [
         views.vampire.RackListView.as_view(),
         name="rack",
     ),
+    path(
+        "tremere_chantry/",
+        views.vampire.TremereChantryListView.as_view(),
+        name="tremere_chantry",
+    ),
+    path(
+        "barrens/",
+        views.vampire.BarrensListView.as_view(),
+        name="barrens",
+    ),
 ]

@@ -590,10 +590,12 @@ locations.views.mage.sector.SectorListView
 locations.views.mummy.CultTempleListView
 locations.views.mummy.TombListView
 locations.views.mummy.UndergroundSanctuaryListView
+locations.views.vampire.BarrensListView
 locations.views.vampire.DomainListView
 locations.views.vampire.ElysiumListView
 locations.views.vampire.HavenListView
 locations.views.vampire.RackListView
+locations.views.vampire.TremereChantryListView
 locations.views.werewolf.caern.CaernListView
 locations.views.wraith.byway.BywayListView
 locations.views.wraith.citadel.CitadelListView
