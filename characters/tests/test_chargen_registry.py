@@ -41,15 +41,34 @@ class RegistryTests(SimpleTestCase):
         self.assertIsNone(get_workflow("not_a_character"))
 
     def test_detail_only_types_preserve_freebie_metadata_without_a_wizard(self):
+        from characters.chargen.definitions import DETAIL_ONLY_FREEBIE_POSITIONS
+        from characters.models.changeling.autumn_person import AutumnPerson
+        from characters.models.changeling.inanimae import Inanimae
+        from characters.models.changeling.nunnehi import Nunnehi
         from characters.models.demon.earthbound import Earthbound
+        from characters.models.hunter.htrhuman import HtRHuman
         from characters.models.hunter.hunter import Hunter
+        from characters.models.mummy.mtr_human import MtRHuman
         from characters.models.mummy.mummy import Mummy
         from characters.models.vampire.revenant import Revenant
 
-        for model, position in ((Earthbound, 7), (Hunter, 7), (Mummy, 7), (Revenant, 6)):
+        expected = (
+            (AutumnPerson, 5),
+            (Inanimae, 5),
+            (Nunnehi, 5),
+            (Earthbound, 7),
+            (HtRHuman, 5),
+            (Hunter, 7),
+            (MtRHuman, 5),
+            (Mummy, 7),
+            (Revenant, 6),
+        )
+        self.assertEqual(set(DETAIL_ONLY_FREEBIE_POSITIONS), {model.type for model, _ in expected})
+        for model, position in expected:
             with self.subTest(model=model.__name__):
                 self.assertIsNone(get_workflow(model.type))
                 self.assertEqual(model.freebie_step, position)
+                self.assertEqual(model().freebie_step, position)
 
     def test_positions_are_bounded(self):
         workflow = get_workflow("vampire")

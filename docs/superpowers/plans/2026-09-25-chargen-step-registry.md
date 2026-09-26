@@ -107,3 +107,13 @@ python manage.py test characters.tests.test_chargen_registry characters.tests.te
 Additional checks: `python manage.py check`, `git diff --check`, Ruff on new registry/tests and shared mixin, Black on changed Python files. No full-project suite or browser automation is claimed.
 
 Final combined verification: **250 tests passed** (234.492 seconds). Django system check reports no issues. Ruff, Black and `git diff --check` pass.
+
+### PR review and rebase verification (2026-09-26)
+
+- Rebased onto `eb5ed842` (`main`, application JavaScript extraction). The Vampire shell conflict was resolved by retaining the shared shell and loading the new static virtues validator from its registered fragment. A regression test checks that binding.
+- Checked all three [Claude review comments](https://github.com/charlesmsiegel/tg/pull/1469#issuecomment-5844419562). The inherited `core/form.html` heading already displays the character name; the deliberate current-form layout remains. Added name assertions to the existing 231-slot owner-rendering test.
+- Expanded independent expected freebie metadata to all nine detail-only types, checking both class and instance descriptors and detecting entries missing from the test.
+- Reproduced the unequal-ability-group case: padding printed literal `None`. Conditional field rendering now keeps the empty cells without that text; the regression test checks the complete padded row.
+- Browser inspection also exposed multiline single-line-comment delimiters printing developer notes around buttons and counters. Converted the five affected comments to Django block comments, with rendered-output coverage.
+- Combined original verification labels plus `characters.tests.test_static_page_assets` and `widgets.tests.test_static_assets_browser`: **267 tests passed** (135.245 seconds). After the comment cleanup, `python manage.py test characters.tests.test_static_page_assets characters.tests.test_chargen_workflow characters.tests.views.core.test_chargen_validation core.tests.views.test_generic --verbosity 0`: **56 tests passed** (25.746 seconds). System check, Ruff, Black and whitespace checks pass.
+- Local Chromium checked all 13 rendered Vampire step pages for name, current progress and heading visibility, and confirmed virtues JavaScript initialization. Rechecked Abilities, Backgrounds and Virtues after the comment cleanup and inspected the corrected Virtues screenshot. These were rendered-page browser checks, not an end-to-end browser submission flow. The in-app browser could not launch because its sandbox helper was unavailable; the local harness used disposable test data and browser profiles.
