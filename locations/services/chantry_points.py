@@ -159,13 +159,21 @@ def remove_background_dot(rating):
 
     A linked Node or Library is detached from the chantry and the link, note
     and URL are cleared so the wizard asks for it again. The linked object
-    itself is never deleted.
+    itself is never deleted. Raises ``ValidationError`` (instead of a bare
+    ``DoesNotExist``/``AttributeError``) when a concurrent request already
+    removed the rating, or its chantry, first.
     """
     with transaction.atomic():
-        locked = _lock(rating.chantry)
-        rating = ChantryBackgroundRating.objects.select_related("bg").get(
-            pk=rating.pk, chantry=locked
-        )
+        try:
+            locked = Chantry.objects.select_for_update().get(pk=rating.chantry_id)
+        except Chantry.DoesNotExist:
+            raise ValidationError("That purchase no longer exists.") from None
+        try:
+            rating = ChantryBackgroundRating.objects.select_related("bg").get(
+                pk=rating.pk, chantry=locked
+            )
+        except ChantryBackgroundRating.DoesNotExist:
+            raise ValidationError("That purchase no longer exists.") from None
         rating.chantry = locked
         error = background_removal_error(rating)
         if error:
