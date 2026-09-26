@@ -34,8 +34,7 @@ INSTALLED_APPS = [
     "locations",
     "polymorphic",
     "core",
-    "widgets",  # Reusable form widgets (replaces chained_select)
-    "chained_select",  # Deprecated - backward compatibility only
+    "widgets",  # Reusable form widgets
     "django.contrib.humanize",
     "crispy_forms",
     "crispy_bootstrap4",

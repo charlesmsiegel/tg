@@ -68,3 +68,21 @@ class D2DependencyRemovedTest(RemovalAssertions, SimpleTestCase):
 
     def test_django_smart_selects_not_in_requirements(self):
         self.assertRequirementRemoved("django-smart-selects")
+
+
+class D3ChainedSelectRemovedTest(RemovalAssertions, SimpleTestCase):
+    """D3: the deprecated chained_select app and its widgets-side copies are gone."""
+
+    def test_chained_select_app_removed(self):
+        self.assertNotIn("chained_select", settings.INSTALLED_APPS)
+        self.assertModuleRemoved("chained_select")
+
+    def test_widgets_copies_removed(self):
+        self.assertAttributesRemoved("widgets", "ChainedSelectAjaxView", "make_ajax_view")
+        self.assertAttributesRemoved("widgets", "ChainedSelectMultiple")
+        self.assertAttributesRemoved("widgets.views", "ChainedSelectAjaxView", "make_ajax_view")
+        self.assertAttributesRemoved("widgets.widgets", "ChainedSelectMultiple")
+        self.assertAttributesRemoved("widgets.widgets.chained", "ChainedSelectMultiple")
+
+    def test_live_widget_endpoint_kept(self):
+        self.assertEqual(reverse("__chained_select_ajax__"), "/__chained_select__/")
