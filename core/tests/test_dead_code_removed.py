@@ -394,3 +394,12 @@ class D6RemovedTests(SimpleTestCase):
         self.assertNotIn(
             "core.middleware.cache_middleware.PerUserCacheMiddleware", settings.MIDDLEWARE
         )
+
+    def test_dead_cache_helpers_are_gone(self):
+        import core.cache
+
+        for name in ("cache_queryset", "get_cached_queryset", "invalidate_cache_on_save"):
+            with self.subTest(name=name):
+                self.assertFalse(hasattr(core.cache, name))
+        self.assertTrue(callable(core.cache.cache_function))
+        self.assertTrue(callable(core.cache.get_cached_reference_list))

@@ -4,9 +4,9 @@ Cache utilities for the Tellurian Games application.
 This module provides utilities for caching expensive operations, particularly
 database queries and view rendering. It includes:
 - Cache key generation utilities
-- Queryset caching decorators
+- A function-result caching decorator
 - Cache invalidation helpers
-- Model-based cache invalidation hooks
+- A cached reference-list helper
 """
 
 from collections.abc import Callable
@@ -14,9 +14,7 @@ from functools import wraps
 from typing import Any
 
 from django.core.cache import cache
-from django.db.models import Model, QuerySet
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
+from django.db.models import Model
 
 
 class CacheKeyGenerator:
@@ -124,60 +122,11 @@ class CacheInvalidator:
                 CacheInvalidator.invalidate_model_cache(base_class)
 
 
-def cache_queryset(timeout: int = 300, key_prefix: str = "") -> Callable:
-    """
-    Decorator to cache the result of a function that returns a QuerySet.
-
-    The cache key is automatically generated based on the function name,
-    arguments, and an optional key prefix.
-
-    Args:
-        timeout: Cache timeout in seconds (default: 5 minutes)
-        key_prefix: Optional prefix to add to the cache key
-
-    Returns:
-        Decorated function that caches its QuerySet result
-
-    Example:
-        @cache_queryset(timeout=600, key_prefix="approved_characters")
-        def get_approved_characters():
-            return Character.objects.filter(status='App')
-    """
-
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(*args, **kwargs) -> QuerySet:
-            # Generate cache key based on function name and arguments
-            func_name = f"{key_prefix}:{func.__name__}" if key_prefix else func.__name__
-
-            # Convert args and kwargs to a hashable string
-            args_str = ":".join(str(arg) for arg in args if arg)
-            kwargs_str = ":".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
-
-            key_parts = [part for part in [func_name, args_str, kwargs_str] if part]
-            cache_key = CacheKeyGenerator.make_key("queryset", ":".join(key_parts))
-
-            # Try to get from cache
-            cached_result = cache.get(cache_key)
-            if cached_result is not None:
-                return cached_result
-
-            # Execute function and cache result
-            result = func(*args, **kwargs)
-            cache.set(cache_key, result, timeout)
-
-            return result
-
-        return wrapper
-
-    return decorator
-
-
 def cache_function(timeout: int = 300, key_prefix: str = "") -> Callable:
     """
     Decorator to cache the result of any function.
 
-    Similar to cache_queryset but works with any function return type.
+    Works with any function return type.
 
     Args:
         timeout: Cache timeout in seconds (default: 5 minutes)
@@ -222,82 +171,12 @@ def cache_function(timeout: int = 300, key_prefix: str = "") -> Callable:
     return decorator
 
 
-def invalidate_cache_on_save(*models: type[Model]) -> Callable:
-    """
-    Class decorator to automatically invalidate caches when models are saved.
-
-    Args:
-        *models: Model classes whose caches should be invalidated
-
-    Returns:
-        Decorated class with cache invalidation signals
-
-    Example:
-        @invalidate_cache_on_save(Character, Group)
-        class CharacterListView(ListView):
-            ...
-    """
-
-    def decorator(cls: type) -> type:
-        # Register signal handlers for each model
-        for model in models:
-
-            @receiver(post_save, sender=model)
-            def invalidate_on_save(sender, instance, **kwargs):
-                CacheInvalidator.invalidate_related_caches(instance)
-
-            @receiver(post_delete, sender=model)
-            def invalidate_on_delete(sender, instance, **kwargs):
-                CacheInvalidator.invalidate_related_caches(instance)
-
-        return cls
-
-    return decorator
-
-
 # Cache timeout constants (in seconds)
 CACHE_TIMEOUT_SHORT = 60  # 1 minute
 CACHE_TIMEOUT_MEDIUM = 300  # 5 minutes
 CACHE_TIMEOUT_LONG = 900  # 15 minutes
 CACHE_TIMEOUT_VERY_LONG = 3600  # 1 hour
 CACHE_TIMEOUT_DAY = 86400  # 24 hours
-
-
-# Example usage functions
-def get_cached_queryset(
-    model_class: type[Model], filters: dict | None = None, timeout: int = CACHE_TIMEOUT_MEDIUM
-) -> QuerySet:
-    """
-    Helper function to get a cached queryset for a model.
-
-    Args:
-        model_class: The model class to query
-        filters: Optional dictionary of filters to apply
-        timeout: Cache timeout in seconds
-
-    Returns:
-        Cached QuerySet
-
-    Example:
-        characters = get_cached_queryset(
-            Character,
-            filters={'status': 'App'},
-            timeout=600
-        )
-    """
-    filters = filters or {}
-    cache_key = CacheKeyGenerator.make_model_key(model_class, **filters)
-
-    # Try to get from cache
-    cached_result = cache.get(cache_key)
-    if cached_result is not None:
-        return cached_result
-
-    # Query database and cache result
-    queryset = model_class.objects.filter(**filters)
-    cache.set(cache_key, queryset, timeout)
-
-    return queryset
 
 
 def get_cached_reference_list(
@@ -309,13 +188,13 @@ def get_cached_reference_list(
     """
     Get a cached list of reference model objects.
 
-    Unlike get_cached_queryset, this evaluates the queryset immediately and
-    caches the resulting list. This is useful for forms that iterate over
-    reference data multiple times, as it avoids repeated database queries.
+    The queryset is evaluated immediately and the resulting list is cached.
+    This is useful for forms that iterate over reference data multiple times,
+    as it avoids repeated database queries.
 
     This function is designed for small reference tables (typically <100 records)
-    like Attributes, Abilities, Backgrounds, etc. For larger datasets, consider
-    using get_cached_queryset() instead to avoid high memory usage.
+    like Attributes, Abilities, Backgrounds, etc. Avoid it for large tables,
+    because the whole list is held in the cache.
 
     Args:
         model_class: The model class to query (e.g., Attribute, Ability)
@@ -349,8 +228,7 @@ def get_cached_reference_list(
         attrs = [a for a in all_attributes if getattr(instance, a.property_name, 0) < 5]
     """
     filters = filters or {}
-    # Use "reference_list" category instead of "queryset" to avoid cache key collisions
-    # with get_cached_queryset, which caches QuerySets rather than evaluated lists
+    # "reference_list" keys are cleared by CacheInvalidator.invalidate_model_cache()
     cache_key = CacheKeyGenerator.make_key(
         "reference_list", model_class.__name__, ordering=ordering or "none", **filters
     )

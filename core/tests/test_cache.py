@@ -15,10 +15,7 @@ from core.cache import (
     CacheInvalidator,
     CacheKeyGenerator,
     cache_function,
-    cache_queryset,
-    get_cached_queryset,
     get_cached_reference_list,
-    invalidate_cache_on_save,
 )
 
 
@@ -169,99 +166,6 @@ class CacheInvalidatorTest(TestCase):
             mock_invalidate.assert_called_once_with(FakeModel)
 
 
-class CacheQuerysetDecoratorTest(TestCase):
-    """Tests for cache_queryset decorator."""
-
-    def setUp(self):
-        """Clear cache before each test."""
-        cache.clear()
-
-    def test_cache_queryset_caches_result(self):
-        """Test that cache_queryset caches the function result."""
-        call_count = 0
-
-        @cache_queryset(timeout=60)
-        def get_items():
-            nonlocal call_count
-            call_count += 1
-            return ["item1", "item2"]
-
-        # First call
-        result1 = get_items()
-        self.assertEqual(result1, ["item1", "item2"])
-        self.assertEqual(call_count, 1)
-
-        # Second call should use cache
-        result2 = get_items()
-        self.assertEqual(result2, ["item1", "item2"])
-        self.assertEqual(call_count, 1)  # Should not increase
-
-    def test_cache_queryset_with_key_prefix(self):
-        """Test cache_queryset with custom key prefix."""
-
-        @cache_queryset(timeout=60, key_prefix="characters")
-        def get_characters():
-            return ["char1", "char2"]
-
-        result = get_characters()
-        self.assertEqual(result, ["char1", "char2"])
-
-    def test_cache_queryset_with_args(self):
-        """Test cache_queryset with function arguments."""
-        call_count = 0
-
-        @cache_queryset(timeout=60)
-        def get_items_by_status(status):
-            nonlocal call_count
-            call_count += 1
-            return [f"item_{status}"]
-
-        # First call with "active"
-        result1 = get_items_by_status("active")
-        self.assertEqual(result1, ["item_active"])
-        self.assertEqual(call_count, 1)
-
-        # Call with "inactive" - different args, should not use cache
-        result2 = get_items_by_status("inactive")
-        self.assertEqual(result2, ["item_inactive"])
-        self.assertEqual(call_count, 2)
-
-        # Call again with "active" - should use cache
-        result3 = get_items_by_status("active")
-        self.assertEqual(result3, ["item_active"])
-        self.assertEqual(call_count, 2)
-
-    def test_cache_queryset_with_kwargs(self):
-        """Test cache_queryset with keyword arguments."""
-        call_count = 0
-
-        @cache_queryset(timeout=60)
-        def get_items(status=None, chronicle=None):
-            nonlocal call_count
-            call_count += 1
-            return [f"item_{status}_{chronicle}"]
-
-        result1 = get_items(status="active", chronicle=1)
-        self.assertEqual(call_count, 1)
-
-        result2 = get_items(status="active", chronicle=1)
-        self.assertEqual(call_count, 1)  # Should use cache
-
-        result3 = get_items(status="active", chronicle=2)
-        self.assertEqual(call_count, 2)  # Different kwargs
-
-    def test_cache_queryset_preserves_function_metadata(self):
-        """Test that cache_queryset preserves function metadata."""
-
-        @cache_queryset(timeout=60)
-        def my_function():
-            """My docstring."""
-            return []
-
-        self.assertEqual(my_function.__name__, "my_function")
-        self.assertEqual(my_function.__doc__, "My docstring.")
-
-
 class CacheFunctionDecoratorTest(TestCase):
     """Tests for cache_function decorator."""
 
@@ -350,86 +254,6 @@ class CacheFunctionDecoratorTest(TestCase):
         # Second call - cache returns None which is same as "not found"
         # So function will be called again
         self.assertIsNone(result2)
-
-
-class InvalidateCacheOnSaveDecoratorTest(TestCase):
-    """Tests for invalidate_cache_on_save decorator."""
-
-    def test_invalidate_cache_on_save_registers_signals(self):
-        """Test that invalidate_cache_on_save registers signal handlers."""
-
-        @invalidate_cache_on_save(FakeModel)
-        class TestView:
-            pass
-
-        # The decorator should return the class unchanged
-        self.assertEqual(TestView.__name__, "TestView")
-
-    def test_invalidate_cache_on_save_returns_class(self):
-        """Test that invalidate_cache_on_save returns the decorated class."""
-
-        @invalidate_cache_on_save(FakeModel)
-        class MyView:
-            def get(self):
-                return "response"
-
-        view = MyView()
-        self.assertEqual(view.get(), "response")
-
-
-class GetCachedQuerysetTest(TestCase):
-    """Tests for get_cached_queryset function."""
-
-    def setUp(self):
-        """Clear cache before each test."""
-        cache.clear()
-
-    def test_get_cached_queryset_without_filters(self):
-        """Test get_cached_queryset without filters."""
-        from django.contrib.auth.models import User
-
-        # Create a test user
-        User.objects.create_user(username="test", password="test123")
-
-        result = get_cached_queryset(User)
-        self.assertEqual(result.count(), 1)
-
-    def test_get_cached_queryset_with_filters(self):
-        """Test get_cached_queryset with filters."""
-        from django.contrib.auth.models import User
-
-        User.objects.create_user(username="active_user", password="test123", is_active=True)
-        User.objects.create_user(username="inactive_user", password="test123", is_active=False)
-
-        result = get_cached_queryset(User, filters={"is_active": True})
-        self.assertEqual(result.count(), 1)
-        self.assertEqual(result.first().username, "active_user")
-
-    def test_get_cached_queryset_uses_cache(self):
-        """Test that get_cached_queryset uses cache on second call."""
-        from django.contrib.auth.models import User
-
-        User.objects.create_user(username="test", password="test123")
-
-        # First call
-        result1 = get_cached_queryset(User)
-
-        # Add another user
-        User.objects.create_user(username="test2", password="test123")
-
-        # Second call should still return cached result with 1 user
-        result2 = get_cached_queryset(User)
-        # Note: The cached queryset evaluates to fresh data since QuerySets are lazy
-        # This tests the caching mechanism, not the queryset evaluation
-
-    def test_get_cached_queryset_custom_timeout(self):
-        """Test get_cached_queryset with custom timeout."""
-        from django.contrib.auth.models import User
-
-        User.objects.create_user(username="test", password="test123")
-
-        result = get_cached_queryset(User, timeout=600)
-        self.assertIsNotNone(result)
 
 
 class GetCachedReferenceListTest(TestCase):
