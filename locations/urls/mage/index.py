@@ -2,7 +2,6 @@ from django.urls import path
 
 from locations import views
 
-app_name = "mage:list"
 urls = [
     path("node/", views.mage.NodeListView.as_view(), name="node"),
     path("sector/", views.mage.SectorListView.as_view(), name="sector"),

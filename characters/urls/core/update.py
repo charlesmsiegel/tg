@@ -8,7 +8,6 @@ from characters.views.core.human import HumanCharacterCreationView, HumanUpdateV
 from characters.views.core.meritflaw import MeritFlawUpdateView
 from characters.views.core.specialty import SpecialtyUpdateView
 
-app_name = "characters:update"
 urls = [
     path(
         "character/<pk>/",

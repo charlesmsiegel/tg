@@ -2,7 +2,6 @@ from django.urls import path
 
 from items import views
 
-app_name = "items:detail"
 urls = [
     path("material/<pk>/", views.core.MaterialDetailView.as_view(), name="material"),
     path("medium/<pk>/", views.core.MediumDetailView.as_view(), name="medium"),

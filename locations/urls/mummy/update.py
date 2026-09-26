@@ -2,7 +2,6 @@ from django.urls import path
 
 from locations import views
 
-app_name = "mummy:update"
 urls = [
     path("tomb/<int:pk>/", views.mummy.TombUpdateView.as_view(), name="tomb"),
     path(

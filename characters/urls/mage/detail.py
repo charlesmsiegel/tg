@@ -6,7 +6,6 @@ from characters.views.mage import (
     MtAHumanTemplateSelectView,
 )
 
-app_name = "mage:detail"
 urls = [
     # MtAHuman character creation paths
     path(

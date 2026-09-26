@@ -2,7 +2,6 @@ from django.urls import path
 
 from locations import views
 
-app_name = "locations:detail"
 urls = [
     path("byway/<pk>/", views.wraith.BywayDetailView.as_view(), name="byway"),
     path("citadel/<pk>/", views.wraith.CitadelDetailView.as_view(), name="citadel"),
