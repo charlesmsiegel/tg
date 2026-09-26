@@ -166,19 +166,3 @@ def simple_markdown(value):
 
     # Mark as safe since we've escaped user content and only added safe HTML tags
     return mark_safe(result)
-
-
-@register.filter
-def badge_text(value):
-    """
-    Format text for display in badges.
-    Replaces underscores with spaces and capitalizes each word.
-    Example: 'autumn_person' -> 'Autumn Person'
-    """
-    if value is None or value == "":
-        return ""
-
-    if not isinstance(value, str):
-        value = str(value)
-
-    return value.replace("_", " ").title()

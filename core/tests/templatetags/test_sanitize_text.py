@@ -3,7 +3,6 @@
 from django.test import TestCase
 
 from core.templatetags.sanitize_text import (
-    badge_text,
     quote_tag,
     safe_post,
     sanitize_html,
@@ -423,62 +422,6 @@ class SimpleMarkdownFilterTest(TestCase):
         self.assertIn("3 * 4", result)
         # ** without closing should not become bold
         self.assertIn("** 3", result)
-
-
-class BadgeTextFilterTest(TestCase):
-    """Tests for badge_text filter."""
-
-    def test_returns_empty_string_for_none(self):
-        """Test filter returns empty string for None input."""
-        result = badge_text(None)
-        self.assertEqual(result, "")
-
-    def test_returns_empty_string_for_empty_string(self):
-        """Test filter returns empty string for empty input."""
-        result = badge_text("")
-        self.assertEqual(result, "")
-
-    def test_converts_non_string_to_string(self):
-        """Test filter converts non-string types to string."""
-        result = badge_text(123)
-        self.assertEqual(result, "123")
-
-    def test_replaces_underscores_with_spaces(self):
-        """Test filter replaces underscores with spaces."""
-        text = "some_text_here"
-        result = badge_text(text)
-        self.assertNotIn("_", result)
-        self.assertIn(" ", result)
-
-    def test_capitalizes_each_word(self):
-        """Test filter capitalizes each word (title case)."""
-        text = "hello_world"
-        result = badge_text(text)
-        self.assertEqual(result, "Hello World")
-
-    def test_handles_multiple_underscores(self):
-        """Test filter handles multiple underscores."""
-        text = "one_two_three_four"
-        result = badge_text(text)
-        self.assertEqual(result, "One Two Three Four")
-
-    def test_handles_already_capitalized(self):
-        """Test filter handles already capitalized text."""
-        text = "ALREADY_CAPS"
-        result = badge_text(text)
-        self.assertEqual(result, "Already Caps")
-
-    def test_handles_single_word(self):
-        """Test filter handles single word without underscores."""
-        text = "word"
-        result = badge_text(text)
-        self.assertEqual(result, "Word")
-
-    def test_example_autumn_person(self):
-        """Test filter with example from docstring."""
-        text = "autumn_person"
-        result = badge_text(text)
-        self.assertEqual(result, "Autumn Person")
 
 
 class SafePostFilterTest(TestCase):
