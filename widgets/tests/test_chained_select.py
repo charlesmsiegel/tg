@@ -117,21 +117,19 @@ class TestChainedSelect(TestCase):
         attrs = widget.build_attrs({})
         self.assertIn("chained-select", attrs["class"])
 
-    def test_widget_render_includes_script(self):
-        """Test widget renders JavaScript."""
-        ChainedSelect.reset_js_rendered()
+    def test_widget_declares_script_media(self):
+        """Test widget declares external JavaScript."""
         widget = ChainedSelect(
             chain_name="test",
             chain_position=0,
             choices=[("a", "A")],
         )
         html = widget.render("test_field", "a")
-        self.assertIn("data-chained-select-js", html)
-        self.assertIn("ChainedSelectManager", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("widgets/chained.js", str(widget.media))
 
     def test_widget_render_choices_tree(self):
         """Test widget embeds choices tree for root position."""
-        ChainedSelect.reset_js_rendered()
         widget = ChainedSelect(
             chain_name="test",
             chain_position=0,
@@ -141,17 +139,18 @@ class TestChainedSelect(TestCase):
         html = widget.render("test_field", "a")
         self.assertIn("data-chain-tree", html)
 
-    def test_widget_js_rendered_once(self):
-        """Test JavaScript is only rendered once."""
-        ChainedSelect.reset_js_rendered()
+    def test_widget_media_is_render_independent(self):
+        """Test repeated renders declare the same media."""
         widget1 = ChainedSelect(chain_name="test1", chain_position=0, choices=[])
         widget2 = ChainedSelect(chain_name="test2", chain_position=0, choices=[])
 
         html1 = widget1.render("field1", "")
+        self.assertNotIn("<script", html1)
         html2 = widget2.render("field2", "")
 
-        # JS should be in first render only
-        self.assertIn("data-chained-select-js", html1)
+        # Media is stable; widget markup contains no executable script.
+        self.assertIn("widgets/chained.js", str(widget1.media + widget2.media))
+        self.assertEqual(str(widget1.media), str(widget2.media))
         self.assertNotIn("data-chained-select-js", html2)
 
 

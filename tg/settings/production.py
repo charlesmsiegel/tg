@@ -133,6 +133,14 @@ DATABASES["default"]["CONN_MAX_AGE"] = int(os.environ.get("DB_CONN_MAX_AGE", "60
 # Static and Media Files for Production
 # ======================================
 
+# collectstatic publishes content-hashed URLs for cache-safe releases.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
+
 # Consider using a CDN or cloud storage for static/media files in production
 # For AWS S3 example, install django-storages and boto3, then configure:
 # STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"

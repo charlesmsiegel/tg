@@ -17,7 +17,7 @@
   {{ character_form.as_p }}
   <button type="submit">Continue</button>
 </form>
-{{ character_form.media }}
+
 {% endif %}
 {% if group_form %}
 <h2>Create a group</h2>
@@ -36,7 +36,7 @@
   {{ item_form.as_p }}
   <button type="submit">Continue</button>
 </form>
-{{ item_form.media }}
+
 {% endif %}
 {% if location_form %}
 <h2>Create a location</h2>
@@ -46,6 +46,6 @@
   {{ location_form.as_p }}
   <button type="submit">Continue</button>
 </form>
-{{ location_form.media }}
+
 {% endif %}
 {% endblock %}

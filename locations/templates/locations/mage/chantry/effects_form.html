@@ -1,3 +1,4 @@
+{% load static %}
 {% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
 <div class="row">
     <div class="col-sm">Create New Effect: {{ form.select_or_create }}</div>
@@ -19,23 +20,4 @@
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with data-toggle="toggle"
-        const effect_creation_toggle = document.getElementById('id_select_or_create');
-        const effect_creation = document.getElementById('effect creation');
-        const effect_selection = document.getElementById('effect selection');
-        
-        effect_creation_toggle.addEventListener('change', function() {
-            if ($(this).prop('checked')) {
-                effect_selection.classList.add("d-none");
-                effect_creation.classList.remove("d-none");
-            } else {
-                effect_selection.classList.add("d-none")
-                effect_creation.classList.remove("d-none")
-            }
-        });
-    });
-
-    
-</script>
+<script src="{% static 'locations/js/chantry-effects.js' %}"></script>

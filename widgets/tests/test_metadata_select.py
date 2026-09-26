@@ -18,30 +18,29 @@ class TestOptionMetadataSelect(TestCase):
         attrs = widget.build_attrs({})
         self.assertEqual(attrs["data-metadata-select"], "true")
 
-    def test_widget_render_includes_script(self):
-        """Test widget renders JavaScript."""
-        OptionMetadataSelect.reset_js_rendered()
+    def test_widget_declares_script_media(self):
+        """Test widget declares external JavaScript."""
         widget = OptionMetadataSelect(choices=[("a", "A")])
         html = widget.render("test_field", "a")
-        self.assertIn("data-option-metadata-js", html)
-        self.assertIn("OptionMetadataManager", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("widgets/metadata_select.js", str(widget.media))
 
-    def test_widget_js_rendered_once(self):
-        """Test JavaScript is only rendered once."""
-        OptionMetadataSelect.reset_js_rendered()
+    def test_widget_media_is_render_independent(self):
+        """Test repeated renders declare the same media."""
         widget1 = OptionMetadataSelect(choices=[])
         widget2 = OptionMetadataSelect(choices=[])
 
         html1 = widget1.render("field1", "")
+        self.assertNotIn("<script", html1)
         html2 = widget2.render("field2", "")
 
-        # JS should be in first render only
-        self.assertIn("data-option-metadata-js", html1)
+        # Media is stable; widget markup contains no executable script.
+        self.assertIn("widgets/metadata_select.js", str(widget1.media + widget2.media))
+        self.assertEqual(str(widget1.media), str(widget2.media))
         self.assertNotIn("data-option-metadata-js", html2)
 
     def test_option_with_metadata(self):
         """Test options with 3-tuple metadata render data attributes."""
-        OptionMetadataSelect.reset_js_rendered()
         choices = [
             ("val1", "Label 1", {"poolable": "true", "cost": "5"}),
             ("val2", "Label 2", {"poolable": "false", "cost": "3"}),
@@ -56,7 +55,6 @@ class TestOptionMetadataSelect(TestCase):
 
     def test_option_without_metadata(self):
         """Test standard 2-tuple choices work normally."""
-        OptionMetadataSelect.reset_js_rendered()
         choices = [
             ("val1", "Label 1"),
             ("val2", "Label 2"),
@@ -70,7 +68,6 @@ class TestOptionMetadataSelect(TestCase):
 
     def test_mixed_choices(self):
         """Test mix of 2-tuple and 3-tuple choices."""
-        OptionMetadataSelect.reset_js_rendered()
         choices = [
             ("val1", "With Metadata", {"extra": "yes"}),
             ("val2", "Without Metadata"),

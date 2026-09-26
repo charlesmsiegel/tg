@@ -18,7 +18,7 @@ Chained Select Usage:
 Template:
     {{ form.as_p }}
 
-That's it!
+The shared base template loads form media; standalone fragments need {{ form.media }}.
 
 Create or Select Usage:
     from django import forms
@@ -48,7 +48,8 @@ Template:
         <!-- creation fields -->
     </div>
 
-JavaScript is auto-injected. No {{ form.media }} needed!
+The shared base template renders combined form media. In standalone fragments,
+include {{ form.media }} after the markup.
 
 Point Pool Usage:
     from django import forms

@@ -1,3 +1,4 @@
+{% load static %}
 <div class="row">
     <h2 class="col-sm {{ object.get_heading }} pointer"
         data-toggle="collapse"
@@ -238,93 +239,5 @@
         {% endif %}
     </form>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const categorySelectMenu = document.getElementById("id_category");
-        const exampleElement = document.getElementById("example_wrap");
-        const valueElement = document.getElementById("value_wrap");
-        const resElement = document.getElementById("resonance_wrap");
-        const noteElement = document.getElementById("note_wrap");
-        const pooled_wrap = document.getElementById("pooled_wrap");
-        const image_field_wrap = document.getElementById("image_field_wrap");
-        const rote_wrap = document.getElementById("rote_wrap");
-
-        var isGroupMember = {{ object.is_group_member|lower }};
-
-        function updateVisibility() {
-            const value = categorySelectMenu.value;
-
-            // Reset all to hidden
-            exampleElement.classList.add("d-none");
-            valueElement.classList.add("d-none");
-            resElement.classList.add("d-none");
-            noteElement.classList.add("d-none");
-            pooled_wrap.classList.add("d-none");
-            image_field_wrap.classList.add("d-none");
-            rote_wrap.classList.add("d-none");
-
-            // Show fields based on category
-            if (!["Willpower", "-----", "Rote Points", "Quintessence", "Rote", "Resonance", "Arete", "Image"].includes(value)) {
-                exampleElement.classList.remove("d-none");
-            }
-
-            if (value === "Rote") {
-                rote_wrap.classList.remove("d-none");
-            }
-
-            if (value === "MeritFlaw") {
-                valueElement.classList.remove("d-none");
-            }
-
-            if (value === "Resonance") {
-                resElement.classList.remove("d-none");
-            }
-
-            if (value === "Background") {
-                noteElement.classList.remove("d-none");
-                if (isGroupMember) {
-                    pooled_wrap.classList.remove("d-none");
-                }
-            }
-
-            if (value === "Image") {
-                image_field_wrap.classList.remove("d-none");
-            }
-        }
-
-        categorySelectMenu.addEventListener("change", updateVisibility);
-
-        // Initial visibility on page load
-        updateVisibility();
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const rote_creation_toggle = document.getElementById('id_select_or_create_rote');
-        const effect_creation_toggle = document.getElementById('id_select_or_create_effect');
-        const rote_creation = document.getElementById('rote creation');
-        const rote_selection = document.getElementById('rote selection');
-        const effect_creation = document.getElementById('effect creation');
-        const effect_selection = document.getElementById('effect selection');
-
-        rote_creation_toggle.addEventListener('change', function() {
-            if (this.checked) {
-                rote_selection.classList.add("d-none");
-                rote_creation.classList.remove("d-none");
-            } else {
-                rote_creation.classList.add("d-none");
-                rote_selection.classList.remove("d-none");
-            }
-        });
-
-        effect_creation_toggle.addEventListener('change', function() {
-            if (this.checked) {
-                effect_selection.classList.add("d-none");
-                effect_creation.classList.remove("d-none");
-            } else {
-                effect_creation.classList.add("d-none");
-                effect_selection.classList.remove("d-none");
-            }
-        });
-    });
-</script>
+<script src="{% static 'characters/js/mage-xp.js' %}" id="mage-xp-script" data-is-group-member="{{ object.is_group_member|yesno:'true,false' }}"></script>
+<script src="{% static 'characters/js/mage-xp-rote.js' %}"></script>

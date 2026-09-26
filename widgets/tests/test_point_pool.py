@@ -34,21 +34,19 @@ class TestPointPoolInput(TestCase):
         attrs = widget.build_attrs({})
         self.assertIn("point-pool-input", attrs["class"])
 
-    def test_widget_render_includes_script(self):
-        """Test widget renders JavaScript."""
-        PointPoolInput.reset_js_rendered()
+    def test_widget_declares_script_media(self):
+        """Test widget declares external JavaScript."""
         widget = PointPoolInput(
             pool_name="test",
             is_root=True,
             pool_config={"mode": "simple", "total_budget": 10},
         )
         html = widget.render("test_field", "5")
-        self.assertIn("data-point-pool-js", html)
-        self.assertIn("PointPoolManager", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("widgets/point_pool.js", str(widget.media))
 
     def test_widget_render_config(self):
         """Test widget embeds config for root position."""
-        PointPoolInput.reset_js_rendered()
         config = {"mode": "simple", "total_budget": 10, "min_value": 0, "max_value": 5}
         widget = PointPoolInput(
             pool_name="test",
@@ -59,17 +57,18 @@ class TestPointPoolInput(TestCase):
         self.assertIn("data-pool-config", html)
         self.assertIn('"total_budget": 10', html)
 
-    def test_widget_js_rendered_once(self):
-        """Test JavaScript is only rendered once."""
-        PointPoolInput.reset_js_rendered()
+    def test_widget_media_is_render_independent(self):
+        """Test repeated renders declare the same media."""
         widget1 = PointPoolInput(pool_name="test1", is_root=True, pool_config={})
         widget2 = PointPoolInput(pool_name="test2", is_root=True, pool_config={})
 
         html1 = widget1.render("field1", "")
+        self.assertNotIn("<script", html1)
         html2 = widget2.render("field2", "")
 
-        # JS should be in first render only
-        self.assertIn("data-point-pool-js", html1)
+        # Media is stable; widget markup contains no executable script.
+        self.assertIn("widgets/point_pool.js", str(widget1.media + widget2.media))
+        self.assertEqual(str(widget1.media), str(widget2.media))
         self.assertNotIn("data-point-pool-js", html2)
 
 
@@ -94,9 +93,8 @@ class TestPointPoolSelect(TestCase):
         attrs = widget.build_attrs({})
         self.assertIn("point-pool-select", attrs["class"])
 
-    def test_widget_render_includes_script(self):
-        """Test widget renders JavaScript."""
-        PointPoolInput.reset_js_rendered()  # Both share the flag
+    def test_widget_declares_script_media(self):
+        """Test widget declares external JavaScript."""
         widget = PointPoolSelect(
             pool_name="test",
             is_root=True,
@@ -104,7 +102,8 @@ class TestPointPoolSelect(TestCase):
             choices=[(0, "0"), (1, "1")],
         )
         html = widget.render("test_field", "1")
-        self.assertIn("data-point-pool-js", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("widgets/point_pool.js", str(widget.media))
 
 
 class TestSimplePoolMixin(TestCase):
@@ -356,7 +355,6 @@ class TestPointPoolMixin(TestCase):
             field1 = forms.IntegerField(min_value=0, max_value=5)
             field2 = forms.IntegerField(min_value=0, max_value=5)
 
-        PointPoolInput.reset_js_rendered()
         form = TestForm()
 
         # Check widgets were configured
@@ -382,7 +380,6 @@ class TestPointPoolMixin(TestCase):
                 choices=[(0, "0"), (1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
             )
 
-        PointPoolInput.reset_js_rendered()
         form = TestForm()
 
         self.assertIsInstance(form.fields["rating"].widget, PointPoolSelect)
@@ -407,7 +404,6 @@ class TestPointPoolMixin(TestCase):
             int = forms.IntegerField(min_value=1, max_value=5)
             wit = forms.IntegerField(min_value=1, max_value=5)
 
-        PointPoolInput.reset_js_rendered()
         form = TestForm()
 
         self.assertEqual(form.fields["str"].widget.pool_group, "physical")

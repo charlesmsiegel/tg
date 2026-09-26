@@ -17,7 +17,7 @@ class CreateOrSelectField(forms.BooleanField):
     When True: user is creating a new object
     When False: user is selecting an existing object
 
-    Works with CreateOrSelectWidget to auto-inject JavaScript for visibility toggling.
+    Works with CreateOrSelectWidget to declare JavaScript media for visibility toggling.
 
     Usage:
         class MyForm(forms.Form):
