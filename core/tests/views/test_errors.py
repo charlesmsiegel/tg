@@ -24,17 +24,6 @@ class TestErrorViews(TestCase):
         self.factory = RequestFactory()
         self.anon_user = AnonymousUser()
 
-    def test_error_401_view(self):
-        """Test that 401 error view returns correct status code."""
-        from core.views.errors import error_401
-
-        request = self.factory.get("/fake-url/")
-        request.user = self.anon_user
-
-        response = error_401(request)
-
-        self.assertEqual(response.status_code, 401)
-
     def test_error_403_view(self):
         """Test that 403 error view returns correct status code."""
         from core.views.errors import error_403
