@@ -130,3 +130,88 @@ def buy_ie_dot(chantry):
         locked.save(update_fields=["integrated_effects_score"])
         chantry.integrated_effects_score = locked.integrated_effects_score
         return locked.integrated_effects_score
+
+
+def background_removal_error(rating):
+    """Why ``rating`` cannot lose a dot, or None when it can."""
+    floor = rating.chantry.free_dots(rating.bg.property_name)
+    if rating.rating <= floor:
+        return f"The first {floor} {rating.bg} dots are free and cannot be removed."
+    return None
+
+
+def _detach_linked_object(chantry, rating):
+    linked_location_id = rating.linked_location_id
+    if linked_location_id is not None:
+        chantry.nodes.remove(linked_location_id)
+        if chantry.chantry_library_id == linked_location_id:
+            chantry.chantry_library.contained_within.remove(chantry)
+            chantry.chantry_library = None
+            chantry.save(update_fields=["chantry_library"])
+    rating.linked_object = None
+    rating.url = ""
+    rating.note = ""
+    rating.complete = False
+
+
+def remove_background_dot(rating):
+    """Refund one dot. A rating that reaches 0 is deleted.
+
+    A linked Node or Library is detached from the chantry and the link, note
+    and URL are cleared so the wizard asks for it again. The linked object
+    itself is never deleted.
+    """
+    with transaction.atomic():
+        locked = _lock(rating.chantry)
+        rating = ChantryBackgroundRating.objects.select_related("bg").get(
+            pk=rating.pk, chantry=locked
+        )
+        rating.chantry = locked
+        error = background_removal_error(rating)
+        if error:
+            raise ValidationError(error)
+        if rating.linked_location_id or rating.linked_character_id:
+            _detach_linked_object(locked, rating)
+        rating.rating -= 1
+        if rating.rating == 0:
+            rating.delete()
+            return None
+        rating.save()
+        return rating
+
+
+def ie_removal_error(chantry):
+    """Why the Integrated Effects score cannot drop by one, or None."""
+    score = chantry.integrated_effects_score
+    if score <= 0:
+        return "Integrated Effects is already at 0."
+    allowance = Chantry.INTEGRATED_EFFECTS_NUMBERS[score - 1]
+    spent = chantry.spent_integrated_effect_points()
+    if spent > allowance:
+        return (
+            f"Chosen effects use {spent} points; Integrated Effects {score - 1} "
+            f"allows {allowance}. Remove an effect first."
+        )
+    return None
+
+
+def remove_ie_dot(chantry):
+    """Refund one Integrated Effects dot. Returns the new score."""
+    with transaction.atomic():
+        locked = _lock(chantry)
+        error = ie_removal_error(locked)
+        if error:
+            raise ValidationError(error)
+        locked.integrated_effects_score -= 1
+        locked.save(update_fields=["integrated_effects_score"])
+        chantry.integrated_effects_score = locked.integrated_effects_score
+        return locked.integrated_effects_score
+
+
+def remove_effect(chantry, effect):
+    """Remove a chosen integrated effect, freeing its IE points."""
+    with transaction.atomic():
+        locked = _lock(chantry)
+        if not locked.integrated_effects.filter(pk=effect.pk).exists():
+            raise ValidationError(f"{effect} is not one of this chantry's effects.")
+        locked.integrated_effects.remove(effect)
