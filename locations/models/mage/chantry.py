@@ -3,6 +3,7 @@ from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 from characters.models.core.background_block import BackgroundBlock
+from characters.models.core.character import CharacterModel
 from characters.models.core.human import Human
 from characters.models.mage.effect import Effect
 from core.models import BaseBackgroundRating
@@ -369,6 +370,25 @@ class ChantryBackgroundRating(BaseBackgroundRating):
     )
     display_alt_name = models.BooleanField(default=False)
 
+    # The object realised for this rating in the chantry wizard: a Node, Library
+    # or Sanctum (a location) or an Allies NPC (a character). ``core.Model`` is
+    # abstract, so one FK per polymorphic tree; use ``linked_object`` to read or
+    # write. Columns added to legacy databases by tg_schema 0002.
+    linked_location = models.ForeignKey(
+        "locations.LocationModel",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    linked_character = models.ForeignKey(
+        "characters.CharacterModel",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
     class Meta:
         ordering = ["bg__name"]
         constraints = [
@@ -378,6 +398,19 @@ class ChantryBackgroundRating(BaseBackgroundRating):
                 violation_error_message="Chantry background rating must be between 0 and 10",
             ),
         ]
+
+    @property
+    def linked_object(self):
+        """The concrete linked Node, Library, Sanctum or character, or None."""
+        linked = self.linked_location or self.linked_character
+        return linked.get_real_instance() if linked is not None else None
+
+    @linked_object.setter
+    def linked_object(self, obj):
+        if obj is not None and not isinstance(obj, LocationModel | CharacterModel):
+            raise TypeError(f"Cannot link {type(obj).__name__} to a chantry background")
+        self.linked_location = obj if isinstance(obj, LocationModel) else None
+        self.linked_character = obj if isinstance(obj, CharacterModel) else None
 
     def display_name(self):
         if self.bg.alternate_name == "":
