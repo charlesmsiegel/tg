@@ -6,6 +6,7 @@ Each step corresponds to a stage in the creation process from Book of Freeholds.
 from django import forms
 
 from locations.models.changeling import Freehold
+from locations.models.changeling.freehold import PowerChoices
 
 
 class FreeholdBasicsForm(forms.ModelForm):
@@ -97,12 +98,15 @@ class FreeholdFeaturesForm(forms.ModelForm):
 class FreeholdPowersForm(forms.ModelForm):
     """Step 3: Powers selection"""
 
+    powers = forms.MultipleChoiceField(
+        choices=PowerChoices.choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
     class Meta:
         model = Freehold
         fields = ("powers", "dual_nature_archetype", "dual_nature_ability")
-        widgets = {
-            "powers": forms.CheckboxSelectMultiple(),
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
