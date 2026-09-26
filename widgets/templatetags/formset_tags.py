@@ -9,19 +9,20 @@ Simplified Usage:
         <div class="col-sm">{{ subform.quantity }}</div>
     {% endformset %}
 
-That's it! The tag handles:
+Standalone templates must end with {% load widget_media %}{% page_media %}.
+The tag handles:
 - Management form
 - Container with data attributes
 - Looping through existing forms
 - Hidden empty form template
 - Add button
-- JavaScript injection (once per page)
+- JavaScript media registration (rendered by the base template)
 """
 
-from django import template
+from django import forms, template
 from django.utils.safestring import mark_safe
 
-from ..widgets.formset_manager import render_formset_manager_script_once
+from .widget_media import register_media
 
 register = template.Library()
 
@@ -131,8 +132,12 @@ class FormsetNode(template.Node):
             f'class="{add_class}">{add_label}</button>'
         )
 
-        # JavaScript (once per page)
-        parts.append(render_formset_manager_script_once())
+        register_media(
+            context,
+            formset.media
+            + formset.empty_form.media
+            + forms.Media(js=("widgets/formset_manager.js",)),
+        )
 
         return mark_safe("\n".join(parts))
 
@@ -246,10 +251,11 @@ def do_formset(parser, token):
 
 
 # Keep the simple tags for advanced/custom use cases
-@register.simple_tag
-def formset_script():
-    """Render FormsetManager JS. Only renders once per page."""
-    return render_formset_manager_script_once()
+@register.simple_tag(takes_context=True)
+def formset_script(context):
+    """Declare FormsetManager for the base template's page_media output."""
+    register_media(context, forms.Media(js=("widgets/formset_manager.js",)))
+    return ""
 
 
 @register.simple_tag

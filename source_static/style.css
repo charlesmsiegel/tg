@@ -1,51 +1,51 @@
 @font-face {
     font-family: 'Abbess';
-    src: url('../static/fonts/abbess-regular.ttf') format("truetype");
+    src: url('fonts/abbess-regular.ttf') format("truetype");
 }
 
 @font-face {
     font-family: 'MatrixTall';
-    src: url('../static/fonts/MatrixTall.ttf') format("truetype");
+    src: url('fonts/MatrixTall.ttf') format("truetype");
 }
 
 @font-face {
     font-family: 'Caslon Antique';
-    src: url('../static/fonts/cas_antn.ttf') format("truetype");
+    src: url('fonts/cas_antn.ttf') format("truetype");
 }
 
 @font-face {
     font-family: 'Futura PT';
-    src: url('../static/fonts/FuturaT-Bold.otf') format("opentype");
+    src: url('fonts/FuturaT-Bold.otf') format("opentype");
 }
 
 @font-face {
     font-family: 'Optima';
-    src: url('../static/fonts/Optima-Bold.otf') format("opentype");
+    src: url('fonts/Optima-Bold.otf') format("opentype");
 }
 
 @font-face {
     font-family: 'Balthazar';
-    src: url('../static/fonts/balthazarregular.ttf') format("truetype");
+    src: url('fonts/balthazarregular.ttf') format("truetype");
 }
 
 @font-face {
     font-family: 'Delavan';
-    src: url('../static/fonts/delavan.TTF') format("truetype");
+    src: url('fonts/delavan.TTF') format("truetype");
 }
 
 @font-face {
     font-family: 'Kells';
-    src: url('../static/fonts/KellsFLF.ttf') format("truetype");
+    src: url('fonts/KellsFLF.ttf') format("truetype");
 }
 
 @font-face {
     font-family: 'OPTIProtea';
-    src: url('../static/fonts/OPTIProtea.otf') format("opentype");
+    src: url('fonts/OPTIProtea.otf') format("opentype");
 }
 
 @font-face {
     font-family: 'EnvisionRoman';
-    src: url('../static/fonts/Envision roman_0.ttf') format("truetype");
+    src: url('fonts/Envision roman_0.ttf') format("truetype");
 }
 
 .vtm_heading {

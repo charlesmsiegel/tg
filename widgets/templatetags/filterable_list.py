@@ -5,18 +5,19 @@ Usage in templates:
     {% load filterable_list %}
     {% filterable_list_script %}
 
-This loads the JavaScript needed for client-side list filtering.
+This registers media for the base template. Standalone templates must end
+with {% load widget_media %}{% page_media %}.
 """
 
-from django import template
+from django import forms, template
 
-from widgets.widgets.filterable import render_filterable_list_script
+from .widget_media import register_media
 
 register = template.Library()
 
 
-@register.simple_tag
-def filterable_list_script():
+@register.simple_tag(takes_context=True)
+def filterable_list_script(context):
     """
     Render the FilterableList JavaScript.
 
@@ -37,4 +38,5 @@ def filterable_list_script():
         <span data-filter-count></span>
         <div data-filter-no-results style="display:none;">No results</div>
     """
-    return render_filterable_list_script()
+    register_media(context, forms.Media(js=("widgets/filterable.js",)))
+    return ""

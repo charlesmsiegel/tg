@@ -4,6 +4,15 @@ Utility functions for the widgets app.
 Shared helpers for response handling and choice normalization.
 """
 
+from django.forms.utils import flatatt
+from django.utils.html import json_script
+from django.utils.safestring import mark_safe
+
+
+def config_script(value, **attrs):
+    """Encode inert JSON while retaining the managers' existing data selectors."""
+    return mark_safe(json_script(value).replace("<script", "<script" + flatatt(attrs), 1))
+
 
 def normalize_choices(choices):
     """

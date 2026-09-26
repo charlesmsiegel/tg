@@ -22,7 +22,6 @@ class TestCreateOrSelectWidget(TestCase):
 
     def test_widget_attributes(self):
         """Test widget adds correct data attributes."""
-        CreateOrSelectWidget.reset_js_rendered()
         widget = CreateOrSelectWidget(group_name="test_group")
         html = widget.render("test_field", False)
 
@@ -31,7 +30,6 @@ class TestCreateOrSelectWidget(TestCase):
 
     def test_widget_derives_group_from_name(self):
         """Test widget uses field name as group if not specified."""
-        CreateOrSelectWidget.reset_js_rendered()
         widget = CreateOrSelectWidget()
         html = widget.render("my_toggle", False)
 
@@ -39,41 +37,39 @@ class TestCreateOrSelectWidget(TestCase):
 
     def test_widget_css_class(self):
         """Test widget adds CSS class."""
-        CreateOrSelectWidget.reset_js_rendered()
         widget = CreateOrSelectWidget()
         html = widget.render("test", False)
 
         self.assertIn("create-or-select-toggle", html)
 
-    def test_widget_render_includes_script(self):
-        """Test widget renders JavaScript."""
-        CreateOrSelectWidget.reset_js_rendered()
+    def test_widget_declares_script_media(self):
+        """Test widget declares external JavaScript."""
         widget = CreateOrSelectWidget()
         html = widget.render("test_field", False)
+        self.assertNotIn("<script", html)
 
-        self.assertIn("data-create-or-select-js", html)
-        self.assertIn("CreateOrSelectManager", html)
+        self.assertIn("widgets/create_or_select.js", str(widget.media))
 
-    def test_widget_js_rendered_once(self):
-        """Test JavaScript is only rendered once."""
-        CreateOrSelectWidget.reset_js_rendered()
+    def test_widget_media_is_render_independent(self):
+        """Test repeated renders declare the same media."""
         widget1 = CreateOrSelectWidget()
         widget2 = CreateOrSelectWidget()
 
         html1 = widget1.render("field1", False)
+        self.assertNotIn("<script", html1)
         html2 = widget2.render("field2", False)
 
-        # JS should be in first render only
-        self.assertIn("data-create-or-select-js", html1)
+        # Media is stable; widget markup contains no executable script.
+        self.assertIn("widgets/create_or_select.js", str(widget1.media + widget2.media))
+        self.assertEqual(str(widget1.media), str(widget2.media))
         self.assertNotIn("data-create-or-select-js", html2)
 
     def test_widget_reinit_script(self):
         """Test widget adds reinit script for dynamic loading."""
-        CreateOrSelectWidget.reset_js_rendered()
         widget = CreateOrSelectWidget()
         html = widget.render("test", False)
 
-        self.assertIn("if(window.CreateOrSelect)window.CreateOrSelect.init();", html)
+        self.assertNotIn("<script", html)
 
 
 class TestCreateOrSelectField(TestCase):
@@ -228,7 +224,6 @@ class TestJavaScriptBehavior(TestCase):
 
     def test_js_data_attributes_for_containers(self):
         """Test that container data attributes match the expected format."""
-        CreateOrSelectWidget.reset_js_rendered()
         widget = CreateOrSelectWidget(group_name="effects-0")
         html = widget.render("select_or_create", False)
 
@@ -249,13 +244,11 @@ class TestJavaScriptBehavior(TestCase):
 
     def test_js_handles_formset_prefixes(self):
         """Test JavaScript handles formset-style prefixes correctly."""
-        CreateOrSelectWidget.reset_js_rendered()
 
         # Simulate formset rendering with different prefixes
         widget = CreateOrSelectWidget()
 
         html0 = widget.render("effects-0-select_or_create", False)
-        CreateOrSelectWidget.reset_js_rendered()  # Reset for next render
 
         widget2 = CreateOrSelectWidget()
         html1 = widget2.render("effects-1-select_or_create", False)

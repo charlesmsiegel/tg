@@ -32,121 +32,9 @@ Usage:
     const metadata = OptionMetadata.get(selectElement);
 """
 
-
 from django import forms
-from django.utils.safestring import mark_safe
 
 # JavaScript for metadata handling - embedded directly so no static files needed
-OPTION_METADATA_JS = """
-(function() {
-    'use strict';
-
-    // Prevent double-initialization
-    if (window.OptionMetadata) return;
-
-    class OptionMetadataManager {
-        constructor() {
-            this.initialized = new WeakSet();
-        }
-
-        init() {
-            document.querySelectorAll('[data-metadata-select]').forEach(select => {
-                if (!this.initialized.has(select)) {
-                    this.registerSelect(select);
-                    this.initialized.add(select);
-                }
-            });
-        }
-
-        registerSelect(select) {
-            // Fire metadata:change event on selection change
-            select.addEventListener('change', () => this.fireMetadataChange(select));
-
-            // Fire initial event if there's a selected value
-            if (select.value) {
-                this.fireMetadataChange(select);
-            }
-        }
-
-        fireMetadataChange(select) {
-            const metadata = this.get(select);
-            const event = new CustomEvent('metadata:change', {
-                bubbles: true,
-                detail: {
-                    value: select.value,
-                    metadata: metadata,
-                    select: select
-                }
-            });
-            select.dispatchEvent(event);
-        }
-
-        /**
-         * Get metadata from the currently selected option.
-         * @param {HTMLSelectElement|string} selectElement - Select element or selector
-         * @returns {Object} - Object with all data-* attributes from selected option
-         */
-        get(selectElement) {
-            const select = typeof selectElement === 'string'
-                ? document.querySelector(selectElement)
-                : selectElement;
-
-            if (!select || !select.selectedOptions || select.selectedOptions.length === 0) {
-                return {};
-            }
-
-            const selectedOption = select.selectedOptions[0];
-            const metadata = {};
-
-            // Copy all data attributes from the option
-            for (const key in selectedOption.dataset) {
-                metadata[key] = selectedOption.dataset[key];
-            }
-
-            return metadata;
-        }
-
-        /**
-         * Check if a specific metadata field is truthy.
-         * @param {HTMLSelectElement|string} selectElement - Select element or selector
-         * @param {string} field - The metadata field name (without 'data-' prefix)
-         * @returns {boolean} - True if field value is 'true' or 'True'
-         */
-        isTrue(selectElement, field) {
-            const metadata = this.get(selectElement);
-            const value = metadata[field];
-            return value === 'true' || value === 'True' || value === true;
-        }
-
-        /**
-         * Get a specific metadata field value.
-         * @param {HTMLSelectElement|string} selectElement - Select element or selector
-         * @param {string} field - The metadata field name
-         * @param {*} defaultValue - Default value if field not found
-         * @returns {*} - The field value or default
-         */
-        getField(selectElement, field, defaultValue) {
-            const metadata = this.get(selectElement);
-            return metadata[field] !== undefined ? metadata[field] : defaultValue;
-        }
-    }
-
-    window.OptionMetadata = new OptionMetadataManager();
-
-    const init = () => window.OptionMetadata.init();
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    // Re-init for htmx/Turbo/dynamic content
-    document.addEventListener('htmx:afterSwap', init);
-    document.addEventListener('turbo:render', init);
-    document.addEventListener('turbo:frame-load', init);
-})();
-"""
 
 
 class OptionMetadataSelect(forms.Select):
@@ -161,8 +49,8 @@ class OptionMetadataSelect(forms.Select):
     model-based choices where metadata is extracted from model fields.
     """
 
-    # Track if JS has been rendered in this request
-    _js_rendered = False
+    class Media:
+        js = ("widgets/metadata_select.js",)
 
     def __init__(self, metadata_fields=None, attrs=None, choices=()):
         """
@@ -227,36 +115,3 @@ class OptionMetadataSelect(forms.Select):
         Looks up metadata from the stored _choices_with_metadata dict.
         """
         return self._choices_with_metadata.get(str(value))
-
-    def render(self, name, value, attrs=None, renderer=None):
-        """Render the select with injected JavaScript."""
-        # Render the standard select
-        select_html = super().render(name, value, attrs, renderer)
-
-        parts = [select_html]
-
-        # Inject JavaScript (only once per page)
-        if not OptionMetadataSelect._js_rendered:
-            OptionMetadataSelect._js_rendered = True
-            parts.append(f"<script data-option-metadata-js>{OPTION_METADATA_JS}</script>")
-
-        # Add a micro-script to re-initialize (handles dynamic/AJAX-loaded forms)
-        parts.append(
-            "<script>" "if(window.OptionMetadata)window.OptionMetadata.init();" "</script>"
-        )
-
-        return mark_safe("".join(parts))
-
-    @classmethod
-    def reset_js_rendered(cls):
-        """Reset the JS rendered flag. Called automatically between requests."""
-        cls._js_rendered = False
-
-
-# Reset flag between requests using Django's request_finished signal
-try:
-    from django.core.signals import request_finished
-
-    request_finished.connect(lambda sender, **kwargs: OptionMetadataSelect.reset_js_rendered())
-except ImportError:
-    pass

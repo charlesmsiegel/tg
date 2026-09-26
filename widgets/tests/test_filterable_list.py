@@ -5,19 +5,21 @@ These tests verify the Python rendering functions.
 The JavaScript behavior would be tested via browser/integration tests.
 """
 
+from pathlib import Path
+
+from django.contrib.staticfiles import finders
 from django.template import Context, Template
 from django.test import TestCase
 
 from widgets import render_filterable_list_script
-from widgets.widgets.filterable import FILTERABLE_LIST_JS
 
 
 class TestFilterableListScript(TestCase):
     """Tests for the filterable list script rendering."""
 
     def test_filterable_list_js_is_string(self):
-        """Test that FILTERABLE_LIST_JS holds the JavaScript code."""
-        js = FILTERABLE_LIST_JS
+        """The manager is available through staticfiles discovery."""
+        js = Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
         self.assertIsInstance(js, str)
         self.assertIn("FilterableListManager", js)
         self.assertIn("window.FilterableList", js)
@@ -26,12 +28,11 @@ class TestFilterableListScript(TestCase):
         """Test that render_filterable_list_script returns script tag."""
         html = render_filterable_list_script()
         self.assertIn("<script", html)
-        self.assertIn("data-filterable-list-js", html)
-        self.assertIn("FilterableListManager", html)
+        self.assertIn("widgets/filterable.js", html)
 
     def test_script_contains_key_features(self):
         """Test that the JavaScript includes key functionality."""
-        js = FILTERABLE_LIST_JS
+        js = Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
 
         # Core manager class
         self.assertIn("class FilterableListManager", js)
@@ -58,14 +59,14 @@ class TestFilterableListScript(TestCase):
 
     def test_script_handles_htmx_turbo(self):
         """Test that the script re-initializes for htmx/Turbo."""
-        js = FILTERABLE_LIST_JS
+        js = Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
         self.assertIn("htmx:afterSwap", js)
         self.assertIn("turbo:render", js)
         self.assertIn("turbo:frame-load", js)
 
     def test_script_prevents_double_init(self):
         """Test that the script prevents double initialization."""
-        js = FILTERABLE_LIST_JS
+        js = Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
         self.assertIn("if (window.FilterableList) return", js)
 
 
@@ -75,9 +76,11 @@ class TestFilterableListTemplateTag(TestCase):
     def test_template_tag_renders(self):
         """Test that the template tag renders correctly."""
         template = Template("{% load filterable_list %}{% filterable_list_script %}")
-        html = template.render(Context({}))
+        html = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
+            Context({})
+        )
         self.assertIn("<script", html)
-        self.assertIn("FilterableListManager", html)
+        self.assertIn("widgets/filterable.js", html)
 
     def test_template_tag_used_multiple_times(self):
         """Test that multiple uses of the tag work correctly."""
@@ -86,11 +89,12 @@ class TestFilterableListTemplateTag(TestCase):
             "{% filterable_list_script %}"
             "{% filterable_list_script %}"
         )
-        html = template.render(Context({}))
-        # Should have two script tags, each containing "FilterableListManager" twice
-        # (once in class declaration, once in window assignment)
-        self.assertEqual(html.count("<script"), 2)
-        self.assertEqual(html.count("FilterableListManager"), 4)
+        html = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
+            Context({})
+        )
+        # Django Media deduplicates both declarations.
+        self.assertEqual(html.count("<script"), 1)
+        self.assertEqual(html.count("widgets/filterable.js"), 1)
 
 
 class TestFilterableListDocumentation(TestCase):
@@ -126,9 +130,10 @@ class TestFilterableListImports(TestCase):
     def test_imports_from_widgets_filterable_module(self):
         """Test direct import from filterable module."""
         from widgets.widgets.filterable import (
-            FILTERABLE_LIST_JS,
             render_filterable_list_script,
         )
 
-        self.assertIsNotNone(FILTERABLE_LIST_JS)
+        self.assertIsNotNone(
+            Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
+        )
         self.assertIsNotNone(render_filterable_list_script)

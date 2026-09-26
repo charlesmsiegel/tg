@@ -130,7 +130,6 @@ class MultipleFormsetsMixin:
 
     formsets = {}
     _bound_formsets = None  # Cache for bound formsets during POST
-    _formset_js_included = False  # Track if JS has been included
 
     def get_formset_context(self, formset_class, formset_prefix, bound_formset=None):
         """Generate context for a given formset using FormsetManager conventions."""
@@ -158,10 +157,11 @@ class MultipleFormsetsMixin:
             "remove_button_class": f"remove_{formset_prefix}_form",
         }
 
-        # Include FormsetManager JS once per request
-        from widgets.widgets.formset_manager import render_formset_manager_script_once
+        # Compatibility output for standalone formset consumers. Full pages
+        # combine formset media in the shared base template.
+        from widgets.widgets.formset_manager import render_formset_manager_script
 
-        js_code = render_formset_manager_script_once()
+        js_code = render_formset_manager_script()
 
         return context, js_code
 

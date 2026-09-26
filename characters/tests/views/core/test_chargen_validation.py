@@ -1,6 +1,10 @@
 """Tests that chargen pages render the client-side validation hooks."""
 
+import json
+
 from django.contrib.auth.models import User
+from django.templatetags.static import static
+from django.utils.html import json_script
 from django.test import TestCase
 
 from django.urls import reverse
@@ -30,14 +34,12 @@ class TestChargenValidationRendering(TestCase):
         self.owner = User.objects.create_user(username="owner", password="password")
 
     def test_abilities_step_renders_validation(self):
-        char = Human.objects.create(
-            name="Ability Human", owner=self.owner, creation_status=2
-        )
+        char = Human.objects.create(name="Ability Human", owner=self.owner, creation_status=2)
         self.client.login(username="owner", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
 
     def test_abilities_step_renders_validation_vtmhuman(self):
         char = VtMHuman.objects.create(
@@ -47,7 +49,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
 
     def test_abilities_step_renders_validation_wtahuman(self):
         char = WtAHuman.objects.create(
@@ -57,7 +59,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
 
     def test_abilities_step_renders_validation_ctdhuman(self):
         char = CtDHuman.objects.create(
@@ -67,7 +69,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
 
     def test_staff_non_owner_sees_ability_validation(self):
         """A staff user who is not the owner keeps is_approved_user via the
@@ -76,9 +78,7 @@ class TestChargenValidationRendering(TestCase):
         char = MtAHuman.objects.create(
             name="Mage Ability Human", owner=self.owner, creation_status=2
         )
-        staff = User.objects.create_user(
-            username="staff", password="password", is_staff=True
-        )
+        staff = User.objects.create_user(username="staff", password="password", is_staff=True)
         self.client.login(username="staff", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -121,38 +121,32 @@ class TestChargenValidationRendering(TestCase):
                 response = self.client.get(char.get_absolute_url())
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, "abilities-validation-status")
-                self.assertContains(response, "TG.validation = {")
+                self.assertContains(response, f'src="{static("core/js/validation.js")}"')
 
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
         # backgrounds block (pre-existing gap, tracked in #1459), so exercise a
         # flow whose template includes background_block/form.html: Wraith human.
-        char = WtOHuman.objects.create(
-            name="Background Human", owner=self.owner, creation_status=3
-        )
+        char = WtOHuman.objects.create(name="Background Human", owner=self.owner, creation_status=3)
         self.client.login(username="owner", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "backgrounds-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
         # The multiplier map must render with real data, not fall back empty
-        bg = Background.objects.filter(
-            property_name__in=char.allowed_backgrounds
-        ).first()
+        bg = Background.objects.filter(property_name__in=char.allowed_backgrounds).first()
         self.assertIsNotNone(bg)
-        self.assertContains(response, f'"{bg.pk}": {bg.multiplier}')
+        multipliers_json = response.context["background_multipliers_json"]
+        self.assertEqual(json.loads(multipliers_json)[str(bg.pk)], bg.multiplier)
+        self.assertContains(response, json_script(multipliers_json, "background-multipliers"))
 
     def test_virtues_step_renders_validation(self):
         # creation_status 5 is the Vampire virtues step (VampireVirtuesView).
-        char = Vampire.objects.create(
-            name="Virtue Vampire", owner=self.owner, creation_status=5
-        )
+        char = Vampire.objects.create(name="Virtue Vampire", owner=self.owner, creation_status=5)
         self.client.login(username="owner", password="password")
         # Vampire.get_absolute_url targets the plain detail view; chargen is
         # reached through the generic character dispatcher.
-        response = self.client.get(
-            reverse("characters:character", kwargs={"pk": char.pk})
-        )
+        response = self.client.get(reverse("characters:character", kwargs={"pk": char.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "virtues-validation-status")
-        self.assertContains(response, "TG.validation = {")
+        self.assertContains(response, f'src="{static("core/js/validation.js")}"')

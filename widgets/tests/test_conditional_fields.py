@@ -2,7 +2,6 @@
 Tests for the ConditionalFieldsMixin.
 """
 
-
 from django import forms
 from django.test import TestCase
 
@@ -33,7 +32,6 @@ class TestConditionalFieldsMixin(TestCase):
 
     def test_conditional_js_output(self):
         """Test conditional_js() generates correct JavaScript."""
-        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
             category = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
@@ -49,16 +47,15 @@ class TestConditionalFieldsMixin(TestCase):
         js = form.conditional_js()
 
         # Should include JavaScript manager
-        self.assertIn("ConditionalFieldsManager", js)
-        self.assertIn("data-conditional-fields-js", js)
+        self.assertIn("widgets/conditional.js", str(form.media))
+        self.assertNotIn("data-conditional-fields-js", js)
 
         # Should include rules as JSON
         self.assertIn("data-conditional-rules", js)
         self.assertIn('"detail"', js)
 
-    def test_conditional_js_rendered_once(self):
-        """Test JavaScript is only rendered once per request."""
-        ConditionalFieldsMixin.reset_js_rendered()
+    def test_conditional_media_is_render_independent(self):
+        """Test forms declare the same media independently."""
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
             field1 = forms.CharField()
@@ -70,8 +67,8 @@ class TestConditionalFieldsMixin(TestCase):
         js1 = form1.conditional_js()
         js2 = form2.conditional_js()
 
-        # First should have JS manager
-        self.assertIn("data-conditional-fields-js", js1)
+        # Both forms declare identical media
+        self.assertEqual(str(form1.media), str(form2.media))
         # Second should not (already rendered)
         self.assertNotIn("data-conditional-fields-js", js2)
         # But both should have rules
@@ -80,7 +77,6 @@ class TestConditionalFieldsMixin(TestCase):
 
     def test_conditional_context(self):
         """Test conditional context variables are included."""
-        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
             pooled = forms.BooleanField(required=False)
@@ -230,7 +226,6 @@ class TestConditionalFieldsWithChainedSelect(TestCase):
 
     def test_combined_js_output(self):
         """Test combined form generates all necessary JavaScript."""
-        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, ChainedSelectMixin, forms.Form):
             category = ChainedChoiceField(choices=[("bg", "Background"), ("mf", "Merit/Flaw")])
@@ -253,15 +248,14 @@ class TestConditionalFieldsWithChainedSelect(TestCase):
 
         # Should have conditional JS
         conditional_js = form.conditional_js()
-        self.assertIn("ConditionalFieldsManager", conditional_js)
+        self.assertIn("application/json", conditional_js)
+        self.assertIn("widgets/conditional.js", str(form.media))
 
-        # ChainedSelect widget should render its JS (reset it first)
-        from widgets.widgets.chained import ChainedSelect
-
-        ChainedSelect.reset_js_rendered()
+        # ChainedSelect declares its asset without inline executable markup
 
         category_html = str(form["category"])
-        self.assertIn("ChainedSelectManager", category_html)
+        self.assertIn("widgets/chained.js", str(form.media))
+        self.assertNotIn("ChainedSelectManager", category_html)
 
 
 class TestConditionalFieldsRuleTypes(TestCase):
