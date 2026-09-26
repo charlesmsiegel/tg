@@ -9,6 +9,14 @@
                 <h3 class="tg-card-title mta_heading">Chantries</h3>
             </div>
             <div class="tg-card-body" style="padding: 24px;">
+                {% if user.is_authenticated %}
+                    <p class="text-center">
+                        <a href="{% url 'locations:mage:create:chantry' %}" class="tg-btn btn-primary">Create Chantry</a>
+                        {% if can_create_directly %}
+                            <a href="{% url 'locations:mage:create:chantry_direct' %}" class="tg-btn btn-secondary">Create directly</a>
+                        {% endif %}
+                    </p>
+                {% endif %}
                 <div class="row">
                     {% for obj in object_list %}
                         <div class="col-sm-6 col-md-4 mb-3">
