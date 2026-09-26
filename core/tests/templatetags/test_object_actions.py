@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase
 
 from characters.models.core.human import Human
 from game.models import Chronicle
-from locations.models.mage.chantry import Chantry
+from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 
 
 def render_actions(obj, user):
@@ -56,3 +56,11 @@ class ObjectActionsTagTests(TestCase):
         )
         stranger = get_user_model().objects.create_user("actions_stranger")
         self.assertNotIn("Finish creation first", render_actions(chantry, stranger))
+
+    def test_null_bg_rating_does_not_crash_the_render(self):
+        chantry = Chantry.objects.create(
+            name="Draft", owner=self.owner, chronicle=self.chronicle, creation_status=3
+        )
+        ChantryBackgroundRating.objects.create(chantry=chantry, bg=None, rating=1)
+        html = render_actions(chantry, self.owner)
+        self.assertIn("A deleted background is not a chantry background.", html)

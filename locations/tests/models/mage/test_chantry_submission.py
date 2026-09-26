@@ -97,6 +97,13 @@ class SubmissionErrorsTests(TestCase):
         ChantryBackgroundRating.objects.create(chantry=chantry, bg=cult, rating=1)
         self.assertEqual(chantry.submission_errors(), [])
 
+    def test_null_bg_rating_lists_a_reason_instead_of_crashing(self):
+        chantry = finished_chantry(total_points=4)
+        ChantryBackgroundRating.objects.create(chantry=chantry, bg=None, rating=1)
+        self.assertIn(
+            "A deleted background is not a chantry background.", chantry.submission_errors()
+        )
+
 
 class ReturnedForRevisionTests(TestCase):
     def test_resets_to_first_step_and_names_the_field(self):
