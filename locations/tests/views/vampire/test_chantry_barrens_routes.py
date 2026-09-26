@@ -73,7 +73,18 @@ class TestTremereChantryAndBarrensListViews(TestCase):
         self.assertContains(response, "Rust Belt")
 
     def test_anonymous_list_gets_public_projection(self):
-        for name in ("tremere_chantry", "barrens"):
+        """Anonymous users get the allowlisted public projection, not the
+        staff list template: a PUB-visibility object's name is shown, but
+        the default-visibility (private) objects from setUp are hidden."""
+        TremereChantry.objects.create(name="Open Chantry", visibility="PUB")
+        Barrens.objects.create(name="Open Barrens", visibility="PUB")
+        for name, private_name, public_name in (
+            ("tremere_chantry", "Vienna Chantry", "Open Chantry"),
+            ("barrens", "Rust Belt", "Open Barrens"),
+        ):
             with self.subTest(name=name):
                 response = self.client.get(reverse(f"locations:vampire:list:{name}"))
                 self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, "core/public_object_list.html")
+                self.assertContains(response, public_name)
+                self.assertNotContains(response, private_name)

@@ -38,3 +38,7 @@ class TestFreeholdPowersForm(TestCase):
     def test_dual_nature_still_requires_second_archetype(self):
         form = FreeholdPowersForm(data={"powers": ["dual_nature"]}, instance=self.freehold)
         self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Dual Nature power requires selecting a second archetype",
+            form.non_field_errors(),
+        )
