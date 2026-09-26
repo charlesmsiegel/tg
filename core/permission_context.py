@@ -40,6 +40,8 @@ def get_object_permissions(request, obj):
 
     obj = permission_subject(obj, request)
     user = request.user
+    # Consult the request-cached roles before a snapshot hit: live owner or
+    # chronicle changes can change capabilities even when status is unchanged.
     roles = frozenset(PermissionManager.get_user_roles(user, obj, request=request))
     key = (
         PermissionManager._user_key(user),

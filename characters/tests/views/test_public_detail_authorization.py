@@ -111,7 +111,9 @@ class SkipStepReadOnlyTests(TestCase):
         self.assertEqual(character.languages.count(), 0)
         self.assertEqual(self.client.post(url, {}).status_code, 302)
         character.refresh_from_db()
-        self.assertEqual(character.creation_status, 7)
+        # The registry also skips Allies when no outstanding background exists.
+        self.assertEqual(character.creation_status, 8)
+        self.assertEqual(list(character.languages.values_list("name", flat=True)), ["English"])
 
     def test_sorcerer_skip_requires_post_to_advance(self):
         character = Sorcerer.objects.create(
