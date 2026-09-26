@@ -33,3 +33,36 @@ class TestReliquaryDetailDamageBar(TestCase):
         self.assertContains(response, "20/20")
         self.assertNotContains(response, "progress-bar")
         self.assertNotContains(response, "% damaged")
+
+
+class TestReliquaryDetailPowerHelpText(TestCase):
+    """The Pervasiveness/Manifestation cells carry their help sentences
+    (formerly only in the deleted orphan health.html include)."""
+
+    def setUp(self):
+        self.staff = User.objects.create_user("staff", "s@test.com", "password", is_staff=True)
+        self.client.force_login(self.staff)
+
+    def test_pervasiveness_and_manifestation_help_shown_when_true(self):
+        reliquary = Reliquary.objects.create(
+            name="Aware Idol",
+            has_pervasiveness=True,
+            has_manifestation=True,
+        )
+        response = self.client.get(reliquary.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Earthbound can sense everything within this location.")
+        self.assertContains(response, "The demon can manifest its apocalyptic form here.")
+
+    def test_help_sentences_hidden_when_power_absent(self):
+        reliquary = Reliquary.objects.create(
+            name="Inert Idol",
+            has_pervasiveness=False,
+            has_manifestation=False,
+        )
+        response = self.client.get(reliquary.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response, "The Earthbound can sense everything within this location."
+        )
+        self.assertNotContains(response, "The demon can manifest its apocalyptic form here.")
