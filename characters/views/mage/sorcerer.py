@@ -2,10 +2,8 @@ from typing import Any
 
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.views import View
 from django.views.generic import CreateView, FormView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -23,7 +21,6 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
@@ -48,9 +45,7 @@ from characters.views.mage.background_views import (
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    DropdownOptionsView,
     EditPermissionMixin,
-    JsonListView,
     MessageMixin,
     ScopedCreationFormMixin,
     SpecialUserMixin,
@@ -60,7 +55,6 @@ from core.mixins import (
 from core.models import Language
 from core.permissions import PermissionManager
 from core.views.generic import MultipleFormsetsMixin
-from game.models import ObjectType
 from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
@@ -109,24 +103,6 @@ class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMix
         return super().form_valid(form)
 
 
-class LoadAttributesView(DropdownOptionsView):
-    """AJAX view to load favored attributes for a sorcerer fellowship."""
-
-    def get_queryset(self):
-        fellowship_id = self.request.GET.get("fellowship")
-        sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
-        return sf.favored_attributes.all()
-
-
-class LoadAffinitiesView(DropdownOptionsView):
-    """AJAX view to load favored paths (affinities) for a sorcerer fellowship."""
-
-    def get_queryset(self):
-        fellowship_id = self.request.GET.get("fellowship")
-        sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
-        return sf.favored_paths.all()
-
-
 class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Sorcerer
     form_class = SorcererForm
@@ -158,79 +134,6 @@ class SorcererDetailView(XPApprovalMixin, HumanDetailView):
         return context
 
 
-class LoadExamplesView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        from core.ajax import dropdown_options_response
-
-        category_choice = request.GET.get("category")
-        object_id = request.GET.get("object")
-        m = get_object_or_404(Sorcerer, pk=object_id)
-
-        category_choice = request.GET.get("category")
-        if category_choice == "Attribute":
-            examples = Attribute.objects.all()
-            examples = [x for x in examples if getattr(m, x.property_name, 0) < 5]
-        elif category_choice == "Ability":
-            examples = Ability.objects.order_by("name")
-            examples = [x for x in examples if hasattr(m, x.property_name)]
-            examples = [x for x in examples if isinstance(getattr(m, x.property_name), int)]
-            examples = [x for x in examples if getattr(m, x.property_name, 0) < 4]
-        elif category_choice == "New Background":
-            examples = Background.objects.filter(property_name__in=m.allowed_backgrounds).order_by(
-                "name"
-            )
-        elif category_choice == "Existing Background":
-            examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
-        elif category_choice == "MeritFlaw":
-            companion = ObjectType.objects.filter(
-                name="companion", type="char", gameline="mta"
-            ).first()
-            if companion is None:
-                return dropdown_options_response([])
-            examples = MeritFlaw.objects.filter(allowed_types=companion)
-            if m.total_flaws() <= 0:
-                examples = examples.exclude(max_rating__lt=min(0, -7 - m.total_flaws()))
-            examples = examples.exclude(min_rating__gt=m.freebies)
-        elif category_choice == "New Path":
-            if m.sorcerer_type == "hedge_mage":
-                examples = LinearMagicPath.objects.filter(numina_type="hedge_magic")
-            else:
-                examples = LinearMagicPath.objects.filter(numina_type="psychic")
-            examples = examples.exclude(id__in=[x.id for x in m.paths.all()])
-        elif category_choice == "Existing Path":
-            if m.sorcerer_type == "hedge_mage":
-                examples = LinearMagicPath.objects.filter(numina_type="hedge_magic")
-            else:
-                examples = LinearMagicPath.objects.filter(numina_type="psychic")
-            examples = examples.filter(id__in=[x.id for x in examples if 5 > m.path_rating(x) > 0])
-        elif category_choice == "Select Ritual":
-            rituals = Q()
-
-            for path in m.pathrating_set.all():
-                ritual_levels = list(
-                    m.rituals.filter(path=path.path).values_list("level", flat=True)
-                )
-                if ritual_levels:
-                    maximum_level_ritual = max(ritual_levels)
-                else:
-                    maximum_level_ritual = 0
-
-                rituals |= Q(
-                    **{
-                        "path": path.path,
-                        "level__lte": min([path.rating, maximum_level_ritual + 1]),
-                    }
-                )
-
-            examples = LinearMagicRitual.objects.filter(rituals).exclude(
-                id__in=[x.id for x in m.rituals.all()]
-            )
-        else:
-            examples = []
-
-        return dropdown_options_response(examples, label_attr="__str__")
-
-
 class SorcererAttributeView(HumanAttributeView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -255,16 +158,6 @@ class SorcererAbilityView(MtAHumanAbilityView):
 
 class SorcererBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/sorcerer/chargen.html"
-
-
-class GetPracticeAbilitiesView(JsonListView):
-    """AJAX view to get abilities for a practice."""
-
-    def get_items(self):
-        practice_id = self.request.GET.get("practice_id")
-        prac = get_object_or_404(Practice, id=practice_id)
-        abilities = prac.abilities.all().order_by("name")
-        return [{"id": ability.id, "name": ability.name} for ability in abilities]
 
 
 class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):

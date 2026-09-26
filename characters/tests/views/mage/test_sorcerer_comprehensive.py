@@ -1,7 +1,5 @@
 """Comprehensive tests for sorcerer views module."""
 
-import unittest
-
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -9,7 +7,6 @@ from django.urls import reverse
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.fellowship import SorcererFellowship
-from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
 from characters.tests.utils import mage_setup
 from game.models import Chronicle
@@ -300,116 +297,3 @@ class TestSorcererFreebiesView(TestCase):
         self.client.login(username="owner", password="password")
         response = self.client.get(self.sorcerer.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-
-
-@unittest.skip("URLs 'load_sorcerer_attributes' and 'load_sorcerer_affinities' not implemented yet")
-class TestSorcererAjaxViews(TestCase):
-    """Test AJAX views for sorcerer creation."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.fellowship = SorcererFellowship.objects.create(name="Test Fellowship")
-        self.attribute = Attribute.objects.first()
-        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
-        self.fellowship.favored_attributes.add(self.attribute)
-        self.fellowship.favored_paths.add(self.path)
-
-    def test_load_attributes_ajax(self):
-        """Test loading favored attributes for a fellowship."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_sorcerer_attributes"),
-            {"fellowship": self.fellowship.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_affinities_ajax(self):
-        """Test loading favored paths for a fellowship."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_sorcerer_affinities"),
-            {"fellowship": self.fellowship.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-@unittest.skip("URL 'sorcerer_load_examples' not implemented yet")
-class TestSorcererExamplesView(TestCase):
-    """Test LoadExamplesView for sorcerer freebie spending."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
-        self.sorcerer = Sorcerer.objects.create(
-            name="Test Sorcerer",
-            owner=self.owner,
-            sorcerer_type="hedge_mage",
-            freebies=21,
-            willpower=5,
-        )
-
-    def test_load_examples_attribute(self):
-        """Test loading attribute examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:sorcerer_load_examples"),
-            {"category": "Attribute", "object": self.sorcerer.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_ability(self):
-        """Test loading ability examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:sorcerer_load_examples"),
-            {"category": "Ability", "object": self.sorcerer.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_new_background(self):
-        """Test loading new background examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:sorcerer_load_examples"),
-            {"category": "New Background", "object": self.sorcerer.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_examples_new_path(self):
-        """Test loading new path examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:sorcerer_load_examples"),
-            {"category": "New Path", "object": self.sorcerer.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-class TestGetPracticeAbilitiesView(TestCase):
-    """Test GetPracticeAbilitiesView AJAX endpoint."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.practice = Practice.objects.first()
-
-    def test_get_practice_abilities(self):
-        """Test getting abilities for a practice."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:get_practice_abilities"),
-            {"practice_id": self.practice.id},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")

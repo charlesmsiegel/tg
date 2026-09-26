@@ -3,7 +3,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views import View
 from django.views.generic import CreateView, FormView, UpdateView
 
 from characters.costs import get_freebie_cost
@@ -38,7 +37,6 @@ from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     ScopedCreationFormMixin,
-    SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     XPApprovalMixin,
@@ -46,7 +44,6 @@ from core.mixins import (
 )
 from core.models import Language
 from core.permissions import Permission, PermissionManager
-from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
@@ -152,70 +149,6 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
             return super().get_form_class()
         else:
             return LimitedHumanEditForm
-
-
-class LoadExamplesView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        from core.ajax import dropdown_options_response
-
-        category_choice = request.GET.get("category")
-        object_id = request.GET.get("object")
-        m = get_object_or_404(Companion, pk=object_id)
-
-        category_choice = request.GET.get("category")
-        if category_choice == "Attribute":
-            examples = Attribute.objects.all()
-            examples = [x for x in examples if getattr(m, x.property_name, 0) < 5]
-        elif category_choice == "Ability":
-            examples = Ability.objects.order_by("name")
-            examples = [
-                x
-                for x in examples
-                if getattr(m, x.property_name, 0) < 4 and hasattr(m, x.property_name)
-            ]
-        elif category_choice == "New Background":
-            examples = Background.objects.filter(property_name__in=m.allowed_backgrounds).order_by(
-                "name"
-            )
-        elif category_choice == "Existing Background":
-            examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
-        elif category_choice == "MeritFlaw":
-            companion = ObjectType.objects.filter(
-                name="companion", type="char", gameline="mta"
-            ).first()
-            if companion is None:
-                return dropdown_options_response([])
-            examples = MeritFlaw.objects.filter(allowed_types=companion)
-            max_flaws = 7
-            if m.total_flaws() <= 0:
-                if m.companion_type == "familiar":
-                    max_flaws += 5
-                examples = examples.exclude(max_rating__lt=min(0, -max_flaws - m.total_flaws()))
-            examples = examples.exclude(min_rating__gt=m.freebies)
-        elif category_choice == "Advantage":
-            examples = Advantage.objects.filter(min_rating__lte=m.freebies)
-            examples = [x for x in examples if x not in m.advantages.all()]
-        elif category_choice == "Charms":
-            examples = (
-                SpiritCharm.objects.exclude(point_cost=0)
-                .filter(point_cost__lte=m.freebies)
-                .order_by("name")
-            )
-            examples = [x for x in examples if x not in m.charms.all()]
-        else:
-            examples = []
-
-        return dropdown_options_response(examples, label_attr="__str__")
-
-
-class LoadCompanionValuesView(SimpleValuesView):
-    """AJAX view to load available rating values for a companion advantage."""
-
-    def get_values(self):
-        advantage = get_object_or_404(Advantage, pk=self.request.GET.get("example"))
-        ratings = [x.value for x in advantage.ratings.all()]
-        ratings.sort()
-        return ratings
 
 
 class CompanionBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, CreateView):

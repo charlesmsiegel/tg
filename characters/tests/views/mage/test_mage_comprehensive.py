@@ -1,7 +1,5 @@
 """Comprehensive tests for mage views module - XP spending, rote creation, and creation workflow."""
 
-import unittest
-
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -9,9 +7,8 @@ from django.urls import reverse
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
@@ -176,173 +173,6 @@ class TestMageDetailViewPost(TestCase):
         self.assertEqual(self.mage.status, "App")
 
 
-class TestMageAjaxViews(TestCase):
-    """Test AJAX views for mage character creation."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-
-    def test_load_mf_ratings_ajax(self):
-        """Test loading merit/flaw ratings via AJAX."""
-        self.client.login(username="testuser", password="password")
-        mf = MeritFlaw.objects.filter(ratings__isnull=False).first()
-        if mf:
-            response = self.client.get(
-                reverse("characters:mage:ajax:load_mf_ratings"),
-                {"mf": mf.id},
-            )
-            self.assertEqual(response.status_code, 200)
-
-
-@unittest.skip("URL 'load_freebie_examples' not implemented yet")
-class TestMageFreebieFormPopulationView(TestCase):
-    """Test the freebie form population AJAX view."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.met_tenet = Tenet.objects.filter(tenet_type="met").first()
-        self.per_tenet = Tenet.objects.filter(tenet_type="per").first()
-        self.asc_tenet = Tenet.objects.filter(tenet_type="asc").first()
-
-        self.mage = Mage.objects.create(
-            name="Test Mage",
-            owner=self.owner,
-            arete=2,
-            metaphysical_tenet=self.met_tenet,
-            personal_tenet=self.per_tenet,
-            ascension_tenet=self.asc_tenet,
-        )
-
-    def test_load_freebie_examples_attribute(self):
-        """Test loading attribute examples for freebie spending."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_freebie_examples"),
-            {"category": "Attribute", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_freebie_examples_ability(self):
-        """Test loading ability examples for freebie spending."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_freebie_examples"),
-            {"category": "Ability", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_freebie_examples_sphere(self):
-        """Test loading sphere examples for freebie spending."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_freebie_examples"),
-            {"category": "Sphere", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_freebie_examples_resonance(self):
-        """Test loading resonance examples for freebie spending."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_freebie_examples"),
-            {"category": "Resonance", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-class TestMageXPExamplesView(TestCase):
-    """Test loading XP spending examples."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.met_tenet = Tenet.objects.filter(tenet_type="met").first()
-        self.per_tenet = Tenet.objects.filter(tenet_type="per").first()
-        self.asc_tenet = Tenet.objects.filter(tenet_type="asc").first()
-
-        self.mage = Mage.objects.create(
-            name="Test Mage",
-            owner=self.owner,
-            arete=3,
-            xp=50,
-            metaphysical_tenet=self.met_tenet,
-            personal_tenet=self.per_tenet,
-            ascension_tenet=self.asc_tenet,
-        )
-        self.mage.forces = 2
-        self.mage.prime = 1
-        self.mage.occult = 3
-        self.mage.save()
-
-    def test_load_xp_examples_attribute(self):
-        """Test loading attribute XP examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "Attribute", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_xp_examples_ability(self):
-        """Test loading ability XP examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "Ability", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_xp_examples_sphere(self):
-        """Test loading sphere XP examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "Sphere", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_xp_examples_new_background(self):
-        """Test loading new background XP examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "New Background", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_xp_examples_tenet(self):
-        """Test loading tenet XP examples."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "Tenet", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_xp_examples_practice(self):
-        """Test loading practice XP examples."""
-        self.client.login(username="owner", password="password")
-        # Set up practice prerequisites
-        self.mage.occult = 4
-        self.mage.save()
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_xp_examples"),
-            {"category": "Practice", "object": self.mage.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
 class TestMageCharacterCreationWorkflow(TestCase):
     """Test the complete mage character creation workflow."""
 
@@ -487,32 +317,3 @@ class TestMageExtrasView(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-
-
-class TestGetAbilitiesView(TestCase):
-    """Test the GetAbilitiesView AJAX endpoint."""
-
-    def setUp(self):
-        mage_setup()
-        self.client = Client()
-        self.owner = User.objects.create_user(
-            username="owner", email="owner@test.com", password="password"
-        )
-        self.mage = Mage.objects.create(
-            name="Test Mage",
-            owner=self.owner,
-            arete=2,
-        )
-        self.mage.occult = 3
-        self.mage.save()
-        self.practice = Practice.objects.first()
-
-    def test_get_abilities_returns_json(self):
-        """Test that get_abilities returns JSON data."""
-        self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:get_abilities"),
-            {"object": self.mage.id, "practice_id": self.practice.id},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")

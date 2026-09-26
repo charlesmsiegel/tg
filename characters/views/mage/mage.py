@@ -5,37 +5,6 @@ from core.mixins import ScopedCreationFormMixin
 
 logger = logging.getLogger(__name__)
 
-from characters.costs import get_meritflaw_xp_cost, get_xp_cost
-from characters.forms.core.limited_edit import LimitedHumanEditForm
-
-
-def _calculate_xp_cost(trait_type, current_value):
-    """Calculate XP cost for raising a trait, handling new trait costs."""
-    if current_value == 0:
-        new_key = f"new_{trait_type}"
-        new_cost = get_xp_cost(new_key)
-        if new_cost != 10000:  # Not blocked
-            return new_cost
-    return get_xp_cost(trait_type) * current_value
-
-
-def _mage_sphere_xp_cost(character, sphere):
-    """Calculate XP cost for raising a sphere."""
-    current = getattr(character, sphere.property_name, 0)
-    if current == 0:
-        return get_xp_cost("new_sphere")
-    trait_type = character.sphere_to_trait_type(sphere.property_name)
-    return get_xp_cost(trait_type) * current
-
-
-def _mage_practice_xp_cost(character, practice):
-    """Calculate XP cost for raising a practice."""
-    current = character.practice_rating(practice)
-    if current == 0:
-        return get_xp_cost("new_practice")
-    return get_xp_cost("practice") * current
-
-
 import re
 
 from django import forms
@@ -45,9 +14,9 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views import View
 from django.views.generic import CreateView, FormView, UpdateView
 
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.chained_freebies import ChainedMageFreebiesForm
@@ -56,18 +25,13 @@ from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
 from characters.forms.mage.xp import MageXPForm
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.human import Human
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import Practice, SpecializedPractice, Tenet
+from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
-from characters.models.mage.sphere import Sphere
 from characters.services.xp_spending import XPSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -86,170 +50,18 @@ from characters.views.mage.background_views import (
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
-    JsonListView,
     MessageMixin,
-    SimpleValuesView,
     SpecialUserMixin,
 )
 from core.permissions import Permission, PermissionManager
 from core.widgets import AutocompleteTextInput
-from game.models import ObjectType, XPSpendingRequest
+from game.models import XPSpendingRequest
 from game.spending_approval import SpendingDecisionError, decide_spending_request
 from items.forms.mage.wonder import WonderForm
 from items.models.core.item import ItemModel
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
-
-
-class LoadMFRatingsView(SimpleValuesView):
-    """AJAX view to load merit/flaw rating values."""
-
-    def get_values(self):
-        mf_id = self.request.GET.get("mf")
-        mf = get_object_or_404(MeritFlaw, pk=mf_id)
-        return mf.ratings.values_list("value", flat=True)
-
-
-class LoadXPExamplesView(View):
-    def get(self, request, *args, **kwargs):
-        from core.ajax import dropdown_options_response
-
-        category_choice = request.GET.get("category")
-        object_id = request.GET.get("object")
-        self.character = get_object_or_404(Mage, pk=object_id)
-        examples = []
-
-        if category_choice == "Attribute":
-            filtered_attributes = [
-                attribute
-                for attribute in Attribute.objects.all()
-                if getattr(self.character, attribute.property_name) < 5
-            ]
-            filtered_for_xp_cost = [
-                x
-                for x in filtered_attributes
-                if _calculate_xp_cost("attribute", getattr(self.character, x.property_name))
-                <= self.character.xp
-            ]
-            examples = filtered_for_xp_cost
-        elif category_choice == "Ability":
-            filtered_abilities = [
-                ability
-                for ability in Ability.objects.filter(
-                    property_name__in=self.character.talents
-                    + self.character.skills
-                    + self.character.knowledges
-                )
-                if getattr(self.character, ability.property_name) < 5
-            ]
-            filtered_for_xp_cost = [
-                x
-                for x in filtered_abilities
-                if _calculate_xp_cost("ability", getattr(self.character, x.property_name))
-                <= self.character.xp
-            ]
-            examples = filtered_for_xp_cost
-        elif category_choice == "New Background":
-            examples = Background.objects.filter(
-                property_name__in=self.character.allowed_backgrounds
-            ).order_by("name")
-        elif category_choice == "Existing Background":
-            bgs = self.character.backgrounds.filter(rating__lt=5)
-            filtered_for_xp_cost = [
-                x for x in bgs if _calculate_xp_cost("background", x.rating) <= self.character.xp
-            ]
-            examples = filtered_for_xp_cost
-        elif category_choice == "MeritFlaw":
-            mage = ObjectType.objects.filter(name="mage", type="char", gameline="mta").first()
-            if mage is None:
-                return dropdown_options_response([])
-            examples = MeritFlaw.objects.filter(allowed_types=mage, max_rating__gte=0)
-            examples = [x for x in examples if self.character.mf_rating(x) != x.max_rating]
-            examples = [
-                x
-                for x in examples
-                if get_meritflaw_xp_cost(
-                    min([y for y in x.get_ratings() if y > self.character.mf_rating(x)])
-                    - self.character.mf_rating(x)
-                )
-                <= self.character.xp
-            ]
-        elif category_choice == "Sphere":
-            filtered_spheres = [
-                sphere
-                for sphere in Sphere.objects.all()
-                if getattr(self.character, sphere.property_name) < self.character.arete
-            ]
-            filtered_for_xp_cost = [
-                x
-                for x in filtered_spheres
-                if _mage_sphere_xp_cost(self.character, x) <= self.character.xp
-            ]
-            examples = filtered_for_xp_cost
-        elif category_choice == "Tenet":
-            examples = Tenet.objects.exclude(
-                id__in=[
-                    self.character.metaphysical_tenet.id,
-                    self.character.personal_tenet.id,
-                    self.character.ascension_tenet.id,
-                ]
-            )
-            examples = examples.exclude(id__in=[x.id for x in self.character.other_tenets.all()])
-        elif category_choice == "Remove Tenet":
-            examples = self.character.other_tenets.all()
-            types = [x.tenet_type for x in examples]
-            if "met" in types:
-                examples |= Tenet.objects.filter(id__in=[self.character.metaphysical_tenet.id])
-            if "asc" in types:
-                examples |= Tenet.objects.filter(id__in=[self.character.ascension_tenet.id])
-            if "per" in types:
-                examples |= Tenet.objects.filter(id__in=[self.character.personal_tenet.id])
-        elif category_choice == "Practice":
-            examples = Practice.objects.exclude(
-                polymorphic_ctype__model="specializedpractice"
-            ).exclude(polymorphic_ctype__model="corruptedpractice")
-            spec = SpecializedPractice.objects.filter(faction=self.character.faction)
-            if spec.exists():
-                examples = examples.exclude(
-                    id__in=[x.parent_practice.id for x in spec]
-                ) | Practice.objects.filter(id__in=[x.id for x in spec])
-
-            ids = PracticeRating.objects.filter(mage=self.character, rating=5).values_list(
-                "practice__id", flat=True
-            )
-
-            filtered_practices = examples.exclude(pk__in=ids).order_by("name")
-            examples = [
-                x
-                for x in filtered_practices
-                if _mage_practice_xp_cost(self.character, x) <= self.character.xp
-            ]
-            examples = [
-                x
-                for x in examples
-                if (
-                    sum(
-                        [getattr(self.character, abb.property_name, 0) for abb in x.abilities.all()]
-                    )
-                    / 2
-                    > self.character.practice_rating(x) + 1
-                )
-            ]
-        return dropdown_options_response(examples, label_attr="__str__")
-
-
-class GetAbilitiesView(JsonListView):
-    """AJAX view to get abilities for a practice, filtered to those the character has."""
-
-    def get_items(self):
-        object_id = self.request.GET.get("object")
-        obj = get_object_or_404(Human, id=object_id)
-        practice_id = self.request.GET.get("practice_id")
-        prac = get_object_or_404(Practice, id=practice_id)
-        abilities = prac.abilities.all().order_by("name")
-        abilities = [x for x in abilities if getattr(obj, x.property_name, 0) > 0]
-        return [{"id": ability.id, "name": ability.name} for ability in abilities]
 
 
 class MageDetailView(HumanDetailView):

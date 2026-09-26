@@ -69,11 +69,6 @@ class CharactersNamespaceTest(TestCase):
         resolver = resolve("/characters/list/")
         self.assertIsNotNone(resolver)
 
-    def test_characters_ajax_namespace(self):
-        """Test that characters:ajax namespace is accessible."""
-        resolver = resolve("/characters/ajax/")
-        self.assertIsNotNone(resolver)
-
     def test_characters_create_namespace(self):
         """Test that characters:create namespace is accessible."""
         resolver = resolve("/characters/create/")
