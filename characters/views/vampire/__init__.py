@@ -16,7 +16,7 @@ from .discipline import (
     DisciplineListView,
     DisciplineUpdateView,
 )
-from .ghoul import GhoulDetailView, GhoulListView, GhoulUpdateView
+from .ghoul import GhoulDetailView, GhoulUpdateView
 from .ghoul_chargen import (
     GhoulAbilityView,
     GhoulAlliesView,
@@ -34,7 +34,6 @@ from .path import PathCreateView, PathDetailView, PathListView, PathUpdateView
 from .revenant import (
     RevenantCreateView,
     RevenantDetailView,
-    RevenantListView,
     RevenantUpdateView,
 )
 from .revenant_family import (
@@ -57,7 +56,6 @@ from .title import (
 )
 from .vampire import (
     VampireDetailView,
-    VampireListView,
     VampireUpdateView,
 )
 from .vampire_chargen import (
@@ -96,7 +94,6 @@ __all__ = [
     "DisciplineListView",
     "DisciplineUpdateView",
     "GhoulDetailView",
-    "GhoulListView",
     "GhoulUpdateView",
     "GhoulAbilityView",
     "GhoulAlliesView",
@@ -115,7 +112,6 @@ __all__ = [
     "PathUpdateView",
     "RevenantCreateView",
     "RevenantDetailView",
-    "RevenantListView",
     "RevenantUpdateView",
     "RevenantFamilyCreateView",
     "RevenantFamilyDetailView",
@@ -130,7 +126,6 @@ __all__ = [
     "VampireTitleListView",
     "VampireTitleUpdateView",
     "VampireDetailView",
-    "VampireListView",
     "VampireUpdateView",
     "VampireAbilityView",
     "VampireAlliesView",

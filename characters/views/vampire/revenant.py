@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.revenant import Revenant
@@ -84,12 +84,3 @@ class RevenantUpdateView(MessageMixin, UpdateView):
             return super().get_form_class()
         else:
             return LimitedHumanEditForm
-
-
-class RevenantListView(ListView):
-    model = Revenant
-    ordering = ["name"]
-    template_name = "characters/vampire/revenant/list.html"
-
-    def get_queryset(self):
-        return super().get_queryset().select_related("family")
