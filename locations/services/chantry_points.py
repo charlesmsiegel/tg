@@ -217,6 +217,21 @@ def remove_effect(chantry, effect):
         locked.integrated_effects.remove(effect)
 
 
+def affordable_effects(chantry):
+    """Effects the chantry can still integrate: within its rank and its remaining IE points."""
+    from characters.models.mage.effect import Effect
+
+    return Effect.objects.filter(
+        rote_cost__gt=0,
+        rote_cost__lte=chantry.current_ie_points(),
+        max_sphere__lte=chantry.rank,
+    ).exclude(pk__in=chantry.integrated_effects.values("pk"))
+
+
+def has_affordable_effect(chantry):
+    return affordable_effects(chantry).exists()
+
+
 def apply_type_grants(chantry):
     """Give a library-type chantry its free Library dots.
 
