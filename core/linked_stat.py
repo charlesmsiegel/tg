@@ -498,24 +498,3 @@ def linked_stat_constraints(
         )
 
     return constraints
-
-
-# Convenience aliases for different naming conventions
-class MaxCurrentStat(LinkedStat):
-    """
-    LinkedStat variant for max/current naming (e.g., max_blood_pool/blood_pool).
-
-    The "permanent" value is the max, and "temporary" is current.
-    """
-
-    pass
-
-
-class PermanentTemporaryStat(LinkedStat):
-    """
-    LinkedStat variant for permanent/temporary naming (standard WoD pattern).
-
-    This is identical to LinkedStat but makes the naming convention explicit.
-    """
-
-    pass

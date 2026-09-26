@@ -403,3 +403,28 @@ class D6RemovedTests(SimpleTestCase):
                 self.assertFalse(hasattr(core.cache, name))
         self.assertTrue(callable(core.cache.cache_function))
         self.assertTrue(callable(core.cache.get_cached_reference_list))
+
+    def test_linked_stat_aliases_and_widgets_are_gone(self):
+        import core.linked_stat
+        import core.widgets
+
+        for name in ("MaxCurrentStat", "PermanentTemporaryStat"):
+            with self.subTest(name=name):
+                self.assertFalse(hasattr(core.linked_stat, name))
+        self.assertFalse(self._module_exists("core.widgets.linked_stat"))
+        self.assertEqual(core.widgets.__all__, ["AutocompleteTextInput"])
+        for name in ("DotsBoxesWidget", "LinkedStatFormField", "LinkedStatWidget", "PoolWidget"):
+            with self.subTest(name=name):
+                self.assertFalse(hasattr(core.widgets, name))
+
+    def test_dead_utils_and_reexports_are_gone(self):
+        import core.utils
+        import locations.views.core
+
+        for name in ("fast_selector", "level_name", "tree_sort", "compute_level"):
+            with self.subTest(module="core.utils", name=name):
+                self.assertFalse(hasattr(core.utils, name))
+        for name in ("level_name", "tree_sort"):
+            with self.subTest(module="locations.views.core", name=name):
+                self.assertFalse(hasattr(locations.views.core, name))
+                self.assertNotIn(name, locations.views.core.__all__)
