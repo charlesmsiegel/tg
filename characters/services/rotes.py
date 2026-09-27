@@ -21,6 +21,7 @@ SPHERE_FIELDS = (
 )
 
 NOT_ENOUGH_ROTE_POINTS = "Not enough Rote Points"
+ROTE_ALREADY_KNOWN = "Rote already known"
 
 
 def _locked_rote_points(mage):
@@ -69,6 +70,10 @@ def learn_rote(mage, cleaned_data):
         else:
             rote = cleaned_data["rote_options"]
             effect = rote.effect
+            # Re-checked under the lock: a concurrent submission may have
+            # learned this rote after the form's choices were built.
+            if mage.rotes.filter(pk=rote.pk).exists():
+                return ServiceResult.fail(ROTE_ALREADY_KNOWN)
         if effect.cost() > mage.rote_points:
             transaction.set_rollback(True)
             return ServiceResult.fail(NOT_ENOUGH_ROTE_POINTS)

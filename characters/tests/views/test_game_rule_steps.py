@@ -476,6 +476,47 @@ class SorcererStepTests(RuleStepTestCase):
         self.assertFalse(sorcerer.pathrating_set.exists())
 
 
+class HedgeNuminaTests(RuleStepTestCase):
+    """Hedge paths are cast through a practice and ability (Codex review, PR 1473)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        from characters.models.mage.focus import Practice
+        from characters.models.mage.sorcerer import LinearMagicPath
+
+        cls.alchemy = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
+        cls.occult = Ability.objects.create(name="Occult", property_name="occult")
+        cls.practice = Practice.objects.create(name="Alchemy Practice")
+        cls.practice.abilities.add(cls.occult)
+
+    def sorcerer(self):
+        from characters.models.mage.sorcerer import Sorcerer
+
+        return self.at("sorcerer", Sorcerer, "path", sorcerer_type="hedge_mage")
+
+    def rows(self, **row):
+        return formset_data("numina_form", [{"path": self.alchemy.pk, "rating": 5, **row}])
+
+    def test_blank_practice_or_ability_is_rejected(self):
+        for row in ({"practice": "", "ability": ""}, {"practice": self.practice.pk, "ability": ""}):
+            with self.subTest(row=row):
+                sorcerer = self.sorcerer()
+                response = self.post(sorcerer, self.rows(**row))
+                self.assert_stays(sorcerer, response)
+                self.assertFalse(sorcerer.pathrating_set.exists())
+
+    def test_complete_row_is_recorded(self):
+        sorcerer = self.sorcerer()
+        response = self.post(sorcerer, self.rows(practice=self.practice.pk, ability=self.occult.pk))
+        self.assertEqual(response.status_code, 302)
+        rating = sorcerer.pathrating_set.get()
+        self.assertEqual(
+            (rating.path, rating.rating, rating.practice, rating.ability),
+            (self.alchemy, 5, self.practice, self.occult),
+        )
+
+
 class FeraStepTests(RuleStepTestCase):
     def test_gifts_need_exactly_three(self):
         from characters.models.werewolf.corax import Corax
