@@ -13,6 +13,7 @@ from core.permissions import PermissionManager
 from core.templatetags.sanitize_text import render_post_html
 from game.models import Scene
 from game.security import can_view_scene
+from game.text import straighten_quotes
 
 logger = logging.getLogger(__name__)
 
@@ -221,44 +222,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    @staticmethod
-    def straighten_quotes(s):
-        """Normalize various quotation marks to standard ASCII."""
-        single_quote_chars = [
-            0x2018,
-            0x2019,
-            0x201A,
-            0x201B,
-            0x2032,
-            0x02B9,
-            0x02BB,
-            0x02BC,
-            0x02BD,
-            0x275B,
-            0x275C,
-            0xFF07,
-            0x00B4,
-            0x0060,
-        ]
-        double_quote_chars = [
-            0x201C,
-            0x201D,
-            0x201E,
-            0x201F,
-            0x2033,
-            0x02BA,
-            0x275D,
-            0x275E,
-            0xFF02,
-        ]
-        translation_table = {}
-        for code_point in single_quote_chars:
-            translation_table[code_point] = ord("'")
-        for code_point in double_quote_chars:
-            translation_table[code_point] = ord('"')
-        return s.translate(translation_table)
-
-    # Database operations (must be wrapped for async)
+    straighten_quotes = staticmethod(straighten_quotes)
 
     @database_sync_to_async
     def get_scene(self):
