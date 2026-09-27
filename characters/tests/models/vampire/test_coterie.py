@@ -109,7 +109,7 @@ class TestCoterieListView(TestCase):
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/vampire/coterie/list.html")
+        self.assertTemplateUsed(response, "characters/shared/group/list.html")
 
     def test_list_view_contains_coteries(self):
         self.client.force_login(

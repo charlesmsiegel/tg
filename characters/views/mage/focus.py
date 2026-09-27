@@ -23,7 +23,7 @@ class InstrumentDetailView(DetailView):
 class InstrumentCreateView(MessageMixin, CreateView):
     model = Instrument
     fields = ["name", "description"]
-    template_name = "characters/mage/instrument/form.html"
+    template_name = "characters/shared/reference/form.html"
     success_message = "Instrument created successfully."
     error_message = "There was an error creating the Instrument."
 
@@ -31,7 +31,7 @@ class InstrumentCreateView(MessageMixin, CreateView):
 class InstrumentUpdateView(MessageMixin, UpdateView):
     model = Instrument
     fields = ["name", "description"]
-    template_name = "characters/mage/instrument/form.html"
+    template_name = "characters/shared/reference/form.html"
     success_message = "Instrument updated successfully."
     error_message = "There was an error updating the Instrument."
 

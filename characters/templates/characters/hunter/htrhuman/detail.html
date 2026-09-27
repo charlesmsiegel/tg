@@ -1,4 +1,7 @@
 {% extends "characters/core/human/detail.html" %}
+{% block abilities %}
+    {# HtRHuman lists dodge and repair, which are not model fields, so the shared ability block cannot render it yet. #}
+{% endblock abilities %}
 {% load dots %}
 {% load get_specialty %}
 {% block basics %}

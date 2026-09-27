@@ -465,7 +465,7 @@ class TestVtMHumanTemplateSelectView(VtMHumanViewTestCase):
         self.client.login(username="testuser", password="testpassword")
         url = reverse("characters:vampire:vtmhuman_template", kwargs={"pk": self.vtmhuman.pk})
         response = self.client.get(url)
-        self.assertTemplateUsed(response, "characters/vampire/vtmhuman/template_select.html")
+        self.assertTemplateUsed(response, "characters/shared/human/template_select.html")
 
     def test_template_view_context_has_character(self):
         """Test that context includes the character."""

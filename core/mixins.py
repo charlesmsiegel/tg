@@ -10,7 +10,7 @@ This module consolidates all view mixins used throughout the application:
 import re
 
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView
@@ -19,9 +19,45 @@ from characters.models.core import CharacterModel
 from core.models import Model
 from core.permission_context import add_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
+from core.template_resolution import shared_template_names
 from game.models import Chronicle, STRelationship
 from game.security import readable_chronicles
 from game.spending_approval import SpendingDecisionError, decide_spending_request
+
+
+class SharedTemplateMixin:
+    """Render ``template_name`` if it exists, else ``shared_template_name``.
+
+    The specific name stays declared as the override slot; see
+    ``core.template_resolution``.
+    """
+
+    shared_template_name = None
+
+    def get_template_names(self):
+        try:
+            names = super().get_template_names()
+        except ImproperlyConfigured:
+            if not self.shared_template_name:
+                raise
+            names = []  # no specific template declared: the shared one is the page
+        return shared_template_names(names, self.shared_template_name)
+
+
+class ListHeadingMixin:
+    """``list_title`` and ``list_heading`` for shared list pages.
+
+    ``list_title`` defaults to the model's ``verbose_name_plural`` and
+    ``list_heading`` to its gameline heading class (``vtm_heading``, ...).
+    """
+
+    list_title = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("list_title", self.list_title or self.model._meta.verbose_name_plural)
+        context.setdefault("list_heading", f"{getattr(self.model, 'gameline', 'wod')}_heading")
+        return context
 
 
 class ObjectCachingMixin:

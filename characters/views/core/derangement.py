@@ -15,7 +15,7 @@ class DerangementDetailView(DetailView):
 class DerangementCreateView(MessageMixin, CreateView):
     model = Derangement
     fields = ["name", "description"]
-    template_name = "characters/core/derangement/form.html"
+    template_name = "characters/shared/reference/form.html"
     success_message = "Derangement '{name}' created successfully!"
     error_message = "Failed to create Derangement. Please correct the errors below."
 
@@ -23,7 +23,7 @@ class DerangementCreateView(MessageMixin, CreateView):
 class DerangementUpdateView(MessageMixin, UpdateView):
     model = Derangement
     fields = ["name", "description"]
-    template_name = "characters/core/derangement/form.html"
+    template_name = "characters/shared/reference/form.html"
     success_message = "Derangement '{name}' updated successfully!"
     error_message = "Failed to update Derangement. Please correct the errors below."
 

@@ -1,11 +1,4 @@
 {% extends "characters/core/human/detail.html" %}
-{% load dots %}
 {% block basics %}
     {% include "characters/shared/human/basics_display_include.html" %}
 {% endblock basics %}
-{% block abilities %}
-    {% include "characters/werewolf/wtahuman/ability_block_display.html" %}
-{% endblock abilities %}
-{% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-{% endblock backgrounds %}

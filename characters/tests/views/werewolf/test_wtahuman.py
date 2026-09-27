@@ -166,7 +166,7 @@ class TestWtAHumanTemplateSelectView(WtAHumanViewTestCase):
         response = self.client.get(
             reverse("characters:werewolf:wtahuman_template", kwargs={"pk": self.wtahuman.pk})
         )
-        self.assertTemplateUsed(response, "characters/werewolf/wtahuman/template_select.html")
+        self.assertTemplateUsed(response, "characters/shared/human/template_select.html")
 
     def test_form_valid_without_template(self):
         """Form submission without template sets creation_status and redirects."""

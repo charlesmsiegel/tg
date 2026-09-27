@@ -213,6 +213,51 @@ class AbilityBlock(models.Model):
         triple.sort()
         return triple == [tertiary, secondary, primary]
 
+    # Sheet labels that are not the field name title-cased.
+    ABILITY_LABELS = {"primal_urge": "Primal-Urge"}
+    ABILITY_GROUPS = (("Talents", "talents"), ("Skills", "skills"), ("Knowledges", "knowledges"))
+
+    @classmethod
+    def ability_label(cls, stat):
+        return cls.ABILITY_LABELS.get(stat, stat.replace("_", " ").title())
+
+    def _specialty_for(self, stat):
+        get_specialty = getattr(self, "get_specialty", None)
+        return get_specialty(stat) if get_specialty and stat else None
+
+    def ability_sections(self):
+        """Primary abilities for the character sheet, alphabetical within each group.
+
+        Returns ``[(heading, [(label, rating, specialty), ...]), ...]`` for Talents,
+        Skills and Knowledges; used by ``characters/shared/human/ability_block_display.html``.
+        """
+        sections = []
+        for heading, group in self.ABILITY_GROUPS:
+            stats = [stat for stat in getattr(self, group) if stat in self.primary_abilities]
+            rows = [
+                (self.ability_label(stat), getattr(self, stat), self._specialty_for(stat))
+                for stat in stats
+            ]
+            sections.append((heading, sorted(rows, key=lambda row: row[0])))
+        return sections
+
+    def secondary_ability_sections(self):
+        """Non-zero secondary abilities as three padded columns, in the sheet's row layout.
+
+        Returns ``[(heading, [(label, rating, specialty), ...]), ...]``; padding rows are
+        ``("", 0, None)``. Empty when the character has no secondary abilities.
+        """
+        rows = self.get_secondaries_for_display()
+        if not rows:
+            return []
+        return [
+            (
+                f"Secondary {heading}",
+                [(label, rating, self._specialty_for(stat)) for label, rating, stat in column],
+            )
+            for (heading, _group), column in zip(self.ABILITY_GROUPS, zip(*rows), strict=True)
+        ]
+
     def get_secondaries_for_display(self):
         secondary_talents = {
             k: v

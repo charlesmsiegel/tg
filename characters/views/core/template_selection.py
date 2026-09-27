@@ -7,10 +7,15 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView
 
+from core.mixins import SharedTemplateMixin
 
-class CharacterTemplateSelectView(LoginRequiredMixin, FormView):
+
+class CharacterTemplateSelectView(SharedTemplateMixin, LoginRequiredMixin, FormView):
+    """Subclasses keep ``template_name`` as their gameline override slot."""
+
     model = None
     creation_route = None
+    shared_template_name = "characters/shared/human/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:

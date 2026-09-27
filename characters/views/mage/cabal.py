@@ -4,7 +4,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from characters.forms.mage.cabal import CabalForm
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
-from core.mixins import MessageMixin
+from core.mixins import ListHeadingMixin, MessageMixin, SharedTemplateMixin
 
 
 class CabalDetailView(DetailView):
@@ -68,10 +68,12 @@ class CabalUpdateView(MessageMixin, UpdateView):
         return kwargs
 
 
-class CabalListView(ListView):
+class CabalListView(ListHeadingMixin, SharedTemplateMixin, ListView):
     model = Cabal
     ordering = ["name"]
     template_name = "characters/mage/cabal/list.html"
+    shared_template_name = "characters/shared/group/list.html"
+    extra_context = {"show_group_type": True}
 
     def get_queryset(self):
         return super().get_queryset().select_related("leader").prefetch_related("members")

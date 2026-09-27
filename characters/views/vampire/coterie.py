@@ -1,7 +1,7 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.vampire.coterie import Coterie
-from core.mixins import MessageMixin
+from core.mixins import ListHeadingMixin, MessageMixin, SharedTemplateMixin
 
 
 class CoterieDetailView(DetailView):
@@ -25,10 +25,11 @@ class CoterieUpdateView(MessageMixin, UpdateView):
     error_message = "Failed to update Coterie. Please correct the errors below."
 
 
-class CoterieListView(ListView):
+class CoterieListView(ListHeadingMixin, SharedTemplateMixin, ListView):
     model = Coterie
     ordering = ["name"]
     template_name = "characters/vampire/coterie/list.html"
+    shared_template_name = "characters/shared/group/list.html"
 
     def get_queryset(self):
         return super().get_queryset().select_related("leader").prefetch_related("members")
