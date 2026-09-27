@@ -1,0 +1,12 @@
+{% comment %}The post form's character choice for one viewer (page render and live update).
+Inputs: post_characters (the viewer's characters in this scene), oob.{% endcomment %}<div id="post-character-field" class="mb-3"{% if oob %} hx-swap-oob="true"{% endif %}>
+    {% if post_characters|length == 1 %}
+        <input type="hidden" id="character-select" name="character" value="{{ post_characters.0.pk }}">
+        <span class="form-control-plaintext"><strong>{{ post_characters.0.name }}</strong></span>
+    {% else %}
+        <select id="character-select" name="character" class="form-control" aria-label="Character">
+            <option value="">Character Select</option>
+            {% for char in post_characters %}<option value="{{ char.pk }}">{{ char.name }}</option>{% endfor %}
+        </select>
+    {% endif %}
+</div>

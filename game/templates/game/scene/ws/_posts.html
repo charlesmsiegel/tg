@@ -1,0 +1,1 @@
+{% comment %}New posts for one viewer, appended to the page's posts. Inputs: posts, viewer_id.{% endcomment %}<div hx-swap-oob="beforeend:#posts-container">{% for post in posts %}{% include "game/scene/_post.html" %}{% endfor %}</div>
