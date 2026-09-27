@@ -250,6 +250,24 @@ p.post {
     text-indent: -1em;
 }
 
+/* Scene chat: game/scene/_post.html and the live regions of game/scene/detail.html */
+.post-item {
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.post-item p.post {
+    line-height: 1.6;
+}
+
+.post-item strong a {
+    font-weight: 600;
+}
+
+#posts-container:has(.post-item) #no-posts-message {
+    display: none;
+}
+
 /* 
 * Location style extensions - to be included in the static/style.css file
 * These styles enhance the location templates and maintain theme compatibility

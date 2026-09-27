@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from characters.services.result import ServiceResult
 from core.actions import ActionFailed, ObjectActionView
 from core.permissions import Permission, PermissionManager
+from game import scene_chat
 from game.forms import (
     AddCharForm,
     JournalEntryForm,
@@ -17,7 +18,6 @@ from game.forms import (
 )
 from game.models import Chronicle, Journal, JournalEntry, Scene, STRelationship
 from game.security import can_read_private_record, can_view_scene, readable_chronicles
-from game.text import straighten_quotes
 from game.views import ChronicleDetailView
 
 # Scenes -------------------------------------------------------------------
@@ -51,6 +51,7 @@ class SceneCloseView(SceneActionView):
         if self.object.finished:
             raise ActionFailed(f"Scene '{self.object.name}' is already closed.")
         self.object.close()
+        scene_chat.broadcast(self.object.pk, scene_chat.SCENE_CLOSED)
         return ServiceResult.ok(f"Scene '{self.object.name}' closed successfully!")
 
 
@@ -68,6 +69,7 @@ class SceneAddCharacterView(SceneActionView):
     def perform(self, form):
         character = form.cleaned_data["character_to_add"]
         self.object.add_character(character)
+        scene_chat.broadcast(self.object.pk, scene_chat.CHARACTER_JOINED, character_id=character.pk)
         return ServiceResult.ok(f"Character '{character.name}' added to scene!")
 
 
@@ -77,9 +79,7 @@ class ScenePostView(SceneActionView):
     form_class = PostForm
 
     def has_permission(self, subject):
-        return super().has_permission(subject) and (
-            subject.characters.owned_by(self.request.user).exists()
-        )
+        return scene_chat.can_post(self.request.user, subject)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -96,15 +96,7 @@ class ScenePostView(SceneActionView):
         return redirect(self.get_failure_url())
 
     def perform(self, form):
-        # PostForm offers only the user's own characters in this scene.
-        own = form.character_queryset
-        character = own.first() if own.count() == 1 else form.cleaned_data["character"]
-        message = straighten_quotes(form.cleaned_data["message"])
-        try:
-            self.object.add_post(character, form.cleaned_data["display_name"], message)
-        except ValueError as exc:
-            raise ActionFailed("Command does not match the expected format.") from exc
-        return ServiceResult.ok("Post added successfully!")
+        return scene_chat.create_post(self.object, form)
 
 
 # Journals -----------------------------------------------------------------

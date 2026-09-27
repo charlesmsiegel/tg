@@ -1,0 +1,13 @@
+{% load sanitize_text %}{% comment %}
+One scene post, for the page and for every live update (Step 11). Inputs: post
+(character and owner joined, author_is_st set by game.selectors) and viewer_id.
+It never reads request, so the page and the WebSocket consumer render the same markup.
+The link uses the type-dispatching character route: post.character is the base
+CharacterModel (a joined row, not the polymorphic subclass), which has no URL of its own.
+{% endcomment %}<div class="mb-3 post-item" id="post-{{ post.pk }}" data-post-id="{{ post.pk }}">
+    <p class="post mb-0">
+        <strong {% if post.author_is_st %}class="st"{% elif viewer_id and post.character.owner_id == viewer_id %}class="highlight"{% endif %}>
+            {% if post.character %}<a href="{% url 'characters:character' post.character_id %}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}
+        </strong>: {{ post.message|safe_post }}
+    </p>
+</div>

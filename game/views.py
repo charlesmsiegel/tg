@@ -48,7 +48,6 @@ from game.models import (
     Chronicle,
     FreebieSpendingRecord,
     Journal,
-    Post,
     Scene,
     SettingElement,
     Story,
@@ -63,7 +62,11 @@ from game.security import (
     readable_chronicles,
     staffed_chronicles,
 )
-from game.selectors import annotate_week_scene_counts, chronicle_overview
+from game.selectors import (
+    annotate_week_scene_counts,
+    chronicle_overview,
+    scene_post_window,
+)
 from game.spending_approval import (
     SpendingDecisionError,
     decide_spending_request,
@@ -129,7 +132,11 @@ class SceneDetailView(DetailView):
         scene = self.object
         user = self.request.user
 
-        context["posts"] = Post.objects.for_scene_optimized(scene)
+        before = self.post_cursor()
+        context["posts"], has_earlier = scene_post_window(scene, before=before)
+        context["earlier_cursor"] = context["posts"][0].pk if has_earlier else None
+        context["showing_earlier"] = before is not None
+        context["viewer_id"] = user.pk if user.is_authenticated else None
 
         if user.is_authenticated:
             add_char_form = AddCharForm(user=user, scene=scene)
@@ -144,6 +151,11 @@ class SceneDetailView(DetailView):
             )
 
         return context
+
+    def post_cursor(self):
+        """``?before=<post id>`` pages back through a long scene; junk is ignored."""
+        value = self.request.GET.get("before", "")
+        return int(value) if value.isdigit() and int(value) > 0 else None
 
     straighten_quotes = staticmethod(straighten_quotes)
 
