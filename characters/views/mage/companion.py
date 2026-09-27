@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, UpdateView
 
@@ -10,7 +11,6 @@ from characters.forms.mage.freebies import CompanionFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.faction import MageFaction
 from characters.models.werewolf.charm import SpiritCharm
@@ -228,30 +228,10 @@ class CompanionExtrasView(CharacterExtrasView):
     }
 
     def prepare_character(self, form):
-        if self.object.companion_type in ["acoylte", "backup"]:
-            self.object.freebies = 15
-        elif self.object.companion_type in ["consor", "ally"]:
-            self.object.freebies = 21
-        elif self.object.companion_type in ["familiar"]:
-            if self.object.npc == False:
-                self.object.freebies = 25
-            thaumivore = get_object_or_404(MeritFlaw, name="Thaumivore")
-            bond_sharing = get_object_or_404(Advantage, name="Bond-Sharing")
-            paradox_nullification = get_object_or_404(Advantage, name="Paradox Nullification")
-            self.object.add_mf(thaumivore, -5)
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(thaumivore.name, "meritflaw", -5, cost=-5)
-            )
-            self.object.add_advantage(bond_sharing, 4)
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(bond_sharing.name, "advantage", 4, cost=4)
-            )
-            self.object.add_advantage(paradox_nullification, 2)
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(paradox_nullification.name, "advantage", 2, cost=2)
-            )
-            self.object.add_charm(get_object_or_404(SpiritCharm, name="Airt Sense"))
-            self.object.freebies -= 1
+        try:
+            self.object.prepare_starting_freebies()
+        except ObjectDoesNotExist as error:
+            raise Http404("Familiar starting package data is missing") from error
 
 
 class CompanionFreebiesView(HumanFreebiesView):
