@@ -473,7 +473,7 @@ class TestLanguageDetailView(TestCase):
 
     def test_location_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "core/language/detail.html")
+        self.assertTemplateUsed(response, "core/object.html")
 
 
 class TestLanguageCreateView(TestCase):

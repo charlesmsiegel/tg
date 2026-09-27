@@ -21,7 +21,7 @@ class TestArchetypeDetailView(TestCase):
     def test_archetype_detail_view_templates(self):
         self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/archetype/detail.html")
+        self.assertTemplateUsed(response, "core/object.html")
 
 
 class TestArchetypeCreateView(TestCase):

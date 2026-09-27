@@ -448,7 +448,7 @@ registry = ModelRegistry(
             },
             fields=("name", "is_hard"),
             templates={
-                "detail": "items/core/material/detail.html",
+                "detail": "core/object.html",
                 "list": "items/core/material/list.html",
                 "create": "items/core/material/form.html",
                 "update": "items/core/material/form.html",
@@ -560,7 +560,7 @@ registry = ModelRegistry(
             },
             fields=("name", "description", "difficulty", "damage", "damage_type", "conceal"),
             templates={
-                "detail": "items/core/meleeweapon/detail.html",
+                "detail": "items/core/weapon/detail.html",
                 "list": "items/core/meleeweapon/list.html",
                 "create": "items/core/meleeweapon/form.html",
                 "update": "items/core/meleeweapon/form.html",
@@ -688,7 +688,7 @@ registry = ModelRegistry(
             },
             fields=("name", "description", "difficulty", "damage", "damage_type", "conceal"),
             templates={
-                "detail": "items/core/thrownweapon/detail.html",
+                "detail": "items/core/weapon/detail.html",
                 "list": "items/core/thrownweapon/list.html",
                 "create": "items/core/thrownweapon/form.html",
                 "update": "items/core/thrownweapon/form.html",

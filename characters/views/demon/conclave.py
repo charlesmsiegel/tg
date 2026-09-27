@@ -8,7 +8,7 @@ from core.mixins import MessageMixin
 
 class ConclaveDetailView(DetailView):
     model = Conclave
-    template_name = "characters/demon/conclave/detail.html"
+    template_name = "characters/core/group/detail.html"
 
 
 class ConclaveCreateView(MessageMixin, CreateView):

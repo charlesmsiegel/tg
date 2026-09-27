@@ -17,7 +17,7 @@ from core.views.generic import DictView
 
 class InstrumentDetailView(DetailView):
     model = Instrument
-    template_name = "characters/mage/instrument/detail.html"
+    template_name = "core/object.html"
 
 
 class InstrumentCreateView(MessageMixin, CreateView):

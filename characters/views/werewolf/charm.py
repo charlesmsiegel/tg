@@ -6,7 +6,7 @@ from core.mixins import MessageMixin
 
 class SpiritCharmDetailView(DetailView):
     model = SpiritCharm
-    template_name = "characters/werewolf/charm/detail.html"
+    template_name = "core/object.html"
 
 
 class SpiritCharmCreateView(MessageMixin, CreateView):

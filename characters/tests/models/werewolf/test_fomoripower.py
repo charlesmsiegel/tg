@@ -15,7 +15,7 @@ class TestFomoriPowerDetailView(TestCase):
 
     def test_fomoripower_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/werewolf/fomoripower/detail.html")
+        self.assertTemplateUsed(response, "core/object.html")
 
 
 class TestFomoriPowerCreateView(TestCase):

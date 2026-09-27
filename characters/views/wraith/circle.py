@@ -9,7 +9,7 @@ from core.mixins import MessageMixin
 
 class CircleDetailView(DetailView):
     model = Circle
-    template_name = "characters/wraith/circle/detail.html"
+    template_name = "characters/core/group/detail.html"
 
 
 class CircleCreateView(LoginRequiredMixin, MessageMixin, CreateView):

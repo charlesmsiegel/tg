@@ -9,7 +9,7 @@ from core.mixins import MessageMixin
 
 class CabalDetailView(DetailView):
     model = Cabal
-    template_name = "characters/mage/cabal/detail.html"
+    template_name = "characters/core/group/detail.html"
 
 
 class CabalCreateView(MessageMixin, CreateView):

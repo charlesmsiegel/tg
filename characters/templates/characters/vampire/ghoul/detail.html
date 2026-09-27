@@ -8,13 +8,13 @@
     {% include "characters/vampire/ghoul/basics_display_include.html" %}
 {% endblock basics %}
 {% block advantages %}
-    {% include "characters/vampire/ghoul/ghoul_advantage_display.html" %}
+    {% include "characters/shared/vampire/ghoul_advantage_display.html" %}
 {% endblock advantages %}
 {% block backgrounds %}
     {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
 {% endblock backgrounds %}
 {% block powers %}
-    {% include "characters/vampire/ghoul/ghoul_powers_block_display.html" %}
+    {% include "characters/shared/vampire/powers_block_display.html" %}
 {% endblock powers %}
 {% block equipment %}
     {% include "characters/core/human/equipment_block.html" %}

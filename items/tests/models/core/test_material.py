@@ -15,7 +15,7 @@ class TestMaterialDetailView(TestCase):
 
     def test_material_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "items/core/material/detail.html")
+        self.assertTemplateUsed(response, "core/object.html")
 
 
 class TestMaterialCreateView(TestCase):

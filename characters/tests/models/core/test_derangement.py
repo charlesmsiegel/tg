@@ -21,7 +21,7 @@ class TestDerangementDetailView(TestCase):
     def test_derangement_detail_view_templates(self):
         self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/derangement/detail.html")
+        self.assertTemplateUsed(response, "core/object.html")
 
 
 class TestDerangementCreateView(TestCase):
