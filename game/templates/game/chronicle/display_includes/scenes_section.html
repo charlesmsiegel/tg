@@ -48,8 +48,10 @@
                     <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Scene</h5>
                 </div>
                 <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="">
+                    <form method="post" action="{% url 'game:chronicle_create_scene' object.pk %}">
                         {% csrf_token %}
+                        {% for error in form.non_field_errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
+                        {% for field in form %}{% for error in field.errors %}<div class="text-danger small mb-2">{{ field.label }}: {{ error }}</div>{% endfor %}{% endfor %}
                         <div class="tg-form-group mb-3">
                             <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
                             {{ form.name|add_class:"tg-form-control" }}
@@ -73,7 +75,7 @@
                             </div>
                         </div>
                         <div class="text-center mt-2">
-                            <button type="submit" name="create_scene" class="tg-btn btn-primary">
+                            <button type="submit" class="tg-btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Create Scene
                             </button>
                         </div>
@@ -93,14 +95,16 @@
                     <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Story</h5>
                 </div>
                 <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="">
+                    <form method="post" action="{% url 'game:chronicle_create_story' object.pk %}">
                         {% csrf_token %}
+                        {% for error in story_form.non_field_errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
+                        {% for field in story_form %}{% for error in field.errors %}<div class="text-danger small mb-2">{{ field.label }}: {{ error }}</div>{% endfor %}{% endfor %}
                         <div class="tg-form-group mb-3">
                             <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
                             {{ story_form.name|add_class:"tg-form-control" }}
                         </div>
                         <div class="text-center">
-                            <button type="submit" name="create_story" class="tg-btn btn-primary">
+                            <button type="submit" class="tg-btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Create Story
                             </button>
                         </div>

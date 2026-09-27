@@ -21,6 +21,13 @@ characters.views.core.actions.CharacterSpecialtiesView
 characters.views.core.actions.XPRequestApproveView
 characters.views.core.actions.XPRequestRejectView
 characters.views.mage.actions.MageXPSpendView
+game.actions.ChronicleSceneCreateView
+game.actions.ChronicleStoryCreateView
+game.actions.JournalEntryCreateView
+game.actions.JournalResponseView
+game.actions.SceneAddCharacterView
+game.actions.SceneCloseView
+game.actions.ScenePostView
     """.split()),
     "CHARGEN_STEP": frozenset("""
 characters.views.changeling.changeling.ChangelingAbilityView
