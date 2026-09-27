@@ -1,4 +1,5 @@
 {% extends "core/form.html" %}
+{% load get_specialty %}
 {% block creation_title %}
     Create Mage
 {% endblock creation_title %}
@@ -36,12 +37,12 @@
             <div class="col-sm">{{ form.subfaction }}</div>
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Attributes</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Attributes</h2>
         </div>
         <div class="row">
-            <h3 class="col-sm {{ form.get_heading }}">Physical</h3>
-            <h3 class="col-sm {{ form.get_heading }}">Social</h3>
-            <h3 class="col-sm {{ form.get_heading }}">Mental</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Physical</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Social</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Mental</h3>
         </div>
         <div class="row">
             <div class="col-sm">Strength</div>
@@ -68,204 +69,28 @@
             <div class="col-sm">{{ form.wits }}</div>
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Abilities</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
         </div>
         <div class="row">
-            <h3 class="col-sm {{ form.get_heading }}">Talents</h3>
-            <h3 class="col-sm {{ form.get_heading }}">Skills</h3>
-            <h3 class="col-sm {{ form.get_heading }}">Knowledges</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Talents</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Skills</h3>
+            <h3 class="col-sm {{ object.get_heading }}">Knowledges</h3>
         </div>
+        {% for row in ability_rows %}
+            <div class="row">
+                {% for label, field, specialty in row %}
+                    <div class="col-sm">
+                        {{ label }}
+                        {% if specialty %}({{ specialty }}){% endif %}
+                    </div>
+                    <div class="col-sm">{{ field }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
         <div class="row">
-            <div class="col-sm">
-                Alertness
-                {% if alertness_spec %}({{ alertness_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.alertness }}</div>
-            <div class="col-sm">
-                Crafts
-                {% if crafts_spec %}({{ crafts_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.crafts }}</div>
-            <div class="col-sm">
-                Academics
-                {% if academics_spec %}({{ academics_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.academics }}</div>
+            <h2 class="col-sm {{ object.get_heading }}">Secondary Abilities</h2>
         </div>
-        <div class="row">
-            <div class="col-sm">
-                Art
-                {% if art_spec %}({{ art_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.art }}</div>
-            <div class="col-sm">
-                Drive
-                {% if drive_spec %}({{ drive_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.drive }}</div>
-            <div class="col-sm">
-                Computer
-                {% if computer_spec %}({{ computer_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.computer }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Athletics
-                {% if athletics_spec %}({{ athletics_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.athletics }}</div>
-            <div class="col-sm">
-                Etiquette
-                {% if etiquette_spec %}({{ etiquette_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.etiquette }}</div>
-            <div class="col-sm">
-                Cosmology
-                {% if cosmology_spec %}({{ cosmology_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.cosmology }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Awareness
-                {% if awareness_spec %}({{ awareness_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.awareness }}</div>
-            <div class="col-sm">
-                Firearms
-                {% if firearms_spec %}({{ firearms_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.firearms }}</div>
-            <div class="col-sm">
-                Enigmas
-                {% if enigmas_spec %}({{ enigmas_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.enigmas }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Brawl
-                {% if brawl_spec %}({{ brawl_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.brawl }}</div>
-            <div class="col-sm">
-                Larceny
-                {% if larceny_spec %}({{ larceny_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.larceny }}</div>
-            <div class="col-sm">
-                Finance
-                {% if finance_spec %}({{ finance_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.finance }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Empathy
-                {% if empathy_spec %}({{ empathy_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.empathy }}</div>
-            <div class="col-sm">
-                Meditation
-                {% if meditation_spec %}({{ meditation_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.meditation }}</div>
-            <div class="col-sm">
-                Investigation
-                {% if investigation_spec %}({{ investigation_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.investigation }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Expression
-                {% if expression_spec %}({{ expression_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.expression }}</div>
-            <div class="col-sm">
-                Melee
-                {% if melee_spec %}({{ melee_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.melee }}</div>
-            <div class="col-sm">
-                Law
-                {% if law_spec %}({{ law_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.law }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Intimidation
-                {% if intimidation_spec %}({{ intimidation_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.intimidation }}</div>
-            <div class="col-sm">
-                Research
-                {% if research_spec %}({{ research_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.research }}</div>
-            <div class="col-sm">
-                Medicine
-                {% if medicine_spec %}({{ medicine_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.medicine }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Leadership
-                {% if leadership_spec %}({{ leadership_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.leadership }}</div>
-            <div class="col-sm">
-                Stealth
-                {% if stealth_spec %}({{ stealth_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.stealth }}</div>
-            <div class="col-sm">
-                Occult
-                {% if occult_spec %}({{ occult_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.occult }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Streetwise
-                {% if streetwise_spec %}({{ streetwise_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.streetwise }}</div>
-            <div class="col-sm">
-                Survival
-                {% if survival_spec %}({{ survival_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.survival }}</div>
-            <div class="col-sm">
-                Politics
-                {% if politics_spec %}({{ politics_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.politics }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Subterfuge
-                {% if subterfuge_spec %}({{ subterfuge_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.subterfuge }}</div>
-            <div class="col-sm">
-                Technology
-                {% if technology_spec %}({{ technology_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.technology }}</div>
-            <div class="col-sm">
-                Science
-                {% if science_spec %}({{ science_spec }}){% endif %}
-            </div>
-            <div class="col-sm">{{ form.science }}</div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Secondary Abilities</h2>
-        </div>
-        {% for tal, ski, kno in form.get_secondaries_for_display %}
+        {% for tal, ski, kno in object.get_secondaries_for_display %}
             <div class="row">
                 <div class="col-sm">{{ tal|first }}</div>
                 {% if tal|slice:"1:"|first != 0 %}
@@ -287,11 +112,11 @@
                 {% endif %}
             </div>
         {% endfor %}
-        {% if form.faction.name == "Akashayana" %}
+        {% if object.faction.name == "Akashayana" %}
             <div class="row">
                 <div class="col-sm">
                     Do
-                    {% if do_spec %}({{ do_spec }}){% endif %}
+                    {% with spec=object|get_specialty:'do' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
                 </div>
                 <div class="col-sm">{{ form.do }}</div>
                 <div class="col-sm"></div>
@@ -301,7 +126,7 @@
             </div>
         {% endif %}
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Advantages</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
         </div>
         <div class="row">
             <div class="col-sm">Willpower</div>
@@ -309,7 +134,7 @@
             <div class="col-sm">Arete</div>
             <div class="col-sm">{{ form.arete }}</div>
             <div class="col-sm">Affinity Sphere</div>
-            <div class="col-sm">{{ form.get_affinity_sphere_display }}</div>
+            <div class="col-sm">{{ object.affinity_sphere|default_if_none:'' }}</div>
         </div>
         <div class="row">
             <div class="col-sm">Quintessence</div>
@@ -320,14 +145,14 @@
             <div class="col-sm"></div>
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Backgrounds</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Backgrounds</h2>
         </div>
         <div class="row">
             <div class="col-sm">Allies</div>
             <div class="col-sm">{{ form.allies }}</div>
             <div class="col-sm">Alternate Identity</div>
             <div class="col-sm">{{ form.alternate_identity }}</div>
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Cloaking</div>
             {% else %}
                 <div class="col-sm">Arcane</div>
@@ -335,7 +160,7 @@
             <div class="col-sm">{{ form.arcane }}</div>
         </div>
         <div class="row">
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Genius</div>
             {% else %}
                 <div class="col-sm">Avatar</div>
@@ -349,7 +174,7 @@
         <div class="row">
             <div class="col-sm">Certification</div>
             <div class="col-sm">{{ form.certification }}</div>
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Construct</div>
             {% else %}
                 <div class="col-sm">Chantry</div>
@@ -367,7 +192,7 @@
             <div class="col-sm">{{ form.destiny }}</div>
         </div>
         <div class="row">
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Hypercram</div>
             {% else %}
                 <div class="col-sm">Dream</div>
@@ -379,7 +204,7 @@
             <div class="col-sm">{{ form.fame }}</div>
         </div>
         <div class="row">
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Companion</div>
             {% else %}
                 <div class="col-sm">Familiar</div>
@@ -411,7 +236,7 @@
             <div class="col-sm">{{ form.resources }}</div>
             <div class="col-sm">Retainers</div>
             <div class="col-sm">{{ form.retainers }}</div>
-            {% if form.affiliation.name == "Technocratic Union" %}
+            {% if technocratic %}
                 <div class="col-sm">Laboratory</div>
             {% else %}
                 <div class="col-sm">Sanctum</div>
@@ -429,7 +254,7 @@
         <div class="row">
             <div class="col-sm">Wonder</div>
             <div class="col-sm">{{ form.wonder }}</div>
-            {% if form.affiliation.name == 'Technocratic Union' %}
+            {% if technocratic %}
                 <div class="col-sm">Requisitions</div>
                 <div class="col-sm">{{ form.requisitions }}</div>
                 <div class="col-sm">Secret Weapons</div>
@@ -442,22 +267,20 @@
             {% endif %}
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Spheres</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Spheres</h2>
         </div>
         {% include "characters/mage/spheres/form.html" %}
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Rotes</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Rotes</h2>
         </div>
-        {% for row in rotes %}
+        {% for rote in rotes %}
             <div class="row">
-                {% for rote in row %}
-                    <a class="col-sm" href={{ rote.get_absolute_url }}>{{ rote.name }}</a>
-                    <div class="col-sm">{{ rote.effect.spheres }}</div>
-                {% endfor %}
+                <a class="col-sm" href="{{ rote.get_absolute_url }}">{{ rote.name }}</a>
+                <div class="col-sm">{{ rote.effect.spheres }}</div>
             </div>
         {% endfor %}
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Resonance</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Resonance</h2>
         </div>
         <div class="row">
             {% for res in resonance %}
@@ -466,12 +289,12 @@
             {% endfor %}
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Focus</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Focus</h2>
         </div>
         <div class="row">
             <div class="col-sm">Paradigm</div>
             <div class="col-sm">
-                {% for paradigm in form.paradigms.all %}
+                {% for paradigm in object.paradigms.all %}
                     <a href="{{ paradigm.get_absolute_url }}">{{ paradigm }}</a>
                     <br />
                 {% endfor %}
@@ -480,7 +303,7 @@
         <div class="row">
             <div class="col-sm">Practices</div>
             <div class="col-sm">
-                {% for practice in form.practices.all %}
+                {% for practice in object.practices.all %}
                     <a href="{{ practice.get_absolute_url }}">{{ practice }}</a>
                     <br />
                 {% endfor %}
@@ -489,28 +312,28 @@
         <div class="row">
             <div class="col-sm">Instruments</div>
             <div class="col-sm">
-                {% for instrument in form.instruments.all %}
+                {% for instrument in object.instruments.all %}
                     <a href="{{ instrument.get_absolute_url }}">{{ instrument }}</a>
                     <br />
                 {% endfor %}
             </div>
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Merits and Flaws</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Merits and Flaws</h2>
         </div>
         <div class="row">
-            {% for mf, rating in form.get_mf_and_rating_list %}
+            {% for mf, rating in object.get_mf_and_rating_list %}
                 <a class="col-sm" href="{{ mf.get_absolute_url }}">{{ mf }}: {{ rating }}</a>
             {% endfor %}
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Languages</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Languages</h2>
         </div>
         <div class="row">
-            {% for lang in form.languages.all %}<div class="col-sm">{{ lang }}</div>{% endfor %}
+            {% for lang in object.languages.all %}<div class="col-sm">{{ lang }}</div>{% endfor %}
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">Appearance</h2>
+            <h2 class="col-sm {{ object.get_heading }}">Appearance</h2>
         </div>
         <div class="row">
             <div class="col-sm">Date of Birth</div>
@@ -529,7 +352,7 @@
             <div class="col-sm">{{ form.description }}</div>
         </div>
         <div class="row">
-            <h2 class="col-sm {{ form.get_heading }}">History</h2>
+            <h2 class="col-sm {{ object.get_heading }}">History</h2>
         </div>
         <div class="row">
             <div class="col-sm">History</div>

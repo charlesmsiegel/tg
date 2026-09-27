@@ -128,6 +128,13 @@ class StoryXP(forms.Form):
                 initial=0, required=False, widget=forms.NumberInput(attrs={"size": "5"})
             )
 
+    TOPICS = ("success", "danger", "growth", "drama", "duration")
+
+    def rows(self):
+        """``(character, [bound fields in TOPICS order])`` for each approved character."""
+        for char in self.char_list:
+            yield char, [self[f"{char.name}-{topic}"] for topic in self.TOPICS]
+
     def save(self, commit=True):
         """Save XP awards using the Story model's business logic."""
         self.story.award_xp(self.cleaned_data)

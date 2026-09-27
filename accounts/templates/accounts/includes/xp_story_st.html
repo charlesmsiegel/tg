@@ -1,4 +1,3 @@
-{% load field %}
 <div class="row">
     <h2 class="col-sm {{ user.profile.preferred_heading }}">Story XP</h2>
 </div>
@@ -21,25 +20,11 @@
                             <div class="col-sm">Drama</div>
                             <div class="col-sm">Duration</div>
                         </div>
-                        {% for char in story_xp_form.char_list %}
-                            {% with success_field=char.name|add:"-success" %}
-                                {% with danger_field=char.name|add:"-danger" %}
-                                    {% with growth_field=char.name|add:"-growth" %}
-                                        {% with drama_field=char.name|add:"-drama" %}
-                                            {% with duration_field=char.name|add:"-duration" %}
-                                                <div class="row">
-                                                    <a class="col-sm" href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-                                                    <div class="col-sm">{{ story_xp_form|field:success_field }}</div>
-                                                    <div class="col-sm">{{ story_xp_form|field:danger_field }}</div>
-                                                    <div class="col-sm">{{ story_xp_form|field:growth_field }}</div>
-                                                    <div class="col-sm">{{ story_xp_form|field:drama_field }}</div>
-                                                    <div class="col-sm">{{ story_xp_form|field:duration_field }}</div>
-                                                </div>
-                                            {% endwith %}
-                                        {% endwith %}
-                                    {% endwith %}
-                                {% endwith %}
-                            {% endwith %}
+                        {% for char, fields in story_xp_form.rows %}
+                            <div class="row">
+                                <a class="col-sm" href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                {% for bound_field in fields %}<div class="col-sm">{{ bound_field }}</div>{% endfor %}
+                            </div>
                         {% endfor %}
                         <div class="text-center mt-3">
                             <button type="submit"

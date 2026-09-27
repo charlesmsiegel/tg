@@ -11,6 +11,7 @@ from core.mixins import ScopedCreationFormMixin, ScopedEditFormMixin
 logger = logging.getLogger(__name__)
 
 import re
+from itertools import zip_longest
 
 from django import forms
 from django.contrib import messages
@@ -244,7 +245,48 @@ class MageDetailView(HumanDetailView):
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
-class MageCreateView(MessageMixin, CreateView):
+class MageFormContextMixin:
+    """Model data the Mage create/edit template shows next to the form.
+
+    The template used to read these off ``form`` (``form.affiliation.name``,
+    ``form.paradigms.all``, ``<stat>_spec``, ...), where they never exist, so the
+    Technocracy labels, specialties, rotes and resonance never rendered.
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mage = self.object  # None while creating
+        form = context["form"]
+        affiliation = getattr(mage, "affiliation", None)
+        context["technocratic"] = bool(affiliation and affiliation.name == "Technocratic Union")
+        groups = []
+        for _heading, group in Mage.ABILITY_GROUPS:
+            stats = sorted(
+                (stat for stat in getattr(Mage, group) if stat in Mage.primary_abilities),
+                key=Mage.ability_label,
+            )
+            groups.append(
+                [
+                    (
+                        Mage.ability_label(stat),
+                        form[stat] if stat in form.fields else "",
+                        mage.get_specialty(stat) if mage else None,
+                    )
+                    for stat in stats
+                ]
+            )
+        context["ability_rows"] = list(zip_longest(*groups, fillvalue=("", "", None)))
+        if mage is not None:
+            context["rotes"] = mage.rotes.select_related("effect")
+            context["resonance"] = (
+                ResRating.objects.filter(mage=mage)
+                .select_related("resonance")
+                .order_by("resonance__name")
+            )
+        return context
+
+
+class MageCreateView(MageFormContextMixin, MessageMixin, CreateView):
     model = Mage
     FORM_FIELDS = MAGE_CREATE_FIELDS
     fields = FORM_FIELDS
@@ -260,7 +302,7 @@ class MageCreateView(MessageMixin, CreateView):
         return form
 
 
-class MageUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
+class MageUpdateView(MageFormContextMixin, ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Mage
     fields = MageCreateView.FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
