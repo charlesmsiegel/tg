@@ -29,6 +29,7 @@ from characters.models.mage.sorcerer import (
     PathRating,
     Sorcerer,
 )
+from characters.services.sorcerer_chargen import set_starting_numina
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -78,29 +79,9 @@ class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMix
         )
         return context
 
-    def form_invalid(self, form):
-        errors = form.errors
-        if "casting_attribute" in errors:
-            del errors["casting_attribute"]
-        if "affinity_path" in errors:
-            del errors["affinity_path"]
-
-        if not errors:
-            return self.form_valid(form)
-        return super().form_invalid(form)
-
     def form_valid(self, form):
-        # Handle foreign key fields from ChainedChoiceField string values
-        casting_attr_pk = form.data.get("casting_attribute")
-        affinity_path_pk = form.data.get("affinity_path")
-        fellowship_pk = form.data.get("fellowship")
-
-        if casting_attr_pk:
-            form.instance.casting_attribute = get_object_or_404(Attribute, pk=casting_attr_pk)
-        if affinity_path_pk:
-            form.instance.affinity_path = get_object_or_404(LinearMagicPath, pk=affinity_path_pk)
-        if fellowship_pk:
-            form.instance.fellowship = get_object_or_404(SorcererFellowship, pk=fellowship_pk)
+        # The form restricts casting attribute and affinity path to the
+        # fellowship's favoured choices and cleans them into model instances.
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
@@ -150,84 +131,37 @@ class SorcererBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
-class SorcererPsychicView(ChargenStepMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class StartingNuminaView(ChargenStepMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+    """Validate the bound numina formset, then record it in one service call."""
+
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
+    with_practice = True
+
+    def form_valid(self, form):
+        formset = self.get_bound_formsets()["numina_form"]
+        if not formset.is_valid():
+            for error in formset.non_form_errors():
+                form.add_error(None, error)
+            return self.form_invalid(form)
+        set_starting_numina(self.object, formset.rows(), with_practice=self.with_practice)
+        advance(self.object, user=self.request.user)
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class SorcererPsychicView(StartingNuminaView):
     formsets = {
         "numina_form": PsychicPathRatingFormSet,
     }
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def form_valid(self, form):
-        self.object.willpower = 5
-        context = self.get_context_data()
-        sorcerer = context["object"]
-        numina_data = self.get_form_data("numina_form")
-        for numina in numina_data:
-            numina["path"] = get_object_or_404(LinearMagicPath, id=numina["path"])
-            numina["rating"] = int(numina["rating"])
-            if numina["rating"] > sorcerer.willpower // 2:
-                pass
-        total_numina = sum(x["rating"] for x in numina_data)
-        if total_numina != 5:
-            form.add_error(None, "Must choose exactly five levels of Numina")
-            return self.form_invalid(form)
-        for numina in numina_data:
-            PathRating.objects.create(
-                character=sorcerer,
-                path=numina["path"],
-                rating=numina["rating"],
-                practice=None,
-                ability=None,
-            )
-        advance(self.object, user=self.request.user)
-        self.object.freebies = 21
-        self.object.save()
-        return super().form_valid(form)
+    with_practice = False
 
 
-class SorcererPathView(ChargenStepMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
-    model = Sorcerer
-    fields = []
-    template_name = "characters/mage/sorcerer/chargen.html"
+class SorcererPathView(StartingNuminaView):
     formsets = {
         "numina_form": NuminaPathRatingFormSet,
     }
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        sorcerer = context["object"]
-        numina_data = self.get_form_data("numina_form")
-        for numina in numina_data:
-            numina["path"] = get_object_or_404(LinearMagicPath, id=numina["path"])
-            numina["rating"] = int(numina["rating"])
-            numina["practice"] = get_object_or_404(Practice, id=numina["practice"])
-            numina["ability"] = get_object_or_404(Ability, id=numina["ability"])
-        total_numina = sum(x["rating"] for x in numina_data)
-        if total_numina != 5:
-            form.add_error(None, "Must choose exactly five levels of Numina")
-            return self.form_invalid(form)
-        for numina in numina_data:
-            PathRating.objects.create(
-                character=sorcerer,
-                path=numina["path"],
-                rating=numina["rating"],
-                practice=numina["practice"],
-                ability=numina["ability"],
-            )
-        advance(self.object, user=self.request.user)
-        self.object.willpower = 5
-        self.object.freebies = 21
-        self.object.save()
-        return super().form_valid(form)
 
 
 class SorcererRitualView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):

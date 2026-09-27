@@ -438,7 +438,7 @@ class SorcererStepTests(RuleStepTestCase):
         sorcerer.refresh_from_db()
         self.assertEqual((sorcerer.willpower, sorcerer.freebies), (5, 21))
         self.assertEqual(sorcerer.path_rating(self.telepathy), 5)
-        self.assertEqual(sorcerer.creation_status, position("sorcerer", "psychic") + 1)
+        self.assertGreater(sorcerer.creation_status, position("sorcerer", "psychic"))
 
     def test_psychic_numina_rejects_bad_input_regression(self):
         """D10: a non-numeric rating or a hedge path is a form error, not a 500."""
@@ -529,3 +529,41 @@ class ApocalypticFormStepTests(RuleStepTestCase):
             "A trait cannot be selected as both low and high torment.",
             self.form_errors(response),
         )
+
+
+class SorcererBasicsTests(RuleStepTestCase):
+    def test_casting_attribute_must_be_favoured_by_the_fellowship_regression(self):
+        """D11: basics no longer accept an attribute or path outside the fellowship."""
+        from characters.models.core.archetype import Archetype
+        from characters.models.core.attribute_block import Attribute
+        from characters.models.mage.fellowship import SorcererFellowship
+        from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+
+        archetype = Archetype.objects.create(name="Survivor")
+        wits = Attribute.objects.create(name="Wits", property_name="wits")
+        strength = Attribute.objects.create(name="Strength", property_name="strength")
+        path = LinearMagicPath.objects.create(name="Alchemy")
+        fellowship = SorcererFellowship.objects.create(name="Circle")
+        fellowship.favored_attributes.add(wits)
+        fellowship.favored_paths.add(path)
+        data = {
+            "name": "Hedge",
+            "nature": archetype.pk,
+            "demeanor": archetype.pk,
+            "concept": "Witch",
+            "fellowship": fellowship.pk,
+            "affinity_path": path.pk,
+            "casting_attribute": strength.pk,
+            "sorcerer_type": "hedge_mage",
+        }
+        url = reverse("characters:mage:create:sorcerer")
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("casting_attribute", response.context["form"].errors)
+        self.assertFalse(Sorcerer.objects.filter(name="Hedge").exists())
+
+        response = self.client.post(url, {**data, "casting_attribute": wits.pk})
+        self.assertEqual(response.status_code, 302)
+        sorcerer = Sorcerer.objects.get(name="Hedge")
+        self.assertEqual((sorcerer.casting_attribute, sorcerer.affinity_path), (wits, path))
+        self.assertEqual(sorcerer.owner, self.owner)

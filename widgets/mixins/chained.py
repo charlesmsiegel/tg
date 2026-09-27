@@ -228,9 +228,12 @@ class ChainedSelectMixin:
             value = cleaned_data.get(field_name)
             parent_value = cleaned_data.get(field.parent_field)
 
-            # Handle model instances - get the pk for comparison
+            # Handle model instances - get the pk for comparison. A field's
+            # clean_<name>() may already have turned its value into one.
             if hasattr(parent_value, "pk"):
                 parent_value = parent_value.pk
+            if hasattr(value, "pk"):
+                value = value.pk
 
             if value and isinstance(field, ChainedChoiceField):
                 valid_choices = field.get_choices_for_parent(parent_value)

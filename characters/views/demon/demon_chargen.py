@@ -6,16 +6,18 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
-from characters.rules.limits import DEMON_LORES, FALLEN_VIRTUES
+from characters.rules.limits import (
+    APOCALYPTIC_FORM_POINT_BUDGET,
+    DEMON_LORES,
+    FALLEN_VIRTUES,
+)
 from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.demon.apocalyptic_form import ApocalypticFormSelectionForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
-from characters.models.demon.apocalyptic_form import (
-    ApocalypticForm,
-    ApocalypticFormTrait,
-)
 from characters.models.demon.demon import Demon
+from characters.services.demon_chargen import apply_apocalyptic_form
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -130,7 +132,7 @@ class DemonLoresView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, Up
 
 class DemonApocalypticFormView(ChargenStepMixin, EditPermissionMixin, FormView):
     template_name = "characters/demon/demon/chargen.html"
-    form_class = forms.Form
+    form_class = ApocalypticFormSelectionForm
 
     def get_object(self):
         """Return the Demon object for permission checking."""
@@ -138,108 +140,17 @@ class DemonApocalypticFormView(ChargenStepMixin, EditPermissionMixin, FormView):
             self.object = get_object_or_404(Demon, pk=self.kwargs["pk"])
         return self.object
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        demon = get_object_or_404(Demon, pk=self.kwargs["pk"])
-
-        # Get all available traits, separated by type
-        # Low torment traits (exclude high_torment_only traits)
-        low_torment_traits = ApocalypticFormTrait.objects.filter(high_torment_only=False)
-        # High torment traits (all traits can be high torment)
-        high_torment_traits = ApocalypticFormTrait.objects.all()
-
-        # Add low torment trait fields
-        for trait in low_torment_traits:
-            form.fields[f"low_trait_{trait.id}"] = forms.BooleanField(
-                required=False,
-                label=f"{trait.name} ({trait.cost} points)",
-                help_text=trait.description,
-            )
-
-        # Add high torment trait fields
-        for trait in high_torment_traits:
-            form.fields[f"high_trait_{trait.id}"] = forms.BooleanField(
-                required=False,
-                label=f"{trait.name} ({trait.cost} points)",
-                help_text=trait.description,
-            )
-
-        return form
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.get_object()
         context["points_spent"] = context["object"].apocalyptic_form_points_spent()
         context["points_remaining"] = context["object"].apocalyptic_form_points_remaining()
-        context["points_budget"] = 16
+        context["points_budget"] = APOCALYPTIC_FORM_POINT_BUDGET
         return context
 
     def form_valid(self, form):
-        demon = get_object_or_404(Demon, pk=self.kwargs["pk"])
-
-        # Create or get an ApocalypticForm for this demon
-        form_name = f"{demon.name}'s Apocalyptic Form"
-        apoc_form, _ = ApocalypticForm.objects.get_or_create(
-            name=form_name,
-            defaults={"description": f"Apocalyptic form for {demon.name}"},
-        )
-
-        # Clear existing selections
-        apoc_form.low_torment_traits.clear()
-        apoc_form.high_torment_traits.clear()
-
-        # Collect selected traits
-        low_traits = []
-        high_traits = []
-        total_cost = 0
-
-        for field_name, value in form.cleaned_data.items():
-            if value:
-                if field_name.startswith("low_trait_"):
-                    trait_id = int(field_name.split("_")[2])
-                    trait = ApocalypticFormTrait.objects.get(id=trait_id)
-                    low_traits.append(trait)
-                    total_cost += trait.cost
-                elif field_name.startswith("high_trait_"):
-                    trait_id = int(field_name.split("_")[2])
-                    trait = ApocalypticFormTrait.objects.get(id=trait_id)
-                    high_traits.append(trait)
-                    total_cost += trait.cost
-
-        # Validate selections
-        if len(low_traits) != 4:
-            form.add_error(
-                None, f"You must select exactly 4 low torment traits. Currently: {len(low_traits)}"
-            )
-            return self.form_invalid(form)
-
-        if len(high_traits) != 4:
-            form.add_error(
-                None,
-                f"You must select exactly 4 high torment traits. Currently: {len(high_traits)}",
-            )
-            return self.form_invalid(form)
-
-        if total_cost > 16:
-            form.add_error(
-                None, f"Point budget exceeded. Maximum is 16 points. Currently: {total_cost}"
-            )
-            return self.form_invalid(form)
-
-        # Check for duplicate traits between low and high
-        low_ids = {t.id for t in low_traits}
-        high_ids = {t.id for t in high_traits}
-        if low_ids & high_ids:
-            form.add_error(None, "A trait cannot be selected as both low and high torment.")
-            return self.form_invalid(form)
-
-        # Add traits to the form
-        for trait in low_traits:
-            apoc_form.low_torment_traits.add(trait)
-        for trait in high_traits:
-            apoc_form.high_torment_traits.add(trait)
-
-        demon.apocalyptic_form = apoc_form
+        demon = self.get_object()
+        apply_apocalyptic_form(demon, form.low_traits, form.high_traits)
         advance(demon, user=self.request.user)
         demon.save()
         return HttpResponseRedirect(demon.get_absolute_url())

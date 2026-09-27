@@ -240,3 +240,7 @@ KINFOLK_TRIBE_BACKGROUND_LIMITS = {
     "Wendigo": {"max": {"resources": 3}},
     "Silver Fangs": {"required": ("pure_breed",)},
 }
+
+# Demon Apocalyptic Form: four traits per Torment state within a point budget.
+APOCALYPTIC_FORM_TRAITS_PER_STATE = 4
+APOCALYPTIC_FORM_POINT_BUDGET = 16

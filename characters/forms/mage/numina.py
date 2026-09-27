@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models import Q
 
+from characters.models.core.ability_block import Ability
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
     LinearMagicPath,
@@ -12,7 +13,42 @@ from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.fields.create_or_select import CreateOrSelectField
 
 
-class NuminaPathForm(ChainedSelectMixin, forms.ModelForm):
+NUMINA_TOTAL = 5
+NUMINA_TOTAL_ERROR = "Must choose exactly five levels of Numina"
+
+
+class NuminaChoicesMixin:
+    """Turn the chained Practice/Ability choice strings into model instances."""
+
+    def clean_practice(self):
+        value = self.cleaned_data.get("practice")
+        return Practice.objects.filter(pk=value).first() if value else None
+
+    def clean_ability(self):
+        value = self.cleaned_data.get("ability")
+        return Ability.objects.filter(pk=value).first() if value else None
+
+
+class StartingNuminaFormSetMixin:
+    """Chargen numina: the rated paths total exactly five levels."""
+
+    def rows(self):
+        return [
+            form.cleaned_data
+            for form in self.forms
+            if form.cleaned_data.get("path") is not None
+            and form.cleaned_data.get("rating") is not None
+        ]
+
+    def clean(self):
+        super().clean()
+        if any(form.errors for form in self.forms):
+            return
+        if sum(row["rating"] for row in self.rows()) != NUMINA_TOTAL:
+            raise forms.ValidationError(NUMINA_TOTAL_ERROR)
+
+
+class NuminaPathForm(NuminaChoicesMixin, ChainedSelectMixin, forms.ModelForm):
     class Meta:
         model = PathRating
         fields = ["path", "rating", "practice", "ability"]
@@ -49,7 +85,7 @@ class NuminaPathForm(ChainedSelectMixin, forms.ModelForm):
         self._setup_chains()
 
 
-class BaseNuminaPathRatingFormSet(forms.BaseInlineFormSet):
+class BaseNuminaPathRatingFormSet(StartingNuminaFormSetMixin, forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -67,7 +103,7 @@ NuminaPathRatingFormSet = forms.inlineformset_factory(
 )
 
 
-class PsychicPathForm(ChainedSelectMixin, forms.ModelForm):
+class PsychicPathForm(NuminaChoicesMixin, ChainedSelectMixin, forms.ModelForm):
     class Meta:
         model = PathRating
         fields = ["path", "rating", "practice", "ability"]
@@ -104,7 +140,7 @@ class PsychicPathForm(ChainedSelectMixin, forms.ModelForm):
         self._setup_chains()
 
 
-class BasePsychicPathRatingFormSet(forms.BaseInlineFormSet):
+class BasePsychicPathRatingFormSet(StartingNuminaFormSetMixin, forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -79,6 +79,10 @@ class ChainedChoiceField(forms.ChoiceField):
         if not parent_value:
             return choices
 
+        if self.choices_map and str(parent_value) in self.choices_map:
+            # Maps are keyed by the parent's submitted (string) value; a
+            # cleaned parent may be a model pk instead.
+            parent_value = str(parent_value)
         if self.choices_map and parent_value in self.choices_map:
             choices.extend(self.choices_map[parent_value])
         elif self.choices_callback:
