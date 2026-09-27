@@ -398,6 +398,8 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     - MeritFlaw
     """
 
+    willpower_cost_multiplier = 1
+
     @handler("Attribute")
     def _handle_attribute(self, example, **kwargs) -> FreebieSpendResult:
         """Handle attribute freebie spending."""
@@ -592,7 +594,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         trait = "Willpower"
         current_value = self.character.willpower
         new_value = current_value + 1
-        cost = get_freebie_cost("willpower")
+        cost = get_freebie_cost("willpower") * self.willpower_cost_multiplier
 
         if cost > self.character.freebies:
             return FreebieSpendResult(

@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
+from characters.forms.core.crud_fields import FERA_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
@@ -24,10 +25,12 @@ from characters.models.werewolf.ratkin import Ratkin
 from characters.models.werewolf.rokea import Rokea
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
+    HumanDetailView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -36,105 +39,26 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
-    ViewPermissionMixin,
     XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class FeraDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class FeraDetailView(XPApprovalMixin, HumanDetailView):
     model = Fera
     template_name = "characters/werewolf/fera/detail.html"
 
 
-class FeraUpdateView(EditPermissionMixin, UpdateView):
+class FeraUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Fera
     success_message = "Fera updated successfully."
     error_message = "Error updating fera."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "breed",
-        "faction",
-        "gnosis",
-        "rage",
-        "renown",
-        "temporary_renown",
-        "gifts",
-        "rites_known",
-        "fetishes_owned",
-        "first_change",
-        "age_of_first_change",
-    ]
+    fields = FERA_UPDATE_FIELDS
     template_name = "characters/werewolf/fera/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class FeraBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -569,7 +493,7 @@ class FeraHistoryView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class FeraExtrasView(CharacterExtrasView):
     model = Fera
     fields = [
         "date_of_birth",
@@ -582,37 +506,20 @@ class FeraExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/fera/chargen.html"
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appearance in all forms. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their upbringing, their First Change (already detailed above), and their role among their kind."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal or related to Gaia's war."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character. Include Renown, deeds, and anything else that would be publicly known."
-            }
-        )
-        return form
+    field_widget_attrs = {
+        "description": {
+            "placeholder": "Describe your character's physical appearance in all forms. Be detailed, this will be visible to other players."
+        },
+        "history": {
+            "placeholder": "Describe character history/backstory. Include information about their upbringing, their First Change (already detailed above), and their role among their kind."
+        },
+        "goals": {
+            "placeholder": "Describe your character's long and short term goals, whether personal or related to Gaia's war."
+        },
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character. Include Renown, deeds, and anything else that would be publicly known."
+        },
+    }
 
 
 class FeraFreebiesView(HumanFreebiesView):
@@ -622,6 +529,7 @@ class FeraFreebiesView(HumanFreebiesView):
 
 
 class FeraLanguagesView(HumanLanguagesView):
+    model = Fera
     template_name = "characters/werewolf/fera/chargen.html"
 
 
@@ -633,6 +541,7 @@ class FeraAlliesView(GenericBackgroundView):
 
 
 class FeraSpecialtiesView(HumanSpecialtiesView):
+    model = Fera
     template_name = "characters/werewolf/fera/chargen.html"
 
 
