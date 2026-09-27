@@ -12,7 +12,8 @@ from characters.forms.wraith.wraith import WraithCreationForm
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
-from characters.views.core.allocations import PointAllocationView
+from characters.rules.limits import WRAITH_ARCANOI
+from characters.views.core.allocations import AllocationStepMixin, PointAllocationView
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -93,56 +94,21 @@ class WraithBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithArcanosView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class WraithArcanosView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Wraith
-    fields = [
-        "argos",
-        "castigate",
-        "embody",
-        "fatalism",
-        "flux",
-        "inhabit",
-        "keening",
-        "lifeweb",
-        "moliate",
-        "mnemosynis",
-        "outrage",
-        "pandemonium",
-        "phantasm",
-        "usury",
-        "intimation",
-    ]
+    fields = list(WRAITH_ARCANOI.fields)
+    allocation_rules = (WRAITH_ARCANOI,)
     template_name = "characters/wraith/wraith/chargen.html"
 
     def form_valid(self, form):
-        # Validate that total arcanoi is exactly 5
-        arcanoi_total = sum(form.cleaned_data.get(field, 0) for field in self.fields)
-
-        if arcanoi_total != 5:
-            form.add_error(
-                None,
-                f"Arcanoi must total exactly 5 dots (currently {arcanoi_total})",
-            )
-            messages.error(
-                self.request,
-                f"Arcanoi allocation error: You must spend exactly 5 dots. You have {arcanoi_total}.",
-            )
-            return self.form_invalid(form)
-
-        # Validate that no arcanos exceeds 5
-        for field in self.fields:
-            if form.cleaned_data.get(field, 0) > 5:
-                form.add_error(field, "Arcanoi cannot exceed 5 dots")
-                messages.error(self.request, "Each Arcanos cannot exceed 5 dots.")
-                return self.form_invalid(form)
-
         advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Arcanoi allocated successfully!")
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        if not self.request._messages._queued_messages:
+        # A rule violation flashes its own message (AllocationStepMixin).
+        if not self.request._messages._queued_messages and not form.flash_errors:
             messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 

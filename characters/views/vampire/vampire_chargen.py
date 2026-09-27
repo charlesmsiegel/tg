@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,6 +12,8 @@ from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.chained_freebies import ChainedVampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.vampire.vampire import Vampire
+from characters.rules.limits import VAMPIRE_DISCIPLINES, vampire_virtue_rule
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -92,35 +96,11 @@ class VampireBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/vampire/chargen.html"
 
 
-class VampireDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class VampireDisciplinesView(
+    AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView
+):
     model = Vampire
-    fields = [
-        "celerity",
-        "fortitude",
-        "potence",
-        "auspex",
-        "dominate",
-        "dementation",
-        "presence",
-        "animalism",
-        "protean",
-        "obfuscate",
-        "chimerstry",
-        "necromancy",
-        "obtenebration",
-        "quietus",
-        "serpentis",
-        "thaumaturgy",
-        "vicissitude",
-        "daimoinon",
-        "melpominee",
-        "mytherceria",
-        "obeah",
-        "temporis",
-        "thanatosis",
-        "valeren",
-        "visceratika",
-    ]
+    fields = list(VAMPIRE_DISCIPLINES.fields)
     template_name = "characters/vampire/vampire/chargen.html"
 
     def get_form(self, form_class=None):
@@ -148,45 +128,20 @@ class VampireDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
             context["clan_disciplines"] = []
         return context
 
+    def get_allocation_rules(self):
+        if not self.object.clan:
+            return [VAMPIRE_DISCIPLINES]
+        clan = frozenset(d.property_name for d in self.object.clan.disciplines.all())
+        return [replace(VAMPIRE_DISCIPLINES, allowed=clan)]
+
     def form_valid(self, form):
-        # Calculate total disciplines
-        total_disciplines = 0
-        for field in self.fields:
-            total_disciplines += form.cleaned_data.get(field, 0)
-
-        if total_disciplines != 3:
-            form.add_error(
-                None,
-                f"You must spend exactly 3 dots on Disciplines. Currently: {total_disciplines}",
-            )
-            messages.error(
-                self.request,
-                f"Discipline allocation error: You must spend exactly 3 dots. You have {total_disciplines}.",
-            )
-            return self.form_invalid(form)
-
-        # Verify all disciplines are in-clan
-        if self.object.clan:
-            clan_discipline_properties = [
-                d.property_name for d in self.object.clan.disciplines.all()
-            ]
-            for field in self.fields:
-                rating = form.cleaned_data.get(field, 0)
-                if rating > 0 and field not in clan_discipline_properties:
-                    form.add_error(field, "You can only spend starting dots on clan Disciplines.")
-                    messages.error(
-                        self.request,
-                        "You can only allocate starting dots to your clan's Disciplines.",
-                    )
-                    return self.form_invalid(form)
-
         advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Disciplines allocated successfully!")
         return super().form_valid(form)
 
 
-class VampireVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class VampireVirtuesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = ["conscience", "self_control", "courage", "conviction", "instinct"]
     template_name = "characters/vampire/vampire/chargen.html"
@@ -222,42 +177,11 @@ class VampireVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         context["uses_path"] = bool(self.object.path)
         return context
 
+    def get_allocation_rules(self):
+        return [vampire_virtue_rule(self.object)]
+
     def form_valid(self, form):
-        # Calculate total virtues based on active virtue booleans
-        if self.object.has_conviction:
-            virtue_1 = form.cleaned_data.get("conviction", 0)
-        else:
-            virtue_1 = form.cleaned_data.get("conscience", 0)
-
-        if self.object.has_instinct:
-            virtue_2 = form.cleaned_data.get("instinct", 0)
-        else:
-            virtue_2 = form.cleaned_data.get("self_control", 0)
-
-        courage = form.cleaned_data.get("courage", 0)
-        total = virtue_1 + virtue_2 + courage
-
-        if total != 7:
-            form.add_error(None, f"Virtues must total 7 dots. Currently: {total}")
-            messages.error(
-                self.request,
-                f"Virtue allocation error: You must spend exactly 7 dots. You have {total}.",
-            )
-            return self.form_invalid(form)
-
-        # Update dependent values
-        # Use set_willpower() to properly adjust temporary_willpower and avoid constraint violations
-        self.object.set_willpower(courage)
-
-        if self.object.path:
-            # Following a path: Path Rating = virtue_1 + virtue_2, Humanity = 0
-            self.object.path_rating = virtue_1 + virtue_2
-            self.object.humanity = 0
-        else:
-            # Default Humanity: Humanity = virtue_1 + virtue_2, Path Rating = 0
-            self.object.humanity = virtue_1 + virtue_2
-            self.object.path_rating = 0
-
+        self.object.apply_starting_virtues()
         advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Virtues allocated successfully!")

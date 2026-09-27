@@ -3,6 +3,8 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
+from characters.rules.limits import FALLEN_VIRTUES
+from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
@@ -75,9 +77,10 @@ class ThrallBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class ThrallVirtuesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = ["conviction", "courage", "conscience"]
+    allocation_rules = (FALLEN_VIRTUES,)
     template_name = "characters/demon/thrall/chargen.html"
 
     def get_form(self, form_class=None):
@@ -88,20 +91,8 @@ class ThrallVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        # Calculate total virtues (must equal 6)
-        total = (
-            form.cleaned_data.get("conviction", 0)
-            + form.cleaned_data.get("courage", 0)
-            + form.cleaned_data.get("conscience", 0)
-        )
-
-        if total != 6:
-            form.add_error(None, f"Virtues must total 6 dots. Currently: {total}")
-            return self.form_invalid(form)
-
-        # Update willpower based on courage
-        self.object.willpower = form.cleaned_data.get("courage", 1)
-
+        # Willpower equals Courage; set_willpower keeps temporary Willpower in range.
+        self.object.set_willpower(self.object.courage)
         advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)

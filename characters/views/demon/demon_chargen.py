@@ -6,6 +6,8 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
+from characters.rules.limits import DEMON_LORES, FALLEN_VIRTUES
+from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
@@ -92,31 +94,10 @@ class DemonBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/demon/chargen.html"
 
 
-class DemonLoresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class DemonLoresView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
-    fields = [
-        "lore_of_the_celestials",
-        "lore_of_the_earth",
-        "lore_of_the_firmament",
-        "lore_of_humanity",
-        "lore_of_the_wild",
-        "lore_of_light",
-        "lore_of_radiance",
-        "lore_of_awakening",
-        "lore_of_the_fundament",
-        "lore_of_patterns",
-        "lore_of_portals",
-        "lore_of_the_forge",
-        "lore_of_longing",
-        "lore_of_storms",
-        "lore_of_transfiguration",
-        "lore_of_the_flesh",
-        "lore_of_death",
-        "lore_of_the_spirit",
-        "lore_of_the_winds",
-        "lore_of_flame",
-        "lore_of_paths",
-    ]
+    fields = list(DEMON_LORES.fields)
+    allocation_rules = (DEMON_LORES,)
     template_name = "characters/demon/demon/chargen.html"
 
     def get_form(self, form_class=None):
@@ -142,18 +123,6 @@ class DemonLoresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        # Calculate total lores (must equal 3)
-        total_lores = 0
-        for field in self.fields:
-            total_lores += form.cleaned_data.get(field, 0)
-
-        if total_lores != 3:
-            form.add_error(
-                None,
-                f"You must spend exactly 3 dots on Lores. Currently: {total_lores}",
-            )
-            return self.form_invalid(form)
-
         advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
@@ -276,9 +245,10 @@ class DemonApocalypticFormView(ChargenStepMixin, EditPermissionMixin, FormView):
         return HttpResponseRedirect(demon.get_absolute_url())
 
 
-class DemonVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class DemonVirtuesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = ["conviction", "courage", "conscience"]
+    allocation_rules = (FALLEN_VIRTUES,)
     template_name = "characters/demon/demon/chargen.html"
 
     def get_form(self, form_class=None):
@@ -293,20 +263,8 @@ class DemonVirtuesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        # Calculate total virtues (must equal 6)
-        total = (
-            form.cleaned_data.get("conviction", 0)
-            + form.cleaned_data.get("courage", 0)
-            + form.cleaned_data.get("conscience", 0)
-        )
-
-        if total != 6:
-            form.add_error(None, f"Virtues must total 6 dots. Currently: {total}")
-            return self.form_invalid(form)
-
-        # Update willpower based on courage
-        self.object.willpower = form.cleaned_data.get("courage", 1)
-
+        # Willpower equals Courage; set_willpower keeps temporary Willpower in range.
+        self.object.set_willpower(self.object.courage)
         advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)

@@ -496,6 +496,28 @@ class Vampire(VtMHuman):
         """Return the name of the second active virtue."""
         return "Instinct" if self.has_instinct else "Self-Control"
 
+    def active_virtue_fields(self):
+        """The three virtue fields this vampire rates; its Path picks the first two."""
+        return (
+            "conviction" if self.has_conviction else "conscience",
+            "instinct" if self.has_instinct else "self_control",
+            "courage",
+        )
+
+    def apply_starting_virtues(self):
+        """Derive chargen Willpower and Humanity or Path Rating from the virtues.
+
+        Willpower equals Courage. A vampire on a Path of Enlightenment rates
+        that Path at the sum of its first two active virtues and has no
+        Humanity; otherwise Humanity is that sum and Path Rating is zero.
+        """
+        self.set_willpower(self.courage)
+        morality = self.active_virtue_1 + self.active_virtue_2
+        if self.path:
+            self.path_rating, self.humanity = morality, 0
+        else:
+            self.humanity, self.path_rating = morality, 0
+
     def get_active_virtues(self):
         """Return a dict of active virtues with their ratings."""
         return {
