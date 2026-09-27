@@ -413,6 +413,17 @@ class Mage(MtAHuman):
         self.essence = essence
         return True
 
+    def purchase_starting_arete(self, arete):
+        """Pay for starting Arete above 1 with freebies (Spheres step).
+
+        Each dot beyond the first costs the Arete freebie cost and is logged in
+        ``spent_freebies``; the caller saves.
+        """
+        for level in range(2, arete + 1):
+            record = self.freebie_spend_record("Arete", "arete", level)
+            self.freebies -= record["cost"]
+            self.spent_freebies.append(record)
+
     def add_resonance(self, resonance):
         if isinstance(resonance, str):
             resonance, _ = Resonance.objects.get_or_create(name=resonance)

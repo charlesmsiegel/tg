@@ -15,6 +15,7 @@ import re
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -26,7 +27,7 @@ from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.chained_freebies import ChainedMageFreebiesForm
 from characters.forms.mage.familiar import FamiliarForm
-from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
+from characters.forms.mage.mage import MageCreationForm, MageFocusForm, MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
 from characters.forms.mage.xp import MageXPForm
@@ -36,6 +37,8 @@ from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
+from characters.services.mage_chargen import set_starting_practices
+from characters.services.rotes import learn_rote
 from characters.services.xp_spending import XPSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.extras import CharacterExtrasView
@@ -134,114 +137,60 @@ class MageDetailView(HumanDetailView):
             return super().post(request, *args, **kwargs)
         context = self.get_context_data()
         form = MageXPForm(request.POST, request.FILES, character=self.object)
-        rote_form = RoteCreationForm(request.POST, instance=self.object)
-        form_errors = False
-        if "spend_xp" in form.data.keys():
-            if form.is_valid():
-                category = form.cleaned_data["category"]
-                example = form.cleaned_data["example"]
-                value = form.cleaned_data["value"]
-                note = form.cleaned_data["note"]
-                pooled = form.cleaned_data["pooled"]
-                image_field = form.cleaned_data["image_field"]
-                resonance = form.cleaned_data["resonance"]
-                if category == "Image":
-                    self.object.image = image_field
-                    self.object.save()
-                if category not in ["Image", "Rote"]:
-                    # Use XP spending service for cleaner handling
-                    service = XPSpendingServiceFactory.get_service(self.object)
+        if "spend_xp" in form.data and form.is_valid():
+            category = form.cleaned_data["category"]
+            if category == "Image":
+                self.object.image = form.cleaned_data["image_field"]
+                self.object.save()
+            elif category == "Rote":
+                rote_form = RoteCreationForm(request.POST, instance=self.object)
+                if not self.learn_rote(rote_form):
+                    context["rote_form"] = rote_form
+                    return render(request, self.template_name, context)
+            else:
+                with XPSpendingServiceFactory.locked(self.object) as service:
                     result = service.spend(
                         category=category,
-                        example=example,
-                        value=value,
-                        note=note,
-                        pooled=pooled,
-                        resonance=resonance,
+                        example=form.cleaned_data["example"],
+                        value=form.cleaned_data["value"],
+                        note=form.cleaned_data["note"],
+                        pooled=form.cleaned_data["pooled"],
+                        resonance=form.cleaned_data["resonance"],
                     )
-                    if result.success:
-                        messages.success(request, result.message)
-                    else:
-                        messages.error(request, result.error)
-                        context["form"] = form
-                        form_errors = True
-                elif category == "Rote":
-                    if rote_form.is_valid():
-                        if (
-                            not rote_form.cleaned_data["select_or_create_rote"]
-                            and not rote_form.cleaned_data["rote_options"]
-                        ):
-                            rote_form.add_error(None, "Must create or select a rote")
-                            context["rote_form"] = rote_form
-                            return render(request, self.template_name, context)
-                        if rote_form.cleaned_data["select_or_create_rote"]:
-                            if (
-                                not rote_form.cleaned_data["select_or_create_effect"]
-                                and not rote_form.cleaned_data["effect_options"]
-                            ):
-                                rote_form.add_error(None, "Must create or select an effect")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if not rote_form.cleaned_data["name"]:
-                                rote_form.add_error(None, "Must choose rote name")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if not rote_form.cleaned_data["practice"]:
-                                rote_form.add_error(None, "Must choose rote Practice")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if not rote_form.cleaned_data["attribute"]:
-                                rote_form.add_error(None, "Must choose rote Attribute")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if not rote_form.cleaned_data["ability"]:
-                                rote_form.add_error(None, "Must choose rote Ability")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if not rote_form.cleaned_data["description"]:
-                                rote_form.add_error(None, "Must choose rote description")
-                                context["rote_form"] = rote_form
-                                return render(request, self.template_name, context)
-                            if rote_form.cleaned_data["select_or_create_effect"]:
-                                if not rote_form.cleaned_data["systems"]:
-                                    rote_form.add_error(None, "Must choose rote systems")
-                                    context["rote_form"] = rote_form
-                                    return render(request, self.template_name, context)
-                                if (
-                                    rote_form.cleaned_data["correspondence"]
-                                    + rote_form.cleaned_data["entropy"]
-                                    + rote_form.cleaned_data["forces"]
-                                    + rote_form.cleaned_data["life"]
-                                    + rote_form.cleaned_data["matter"]
-                                    + rote_form.cleaned_data["mind"]
-                                    + rote_form.cleaned_data["prime"]
-                                    + rote_form.cleaned_data["spirit"]
-                                    + rote_form.cleaned_data["time"]
-                                    == 0
-                                ):
-                                    rote_form.add_error(None, "Effects must have sphere ratings")
-                                    context["rote_form"] = rote_form
-                                    return render(request, self.template_name, context)
-                        try:
-                            rote_form.save(self.object)
-                        except forms.ValidationError:
-                            context["rote_form"] = rote_form
-                            return render(request, self.template_name, context)
-            else:
-                pass
-        if "specialties" in form.data.keys():
-            specs = {
-                k: v
-                for k, v in form.data.items()
-                if k not in ["csrfmiddlewaretoken", "specialties"]
-            }
-            for stat, spec in specs.items():
-                spec = Specialty.objects.get_or_create(name=spec, stat=stat)[0]
-                self.object.specialties.add(spec)
-            self.object.save()
-        if form_errors:
-            return self.render_to_response(context)
+                if not result.success:
+                    messages.error(request, result.error)
+                    context["form"] = form
+                    return self.render_to_response(context)
+                messages.success(request, result.message)
+        if "specialties" in request.POST:
+            self.add_specialties(request.POST)
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+    @staticmethod
+    def learn_rote(rote_form):
+        if not rote_form.is_valid():
+            return False
+        try:
+            rote_form.save(rote_form.instance)
+        except forms.ValidationError as error:
+            rote_form.add_error(None, error)
+            return False
+        return True
+
+    def add_specialties(self, data):
+        """Record the submitted specialties the character actually needs."""
+        spec_form = SpecialtiesForm(
+            data, object=self.object, specialties_needed=self.object.needed_specialties()
+        )
+        for field in spec_form.fields.values():
+            field.required = False
+        if not spec_form.is_valid():
+            return
+        for stat, name in spec_form.cleaned_data.items():
+            if name:
+                specialty, _ = Specialty.objects.get_or_create(name=name, stat=stat)
+                self.object.specialties.add(specialty)
+        self.object.save()
 
 
 class MageCreateView(MessageMixin, CreateView):
@@ -325,13 +274,21 @@ class MageBackgroundsView(HumanBackgroundsView):
 
 class MageFocusView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Mage
-    fields = [
-        "metaphysical_tenet",
-        "personal_tenet",
-        "ascension_tenet",
-        "other_tenets",
-    ]
+    form_class = MageFocusForm
     template_name = "characters/mage/mage/chargen.html"
+
+    def get_practice_formset(self):
+        if not hasattr(self, "_practice_formset"):
+            data = self.request.POST if self.request.method == "POST" else None
+            self._practice_formset = PracticeRatingFormSet(
+                data, instance=self.object, mage=self.object
+            )
+        return self._practice_formset
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["practice_formset"] = self.get_practice_formset()
+        return kwargs
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -346,64 +303,16 @@ class MageFocusView(ChargenStepMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context["practice_formset"] = PracticeRatingFormSet(
-                self.request.POST, instance=self.object, mage=self.object
-            )
-        else:
-            context["practice_formset"] = PracticeRatingFormSet(
-                instance=self.object, mage=self.object
-            )
+        context["practice_formset"] = self.get_practice_formset()
         return context
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        context["form"].full_clean()
-        if context["form"].cleaned_data["metaphysical_tenet"] is None:
-            context["form"].add_error(None, "Must include Metaphysical Tenet")
-            return self.form_invalid(context["form"])
-        if context["form"].cleaned_data["personal_tenet"] is None:
-            context["form"].add_error(None, "Must include Personal Tenet")
-            return self.form_invalid(context["form"])
-        if context["form"].cleaned_data["ascension_tenet"] is None:
-            context["form"].add_error(None, "Must include Ascension Tenet")
-            return self.form_invalid(context["form"])
-        practice_formset = context["practice_formset"]
-
-        if practice_formset.is_valid():
-            self.object = form.save()
-            ratings = [x.cleaned_data.get("rating") for x in practice_formset]
-            ratings = [x for x in ratings if x is not None]
-            practice_total = sum(ratings)
-            if practice_total != self.object.arete:
-                form.add_error(None, "Starting Practices must add up to Arete rating")
-                return self.form_invalid(form)
-            for practice_form in practice_formset:
-                practice = practice_form.cleaned_data.get("practice")
-                rating = practice_form.cleaned_data.get("rating")
-                if practice is not None:
-                    ability_total = 0
-                    for ability in practice.abilities.all():
-                        ability_total += getattr(self.object, ability.property_name, 0)
-                    if practice is not None and rating is not None and rating <= ability_total / 2:
-                        pr = PracticeRating.objects.create(
-                            mage=self.object, practice=practice, rating=rating
-                        )
-                    else:
-                        form.add_error(
-                            None,
-                            "You must have at least 2 dots in associated abilities for each dot of a Practice",
-                        )
-                        return self.form_invalid(form)
-            advance(self.object, user=self.request.user)
-            self.object.save()
-            return HttpResponseRedirect(self.get_success_url())
-        else:
+        if not self.get_practice_formset().is_valid():
             return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        response = super().form_invalid(form)
-        return response
+        self.object = set_starting_practices(form).object
+        advance(self.object, user=self.request.user)
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
@@ -430,34 +339,13 @@ class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return initial
 
     def form_valid(self, form):
-        """Handle successful form validation. Validation logic is in the form."""
-        arete = form.cleaned_data.get("arete", 1)
-        resonance = form.data.get("resonance")
-
-        # Add resonance to character
-        self.object.add_resonance(resonance)
-
-        # Update creation status
-        advance(self.object, user=self.request.user)
-
-        # Handle freebie spending for Arete above 1
-        for i in range(arete - 1):
-            self.object.freebies -= 4
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record("Arete", "arete", i + 2)
-            )
-
-        self.object.save()
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        """Handle form validation errors. Remove resonance errors if data was provided."""
-        errors = form.errors
-        if "resonance" in errors and "resonance" in form.data:
-            del errors["resonance"]
-        if not errors:
-            return self.form_valid(form)
-        return super().form_invalid(form)
+        """Record Resonance, buy starting Arete with freebies, and advance."""
+        with transaction.atomic():
+            self.object.add_resonance(form.cleaned_data["resonance"])
+            advance(self.object, user=self.request.user)
+            self.object.purchase_starting_arete(form.cleaned_data["arete"])
+            self.object.save()
+            return super().form_valid(form)
 
 
 class MageExtrasView(CharacterExtrasView):
@@ -527,64 +415,15 @@ class MageRoteView(ChargenStepMixin, SpecialUserMixin, CreateView):
         kwargs["instance"] = mage
         return kwargs
 
-    def form_invalid(self, form):
-        errors = form.errors
-        if not errors:
-            return self.form_valid(form)
-        return super().form_invalid(form)
-
-    def form_valid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        mage = context["object"]
-        if not form.cleaned_data["select_or_create_rote"] and not form.cleaned_data["rote_options"]:
-            form.add_error(None, "Must create or select a rote")
-            return super().form_invalid(form)
-        if form.cleaned_data["select_or_create_rote"]:
-            if (
-                not form.cleaned_data["select_or_create_effect"]
-                and not form.cleaned_data["effect_options"]
-            ):
-                form.add_error(None, "Must create or select an effect")
-                return super().form_invalid(form)
-            if not form.cleaned_data["name"]:
-                form.add_error(None, "Must choose rote name")
-                return super().form_invalid(form)
-            if not form.cleaned_data["practice"]:
-                form.add_error(None, "Must choose rote Practice")
-                return super().form_invalid(form)
-            if not form.cleaned_data["attribute"]:
-                form.add_error(None, "Must choose rote Attribute")
-                return super().form_invalid(form)
-            if not form.cleaned_data["ability"]:
-                form.add_error(None, "Must choose rote Ability")
-                return super().form_invalid(form)
-            if not form.cleaned_data["description"]:
-                form.add_error(None, "Must choose rote description")
-                return super().form_invalid(form)
-            if form.cleaned_data["select_or_create_effect"]:
-                if not form.cleaned_data["systems"]:
-                    form.add_error(None, "Must choose rote systems")
-                    return super().form_invalid(form)
-                if (
-                    form.cleaned_data["correspondence"]
-                    + form.cleaned_data["entropy"]
-                    + form.cleaned_data["forces"]
-                    + form.cleaned_data["life"]
-                    + form.cleaned_data["matter"]
-                    + form.cleaned_data["mind"]
-                    + form.cleaned_data["prime"]
-                    + form.cleaned_data["spirit"]
-                    + form.cleaned_data["time"]
-                    == 0
-                ):
-                    form.add_error(None, "Effects must have sphere ratings")
-                    return super().form_invalid(form)
-
-        if form.save(mage):
-            if mage.rote_points == 0:
-                advance(mage, user=self.request.user)
-            return HttpResponseRedirect(mage.get_absolute_url())
-        return super().form_invalid(form)
+    def form_valid(self, form):
+        mage = form.instance
+        result = learn_rote(mage, form.cleaned_data)
+        if not result.success:
+            form.add_error(None, result.error)
+            return self.form_invalid(form)
+        if mage.rote_points == 0:
+            advance(mage, user=self.request.user)
+        return HttpResponseRedirect(mage.get_absolute_url())
 
 
 class MageAlliesView(GenericBackgroundView):

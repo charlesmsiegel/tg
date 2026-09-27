@@ -1,12 +1,12 @@
 from django import forms
 from django.db.models import Q
 
-from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
+from characters.services.rotes import SPHERE_FIELDS, learn_rote
 from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.fields.create_or_select import CreateOrSelectField
 
@@ -136,68 +136,39 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
         # Re-run chain setup after choices are configured
         self._setup_chains()
 
+    # Fields a newly created rote must fill, in the order they are reported.
+    REQUIRED_FOR_NEW_ROTE = (
+        ("name", "Must choose rote name"),
+        ("practice", "Must choose rote Practice"),
+        ("attribute", "Must choose rote Attribute"),
+        ("ability", "Must choose rote Ability"),
+        ("description", "Must choose rote description"),
+    )
+
+    def clean(self):
+        """Require a complete choice: a rote selected, or a new rote with an effect."""
+        cleaned_data = super().clean()
+        if self.errors:
+            return cleaned_data
+        if not cleaned_data["select_or_create_rote"] and not cleaned_data["rote_options"]:
+            raise forms.ValidationError("Must create or select a rote")
+        if not cleaned_data["select_or_create_rote"]:
+            return cleaned_data
+        if not cleaned_data["select_or_create_effect"] and not cleaned_data["effect_options"]:
+            raise forms.ValidationError("Must create or select an effect")
+        for field, message in self.REQUIRED_FOR_NEW_ROTE:
+            if not cleaned_data[field]:
+                raise forms.ValidationError(message)
+        if cleaned_data["select_or_create_effect"]:
+            if not cleaned_data["systems"]:
+                raise forms.ValidationError("Must choose rote systems")
+            if sum(cleaned_data[sphere] or 0 for sphere in SPHERE_FIELDS) == 0:
+                raise forms.ValidationError("Effects must have sphere ratings")
+        return cleaned_data
+
     def save(self, mage):
-        if self.cleaned_data["select_or_create_rote"]:
-            # Create Rote
-            name = self.cleaned_data.get("name")
-            # practice and ability are string PKs from ChainedChoiceField
-            practice_pk = self.cleaned_data.get("practice")
-            practice = Practice.objects.get(pk=practice_pk) if practice_pk else None
-            attribute = self.cleaned_data.get("attribute")
-            ability_pk = self.cleaned_data.get("ability")
-            ability = Ability.objects.get(pk=ability_pk) if ability_pk else None
-            description = self.cleaned_data.get("description")
-            if self.cleaned_data["select_or_create_effect"]:
-                # Create Effect
-                systems = self.cleaned_data.get("systems")
-                correspondence = self.cleaned_data.get("correspondence")
-                time = self.cleaned_data.get("time")
-                spirit = self.cleaned_data.get("spirit")
-                matter = self.cleaned_data.get("matter")
-                life = self.cleaned_data.get("life")
-                forces = self.cleaned_data.get("forces")
-                entropy = self.cleaned_data.get("entropy")
-                mind = self.cleaned_data.get("mind")
-                prime = self.cleaned_data.get("prime")
-                e = Effect(
-                    correspondence=correspondence,
-                    time=time,
-                    spirit=spirit,
-                    matter=matter,
-                    life=life,
-                    forces=forces,
-                    entropy=entropy,
-                    mind=mind,
-                    prime=prime,
-                    description=systems,
-                    name=name,
-                    status="Sub",
-                    owner=mage.owner,
-                    chronicle=mage.chronicle,
-                )
-                if e.is_learnable(mage) and e.cost() <= mage.rote_points:
-                    e.save()
-                else:
-                    raise forms.ValidationError("Not enough Rote Points")
-            else:
-                # Select Effect
-                e = self.cleaned_data["effect_options"]
-            r = Rote.objects.create(
-                name=name,
-                practice=practice,
-                attribute=attribute,
-                ability=ability,
-                description=description,
-                effect=e,
-                status="Sub",
-                chronicle=self.instance.chronicle,
-                owner=mage.owner,
-            )
-        else:
-            # Select Rote
-            r = self.cleaned_data["rote_options"]
-            e = r.effect
-        mage.rotes.add(r)
-        mage.rote_points -= e.cost()
-        mage.save()
+        """Learn the chosen rote; raises ValidationError when points run short."""
+        result = learn_rote(mage, self.cleaned_data)
+        if not result.success:
+            raise forms.ValidationError(result.error)
         return True

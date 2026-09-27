@@ -112,8 +112,11 @@ class MageSpheresForm(forms.ModelForm):
             "corr_name",
             "prime_name",
             "spirit_name",
-            "resonance",
         ]
+
+    # Resonance is typed free text resolved by Mage.add_resonance, not a pick
+    # from the model's through-table M2M.
+    resonance = forms.CharField(max_length=100)
 
     def clean_affinity_sphere(self):
         """Validate that an affinity sphere is selected."""
@@ -174,4 +177,63 @@ class MageSpheresForm(forms.ModelForm):
         if total_spheres != 6:
             raise ValidationError(f"Spheres must total 6 (currently {total_spheres}).")
 
+        return cleaned_data
+
+
+TENET_LABELS = (
+    ("metaphysical_tenet", "Metaphysical"),
+    ("personal_tenet", "Personal"),
+    ("ascension_tenet", "Ascension"),
+)
+PRACTICE_TOTAL_ERROR = "Starting Practices must add up to Arete rating"
+PRACTICE_ABILITY_ERROR = (
+    "You must have at least 2 dots in associated abilities for each dot of a Practice"
+)
+
+
+def starting_practice_error(mage, rows):
+    """The first Focus-step practice rule ``rows`` break, or None.
+
+    ``rows`` are (practice, rating) pairs, either possibly None. Ratings sum
+    to Arete, and each practice dot needs two dots among its abilities.
+    """
+    if sum(rating for _, rating in rows if rating is not None) != mage.arete:
+        return PRACTICE_TOTAL_ERROR
+    for practice, rating in rows:
+        if practice is None:
+            continue
+        ability_total = sum(
+            getattr(mage, ability.property_name, 0) for ability in practice.abilities.all()
+        )
+        if rating is None or rating > ability_total / 2:
+            return PRACTICE_ABILITY_ERROR
+    return None
+
+
+class MageFocusForm(forms.ModelForm):
+    """Tenets, validated together with the starting-practice formset."""
+
+    class Meta:
+        model = Mage
+        fields = ["metaphysical_tenet", "personal_tenet", "ascension_tenet", "other_tenets"]
+
+    def __init__(self, *args, practice_formset=None, **kwargs):
+        self.practice_formset = practice_formset
+        super().__init__(*args, **kwargs)
+
+    def practice_rows(self):
+        return [
+            (form.cleaned_data.get("practice"), form.cleaned_data.get("rating"))
+            for form in self.practice_formset
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for field, label in TENET_LABELS:
+            if cleaned_data.get(field) is None:
+                raise ValidationError(f"Must include {label} Tenet")
+        if self.practice_formset is not None and self.practice_formset.is_valid():
+            error = starting_practice_error(self.instance, self.practice_rows())
+            if error:
+                raise ValidationError(error)
         return cleaned_data
