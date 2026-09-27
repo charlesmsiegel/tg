@@ -1,0 +1,2 @@
+{% comment %}Replaces the contents of the page's #scene-chat-notice live region; empty clears it.
+Inputs: messages (strings), level ("error" or "info"), reload_url.{% endcomment %}<div id="scene-chat-notice" hx-swap-oob="innerHTML">{% if messages %}<div class="tg-message {{ level }}">{% for message in messages %}<p class="mb-0">{{ message }}{% if reload_url and forloop.last %} <a href="{{ reload_url }}">Reload the scene</a>{% endif %}</p>{% endfor %}</div>{% endif %}</div>

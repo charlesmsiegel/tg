@@ -60,7 +60,9 @@ class SceneChatBase(ActionAudienceMixin, TestCase):
 
     def post(self, character, message, display=""):
         return Post.objects.create(
-            scene=self.scene, character=character, display_name=display or character.name,
+            scene=self.scene,
+            character=character,
+            display_name=display or character.name,
             message=message,
         )
 
@@ -226,7 +228,7 @@ class CreatePostTests(SceneChatBase):
         with self.captureOnCommitCallbacks(execute=True):
             result = scene_chat.create_post(self.scene, self.form("“Hi”, it’s me"))
         self.assertTrue(result.success)
-        self.assertEqual(result.object.message, "\"Hi\", it's me")
+        self.assertEqual(result.object.message, '"Hi", it\'s me')
         self.assertEqual(result.object.character, self.character)
         self.assertEqual(result.object.display_name, "Scene Hero")
 
@@ -248,9 +250,7 @@ class CreatePostTests(SceneChatBase):
         self.assertEqual(listener.events(), [])
         for callback in callbacks:
             callback()
-        self.assertEqual(
-            listener.events(), [{"type": "scene.post", "post_id": result.object.pk}]
-        )
+        self.assertEqual(listener.events(), [{"type": "scene.post", "post_id": result.object.pk}])
 
     def test_can_post(self):
         self.assertTrue(scene_chat.can_post(self.users["owner"], self.scene))
