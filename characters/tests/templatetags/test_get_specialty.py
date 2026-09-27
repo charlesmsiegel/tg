@@ -89,3 +89,8 @@ class GetSpecialtyTemplateTest(TestCase):
         result = template.render(context)
 
         self.assertIn("Specialty: Swimming", result)
+
+    def test_returns_none_without_a_character(self):
+        """Create pages have no object; the filter must not raise."""
+        self.assertIsNone(get_specialty(None, "alertness"))
+        self.assertIsNone(get_specialty("", "alertness"))

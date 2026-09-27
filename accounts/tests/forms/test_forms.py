@@ -308,6 +308,15 @@ class TestStoryXPForm(TestCase):
         self.assertIn("Character One-drama", form.fields)
         self.assertIn("Character One-duration", form.fields)
 
+    def test_rows_pair_each_character_with_its_fields_in_topic_order(self):
+        form = StoryXP(story=self.story)
+        rows = {char.name: [f.name for f in fields] for char, fields in form.rows()}
+        self.assertEqual(
+            rows["Character One"],
+            [f"Character One-{topic}" for topic in StoryXP.TOPICS],
+        )
+        self.assertIn("Character Two", rows)
+
     def test_form_clean_processes_data_correctly(self):
         """Test that form clean method processes data into character dict."""
         form = StoryXP(

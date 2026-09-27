@@ -7,14 +7,14 @@
 {% block abilities %}
     {% include "characters/mage/mtahuman/ability_block_form.html" %}
     <div class="row">
-        <h2 class="col-sm {{ form.get_heading }}">Secondary Abilities</h2>
+        <h2 class="col-sm {{ object.get_heading }}">Secondary Abilities</h2>
     </div>
-    {% for tal, ski, kno in form.get_secondaries_for_display %}
+    {% for tal, ski, kno in object.get_secondaries_for_display %}
         <div class="row">
             <div class="col-sm">
                 {{ tal|first }}
                 {% with talname=tal|last %}
-                    {% if form|get_specialty:talname %}({{ form|get_specialty:talname }}){% endif %}
+                    {% if object|get_specialty:talname %}({{ object|get_specialty:talname }}){% endif %}
                 {% endwith %}
             </div>
             {% if tal|slice:"1:"|first != 0 %}
@@ -25,7 +25,7 @@
             <div class="col-sm">
                 {{ ski|first }}
                 {% with skiname=ski|last %}
-                    {% if form|get_specialty:skiname %}({{ form|get_specialty:skiname }}){% endif %}
+                    {% if object|get_specialty:skiname %}({{ object|get_specialty:skiname }}){% endif %}
                 {% endwith %}
             </div>
             {% if ski|slice:"1:"|first != 0 %}
@@ -36,7 +36,7 @@
             <div class="col-sm">
                 {{ kno|first }}
                 {% with knoname=kno|last %}
-                    {% if form|get_specialty:knoname %}({{ form|get_specialty:knoname }}){% endif %}
+                    {% if object|get_specialty:knoname %}({{ object|get_specialty:knoname }}){% endif %}
                 {% endwith %}
             </div>
             {% if kno|slice:"1:"|first != 0 %}

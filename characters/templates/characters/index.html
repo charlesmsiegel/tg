@@ -1,278 +1,14 @@
 {% extends "core/base.html" %}
-{% load field sanitize_text %}
+{% load field sanitize_text static %}
 {% block title %}
     {{ title }}
 {% endblock title %}
 {% block styling %}
     {{ block.super }}
-    <style>
-        /* Enhanced tab styling */
-        .tg-nav-tabs .tg-nav-link:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        /* Smooth collapse animation */
-        .collapse {
-            transition: height 0.3s ease;
-        }
-        
-        /* Rotate chevron when collapsed */
-        .collapsed .fa-chevron-down {
-            transform: rotate(-90deg);
-        }
-        
-        /* Enhanced table row hover */
-        .tg-table tbody tr:hover {
-            transform: translateX(4px);
-            box-shadow: -4px 0 0 var(--color-primary);
-        }
-        
-        /* Add more padding to table cells for badges */
-        .tg-table tbody td {
-            padding: var(--spacing-3) var(--spacing-4);
-            white-space: nowrap;
-        }
-        
-        /* Allow badge columns to wrap if needed */
-        .tg-table tbody td:nth-child(4),
-        .tg-table tbody td:nth-child(5) {
-            white-space: normal;
-        }
-        
-        /* Link hover effects */
-        .tg-table a:hover {
-            opacity: 0.8;
-        }
-        
-        /* Form button hover */
-        .tg-btn.btn-primary:hover,
-        .tg-btn.btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md) !important;
-        }
-        
-        /* Quick action cards hover */
-        .col-md-6 .tg-card:hover {
-            transform: translateY(-4px);
-            transition: var(--transition-base);
-        }
-        
-        /* Icon circle pulse effect */
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        .col-md-6 .tg-card:hover div[style*="border-radius: 50%"] {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Badge animations */
-        .tg-badge {
-            transition: var(--transition-fast);
-            display: inline-block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .tg-badge:hover {
-            transform: scale(1.05);
-        }
-        
-        /* Ensure badges in table cells have proper sizing */
-        .tg-table .tg-badge {
-            font-size: var(--font-size-xs);
-            padding: 0.35em 0.75em;
-            white-space: nowrap;
-        }
-        
-        /* Gameline-specific badge colors for character types */
-        .tg-badge.badge-vtm {
-            background-color: var(--gameline-vtm);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-wta {
-            background-color: var(--gameline-wta);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-mta {
-            background-color: var(--gameline-mta);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-ctd {
-            background-color: #20b2aa; /* Light sea green - fae/dreamlike quality */
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-wto {
-            background-color: var(--gameline-wto);
-            color: var(--color-white);
-        }
-        
-        /* Lighter variants for secondary character types (humans, companions, etc.) */
-        /* Using opacity to create lighter versions of the main colors */
-        .tg-badge.badge-vtm-light {
-            background-color: #8b0000;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-wta-light {
-            background-color: #228b22;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-mta-light {
-            background-color: #4b0082;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-ctd-light {
-            background-color: #20b2aa;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-wto-light {
-            background-color: #2f4f4f;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        /* Dark theme adjustments */
-        @media (prefers-color-scheme: dark) {
-            :root:not(.theme-light) .tg-badge.badge-vtm {
-                background-color: #dc143c;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-vtm-light {
-                background-color: #dc143c;
-                opacity: 0.7;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-wta {
-                background-color: #32cd32;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-wta-light {
-                background-color: #32cd32;
-                opacity: 0.7;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-mta {
-                background-color: #9370db;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-mta-light {
-                background-color: #9370db;
-                opacity: 0.7;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-ctd {
-                background-color: #48d1cc;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-ctd-light {
-                background-color: #48d1cc;
-                opacity: 0.7;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-wto {
-                background-color: #708090;
-            }
-            
-            :root:not(.theme-light) .tg-badge.badge-wto-light {
-                background-color: #708090;
-                opacity: 0.7;
-            }
-        }
-        
-        .theme-dark .tg-badge.badge-vtm {
-            background-color: #dc143c;
-        }
-        
-        .theme-dark .tg-badge.badge-vtm-light {
-            background-color: #dc143c;
-            opacity: 0.7;
-        }
-        
-        .theme-dark .tg-badge.badge-wta {
-            background-color: #32cd32;
-        }
-        
-        .theme-dark .tg-badge.badge-wta-light {
-            background-color: #32cd32;
-            opacity: 0.7;
-        }
-        
-        .theme-dark .tg-badge.badge-mta {
-            background-color: #9370db;
-        }
-        
-        .theme-dark .tg-badge.badge-mta-light {
-            background-color: #9370db;
-            opacity: 0.7;
-        }
-        
-        .theme-dark .tg-badge.badge-ctd {
-            background-color: #48d1cc;
-        }
-        
-        .theme-dark .tg-badge.badge-ctd-light {
-            background-color: #48d1cc;
-            opacity: 0.7;
-        }
-        
-        .theme-dark .tg-badge.badge-wto {
-            background-color: #708090;
-        }
-        
-        .theme-dark .tg-badge.badge-wto-light {
-            background-color: #708090;
-            opacity: 0.7;
-        }
-        
-        /* Group header row styling */
-        .group-header-row {
-            cursor: pointer;
-        }
-        
-        .group-header-row:hover {
-            box-shadow: inset 0 0 0 2px var(--color-primary);
-        }
-        
-        .group-header-row td {
-            border-bottom: 2px solid var(--theme-border-color) !important;
-        }
-        
-        /* Character rows should not have hover transform when in unified table */
-        .character-row:hover {
-            transform: translateX(4px);
-            box-shadow: -4px 0 0 var(--color-primary);
-        }
-        
-        /* Responsive improvements */
-        @media (max-width: 768px) {
-            .tg-table tbody tr:hover {
-                transform: none;
-                box-shadow: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'pages/character-index.css' %}">
 {% endblock styling %}
 {% block content %}
-    <div class="container py-4">
+    <div class="container py-4 character-index">
         <!-- Page Header -->
         <div class="tg-card header-card mb-4">
             <div class="tg-card-header">
@@ -282,10 +18,9 @@
         <!-- Character List -->
         <div class="tg-card mb-4">
             <div class="tg-card-header">
-                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs"
+                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs ci-tabs"
                     id="characterTabs"
-                    role="tablist"
-                    style="border-bottom: none; margin-bottom: 0;">
+                    role="tablist">
                     {% for chron in chron_dict.keys %}
                         <li class="nav-item">
                             <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
@@ -352,22 +87,22 @@
                                             {% if chars %}
                                                 {% regroup chars by first_group as grouplist %}
                                                 <!-- Single unified table with group headers as rows -->
-                                                <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
-                                                    <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                                <div class="tg-table-responsive ci-table-wrap">
+                                                    <table class="tg-table table-striped ci-table">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 3%;"></th>
-                                                                <th style="width: 35%;">
-                                                                    <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                                                <th class="ci-col-toggle"></th>
+                                                                <th class="ci-col-name">
+                                                                    <i class="fas fa-user-circle mr-2 ci-heading-icon"></i>Character Name
                                                                 </th>
-                                                                <th style="width: 20%;">
-                                                                    <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Player
+                                                                <th class="ci-col-20">
+                                                                    <i class="fas fa-gamepad mr-2 ci-heading-icon"></i>Player
                                                                 </th>
-                                                                <th style="width: 22%;">
-                                                                    <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                                                <th class="ci-col-type">
+                                                                    <i class="fas fa-tag mr-2 ci-heading-icon"></i>Type
                                                                 </th>
-                                                                <th style="width: 20%;">
-                                                                    <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                                                <th class="ci-col-20">
+                                                                    <i class="fas fa-info-circle mr-2 ci-heading-icon"></i>Status
                                                                 </th>
                                                             </tr>
                                                         </thead>
@@ -375,37 +110,24 @@
                                                             {% for g in grouplist %}
                                                                 {% if g.list %}
                                                                     <!-- Group Header Row -->
-                                                                    <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
-                                                                        <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                                    <tr class="group-header-row ci-group-row">
+                                                                        <td class="ci-group-cell" colspan="5">
                                                                             <div class="d-flex align-items-center">
                                                                                 <a href="#group-{{ g.grouper.id|default:'solo' }}-{{ chron.id|default:'no-chronicle' }}-{{ status }}"
-                                                                                   class="mr-2"
+                                                                                   class="mr-2 ci-group-toggle"
                                                                                    data-toggle="collapse"
                                                                                    role="button"
-                                                                                   aria-expanded="true"
-                                                                                   style="padding: 0.25rem 0.5rem; 
-                                                                                          background: transparent; 
-                                                                                          border: none; 
-                                                                                          color: var(--theme-text-primary);
-                                                                                          cursor: pointer;
-                                                                                          transition: var(--transition-fast);">
-                                                                                    <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                                                   aria-expanded="true">
+                                                                                    <i class="fas fa-chevron-down ci-chevron"></i>
                                                                                 </a>
                                                                                 <div class="flex-grow-1">
                                                                                     {% if g.grouper %}
-                                                                                        <a href="{{ g.grouper.get_absolute_url }}" 
-                                                                                           style="color: var(--theme-text-primary); 
-                                                                                                  text-decoration: none; 
-                                                                                                  font-weight: 600;
-                                                                                                  font-size: var(--font-size-base);
-                                                                                                  transition: var(--transition-fast);">
-                                                                                            <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                                        <a class="ci-group-link" href="{{ g.grouper.get_absolute_url }}">
+                                                                                            <i class="fas fa-users mr-2 ci-heading-icon"></i>{{ g.grouper.name }}
                                                                                         </a>
                                                                                     {% else %}
-                                                                                        <span style="color: var(--theme-text-primary); 
-                                                                                                     font-weight: 600;
-                                                                                                     font-size: var(--font-size-base);">
-                                                                                            <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Solo Characters
+                                                                                        <span class="ci-group-label">
+                                                                                            <i class="fas fa-user mr-2 ci-heading-icon"></i>Solo Characters
                                                                                         </span>
                                                                                     {% endif %}
                                                                                 </div>
@@ -415,30 +137,22 @@
                                                                     </tr>
                                                                     <!-- Character Rows (Collapsible) -->
                                                                     {% for char in g.list %}
-                                                                        <tr class="collapse show character-row" 
-                                                                            id="group-{{ g.grouper.id|default:'solo' }}-{{ chron.id|default:'no-chronicle' }}-{{ status }}"
-                                                                            style="transition: var(--transition-fast);">
+                                                                        <tr class="collapse show character-row ci-row-transition" 
+                                                                            id="group-{{ g.grouper.id|default:'solo' }}-{{ chron.id|default:'no-chronicle' }}-{{ status }}">
                                                                             <td data-label=""></td>
                                                                             <td data-label="Character">
                                                                                 <a href="{{ char.get_absolute_url }}" 
-                                                                                   class="{{ char.gameline }}_heading" 
-                                                                                   style="text-decoration: none; 
-                                                                                          font-weight: 600;
-                                                                                          font-size: var(--font-size-base);
-                                                                                          transition: var(--transition-fast);">
+                                                                                   class="{{ char.gameline }}_heading ci-character-link">
                                                                                     {{ char.name }}
                                                                                 </a>
                                                                             </td>
                                                                             <td data-label="Player">
                                                                                 {% if char.owner %}
-                                                                                    <a href="{% url 'accounts:profile' char.owner.id %}" 
-                                                                                       style="color: var(--theme-text-secondary); 
-                                                                                              text-decoration: none;
-                                                                                              transition: var(--transition-fast);">
-                                                                                        <i class="fas fa-user mr-1" style="font-size: 0.85em;"></i>{{ char.owner.username }}
+                                                                                    <a class="ci-owner-link" href="{% url 'accounts:profile' char.owner.id %}">
+                                                                                        <i class="fas fa-user mr-1 ci-owner-icon"></i>{{ char.owner.username }}
                                                                                     </a>
                                                                                 {% else %}
-                                                                                    <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                                                                    <span class="ci-no-owner">—</span>
                                                                                 {% endif %}
                                                                             </td>
                                                                             <td data-label="Type">
@@ -452,12 +166,9 @@
                                                                 {% endif %}
                                                             {% empty %}
                                                                 <tr>
-                                                                    <td colspan="5" class="text-center py-5" 
-                                                                        style="color: var(--theme-text-muted);
-                                                                               background: var(--theme-bg-secondary);
-                                                                               border: 2px dashed var(--theme-border-color);">
-                                                                        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
-                                                                        <p class="mb-0" style="font-size: var(--font-size-base);">No characters found for this status.</p>
+                                                                    <td colspan="5" class="text-center py-5 ci-empty-state">
+                                                                        <i class="fas fa-inbox fa-3x mb-3 ci-empty-icon"></i>
+                                                                        <p class="mb-0 ci-empty-text">No characters found for this status.</p>
                                                                     </td>
                                                                 </tr>
                                                             {% endfor %}
@@ -465,13 +176,9 @@
                                                     </table>
                                                 </div>
                                             {% else %}
-                                                <div class="text-center py-5" 
-                                                     style="color: var(--theme-text-muted);
-                                                            background: var(--theme-bg-secondary);
-                                                            border-radius: var(--border-radius-base);
-                                                            border: 2px dashed var(--theme-border-color);">
-                                                    <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
-                                                    <p class="mb-0" style="font-size: var(--font-size-base);">No characters found for this status.</p>
+                                                <div class="text-center py-5 ci-empty-state-rounded">
+                                                    <i class="fas fa-inbox fa-3x mb-3 ci-empty-icon"></i>
+                                                    <p class="mb-0 ci-empty-text">No characters found for this status.</p>
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -488,32 +195,24 @@
             <div class="row">
                 <!-- Create Character -->
                 <div class="col-md-6 mb-4">
-                    <div class="tg-card" style="height: 100%; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary);">
-                        <div class="tg-card-body" style="padding: var(--spacing-5); text-align: center;">
-                            <div style="margin-bottom: var(--spacing-4);">
-                                <div style="width: 64px; 
-                                           height: 64px; 
-                                           margin: 0 auto var(--spacing-3); 
-                                           background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
-                                           border-radius: 50%;
-                                           display: flex;
-                                           align-items: center;
-                                           justify-content: center;
-                                           box-shadow: var(--shadow-md);">
-                                    <i class="fas fa-user-plus" style="font-size: 28px; color: white;"></i>
+                    <div class="tg-card ci-action-card-primary">
+                        <div class="tg-card-body ci-action-body">
+                            <div class="ci-action-icon-wrap">
+                                <div class="ci-action-icon ci-action-icon-primary">
+                                    <i class="fas fa-user-plus ci-action-glyph"></i>
                                 </div>
-                                <h5 class="tg-card-title {{ header }}" style="margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
+                                <h5 class="tg-card-title {{ header }} ci-action-title">
                                     Create Character
                                 </h5>
-                                <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+                                <p class="ci-action-text">
                                     Start a new character for your chronicle
                                 </p>
                             </div>
                             <form id="charForm" method="post" novalidate>
                                 {% csrf_token %}
-                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
-                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
-                                        <i class="fas fa-book mr-2" style="color: var(--color-primary);"></i>Game Line
+                                <div class="tg-form-group ci-form-group">
+                                    <label class="tg-form-label ci-form-label">
+                                        <i class="fas fa-book mr-2 ci-label-icon-primary"></i>Game Line
                                     </label>
                                     <select name="gameline" id="id_gameline" class="tg-form-control tg-form-select" required>
                                         {% for value, label in form.gameline.field.choices %}
@@ -521,20 +220,16 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
-                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
-                                        <i class="fas fa-dice-d20 mr-2" style="color: var(--color-primary);"></i>Character Type
+                                <div class="tg-form-group ci-form-group">
+                                    <label class="tg-form-label ci-form-label">
+                                        <i class="fas fa-dice-d20 mr-2 ci-label-icon-primary"></i>Character Type
                                     </label>
                                     {{ form.char_type }}
                                 </div>
                                 <button type="submit"
                                         name="action"
                                         value="create"
-                                        class="tg-btn btn-primary btn-lg"
-                                        style="width: 100%;
-                                               box-shadow: var(--shadow-sm);
-                                               transition: var(--transition-fast);
-                                               font-weight: 600;">
+                                        class="tg-btn btn-primary btn-lg ci-action-button">
                                     <i class="fas fa-plus-circle mr-2"></i>Create Character
                                 </button>
                             </form>
@@ -544,32 +239,24 @@
                 
                 <!-- Create Group -->
                 <div class="col-md-6 mb-4">
-                    <div class="tg-card" style="height: 100%; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-success);">
-                        <div class="tg-card-body" style="padding: var(--spacing-5); text-align: center;">
-                            <div style="margin-bottom: var(--spacing-4);">
-                                <div style="width: 64px; 
-                                           height: 64px; 
-                                           margin: 0 auto var(--spacing-3); 
-                                           background: linear-gradient(135deg, var(--color-success) 0%, var(--color-info) 100%);
-                                           border-radius: 50%;
-                                           display: flex;
-                                           align-items: center;
-                                           justify-content: center;
-                                           box-shadow: var(--shadow-md);">
-                                    <i class="fas fa-users" style="font-size: 28px; color: white;"></i>
+                    <div class="tg-card ci-action-card-success">
+                        <div class="tg-card-body ci-action-body">
+                            <div class="ci-action-icon-wrap">
+                                <div class="ci-action-icon ci-action-icon-success">
+                                    <i class="fas fa-users ci-action-glyph"></i>
                                 </div>
-                                <h5 class="tg-card-title {{ header }}" style="margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
+                                <h5 class="tg-card-title {{ header }} ci-action-title">
                                     Create Group
                                 </h5>
-                                <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+                                <p class="ci-action-text">
                                     Form a cabal, pack, coterie, or motley
                                 </p>
                             </div>
                             <form id="groupForm" method="post" novalidate>
                                 {% csrf_token %}
-                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
-                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
-                                        <i class="fas fa-users-cog mr-2" style="color: var(--color-success);"></i>Group Type
+                                <div class="tg-form-group ci-form-group">
+                                    <label class="tg-form-label ci-form-label">
+                                        <i class="fas fa-users-cog mr-2 ci-label-icon-success"></i>Group Type
                                     </label>
                                     <select name="group_type" id="id_group_type" class="tg-form-control tg-form-select" required>
                                         {% for value, label in group_form.group_type.field.choices %}
@@ -580,11 +267,7 @@
                                 <button type="submit" 
                                         name="action" 
                                         value="create_group" 
-                                        class="tg-btn btn-success btn-lg"
-                                        style="width: 100%; 
-                                               box-shadow: var(--shadow-sm); 
-                                               transition: var(--transition-fast);
-                                               font-weight: 600;">
+                                        class="tg-btn btn-success btn-lg ci-action-button">
                                     <i class="fas fa-users-cog mr-2"></i>Create Group
                                 </button>
                             </form>
