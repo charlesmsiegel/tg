@@ -1,0 +1,12 @@
+{% comment %} Full page for an interactive (htmx) workflow. form#chargen-step is the
+   swap target: each step response replaces it; progress and messages update
+   out of band. Without JavaScript the same form posts normally. {% endcomment %}
+<div class="container py-4" id="chargen-root" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div class="tg-card header-card mb-4" data-gameline="{{ object.get_gameline }}">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title {{ object.get_heading }}">Edit {{ object.name }}</h1>
+        </div>
+    </div>
+    {% include "characters/core/chargen/progress_region.html" %}
+    {% include "characters/core/chargen/step.html" %}
+</div>

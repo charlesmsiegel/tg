@@ -1,0 +1,9 @@
+{% comment %} Instant running totals (Alpine tgPool): sums of the visible inputs
+   against targets supplied by the step's rules. A hint only; the validator's
+   feedback and the submit are the verdict. {% endcomment %}
+{% if allocation_rules and chargen_interactive %}
+    {{ allocation_rules|json_script:"chargen-pool-rules" }}
+    <div class="tg-chargen-pool" x-data="tgPool" data-rules="chargen-pool-rules" aria-live="polite">
+        <span x-text="summary"></span>
+    </div>
+{% endif %}

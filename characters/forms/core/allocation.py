@@ -49,3 +49,22 @@ class AllocationModelForm(AllocationFormMixin, forms.ModelForm):
 def allocation_modelform(model, fields):
     """A ModelForm over ``fields`` (a tuple) whose clean() applies allocation rules."""
     return forms.modelform_factory(model, form=AllocationModelForm, fields=list(fields))
+
+
+def rating_values(form):
+    """Current ratings of a bound form for running totals, even when invalid.
+
+    Cleaned values win; a field that failed cleaning falls back to its raw
+    submitted integer (or 0) so totals still reflect what the player typed.
+    """
+    cleaned = getattr(form, "cleaned_data", {})
+    values = {}
+    for name in form.fields:
+        if name in cleaned:
+            values[name] = cleaned[name]
+            continue
+        try:
+            values[name] = int(form.data.get(form.add_prefix(name), ""))
+        except (TypeError, ValueError):
+            values[name] = 0
+    return values

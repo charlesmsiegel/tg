@@ -1,0 +1,24 @@
+<div class="tg-card-body" data-step="{{ step.key }}">
+    {% if valid %}
+        <div class="tg-success-message"><i class="fas fa-check"></i> Ready to save.</div>
+    {% else %}
+        <ul class="tg-chargen-errors">
+            {% for label, message in errors %}
+                <li class="tg-error-message">{% if label %}{{ label }}: {% endif %}{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% for total in totals %}
+        <div class="tg-chargen-total{% if total.satisfied %} is-satisfied{% endif %}">
+            <strong>{{ total.label }}:</strong>
+            {% if total.groups %}
+                {% for group in total.groups %}{{ group.label }} {{ group.current }}{% if not forloop.last %} · {% endif %}{% endfor %}
+                (need {{ total.targets|join:"/" }} in any order)
+            {% elif total.target is not None %}
+                {{ total.current }} / {{ total.target }}{% if total.comparison == "at_most" %} at most{% endif %}
+            {% else %}
+                {{ total.current }}
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

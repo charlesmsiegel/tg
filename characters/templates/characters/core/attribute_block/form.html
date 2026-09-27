@@ -47,4 +47,8 @@
     <div class="col-sm dots">{{ form.wits }}</div>
 </div>
 
-<script src="{% static 'characters/js/attribute-validation.js' %}" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}"></script>
+{% if chargen_interactive %}
+    {% include "characters/core/chargen/pool.html" %}
+{% else %}
+    <script src="{% static 'characters/js/attribute-validation.js' %}" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}"></script>
+{% endif %}

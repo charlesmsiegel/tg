@@ -117,6 +117,25 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
         choices = [x for x in choices if self._can_afford_category(x[0])]
         self.fields["category"].choices = choices
 
+    # Cost-table keys where the category name is not the cost key itself.
+    cost_keys = {"MeritFlaw": "meritflaw", "Path Rating": "path_rating"}
+
+    def freebie_cost_rows(self):
+        """(category, cost) rows for the categories this form offers, from costs.py."""
+        rows = []
+        for value, label in self.fields["category"].choices:
+            if value == "-----":
+                continue
+            cost = get_freebie_cost(self.cost_keys.get(value, value.lower().replace(" ", "_")))
+            if cost == 10000:
+                continue
+            if cost == "rating":
+                cost = "Rating"
+            elif value == "Background":
+                cost = f"{cost} per dot × background multiplier"
+            rows.append((label, cost))
+        return rows
+
     def _can_afford_category(self, category):
         """Check if character can afford this category type."""
         trait_type = category.lower().split(" ")[-1]
@@ -135,9 +154,7 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
         # Attributes - filter to those below 5 (using cached list)
         all_attributes = get_cached_reference_list(Attribute, ordering=None)
-        attrs = [
-            x for x in all_attributes if getattr(self.instance, x.property_name, 0) < 5
-        ]
+        attrs = [x for x in all_attributes if getattr(self.instance, x.property_name, 0) < 5]
         example_map["Attribute"] = [(str(a.pk), str(a)) for a in attrs]
 
         # Abilities - filter to those below 5 and that character has (using cached list)

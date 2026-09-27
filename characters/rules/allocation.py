@@ -100,8 +100,28 @@ class AllocationRule:
             ]
         return []
 
-    def client_data(self) -> dict[str, int | str]:
-        data = {"name": self.name, "total": self.total, "comparison": self.comparison}
+    def satisfied(self, values: Mapping[str, int | None]) -> bool:
+        current = self.current(values)
+        return current <= self.total if self.comparison == "at_most" else current == self.total
+
+    def status(self, values: Mapping[str, int | None]) -> dict:
+        """Running total for display; the form's violations remain the verdict."""
+        return {
+            "name": self.name,
+            "label": self.name.replace("_", " ").title(),
+            "current": self.current(values),
+            "target": self.total,
+            "comparison": self.comparison,
+            "satisfied": self.satisfied(values),
+        }
+
+    def client_data(self) -> dict:
+        data = {
+            "name": self.name,
+            "total": self.total,
+            "comparison": self.comparison,
+            "fields": list(self.fields),
+        }
         if self.maximum is not None:
             data["max"] = self.maximum
         return data
@@ -163,7 +183,25 @@ class PriorityRule:
             return [RuleViolation(message, flash=flash)]
         return []
 
-    def client_data(self) -> dict[str, int | str]:
+    def targets(self) -> list[int]:
+        """Group totals a valid allocation has, largest first."""
+        return sorted(self._targets(), reverse=True)
+
+    def status(self, values: Mapping[str, int | None]) -> dict:
+        """Running group totals for display; the form's violations remain the verdict."""
+        totals = self.group_totals(values)
+        return {
+            "name": self.name,
+            "label": self.name.replace("_", " ").title(),
+            "groups": [
+                {"name": group, "label": group.title(), "current": totals[group]}
+                for group, _ in self.groups
+            ],
+            "targets": self.targets(),
+            "satisfied": sorted(totals.values()) == self._targets(),
+        }
+
+    def client_data(self) -> dict:
         primary, secondary, tertiary = self.points
         return {
             "name": self.name,
@@ -173,6 +211,8 @@ class PriorityRule:
             "min": self.minimum,
             "max": self.maximum,
             "base": self.base,
+            "groups": [[group, list(names)] for group, names in self.groups],
+            "targets": self.targets(),
         }
 
 

@@ -7,7 +7,7 @@ Mixin for forms with chained select fields.
 from django.core.exceptions import ValidationError
 
 from ..fields.chained import ChainedChoiceField, ChainedModelChoiceField
-from ..widgets.chained import ChainedSelect
+from ..widgets.chained import ChainedSelect, HtmxChainedSelect
 
 
 class ChainedSelectMixin:
@@ -194,6 +194,65 @@ class ChainedSelectMixin:
                 choices = field.get_choices_for_parent(parent_value)
                 field.choices = choices
                 field.widget.choices = choices
+
+    def chain_for(self, name):
+        """Field names of the chain containing ``name``, root first.
+
+        Follows ``parent_field`` links, so a plain ChoiceField can be the root
+        (as ``category`` is in the freebie forms).
+        """
+        children = {}
+        for field_name, field in self.fields.items():
+            parent = getattr(field, "parent_field", None)
+            if isinstance(field, ChainedChoiceField) and parent in self.fields:
+                children[parent] = field_name
+        root = name
+        while getattr(self.fields[root], "parent_field", None) in self.fields:
+            root = self.fields[root].parent_field
+        chain = [root]
+        while chain[-1] in children:
+            chain.append(children[chain[-1]])
+        return chain
+
+    def enable_htmx_chains(self, options_url):
+        """Fetch child options from ``options_url`` instead of an embedded tree.
+
+        Children are (re)filled from the current parent values, so a bound form
+        re-renders with the options for what was submitted.
+        """
+        self.htmx_chains = True
+        roots = {
+            tuple(self.chain_for(name))
+            for name, field in self.fields.items()
+            if isinstance(field, ChainedChoiceField) and field.parent_field in self.fields
+        }
+        for names in roots:
+            include = ", ".join(f"#{self[name].auto_id}" for name in names)
+            for position, name in enumerate(names):
+                field = self.fields[name]
+                if position:
+                    parent_value = self._chain_value(names[position - 1])
+                    # Option metadata (3-tuples) stays in choices_map for the
+                    # server's visibility rules; Select renders (value, label).
+                    field.choices = [
+                        choice[:2] for choice in field.get_choices_for_parent(parent_value)
+                    ]
+                child = names[position + 1] if position + 1 < len(names) else None
+                widget = HtmxChainedSelect(
+                    options_url=options_url,
+                    child=child,
+                    child_id=self[child].auto_id if child else None,
+                    include=include,
+                    attrs=field.widget.attrs,
+                )
+                widget.choices = field.choices
+                field.widget = widget
+
+    def _chain_value(self, name):
+        if self.is_bound:
+            return self.data.get(self.add_prefix(name), "")
+        value = self.get_initial_for_field(self.fields[name], name)
+        return getattr(value, "pk", value) or ""
 
     def _choice_to_dict(self, choice):
         """

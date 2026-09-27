@@ -16,6 +16,10 @@ from core.mixins import (
 class HumanBackgroundsView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
+    live_validation = True
+
+    def validation_totals(self, form):
+        return [form.allocation_status()]
 
     def get_object(self):
         """Return the Human object for permission checking."""

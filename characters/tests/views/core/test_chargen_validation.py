@@ -4,10 +4,9 @@ import json
 
 from django.contrib.auth.models import User
 from django.templatetags.static import static
-from django.utils.html import json_script
 from django.test import TestCase
-
 from django.urls import reverse
+from django.utils.html import json_script
 
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.background_block import Background
@@ -148,5 +147,9 @@ class TestChargenValidationRendering(TestCase):
         # reached through the generic character dispatcher.
         response = self.client.get(reverse("characters:character", kwargs={"pk": char.pk}))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "virtues-validation-status")
-        self.assertContains(response, f'src="{static("core/js/validation.js")}"')
+        # Vampire chargen is interactive: an Alpine pool plus the server's
+        # validate-only feedback replace the old client validator.
+        self.assertContains(response, 'x-data="tgPool"')
+        self.assertContains(response, 'id="chargen-validator"')
+        self.assertNotContains(response, "virtues-validation-status")
+        self.assertNotContains(response, f'src="{static("core/js/validation.js")}"')

@@ -36,6 +36,18 @@ class FreebieSpendingView(ChargenStepMixin, SpendFreebiesPermissionMixin, Update
         "Practice": Practice,
     }
     category_aliases = {"Rotes": "Rote Points"}
+    live_validation = True
+
+    def validation_totals(self, form):
+        # A per-choice cost preview needs a side-effect-free quote() on the
+        # spending services; until then only the pool itself is reported.
+        return [
+            {
+                "label": "Freebies remaining",
+                "current": self.object.freebies,
+                "satisfied": True,
+            }
+        ]
 
     def resolve_choice(self, model, value, **filters):
         if isinstance(value, model):
