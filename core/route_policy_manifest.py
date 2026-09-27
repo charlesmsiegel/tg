@@ -497,6 +497,7 @@ items.views.core.ItemIndexView
 locations.views.core.LocationIndexView
     """.split()),
     "PUBLIC_READ": frozenset("""
+core.views.object_type_redirect.ObjectTypeRedirectView
 accounts.views.CustomLoginView
 accounts.views.CustomPasswordResetView
 accounts.views.SignUp

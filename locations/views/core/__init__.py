@@ -1,8 +1,7 @@
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
 
-from core.create_redirects import resolve_object_type_url
 from core.model_registry import get_registry
 from core.utils import get_gameline_name
 from core.views.generic import DictView
@@ -39,23 +38,6 @@ class LocationIndexView(View):
             )
         context = self.get_context()
         return render(request, "locations/index.html", context)
-
-    def post(self, request, *args, **kwargs):
-        action = request.POST.get("action")
-        loc_type = request.POST.get("loc_type")
-        if not loc_type or action not in {"create", "index"}:
-            return HttpResponseBadRequest("Invalid location selection")
-        if action == "create":
-            if not request.user.is_authenticated:
-                return HttpResponseBadRequest("Login required")
-        return redirect(
-            resolve_object_type_url(
-                "loc",
-                loc_type,
-                "create" if action == "create" else "list",
-                request.POST.get("gameline"),
-            )
-        )
 
     def get_context(self):
         game_locations = get_registry("locations").menu(self.request.user)

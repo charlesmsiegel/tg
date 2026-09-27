@@ -1,5 +1,3 @@
-from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect
 from django.views.generic import ListView
 
 from characters.forms.core.character_creation import CharacterCreationForm
@@ -131,7 +129,6 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from core.create_redirects import resolve_object_type_url
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle
@@ -385,19 +382,6 @@ class CharacterIndexView(ListView):
 
     def get_queryset(self):
         return Character.objects.with_group_ordering()
-
-    def post(self, request, *args, **kwargs):
-        action = request.POST.get("action")
-        if action not in {"create", "create_group"}:
-            return HttpResponseBadRequest("Invalid character selection")
-        if not request.user.is_authenticated:
-            return HttpResponseBadRequest("Login required")
-        type_name = request.POST.get("group_type" if action == "create_group" else "char_type")
-        if not type_name:
-            return HttpResponseBadRequest("Missing character type")
-        return redirect(
-            resolve_object_type_url("char", type_name, "create", request.POST.get("gameline"))
-        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

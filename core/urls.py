@@ -1,9 +1,15 @@
 from django.urls import path
 
 from core import views
+from core.views.object_type_redirect import ObjectTypeRedirectView
 
 urlpatterns = [
     path("", views.HomeListView.as_view(), name="home"),
+    path(
+        "types/<str:kind>/<str:action>/",
+        ObjectTypeRedirectView.as_view(),
+        name="object_type_redirect",
+    ),
     path("book/create/", views.BookCreateView.as_view(), name="create_book"),
     path("book/<pk>/", views.BookDetailView.as_view(), name="book"),
     path("book/update/<pk>/", views.BookUpdateView.as_view(), name="update_book"),

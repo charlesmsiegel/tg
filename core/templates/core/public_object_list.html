@@ -11,9 +11,7 @@
 {% empty %}<p>No objects found.</p>{% endfor %}
 {% if character_form %}
 <h2>Create a character</h2>
-<form method="post">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="create">
+<form method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}">
   {{ character_form.as_p }}
   <button type="submit">Continue</button>
 </form>
@@ -21,18 +19,14 @@
 {% endif %}
 {% if group_form %}
 <h2>Create a group</h2>
-<form method="post">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="create_group">
+<form method="get" action="{% url 'core:object_type_redirect' 'group' 'create' %}">
   {{ group_form.as_p }}
   <button type="submit">Continue</button>
 </form>
 {% endif %}
 {% if item_form %}
 <h2>Create an item</h2>
-<form method="post">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="create">
+<form method="get" action="{% url 'core:object_type_redirect' 'item' 'create' %}">
   {{ item_form.as_p }}
   <button type="submit">Continue</button>
 </form>
@@ -40,9 +34,7 @@
 {% endif %}
 {% if location_form %}
 <h2>Create a location</h2>
-<form method="post">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="create">
+<form method="get" action="{% url 'core:object_type_redirect' 'location' 'create' %}">
   {{ location_form.as_p }}
   <button type="submit">Continue</button>
 </form>

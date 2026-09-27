@@ -43,9 +43,11 @@ class TestSeededVampireLocationRoutes(TestCase):
     def test_index_create_redirects_to_tremere_chantry_form(self):
         user = User.objects.create_user("player", "p@test.com", "password")
         self.client.force_login(user)
-        response = self.client.post(
-            reverse("locations:index"),
-            {"action": "create", "loc_type": "tremere_chantry", "gameline": "vtm"},
+        response = self.client.get(
+            reverse(
+                "core:object_type_redirect", kwargs={"kind": "location", "action": "create"}
+            ),
+            {"loc_type": "tremere_chantry", "gameline": "vtm"},
         )
         self.assertRedirects(
             response, "/locations/vampire/create/tremere_chantry/", fetch_redirect_response=False

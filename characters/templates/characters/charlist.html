@@ -21,12 +21,11 @@
             </h4>
         </div>
         {% if button_include %}
-            <form id="charForm" class="centertext container" method="post" novalidate>
-                {% csrf_token %}
+            <form id="charForm" class="centertext container" method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}" novalidate>
                 <div class="row">
                     <div class="col-sm">
                         {{ form.char_type }}
-                        <button type="submit" name="action" value="create">Create</button>
+                        <button type="submit">Create</button>
                     </div>
                 </div>
             </form>

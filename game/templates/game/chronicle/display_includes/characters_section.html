@@ -59,8 +59,7 @@
                     <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Character</h5>
                 </div>
                 <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="">
-                        {% csrf_token %}
+                    <form method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}">
                         <div class="tg-form-group mb-3">
                             <label for="{{ char_form.gameline.id_for_label }}" class="tg-form-label">Game Line</label>
                             <select name="gameline" id="id_chronicle_gameline" class="tg-form-control tg-form-select">
@@ -74,7 +73,7 @@
                             {{ char_form.char_type }}
                         </div>
                         <div class="text-center mt-2">
-                            <button type="submit" name="create_character" class="tg-btn btn-primary">
+                            <button type="submit" class="tg-btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Create Character
                             </button>
                         </div>
