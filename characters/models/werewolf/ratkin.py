@@ -14,6 +14,13 @@ class Ratkin(Fera):
 
     type = "ratkin"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "aspect")
+    chargen_help_text = {
+        "aspect": "Choose your aspect (similar to auspice for Garou).",
+    }
+    gift_group_fields = (("aspect_gifts", "aspect"),)
+
     # Ratkin breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

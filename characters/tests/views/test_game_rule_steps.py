@@ -584,3 +584,87 @@ class CompanionBudgetTests(RuleStepTestCase):
                 companion.prepare_starting_freebies()
                 self.assertEqual(companion.freebies, after)
                 self.assertEqual(companion.spent_freebies, [])
+
+
+FERA_BREED_STEP = {
+    # kind: (fields, {field: help text} beyond breed, gift context keys given all choices)
+    "ratkin": (["breed", "aspect"], {"aspect": "Choose your aspect (similar to auspice for Garou)."}, {"breed_gifts", "aspect_gifts"}),
+    "mokole": (
+        ["breed", "stream", "auspice"],
+        {
+            "stream": "Choose your stream (cultural/regional grouping).",
+            "auspice": "Choose your auspice (based on sun position at birth).",
+        },
+        {"breed_gifts", "stream_gifts", "auspice_gifts"},
+    ),
+    "bastet": (
+        ["breed", "tribe", "pryio"],
+        {"tribe": "Choose your tribe (cat species).", "pryio": "Choose your Pryio (moon-based role)."},
+        {"breed_gifts", "tribe_gifts", "pryio_gifts"},
+    ),
+    "corax": (["breed"], {}, {"breed_gifts", "corax_gifts"}),
+    "nuwisha": (["breed", "role"], {"role": "Choose your role (optional, loose affiliation)."}, {"breed_gifts", "nuwisha_gifts", "role_gifts"}),
+    "gurahl": (["breed", "auspice"], {"auspice": "Choose your auspice (seasonal role)."}, {"breed_gifts", "auspice_gifts"}),
+    "ananasi": (["breed", "aspect"], {"aspect": "Choose your aspect (role among the Ananasi)."}, {"breed_gifts", "aspect_gifts"}),
+    "rokea": (["breed", "auspice"], {"auspice": "Choose your auspice (time of birth)."}, {"breed_gifts", "auspice_gifts"}),
+    "kitsune": (["breed", "path"], {"path": "Choose your path (role in society)."}, {"breed_gifts", "path_gifts"}),
+    "nagah": (["breed", "auspice"], {"auspice": "Choose your auspice (role as assassin)."}, {"breed_gifts", "auspice_gifts"}),
+    "ajaba": (["breed", "auspice"], {"auspice": "Choose your auspice (lunar cycle)."}, {"breed_gifts", "auspice_gifts"}),
+    "grondr": (["breed", "auspice"], {"auspice": "Choose your auspice (seasonal role)."}, {"breed_gifts", "auspice_gifts"}),
+}
+
+
+class FeraDispatchTests(RuleStepTestCase):
+    """Each Changing Breed renders the fields, help text and gift lists it always did."""
+
+    def fera_model(self, kind):
+        from django.apps import apps
+
+        return apps.get_model("characters", kind)
+
+    def test_breed_faction_step_per_type(self):
+        for kind, (fields, help_text, _) in FERA_BREED_STEP.items():
+            with self.subTest(kind=kind):
+                fera = self.at(kind, self.fera_model(kind), "breed_faction")
+                response = self.client.get(reverse("characters:character", args=[fera.pk]))
+                self.assertEqual(response.status_code, 200)
+                form = response.context["form"]
+                self.assertEqual(list(form.fields), fields)
+                self.assertEqual(form.fields["breed"].help_text, "Choose your breed (birth form).")
+                for field, text in help_text.items():
+                    self.assertEqual(form.fields[field].help_text, text)
+                self.assertEqual(response.context["fera_type"], type(fera).__name__)
+                if kind == "nuwisha":
+                    self.assertFalse(form.fields["role"].required)
+
+    def test_breed_choice_runs_the_setters(self):
+        from characters.models.werewolf.gift import GiftPermission
+
+        fera = self.at("ratkin", self.fera_model("ratkin"), "breed_faction")
+        response = self.post(fera, {"breed": "homid", "aspect": "warrior"})
+        self.assertEqual(response.status_code, 302)
+        fera.refresh_from_db()
+        self.assertEqual((fera.breed, fera.aspect, fera.gnosis, fera.rage), ("homid", "warrior", 1, 4))
+        self.assertTrue(
+            fera.gift_permissions.filter(pk=GiftPermission.objects.get(shifter="ratkin", condition="warrior").pk).exists()
+        )
+
+    def test_gift_groups_per_type(self):
+        from characters.models.werewolf.gift import Gift, GiftPermission
+
+        for kind, (fields, _, keys) in FERA_BREED_STEP.items():
+            with self.subTest(kind=kind):
+                model = self.fera_model(kind)
+                values = {
+                    field: (model._meta.get_field(field).choices or [(f"{kind}-{field}",)])[0][0]
+                    for field in fields
+                }
+                fera = self.at(kind, model, "gifts", **values)
+                conditions = list(values.values()) + [kind]
+                for condition in conditions:
+                    permission = GiftPermission.objects.create(shifter=kind, condition=condition)
+                    Gift.objects.create(name=f"{kind} {condition}", rank=1).allowed.add(permission)
+                response = self.client.get(reverse("characters:character", args=[fera.pk]))
+                self.assertEqual(response.status_code, 200)
+                present = {key for key in response.context.keys() if key.endswith("_gifts")}
+                self.assertEqual(present, keys)

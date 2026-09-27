@@ -14,6 +14,13 @@ class Ajaba(Fera):
 
     type = "ajaba"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "auspice")
+    chargen_help_text = {
+        "auspice": "Choose your auspice (lunar cycle).",
+    }
+    gift_group_fields = (("auspice_gifts", "auspice"),)
+
     # Ajaba breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human
