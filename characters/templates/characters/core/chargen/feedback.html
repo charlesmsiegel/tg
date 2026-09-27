@@ -1,6 +1,8 @@
 <div class="tg-card-body" data-step="{{ step.key }}">
-    {% if valid %}
+    {% if valid and verdict_is_final %}
         <div class="tg-success-message"><i class="fas fa-check"></i> Ready to save.</div>
+    {% elif valid %}
+        <div class="tg-info-message">No problems found so far; the rest is checked when you save.</div>
     {% else %}
         <ul class="tg-chargen-errors">
             {% for label, message in errors %}

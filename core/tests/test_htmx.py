@@ -46,12 +46,15 @@ class HtmxHelperTests(SimpleTestCase):
     def test_headers(self):
         response = vary_on_htmx(mark_fragment(hx_redirect("/"), "chargen-step"))
         self.assertEqual(response["TG-Fragment"], "chargen-step")
-        self.assertIn("HX-Request", response["Vary"])
+        for header in ("HX-Request", "HX-History-Restore-Request", "HX-Boosted"):
+            self.assertIn(header, response["Vary"])
 
     def test_trigger_merges_events(self):
         response = trigger(hx_redirect("/"), "a", {"x": 1})
         trigger(response, "b", True)
         self.assertEqual(json.loads(response["HX-Trigger"]), {"a": {"x": 1}, "b": True})
+        trigger(response, "c", 1, header="HX-Trigger-After-Swap")
+        self.assertEqual(json.loads(response["HX-Trigger-After-Swap"]), {"c": 1})
 
 
 class VendoredLibraryTests(SimpleTestCase):
@@ -79,7 +82,9 @@ class VendoredLibraryTests(SimpleTestCase):
 
     def test_each_vendored_library_ships_its_license(self):
         for path, _ in self.scripts():
-            self.assertTrue((VENDOR / Path(path).relative_to("vendor").parent / "LICENSE").is_file())
+            self.assertTrue(
+                (VENDOR / Path(path).relative_to("vendor").parent / "LICENSE").is_file()
+            )
 
     def test_config_disables_eval_and_injected_styles(self):
         html = render_to_string("core/includes/interactive_scripts.html")
