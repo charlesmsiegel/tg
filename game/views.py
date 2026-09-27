@@ -62,6 +62,7 @@ from game.models import (
     WeeklyXPRequest,
     XPSpendingRequest,
 )
+from game.selectors import annotate_week_scene_counts, chronicle_overview
 from game.security import (
     filter_private_records,
     filter_scenes,
@@ -73,6 +74,7 @@ from game.spending_approval import (
     decide_spending_request,
     require_spending_approver,
 )
+from game.text import straighten_quotes
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
@@ -100,113 +102,11 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
             self.request.user, chronicle, self.request
         )
 
-        # --- Common Knowledge (SettingElements) by gameline ---
-        all_setting_elements = chronicle.common_knowledge_elements.all()
-        setting_elements_by_gameline = ChronicleDataService.group_by_gameline(
-            all_setting_elements, gameline_attr="gameline"
-        )
-
-        # --- Locations ---
-        top_locations = (
-            LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
-        )
-
-        # --- Characters by status ---
-        # Use select_related to prevent N+1 queries when accessing owner.username
-        # and owner.profile in templates
-        active_characters = (
-            Character.objects.active()
-            .player_characters()
-            .with_group_ordering()
-            .filter(chronicle=chronicle)
-            .select_related("owner", "owner__profile")
-        )
-        retired_characters = (
-            Character.objects.retired()
-            .player_characters()
-            .with_group_ordering()
-            .filter(chronicle=chronicle)
-            .select_related("owner", "owner__profile")
-        )
-        deceased_characters = (
-            Character.objects.deceased()
-            .player_characters()
-            .with_group_ordering()
-            .filter(chronicle=chronicle)
-            .select_related("owner", "owner__profile")
-        )
-        npc_characters = (
-            Character.objects.active()
-            .npcs()
-            .with_group_ordering()
-            .filter(chronicle=chronicle)
-            .select_related("owner", "owner__profile")
-        )
-
-        # --- Items ---
-        all_items = ItemModel.objects.for_chronicle(chronicle).order_by("name")
-
-        # These tables include owner, type, status and object relationships.
-        # A chronicle player may open every object's public card elsewhere,
-        # but only full readers may receive rows in this richer context.
-        if not staffed_chronicles(self.request.user).filter(pk=chronicle.pk).exists():
-            # Location rows recurse through children in the template, so a
-            # filtered parent alone could still expose another owner's child.
-            top_locations = top_locations.none()
-            active_characters = active_characters.filter(owner=self.request.user)
-            retired_characters = retired_characters.filter(owner=self.request.user)
-            deceased_characters = deceased_characters.filter(owner=self.request.user)
-            npc_characters = npc_characters.filter(owner=self.request.user)
-            all_items = all_items.filter(owner=self.request.user)
-        locations_by_gameline = ChronicleDataService.group_locations_by_gameline(top_locations)
-        items_by_gameline = ChronicleDataService.group_items_by_gameline(all_items)
-
-        # --- Scenes by status ---
-        all_scenes = filter_scenes(
-            Scene.objects.filter(chronicle=chronicle), self.request.user
-        ).order_by("-date_of_scene")
-        active_scenes = all_scenes.filter(finished=False)
-        completed_scenes = all_scenes.filter(finished=True)
-
+        context.update(chronicle_overview(chronicle, self.request.user))
         context.update(
             {
-                # Common Knowledge
-                "setting_elements_by_gameline": setting_elements_by_gameline,
-                # Characters (base querysets for backward compatibility)
-                "character_list": active_characters,
-                "retired_characters": retired_characters,
-                "deceased_characters": deceased_characters,
-                "npc_characters": npc_characters,
-                # Characters by gameline
-                "active_by_gameline": ChronicleDataService.group_characters_by_gameline(
-                    active_characters
-                ),
-                "retired_by_gameline": ChronicleDataService.group_characters_by_gameline(
-                    retired_characters
-                ),
-                "deceased_by_gameline": ChronicleDataService.group_characters_by_gameline(
-                    deceased_characters
-                ),
-                "npc_by_gameline": ChronicleDataService.group_characters_by_gameline(
-                    npc_characters
-                ),
-                # Locations
-                "top_locations": top_locations,
-                "locations_by_gameline": locations_by_gameline,
-                # Items
-                "items": all_items,
-                "items_by_gameline": items_by_gameline,
-                # Scenes by status and gameline
-                "all_scenes_by_gameline": ChronicleDataService.group_scenes_by_gameline(all_scenes),
-                "active_scenes_by_gameline": ChronicleDataService.group_scenes_by_gameline(
-                    active_scenes
-                ),
-                "completed_scenes_by_gameline": ChronicleDataService.group_scenes_by_gameline(
-                    completed_scenes
-                ),
                 # Forms and other
                 "form": SceneCreationForm(chronicle=chronicle, user=self.request.user),
-                "active_scenes": active_scenes,  # Keep for backward compatibility
                 "story_form": StoryForm(),
                 "header": chronicle.headings,
                 # Creation forms for Characters, Locations, Items
@@ -383,47 +283,7 @@ class SceneDetailView(DetailView):
                 messages.error(request, "Failed to create post. Please check your input.")
         return redirect(reverse("game:scene", kwargs={"pk": scene.pk}))
 
-    @staticmethod
-    def straighten_quotes(s):
-        # Define the Unicode code points for various quotation marks and apostrophes
-        single_quote_chars = [
-            0x2018,  # ‘ LEFT SINGLE QUOTATION MARK
-            0x2019,  # ’ RIGHT SINGLE QUOTATION MARK
-            0x201A,  # ‚ SINGLE LOW-9 QUOTATION MARK
-            0x201B,  # ‛ SINGLE HIGH-REVERSED-9 QUOTATION MARK
-            0x2032,  # ′ PRIME
-            0x02B9,  # ʹ MODIFIER LETTER PRIME
-            0x02BB,  # ʻ MODIFIER LETTER TURNED COMMA
-            0x02BC,  # ʼ MODIFIER LETTER APOSTROPHE
-            0x02BD,  # ʽ MODIFIER LETTER REVERSED COMMA
-            0x275B,  # ❛ HEAVY SINGLE TURNED COMMA QUOTATION MARK ORNAMENT
-            0x275C,  # ❜ HEAVY SINGLE COMMA QUOTATION MARK ORNAMENT
-            0xFF07,  # ＇ FULLWIDTH APOSTROPHE
-            0x00B4,  # ´ ACUTE ACCENT
-            0x0060,  # ` GRAVE ACCENT
-        ]
-
-        double_quote_chars = [
-            0x201C,  # “ LEFT DOUBLE QUOTATION MARK
-            0x201D,  # ” RIGHT DOUBLE QUOTATION MARK
-            0x201E,  # „ DOUBLE LOW-9 QUOTATION MARK
-            0x201F,  # ‟ DOUBLE HIGH-REVERSED-9 QUOTATION MARK
-            0x2033,  # ″ DOUBLE PRIME
-            0x02BA,  # ʺ MODIFIER LETTER DOUBLE PRIME
-            0x275D,  # ❝ HEAVY DOUBLE TURNED COMMA QUOTATION MARK ORNAMENT
-            0x275E,  # ❞ HEAVY DOUBLE COMMA QUOTATION MARK ORNAMENT
-            0xFF02,  # ＂ FULLWIDTH QUOTATION MARK
-        ]
-
-        # Create a translation table
-        translation_table = {}
-        for code_point in single_quote_chars:
-            translation_table[code_point] = ord("'")
-        for code_point in double_quote_chars:
-            translation_table[code_point] = ord('"')
-
-        # Translate the string using the translation table
-        return s.translate(translation_table)
+    straighten_quotes = staticmethod(straighten_quotes)
 
 
 class CommandsView(LoginRequiredMixin, TemplateView):
@@ -582,40 +442,11 @@ class WeekListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_context_data(self, **kwargs):
-        from datetime import timedelta
-
-        from django.db.models import Max
-
         context = super().get_context_data(**kwargs)
         context["can_manage_global_records"] = (
             self.request.user.is_staff or self.request.user.is_superuser
         )
-
-        # Pre-compute finished scene counts for all weeks in the page to avoid N+1 queries
-        # Get all finished scenes with their latest post dates in one query
-        latest_post_subquery = (
-            Post.objects.filter(scene=OuterRef("pk"))
-            .values("scene")
-            .annotate(latest_dt=Max("datetime_created"))
-            .values("latest_dt")
-        )
-
-        finished_scenes = list(
-            filter_scenes(Scene.objects.filter(finished=True), self.request.user)
-            .annotate(latest_post_date=Subquery(latest_post_subquery))
-            .values("pk", "latest_post_date")
-        )
-
-        # Attach scene counts to each week object to avoid N+1 queries in template
-        for week in context["object_list"]:
-            start_date = week.end_date - timedelta(days=7)
-            week.cached_scene_count = sum(
-                1
-                for scene in finished_scenes
-                if scene["latest_post_date"]
-                and start_date <= scene["latest_post_date"].date() <= week.end_date
-            )
-
+        annotate_week_scene_counts(context["object_list"], self.request.user)
         return context
 
 
@@ -739,7 +570,8 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageM
             )
             return redirect("game:week:detail", pk=form.week.pk)
 
-        form.player_save()
+        # player_save() only prepares the instance; ModelFormMixin saves it once.
+        form.player_save(commit=False)
         return super().form_valid(form)
 
     def get_success_url(self):
