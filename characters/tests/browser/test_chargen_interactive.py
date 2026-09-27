@@ -15,6 +15,8 @@ import unittest
 from django.contrib.auth.models import User
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.core.cache import cache
+from django.test import override_settings
 from django.urls import reverse
 
 from characters.models.core.background_block import Background
@@ -35,6 +37,9 @@ def chromium_binary():
     return next((path for path in candidates if path and os.path.isfile(path)), None)
 
 
+# Every test reuses the same user and character ids, and a walkthrough alone
+# sends about 60 partial requests in seconds; the throttle has its own test.
+@override_settings(CHARGEN_PARTIAL_LIMIT=10_000)
 class BrowserTestCase(StaticLiveServerTestCase):
     maxDiff = None
 
@@ -59,6 +64,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
         super().tearDownClass()
 
     def setUp(self):
+        cache.clear()
         self.owner = User.objects.create_user("owner", password="pw")
         self.potence = Discipline.objects.create(name="Potence", property_name="potence")
         self.celerity = Discipline.objects.create(name="Celerity", property_name="celerity")
@@ -255,6 +261,38 @@ class ContractSafetyTests(BrowserTestCase):
         # The Background answer arrived last but belongs to the old chain.
         self.assertTrue(self.page.is_hidden("#note_wrap"))
         self.assertEqual(self.page.input_value("#id_category"), "Discipline")
+        self.assertEqual(self.errors, [])
+
+    def test_slow_options_swap_revalidates_the_reset_chain(self):
+        self.open(self.vampire(7, freebies=15, freebies_approved=True))
+        held = []
+
+        def hold_example_options(route):
+            if "_options=example" in route.request.url:
+                held.append(route)
+            else:
+                route.continue_()
+
+        self.page.select_option("#id_category", "Discipline")
+        self.page.wait_for_selector(
+            f'#id_example option[value="{self.potence.pk}"]', state="attached"
+        )
+        self.page.select_option("#id_example", str(self.potence.pk))
+        self.page.route("**/characters/*/?*", hold_example_options)
+        self.page.select_option("#id_category", "Willpower")
+        # Validation runs first, with the new category and the old trait...
+        self.page.wait_for_function(
+            "document.querySelector('#chargen-feedback').innerText"
+            ".includes('Invalid selection for the chosen category')"
+        )
+        # ...then the held options answer resets the trait.
+        for route in held:
+            route.continue_()
+        self.page.wait_for_function(
+            "document.querySelector('#chargen-feedback').innerText"
+            ".includes('No problems found so far')"
+        )
+        self.assertEqual(self.page.input_value("#id_example"), "")
         self.assertEqual(self.errors, [])
 
     def test_non_fragment_response_loads_as_a_full_page(self):

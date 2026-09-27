@@ -69,6 +69,7 @@ class AttributeRuleTest(TestCase):
                     ["social", ["charisma", "manipulation", "appearance"]],
                     ["mental", ["perception", "intelligence", "wits"]],
                 ],
+                "group_labels": {"physical": "Physical", "social": "Social", "mental": "Mental"},
                 "targets": [10, 8, 6],
             },
         )
@@ -188,6 +189,7 @@ class AllocationRuleTest(TestCase):
             WRAITH_ARCANOI.client_data(),
             {
                 "name": "arcanoi",
+                "label": "Arcanoi",
                 "total": 5,
                 "comparison": "exact",
                 "max": 5,

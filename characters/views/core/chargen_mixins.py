@@ -64,6 +64,9 @@ class ChargenStepMixin:
             if partial == "validate":
                 return self.render_validation()
             return self.render_options()
+        # The early responses below skip get_context_data(); object_perms still
+        # reaches step.html because AuthorizationMiddleware.process_template_response
+        # adds it to any TemplateResponse whose context has an "object".
         if waiting:
             if request.method == "POST":
                 raise PermissionDenied("Freebie allocation is awaiting approval")

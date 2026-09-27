@@ -251,8 +251,14 @@ class ChainedSelectMixin:
     def _chain_value(self, name):
         if self.is_bound:
             return self.data.get(self.add_prefix(name), "")
-        value = self.get_initial_for_field(self.fields[name], name)
-        return getattr(value, "pk", value) or ""
+        field = self.fields[name]
+        value = self.get_initial_for_field(field, name)
+        value = getattr(value, "pk", value)
+        if value in (None, "") and getattr(field, "choices", None):
+            # An unselected <select> shows (and submits) its first option, so
+            # its children must start with that option's choices.
+            value = next(iter(field.choices), ("",))[0]
+        return "" if value is None else value
 
     def _choice_to_dict(self, choice):
         """

@@ -32,6 +32,11 @@ def _value(values: Mapping[str, int | None], name: str) -> int:
     return values.get(name) or 0
 
 
+def label(name: str) -> str:
+    """Display name for a rule or group; the live hints and feedback both use it."""
+    return name.replace("_", " ").title()
+
+
 @dataclass(frozen=True)
 class AllocationRule:
     """Fields that must sum to exactly (or at most) ``total``.
@@ -108,7 +113,7 @@ class AllocationRule:
         """Running total for display; the form's violations remain the verdict."""
         return {
             "name": self.name,
-            "label": self.name.replace("_", " ").title(),
+            "label": label(self.name),
             "current": self.current(values),
             "target": self.total,
             "comparison": self.comparison,
@@ -118,6 +123,7 @@ class AllocationRule:
     def client_data(self) -> dict:
         data = {
             "name": self.name,
+            "label": label(self.name),
             "total": self.total,
             "comparison": self.comparison,
             "fields": list(self.fields),
@@ -192,9 +198,9 @@ class PriorityRule:
         totals = self.group_totals(values)
         return {
             "name": self.name,
-            "label": self.name.replace("_", " ").title(),
+            "label": label(self.name),
             "groups": [
-                {"name": group, "label": group.title(), "current": totals[group]}
+                {"name": group, "label": label(group), "current": totals[group]}
                 for group, _ in self.groups
             ],
             "targets": self.targets(),
@@ -212,6 +218,7 @@ class PriorityRule:
             "max": self.maximum,
             "base": self.base,
             "groups": [[group, list(names)] for group, names in self.groups],
+            "group_labels": {group: label(group) for group, _ in self.groups},
             "targets": self.targets(),
         }
 

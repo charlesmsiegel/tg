@@ -16,6 +16,7 @@ from django.urls import reverse
 
 from characters.chargen import get_workflow
 from characters.chargen.definitions import WORKFLOWS
+from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
@@ -383,6 +384,10 @@ class OptionsTests(InteractiveChargenTestCase):
                 self.assertEqual(self.options(_options=name).status_code, 400)
 
     def test_full_page_uses_server_options_not_embedded_trees(self):
+        from django.core.cache import cache
+
+        strength = Attribute.objects.create(name="Strength", property_name="strength")
+        cache.clear()  # the freebie form reads Attributes through the reference cache
         response = self.client.get(self.url(self.character))
         self.assertNotContains(response, "data-chain-tree")
         self.assertNotContains(response, "widgets/chained.js")
@@ -394,6 +399,9 @@ class OptionsTests(InteractiveChargenTestCase):
         html = response.content.decode()
         self.assertNotRegex(html, r'id="example_wrap"[^>]* hidden')
         self.assertRegex(html, r'id="value_wrap"[^>]* hidden')
+        # ...and its Trait select already offers the Attributes.
+        example = re.search(r'<select name="example".*?</select>', html, re.S).group(0)
+        self.assertIn(f'<option value="{strength.pk}">Strength</option>', example)
 
     def test_cost_table_comes_from_the_cost_source(self):
         response = self.client.get(self.url(self.character))
