@@ -383,11 +383,19 @@ class MageStepTests(RuleStepTestCase):
     def test_detail_specialties_reject_unrequested_stats_regression(self):
         """D12: detail-page specialties only accept stats that need one."""
         from characters.models.core.specialty import Specialty
+        from characters.models.mage.mage import Mage
 
-        mage = self.mage("rote", status="App", strength=4)
-        mage.creation_status = 0
-        mage.save()
-        self.post(mage, {"specialties": "1", "strength": "Brawny", "wits": "Sneaky"})
+        from characters.models.core.attribute_block import Attribute
+
+        Attribute.objects.create(name="Strength", property_name="strength")
+        admin = get_user_model().objects.create_superuser("rule-admin")
+        mage = Mage.objects.create(
+            name="Detail Mage", owner=self.owner, status="App", strength=4
+        )
+        self.client.force_login(admin)
+        response = self.post(mage, {"specialties": "1", "strength": "Brawny", "wits": "Sneaky"})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(mage.specialties.filter(stat="strength", name="Brawny").exists())
         self.assertFalse(Specialty.objects.filter(stat="wits").exists())
 
 

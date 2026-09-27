@@ -458,9 +458,9 @@ class TestRoteCreationFormValidation(TestCase):
             instance=self.mage,
         )
 
-        # Empty form should still be valid since all fields are optional
-        # But saving should fail without proper data
-        self.assertTrue(form.is_valid())
+        # Every field is optional, but the form requires a complete choice.
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.non_field_errors(), ["Must create or select a rote"])
 
     def test_new_effect_cost_validation(self):
         """Test that new effect cost is validated against rote points."""

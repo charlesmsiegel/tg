@@ -9,10 +9,12 @@ Mirrors the XP spending service architecture but for freebie point spending
 during character creation.
 """
 
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost, get_meritflaw_freebie_cost
@@ -203,7 +205,8 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
             )
 
         try:
-            return handler_method(example=example, value=value, note=note, pooled=pooled, **kwargs)
+            with transaction.atomic():
+                return handler_method(example=example, value=value, note=note, pooled=pooled, **kwargs)
         except ValidationError as e:
             return FreebieSpendResult(
                 success=False,
@@ -377,6 +380,20 @@ class FreebieSpendingServiceFactory:
         char_type = character.type
         service_class = cls._service_map.get(char_type, HumanFreebieSpendingService)
         return service_class(character)
+
+    @classmethod
+    @contextmanager
+    def locked(cls, character):
+        """Yield a service bound to a row-locked, freshly read ``character``.
+
+        Opens a transaction and re-reads the character with
+        ``select_for_update()`` so concurrent spends serialize and each sees
+        the other's deduction. Views spend through this; unit tests may still
+        build services around in-memory instances with ``get_service``.
+        """
+        with transaction.atomic():
+            fresh = type(character).objects.select_for_update().get(pk=character.pk)
+            yield cls.get_service(fresh)
 
     @classmethod
     def get_categories_for_character(cls, character) -> list[str]:

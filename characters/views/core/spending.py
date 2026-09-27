@@ -100,8 +100,10 @@ class FreebieSpendingView(ChargenStepMixin, SpendFreebiesPermissionMixin, Update
         except ValidationError as error:
             form.add_error(None, error)
             return self.form_invalid(form)
-        service = FreebieSpendingServiceFactory.get_service(self.object)
-        result = service.spend(**kwargs)
+        with FreebieSpendingServiceFactory.locked(self.object) as service:
+            result = service.spend(**kwargs)
+        # The service spent on a freshly locked copy; continue with that state.
+        self.object = service.character
         if not result.success:
             form.add_error(None, result.error)
             return self.form_invalid(form)
