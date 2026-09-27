@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Max, OuterRef, Subquery
+from django.db.models import Exists, Max, OuterRef, Subquery
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import (  # ensure timezone-aware now if using TIME_ZONE settings
@@ -630,8 +630,22 @@ class PostManager(models.Manager):
     """Custom manager for Post with optimized queries."""
 
     def for_scene_optimized(self, scene):
-        """Get posts for a scene with character data pre-fetched, oldest first"""
-        return self.filter(scene=scene).select_related("character").order_by("datetime_created")
+        """Posts for a scene, oldest first, with what the scene page shows per post.
+
+        Joins the character and its owner, and annotates ``author_is_st``: whether the
+        character's owner storytells any chronicle (``Profile.is_st()``), which the
+        page uses to style ST posts.
+        """
+        return (
+            self.filter(scene=scene)
+            .select_related("character", "character__owner")
+            .annotate(
+                author_is_st=Exists(
+                    STRelationship.objects.filter(user_id=OuterRef("character__owner_id"))
+                )
+            )
+            .order_by("datetime_created")
+        )
 
 
 class Post(models.Model):

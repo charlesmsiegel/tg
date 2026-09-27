@@ -1137,13 +1137,17 @@ class TestChangelingDetailViewContext(TestCase):
         )
         self.url = self.changeling.get_absolute_url()
 
-    def test_detail_view_context_has_specialties(self):
-        """Test that the detail view context includes specialty data."""
+    def test_detail_view_shows_specialties(self):
+        """The sheet shows specialties next to their stats (from the shared blocks)."""
+        from characters.models.core.specialty import Specialty
+
+        self.changeling.strength = 4
+        self.changeling.save()
+        self.changeling.specialties.add(Specialty.objects.create(name="Iron Grip", stat="strength"))
         self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        # Check that specialty context keys exist
-        self.assertIn("strength_spec", response.context)
+        self.assertContains(response, "Strength (Iron Grip)")
 
     def test_detail_view_context_has_merits_and_flaws(self):
         """Test that the detail view context includes merits and flaws."""

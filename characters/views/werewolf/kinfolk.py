@@ -37,17 +37,6 @@ class KinfolkDetailView(XPApprovalMixin, HumanDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        specialties = {}
-        for attribute in self.object.get_attributes():
-            specialties[attribute] = ", ".join(
-                [x.name for x in self.object.specialties.filter(stat=attribute)]
-            )
-        for ability in self.object.get_abilities():
-            specialties[ability] = ", ".join(
-                [x.name for x in self.object.specialties.filter(stat=ability)]
-            )
-        for key, value in specialties.items():
-            context[f"{key}_spec"] = value
 
         context["merits_and_flaws"] = MeritFlawRating.objects.order_by("mf__name").filter(
             character=self.object

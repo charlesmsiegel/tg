@@ -87,8 +87,10 @@ class ChronicleDataService:
         Returns:
             OrderedDict with gameline codes as keys
         """
+        from characters.models.core.character import attach_first_groups  # deferred: app loading
+
         result = OrderedDict()
-        all_characters = list(queryset)
+        all_characters = attach_first_groups(queryset)
 
         if not all_characters:
             return result

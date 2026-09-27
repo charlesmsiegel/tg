@@ -16,7 +16,7 @@
         </div>
     {% endif %}
     <div id="chron-{{ chron.grouper.id }}Section" class="collapse show">
-        {% regroup chron.list by group_set.first as grouplist %}
+        {% regroup chron.list by first_group as grouplist %}
         {% for g in grouplist %}
             <div class="row border pointer"
                  data-toggle="collapse"

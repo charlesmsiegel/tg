@@ -25,6 +25,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
+from characters.models.core.character import attach_first_groups
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.models.core.statistic import Statistic
@@ -411,7 +412,7 @@ class CharacterIndexView(ListView):
 
         # Optimize: fetch all visible characters in one query, then group by chronicle
         # Include polymorphic_ctype for subclass-specific method calls in templates
-        all_characters = list(
+        all_characters = attach_first_groups(
             self.get_queryset().select_related("polymorphic_ctype", "owner", "chronicle").visible()
         )
 
@@ -457,6 +458,7 @@ class RetiredCharacterIndex(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Retired Characters"
+        context["object_list"] = attach_first_groups(context["object_list"])
         context["header"] = "wod_heading"
         return context
 
@@ -477,6 +479,7 @@ class DeceasedCharacterIndex(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Deceased Characters"
+        context["object_list"] = attach_first_groups(context["object_list"])
         context["header"] = "wod_heading"
         return context
 
@@ -497,6 +500,7 @@ class NPCCharacterIndex(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "NPCs"
+        context["object_list"] = attach_first_groups(context["object_list"])
         context["header"] = "wod_heading"
         return context
 

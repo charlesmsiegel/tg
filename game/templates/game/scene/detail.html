@@ -45,10 +45,10 @@
         <!-- Posts Section -->
         <div class="tg-card mb-4">
             <div class="tg-card-body" id="posts-container" style="padding: 20px;">
-                {% for post in object.post_set.all %}
+                {% for post in posts %}
                     <div class="mb-3 post-item" data-post-id="{{ post.pk }}" style="padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1);">
                         <p class="post mb-0" style="line-height: 1.6;">
-                            <strong {% if post.character.owner.profile.is_st %}class="st"{% elif post.character.owner == request.user %}class="highlight"{% endif %}>
+                            <strong {% if post.author_is_st %}class="st"{% elif post.character.owner == request.user %}class="highlight"{% endif %}>
                                 <a href="{{ post.character.get_absolute_url }}" style="font-weight: 600;">{{ post.display_name }}</a>
                             </strong>: {{ post.message|safe_post }}
                         </p>
