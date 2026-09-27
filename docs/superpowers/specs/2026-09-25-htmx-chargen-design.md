@@ -121,9 +121,9 @@ hx-trigger="change from:closest form delay:250ms, input from:closest form delay:
 hx-target="#chargen-feedback" hx-swap="innerHTML" hx-sync="this:replace"
 ```
 
-`delay:` debounces typing, and `replace` aborts an in-flight validation when a newer one starts. When the form itself submits, `chargen.js` sends `htmx:abort` to the validator. Every feedback fragment is stamped with its `data-step`, and the guard drops a response whose step no longer matches the form on screen, so a slow validation can never paint the next step's feedback region.
+`delay:` debounces typing, `replace` aborts an in-flight validation when a newer one starts, `load` paints the first totals, and `hx-disabled-elt="unset"` keeps Save enabled during validation. A validation still in flight when the step is saved is **not** aborted: htmx logs every abort as a console error, and aborting is unnecessary. htmx resolves a request's target when the request starts, so the response can only land in the detached old `#chargen-feedback`; htmx never starts a delayed request from an element that has left the page; and the swap guard also drops any feedback whose `TG-Step` header no longer matches the form on screen. A browser test holds a validation response until after the step swap to prove it.
 
-**Rate limiting.** Debounce plus `replace` gives at most one validation request in flight per page. On top of that, a per-user, per-character cache counter (`CHARGEN_VALIDATE_LIMIT` = 60 per 60 s) answers `204` when exceeded, and htmx ignores a 204. This protects against a runaway client loop, not a determined attacker (who could just POST the real form), so it degrades silently.
+**Rate limiting.** Debounce plus `replace` gives at most one validation request in flight per page. On top of that, a per-user, per-character cache counter shared by validate and options requests (setting `CHARGEN_PARTIAL_LIMIT`, default 60 per minute) answers `204` when exceeded, and htmx ignores a 204. This protects against a runaway client loop, not a determined attacker (who could just POST the real form), so it degrades silently.
 
 ## 3. Alpine components
 
@@ -155,7 +155,7 @@ hx-target="#chargen-feedback" hx-swap="innerHTML" hx-sync="this:replace"
 {{ allocation_rules|json_script:"pool-rules-attributes" }}
 ```
 
-- **API:** it reads `client_data()` of the step's rules from `json_script`. `AllocationRule.client_data()` now also lists its `fields`; `PriorityRule.client_data()` its `groups`. It listens to `input` and `change` on its form and exposes `summary` (for example "Physical 8 · Social 6 · Mental 5 of 10/8/6"). The rule-dependent parts (primary, secondary and tertiary targets; the maximum per trait) are data from the server; the component only adds up visible inputs.
+- **API:** it reads `client_data()` of the step's rules from `json_script`. `AllocationRule.client_data()` now also lists its `fields`; `PriorityRule.client_data()` its `groups`. It listens to `input` and `change` on its form and exposes `summary` (for example "Physical 8 · Social 6 · Mental 5 (need 10/8/6)"). The rule-dependent parts (primary, secondary and tertiary targets; the maximum per trait) are data from the server; the component only adds up visible inputs.
 - **Hints only:** it never disables Save, changes `max`, or blocks input. The server's validate response is the verdict. This removes the client checks that disagreed with the server: the ability script's Save-disable and the attribute script's dynamic `max`.
 
 **`tgConditional`** replaces `conditional_js` and `conditional.js` for chained freebies forms:
@@ -212,7 +212,7 @@ GET /characters/<pk>/?_options=example&category=Discipline      (HX-Request)
 ## 6. Tests
 
 - **Django client (no browser):** full page versus fragment for every pilot step shape; `Vary` and `TG-Fragment` headers; OOB progress and messages; history-restore requests get a full page; the terminal step returns `HX-Redirect`; the router answers `HX-Redirect` for characters outside the wizard; Back through htmx; validate-only returns totals and errors with **zero INSERT/UPDATE/DELETE** (`CaptureQueriesContext`) and the row unchanged; validate on a skippable step does not advance; throttling returns 204; the options endpoint returns filtered `<option>`s and `HX-Trigger` visibility, and rejects unknown or root fields; every mode is denied to anonymous users, other players and submitted characters; non-pilot gamelines render unchanged (no htmx attributes); `field_visibility` matches `conditional.js` case by case; `status()` on the rules; SRI hashes.
-- **Playwright** (Chromium from `/opt/pw-browsers`, skipped when Playwright or Chromium is missing): `tgDots` clicking, clamping and syncing typed values; `tgPool` totals; `tgConditional` plus chained options; validator debounce, abort-on-submit and the stale-step guard; a **full 13-step Vampire walkthrough** that counts document navigations and XHRs and checks there is one page load.
+- **Playwright** (Chromium from `/opt/pw-browsers`, skipped when Playwright or Chromium is missing): `tgDots` clicking, clamping and syncing typed values; `tgPool` totals; `tgConditional` plus chained options; the validator's server verdict; a validation held in flight across a step swap; an expired session loading as a full page; parity between `conditional.js` and the Python evaluator on the same inputs; and a **full 13-step Vampire walkthrough** that counts document loads and XHRs and fails on any console error from application code.
 - **No-JS walkthrough:** the same 13 steps through the Django test client, posting forms exactly as a browser without scripts would (no `HX-Request`), including the two-round-trip chained freebies path.
 
 ## 7. Pilot success criteria and rollout
@@ -247,6 +247,19 @@ When the last gameline is converted, delete `attribute-validation.js`, `ability-
 - **Rules that must run offline or at keystroke frequency.** If a rule really must run in the browser, it needs a single shared definition (for example JSON rule data interpreted in both places). Alpine components must never carry rule logic.
 - **Large client-side data grids** (sorting and filtering thousands of rows). Server-side pagination or filtering through htmx is fine; client-side virtual grids are not what htmx or Alpine are for.
 - **Cross-origin or third-party embeds.** `selfRequestsOnly` is deliberate.
+
+## Implementation record and findings
+
+Implemented as specified, with these deviations and discoveries:
+
+- **No abort on submit** (see §2). The abort was designed in, then removed after the browser run showed htmx logging each abort as a console error. The detached-target property and the step guard already cover the race, and a browser test pins that.
+- **Chains follow `parent_field` links.** `ChainedSelectMixin.chain_for()` walks parents, so a plain `ChoiceField` root works. That is required because of the next finding.
+- **Confirmed defect, fixed for Vampire:** `ChainedHumanFreebiesForm.category` is a plain `ChoiceField`, so the legacy mixin never builds a chain and never embeds a tree. `choices_map` is also assigned after chain setup, so bound re-renders never refill `example`. In real Chromium, the non-interactive Ghoul freebies step leaves "Trait" with only the empty option after choosing a category, and every conditional field stays visible. The same form family serves ten other chargen freebie views (Ghoul, VtM Human, MtA Human, Mage, Changeling, CtD Human, WtA Human, Fera, Fomor, WtO Human); they stay broken until their rollout PR, which fixes them the same way. This raises the priority of the rollout order in §7.
+- **Confirmed defect, fixed:** once `example` options are filled on a bound form, their 3-tuple metadata crashed `Select` rendering (`too many values to unpack`). The widget now receives `(value, label)` pairs and the metadata stays in `choices_map` for the visibility rules.
+- **Confirmed, worked around, not changed:** `VampireCharacterCreationView.default_redirect` is a bare `DetailView` with no access policy, so an owner who GETs `/characters/<pk>/` for a submitted Vampire gets 403. The fragment guard therefore sends `HX-Redirect` to `get_absolute_url()` rather than the router URL. Fixing the router fallback belongs to Step 0/7 ownership.
+- **Preserved for the owner:** `out_of_clan_discipline` has no freebie cost (`get_freebie_cost` returns 10000), so the freebies form offers every Discipline but the service refuses non-clan ones for lack of freebies. The cost table shows only what the cost source defines.
+- **Noted:** building the freebies form lazily creates `ObjectType` rows (`get_or_create`) on any render. Validate-only adds no writes of its own; the test warms the form first. `core/form.html` renders `object.name|safe` in the title and heading; the interactive shell autoescapes the name, and the shared template is left to its owner. Adding a second background row without JS has always needed the formset Add button.
+- **Deleted:** `vampire-virtues.js` and the whole unused point-pool stack (widget, mixins, `point_pool.js`, `AttributeForm`, `AbilityForm`, `SphereForm`, `form_pool.html` and their tests: 2,383 lines, 442 of them JS).
 
 ## Theory
 

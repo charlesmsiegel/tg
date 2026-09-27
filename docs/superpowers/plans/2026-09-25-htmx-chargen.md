@@ -42,11 +42,11 @@ Files: `source_static/vendor/**`, `source_static/vendor/VENDOR.md`, `core/htmx.p
 Interfaces: `is_htmx(request)`, `is_fragment_request(request)`,
 `hx_redirect(url)`, `mark_fragment(response, kind)`, `vary_on_htmx(response)`.
 
-- [ ] Download the npm tarballs, check the registry `sha512` integrity, copy the minified dist files and their license text.
-- [ ] Record the version, source, npm integrity, SRI `sha384` and license in `VENDOR.md`.
-- [ ] Add the include with `integrity`/`crossorigin` attributes and the htmx meta config.
-- [ ] Move base messages into an include with an always-present `#tg-messages` live region.
-- [ ] Tests: helpers; SRI of each file equals the include; the include references only vendored static paths.
+- [x] Download the npm tarballs, check the registry `sha512` integrity, copy the minified dist files and their license text.
+- [x] Record the version, source, npm integrity, SRI `sha384` and license in `VENDOR.md`.
+- [x] Add the include with `integrity`/`crossorigin` attributes and the htmx meta config.
+- [x] Move base messages into an include with an always-present `#tg-messages` live region.
+- [x] Tests: helpers; SRI of each file equals the include; the include references only vendored static paths.
 
 ### Task 2 (PR 2): Fragment contract for interactive workflows
 
@@ -59,14 +59,14 @@ Files: `characters/chargen/{registry,definitions}.py`,
 Interfaces: `Workflow.interactive`; `bind(..., interactive=False)`;
 context `chargen_interactive`; response headers `Vary: HX-Request` and `TG-Fragment`.
 
-- [ ] Registry flag, set for `VAMPIRE` only; a test asserts which workflows are interactive.
-- [ ] `ChargenStepMixin.render_to_response` picks the fragment template for fragment requests and adds the headers.
-- [ ] `dispatch`: redirects out of the wizard become `HX-Redirect`; redirects within the wizard are left for the XHR to follow.
-- [ ] Router: a fragment request for a character outside the wizard gets `HX-Redirect`.
-- [ ] Templates: interactive shell, form swap target, OOB progress and messages, Back with `hx-post`.
-- [ ] `chargen.js`: fragment-header swap guard, focus management, abort validation on submit, stale-step guard.
-- [ ] Vampire fragments: take totals from the rules (drift), drop duplicate CSRF tokens, drop `vampire-virtues.js` (deleted).
-- [ ] Tests: full vs fragment per step shape; history restore; terminal `HX-Redirect`; Back; non-interactive gamelines unchanged; authorization for every mode.
+- [x] Registry flag, set for `VAMPIRE` only; a test asserts which workflows are interactive.
+- [x] `ChargenStepMixin.render_to_response` picks the fragment template for fragment requests and adds the headers.
+- [x] `dispatch`: redirects out of the wizard become `HX-Redirect`; redirects within the wizard are left for the XHR to follow.
+- [x] Router: a fragment request for a character outside the wizard gets `HX-Redirect`.
+- [x] Templates: interactive shell, form swap target, OOB progress and messages, Back with `hx-post`.
+- [x] `chargen.js`: fragment-header swap guard, focus management, stale-step guard.
+- [x] Vampire fragments: take totals from the rules (drift), drop duplicate CSRF tokens, drop `vampire-virtues.js` (deleted).
+- [x] Tests: full vs fragment per step shape; history restore; terminal `HX-Redirect`; Back; non-interactive gamelines unchanged; authorization for every mode.
 
 ### Task 3 (PR 3): Validate-only mode and totals
 
@@ -75,13 +75,13 @@ Files: `characters/rules/allocation.py`, `characters/forms/core/backgroundform.p
 `characters/templates/characters/core/chargen/feedback.html`, tests.
 Interfaces: `AllocationRule.status(values)`, `PriorityRule.status(values)`,
 `BackgroundRatingFormSet.allocation_status()`, `ChargenStepMixin.validation_totals(form)`;
-setting `CHARGEN_VALIDATE_LIMIT`.
+setting `CHARGEN_PARTIAL_LIMIT`.
 
-- [ ] Pure `status()` methods on the rules plus unit tests; `client_data()` lists `fields`/`groups`.
-- [ ] Formset status using the same multiplier arithmetic as `clean()`.
-- [ ] Handle `_validate` in `dispatch` after authorization and before skip/advance; answer 204 on unavailable steps; per-user throttle.
-- [ ] Feedback fragment with the first error, totals and remaining freebies.
-- [ ] Tests: no INSERT/UPDATE/DELETE; state unchanged; no advance on a skippable step; throttle; messages match the submit verdict.
+- [x] Pure `status()` methods on the rules plus unit tests; `client_data()` lists `fields`/`groups`.
+- [x] Formset status using the same multiplier arithmetic as `clean()`.
+- [x] Handle `_validate` in `dispatch` after authorization and before skip/advance; answer 204 on unavailable steps; per-user throttle.
+- [x] Feedback fragment with the first error, totals and remaining freebies.
+- [x] Tests: no INSERT/UPDATE/DELETE; state unchanged; no advance on a skippable step; throttle; messages match the submit verdict.
 
 ### Task 4 (PR 4): Alpine components, chained options, conditional fields
 
@@ -95,11 +95,11 @@ Interfaces: `DotRatingInput(min, max)`; Alpine `tgDots`, `tgPool`, `tgConditiona
 `ConditionalFieldsMixin.field_visibility(values)`; `ChainedSelectMixin.enable_htmx(url)`;
 `GET ?_options=<child>`.
 
-- [ ] Dot widget swapped in by the mixin for rule fields, with min/max from `client_data()`.
-- [ ] Pool status include replaces the attribute, ability and virtue counters on interactive pages (the old includes stay for other gamelines).
-- [ ] Python visibility evaluator with a case table mirroring `conditional.js`.
-- [ ] Options mode on the step URL; `HtmxChainedSelect`; freebies fragment with wrappers and a cost table from `characters.costs`.
-- [ ] Tests: options filtering, rejection of bad fields, visibility header; the evaluator; no chained or conditional scripts on interactive pages.
+- [x] Dot widget swapped in by the mixin for rule fields, with min/max from `client_data()`.
+- [x] Pool status include replaces the attribute, ability and virtue counters on interactive pages (the old includes stay for other gamelines).
+- [x] Python visibility evaluator with a case table mirroring `conditional.js`.
+- [x] Options mode on the step URL; `HtmxChainedSelect`; freebies fragment with wrappers and a cost table from `characters.costs`.
+- [x] Tests: options filtering, rejection of bad fields, visibility header; the evaluator; no chained or conditional scripts on interactive pages.
 
 ### Task 5 (PR 5): Browser tests, no-JS walkthrough, measurements, cleanup
 
@@ -107,10 +107,10 @@ Files: `characters/tests/browser/test_chargen_interactive.py`,
 `characters/tests/views/test_chargen_nojs_walkthrough.py`; deletion of the
 point-pool stack and its tests; updates to Step 9 asset tests.
 
-- [ ] Playwright: dots, pool, conditional and options, validator abort and stale guard, full 13-step walkthrough with request counting.
-- [ ] No-JS walkthrough through the test client.
-- [ ] Delete `point_pool.{py,js}`, the point-pool mixins, `AttributeForm`, `AbilityForm`, `SphereForm`, `form_pool.html` and their tests; update `widgets/__init__.py`.
-- [ ] Record the metrics and go/no-go evidence below.
+- [x] Playwright: dots, pool, conditional and options, in-flight validation across a swap, expired session, JS/Python visibility parity, full 13-step walkthrough with request counting.
+- [x] No-JS walkthrough through the test client.
+- [x] Delete `point_pool.{py,js}`, the point-pool mixins, `AttributeForm`, `AbilityForm`, `SphereForm`, `form_pool.html` and their tests; update `widgets/__init__.py`.
+- [x] Record the metrics and go/no-go evidence below.
 
 ## Suggested PR order
 
@@ -121,4 +121,30 @@ converting that gameline's step fragments.
 
 ## Execution record
 
-(Filled in during implementation.)
+- **Ruling:** the user asked for the plan to be implemented, which supersedes the brief's design-only scope, as in Steps 2, 3, 4 and 9. All five tasks are implemented in this branch as four commits (the spec plus Task 1; Tasks 2-4; the point-pool deletion from Task 5; tests and records).
+- **Ruling:** the referenced frontend, domain, permissions and testing skills are consolidated in `.claude/skills/tg-standards/`; its references were used.
+- **Ruling:** Playwright for Python is a development-only dependency and is not added to `requirements.txt`. The browser tests skip without it and use the preinstalled Chromium (`/opt/pw-browsers`, or `TG_BROWSER_BINARY`); `playwright install` is never run.
+- **Baseline:** 428 chargen, Vampire and widget tests passed before any change.
+- **Deviation:** there is no abort-on-submit for in-flight validation; see the spec's implementation record. A browser test holds a validation across the swap instead.
+- **Defects found and fixed on the Vampire path:** the freebies Trait select never received options (confirmed in Chromium); a bound re-render crashed on option metadata; conditional fields were dead on the chargen freebies step; the Disciplines and Virtues text hard-coded their totals; client validators disagreed with the server (the abilities script disabled Save, the attributes script rewrote `max`); duplicate CSRF inputs; double submission (Save is now disabled while a request is in flight).
+- **Defects confirmed but left for their owners:** the same freebies Trait defect on ten non-pilot chargen views, which their rollout PRs fix; a 403 on the generic router fallback for submitted Vampires; the missing out-of-clan Discipline freebie cost; `object.name|safe` in `core/form.html`.
+
+### Measurements (pilot success criteria)
+
+| Measure | Before | After |
+|---|---|---|
+| Full page loads for the 13-step walkthrough (17 saves, 9 of them freebies) | 18 (1 plus one Post/Redirect/Get page per save) | **1** for the wizard, plus 1 for the submitted character's page |
+| XHRs in that walkthrough | 0 | 61-65 (varies with debounce timing): 17 saves, their followed redirects, debounced validations and option fetches |
+| HTML per step response | full page, 22-48 KB | fragment, 10.6-36.5 KB (about 11.5 KB of page chrome saved on every step) |
+| Application JS loaded across Vampire chargen pages | 895 lines (attribute 231, ability 84, background 80, core validation 43, virtues 52, chained 215, conditional 190) | **174 lines** (`chargen.js` 57, `chargen-components.js` 117), plus vendored htmx 2.0.11 (52 KB) and Alpine CSP 3.17.4 (72 KB) |
+| Application JS deleted | | 494 lines (`point_pool.js` 442, `vampire-virtues.js` 52); 2,383 lines in total with the unused point-pool Python and tests |
+| Client-side rule copies on Vampire pages | 4 (distribution, ability cap, background budget, virtue total) | 0: only server data is read |
+
+### Go/no-go evidence
+
+1. Existing chargen tests plus 34 contract tests pass, and non-interactive gamelines are unchanged (`NonInteractiveWorkflowTests`). The full-suite result is recorded below.
+2. The no-JS 13-step walkthrough passes (`test_chargen_nojs_walkthrough`).
+3. The Playwright walkthrough passes with one wizard page load and no console errors from application code (7 browser tests).
+4. There are no client rule copies (table above). Validate and submit verdicts agree (`test_verdict_matches_submit_for_virtues`).
+5. Authorization tests cover every mode for other players, anonymous users and submitted characters, and validate-only is shown to make zero INSERT/UPDATE/DELETE statements.
+6. Production observation (one week without unexpected guard navigations) is the owner's call and cannot be checked from here.

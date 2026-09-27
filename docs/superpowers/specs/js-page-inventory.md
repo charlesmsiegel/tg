@@ -23,7 +23,7 @@ found in these scoped template trees.
 | characters | mage/mage/mage_xp_form.html block 1 | mage-xp.js | `object.is_group_member` boolean | Possible conditional rewrite |
 | characters | mage/mage/mage_xp_form.html block 2 | mage-xp-rote.js | None | Possible conditional rewrite |
 | characters | mage/sorcerer/sorcerer_freebies_form.html | sorcerer-freebies.js | `object.sorcerer_type` string | Possible conditional rewrite |
-| characters | vampire/vampire/chargen.html | vampire-virtues.js | `object.creation_status == 5` guard; depends on TG.validation | Possible validator rewrite |
+| characters | vampire/vampire/chargen.html | ~~vampire-virtues.js~~ | Deleted by Step 10: interactive Vampire chargen uses the Alpine pool and the server validator | Done |
 | characters | werewolf/gift/list.html | gift-list.js | Existing DOM filter inputs and row attributes | No |
 | characters | wraith/thorn/list.html | thorn-list.js | Existing DOM filter inputs and row attributes | No |
 | items | mage/wonder/form_include.html | wonder-form.js | Existing effect row prefixes; listens for dynamically added formset rows | No |
@@ -52,3 +52,10 @@ above; it is included in these corrected counts. Only the excluded scene page
 retains executable inline JavaScript. Existing CSP blockers include inline
 handlers in core/character_template/detail.html, core/character_template/list.html
 and core/errors/500.html; these are unchanged.
+
+Step 10 update: interactive (htmx) workflows load `characters/js/chargen.js` and
+`characters/js/chargen-components.js` plus the vendored htmx and Alpine CSP
+builds, all as static files with no inline scripts. On those pages the
+attribute, ability, background and core validation scripts, `chained.js` and
+`conditional.js` are not loaded. `widgets/point_pool.js` was deleted with its
+unused widget stack.
