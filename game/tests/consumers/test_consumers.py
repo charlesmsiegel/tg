@@ -409,3 +409,25 @@ class TestSceneSocketAuthorization(TransactionTestCase):
         response = async_to_sync(attempt)()
         self.assertEqual(response["type"], "error")
         self.assertFalse(self.scene.characters.filter(pk=other_character.pk).exists())
+
+    def test_socket_posts_go_through_post_form_regression(self):
+        """The socket skipped PostForm, so a 101-character display name was stored."""
+
+        async def attempt():
+            communicator = WebsocketCommunicator(
+                SceneChatConsumer.as_asgi(), f"/ws/scene/{self.scene.pk}/"
+            )
+            communicator.scope["user"] = self.owner
+            communicator.scope["url_route"] = {"kwargs": {"scene_id": self.scene.pk}}
+            await communicator.connect()
+            await communicator.send_json_to({
+                "type": "chat_message", "character_id": self.character.pk,
+                "display_name": "x" * 101, "message": "Hello",
+            })
+            response = await communicator.receive_json_from()
+            await communicator.disconnect()
+            return response
+
+        response = async_to_sync(attempt)()
+        self.assertEqual(response["type"], "error")
+        self.assertFalse(Post.objects.filter(scene=self.scene).exists())

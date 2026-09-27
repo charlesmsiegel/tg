@@ -7,12 +7,16 @@ import logging
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.db import transaction
 
 from characters.models.core import CharacterModel
-from core.permissions import PermissionManager
+from core.actions import ActionFailed
 from core.templatetags.sanitize_text import render_post_html
+from game import scene_chat
+from game.forms import PostForm
 from game.models import Scene
 from game.security import can_view_scene
+from game.selectors import scene_post
 from game.text import straighten_quotes
 
 logger = logging.getLogger(__name__)
@@ -32,7 +36,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         """Handle WebSocket connection."""
         self.scene_id = self.scope["url_route"]["kwargs"]["scene_id"]
-        self.room_group_name = f"scene_{self.scene_id}"
+        self.room_group_name = scene_chat.group_name(self.scene_id)
         self.user = self.scope["user"]
 
         # Public scenes admit anonymous readers; every other audience is
@@ -77,69 +81,19 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             await self.send_error("Could not process message")
 
     async def handle_chat_message(self, data):
-        """Handle incoming chat message."""
-        character_id = data.get("character_id")
-        message = data.get("message", "").strip()
-        display_name = data.get("display_name", "")
-
-        if not message:
-            await self.send_error("Message cannot be empty")
-            return
-
-        # Check scene is not finished
-        scene = await self.get_scene()
-        if scene is None or scene.finished or not await self.user_can_view_scene(scene):
-            await self.send_error("Cannot post to a finished scene")
-            return
-
-        # Get and validate character
-        character = await self.get_character(character_id)
-        if character is None:
-            await self.send_error("Character not found")
-            return
-
-        # Verify user owns this character
-        if not await self.user_owns_character(character):
-            await self.send_error("You can only post as your own characters")
-            return
-
-        # Verify character is in the scene
-        if not await self.character_in_scene(character, scene):
-            await self.send_error("Character is not in this scene")
-            return
-
-        # Straighten quotes in the message (matching view behavior)
-        message = self.straighten_quotes(message)
-
-        # Create the post using the Scene.add_post method
-        result = await self.create_post(scene, character, display_name, message)
-
-        if result is None:
-            # add_post returns None for @storyteller messages or errors
+        """Handle incoming chat message through the shared posting path."""
+        fields = {
+            "character": data.get("character_id"),
+            "display_name": data.get("display_name", ""),
+            "message": data.get("message", ""),
+        }
+        ok, outcome = await self.submit_post(fields)
+        if not ok:
+            await self.send_error(outcome)
+        elif outcome.object is None:
             await self.send(
-                text_data=json.dumps(
-                    {"type": "system_message", "message": "Message sent to storyteller"}
-                )
+                text_data=json.dumps({"type": "system_message", "message": outcome.message})
             )
-            return
-
-        if result == "error":
-            await self.send_error("Failed to process message command")
-            return
-
-        post = result
-
-        # Prepare post data for broadcast
-        post_data = await self.serialize_post(post, character)
-
-        # Broadcast to all clients in the scene group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "chat_message_broadcast",
-                "post": post_data,
-            },
-        )
 
     async def handle_add_character(self, data):
         """Handle adding a character to the scene."""
@@ -165,51 +119,28 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             await self.send_error("Character cannot join this scene")
             return
 
-        # Add character to scene
+        # Add character to scene; the broadcast follows the commit.
         await self.add_character_to_scene(scene, character)
 
-        # Broadcast character added notification
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "character_added_broadcast",
-                "character": {
-                    "id": character.pk,
-                    "name": character.name,
-                    "owner_id": self.user.pk,
-                },
-            },
-        )
-
-    async def chat_message_broadcast(self, event):
-        """Send chat message to WebSocket."""
-        scene = await self.get_scene()
-        if scene is None or not await self.user_can_view_scene(scene):
+    async def scene_post(self, event):
+        """A post was committed: send it to this connection's viewer."""
+        payload = await self.post_payload(event["post_id"])
+        if payload is False:
             await self.close()
-            return
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "new_post",
-                    "post": event["post"],
-                }
-            )
-        )
+        elif payload:
+            await self.send(text_data=json.dumps({"type": "new_post", "post": payload}))
 
-    async def character_added_broadcast(self, event):
-        """Send character added notification to WebSocket."""
-        scene = await self.get_scene()
-        if scene is None or not await self.user_can_view_scene(scene):
+    async def scene_characters(self, event):
+        """A character joined the scene."""
+        payload = await self.character_payload(event["character_id"])
+        if payload is False:
             await self.close()
-            return
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "character_added",
-                    "character": event["character"],
-                }
-            )
-        )
+        elif payload:
+            await self.send(text_data=json.dumps({"type": "character_added", "character": payload}))
+
+    async def scene_closed(self, event):
+        """The scene was closed; the old client has nothing to update."""
+        await self.close()
 
     async def send_error(self, message):
         """Send error message to client."""
@@ -255,38 +186,65 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         return scene.characters.filter(pk=character.pk).exists()
 
     @database_sync_to_async
-    def create_post(self, scene, character, display_name, message):
-        """Create a post using Scene.add_post method."""
+    def submit_post(self, fields):
+        """Authorize, validate and post like ``ScenePostView``; ``(ok, result or error)``."""
+        scene = self.visible_scene()
+        if scene is None or scene.finished:
+            return False, "Cannot post to a finished scene"
+        if not scene_chat.can_post(self.user, scene):
+            return False, "You can only post as your own characters in this scene"
+        form = PostForm(data=fields, user=self.user, scene=scene)
+        if not form.is_valid():
+            return False, next(iter(form.errors.values()))[0]
         try:
-            post = scene.add_post(character, display_name, message)
-            return post
-        except ValueError:
-            return "error"
+            with transaction.atomic():
+                return True, scene_chat.create_post(scene, form)
+        except ActionFailed as exc:
+            return False, str(exc)
+
+    def visible_scene(self):
+        scene = (
+            Scene.objects.select_related("chronicle", "location").filter(pk=self.scene_id).first()
+        )
+        if scene is None or not can_view_scene(self.user, scene):
+            return None
+        return scene
 
     @database_sync_to_async
     def add_character_to_scene(self, scene, character):
-        """Add a character to the scene."""
-        scene.add_character(character)
+        """Add a character to the scene and announce it after commit."""
+        with transaction.atomic():
+            scene.add_character(character)
+            scene_chat.broadcast(scene.pk, scene_chat.CHARACTER_JOINED, character_id=character.pk)
 
     @database_sync_to_async
-    def serialize_post(self, post, character):
-        """Serialize post data for WebSocket transmission."""
-        scene = post.scene
-        is_st = bool(
-            character.owner_id
-            and PermissionManager.can_manage_scope(
-                character.owner, scene.chronicle, scene.gameline
-            )
-        )
+    def post_payload(self, post_id):
+        """The old JSON shape of a post; ``False`` if the viewer lost access."""
+        scene = self.visible_scene()
+        if scene is None:
+            return False
+        post = scene_post(scene, post_id)
+        if post is None:
+            return None
+        character = post.character
         return {
             "id": post.pk,
-            "character_id": character.pk,
-            "character_name": character.name,
-            "character_url": character.get_absolute_url(),
+            "character_id": character.pk if character else None,
+            "character_name": character.name if character else "",
+            "character_url": character.get_absolute_url() if character else "",
             "display_name": post.display_name,
             "message": post.message,
             "message_html": render_post_html(post.message),
             "datetime_created": post.datetime_created.isoformat(),
-            "owner_id": character.owner_id,
-            "is_st": is_st,
+            "owner_id": character.owner_id if character else None,
+            "is_st": post.author_is_st,
         }
+
+    @database_sync_to_async
+    def character_payload(self, character_id):
+        if self.visible_scene() is None:
+            return False
+        character = CharacterModel.objects.filter(pk=character_id).first()
+        if character is None:
+            return None
+        return {"id": character.pk, "name": character.name, "owner_id": character.owner_id}

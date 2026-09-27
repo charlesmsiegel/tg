@@ -3,11 +3,13 @@
 from bisect import bisect_left, bisect_right
 from datetime import timedelta
 
-from django.db.models import Max, OuterRef, Subquery
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db.models import Max, OuterRef, Q, Subquery
 
 from characters.models.core.character import Character
 from core.services import ChronicleDataService
-from game.models import Post, Scene
+from game.models import Post, Scene, STRelationship
 from game.security import filter_scenes, staffed_chronicles
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
@@ -106,3 +108,73 @@ def annotate_week_scene_counts(weeks, user):
     for week in weeks:
         week.cached_scene_count = count_dates_in_week(dates, week.end_date)
     return weeks
+
+
+# Scene posts ----------------------------------------------------------------
+
+SCENE_POST_WINDOW = 100
+
+
+def scene_storyteller_ids(scene, user_ids):
+    """Which of ``user_ids`` may manage ``scene``'s chronicle and gameline.
+
+    The same facts ``PermissionManager.can_manage_scope`` reads without a
+    request (staff, superusers, the head ST, an ``STRelationship`` for this
+    chronicle and gameline), for many users in one query.
+    """
+    user_ids = {pk for pk in user_ids if pk is not None}
+    if not user_ids:
+        return set()
+    scope = Q(is_staff=True) | Q(is_superuser=True)
+    chronicle = scene.chronicle
+    if chronicle is not None:
+        if chronicle.head_st_id is not None:
+            scope |= Q(pk=chronicle.head_st_id)
+        line = settings.GAMELINES.get(scene.gameline, {}).get("name")
+        if line:
+            scope |= Q(
+                pk__in=STRelationship.objects.filter(
+                    chronicle=chronicle, gameline__name=line
+                ).values("user_id")
+            )
+    users = get_user_model().objects.filter(scope, pk__in=user_ids)
+    return set(users.values_list("pk", flat=True))
+
+
+def with_author_roles(scene, posts):
+    """Set ``author_is_st`` on each post: its author manages this scene's scope."""
+    posts = list(posts)
+    owners = {post.character.owner_id for post in posts if post.character is not None}
+    storytellers = scene_storyteller_ids(scene, owners)
+    for post in posts:
+        post.author_is_st = post.character is not None and post.character.owner_id in storytellers
+    return posts
+
+
+def scene_post_window(scene, *, before=None, limit=SCENE_POST_WINDOW):
+    """The latest ``limit`` posts (or the ``limit`` before post id ``before``).
+
+    Returns ``(posts, has_earlier)``; posts are oldest first, ready for
+    ``_post.html``. Ids order posts: they follow ``datetime_created`` for every
+    post the app creates, and they are what live clients compare.
+    """
+    queryset = Post.objects.for_scene_optimized(scene)
+    if before is not None:
+        queryset = queryset.filter(pk__lt=before)
+    newest_first = list(queryset.order_by("-pk")[: limit + 1])
+    has_earlier = len(newest_first) > limit
+    return with_author_roles(scene, newest_first[:limit][::-1]), has_earlier
+
+
+def scene_posts_after(scene, after, *, limit=SCENE_POST_WINDOW):
+    """Posts after id ``after``, oldest first; ``(posts, has_more)`` past ``limit``."""
+    posts = list(
+        Post.objects.for_scene_optimized(scene).filter(pk__gt=after).order_by("pk")[: limit + 1]
+    )
+    return with_author_roles(scene, posts[:limit]), len(posts) > limit
+
+
+def scene_post(scene, post_id):
+    """One post of ``scene`` ready for ``_post.html``, or ``None``."""
+    posts = with_author_roles(scene, Post.objects.for_scene_optimized(scene).filter(pk=post_id))
+    return posts[0] if posts else None
