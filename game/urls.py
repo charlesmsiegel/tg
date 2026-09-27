@@ -1,7 +1,7 @@
 from django.urls import include, path
 
 from characters import views as char_views
-from game import views
+from game import actions, views
 
 app_name = "game"
 
@@ -95,6 +95,16 @@ urlpatterns = [
     path("chronicles/", views.ChronicleListView.as_view(), name="chronicles"),
     path("chronicle/<int:pk>/", views.ChronicleDetailView.as_view(), name="chronicle"),
     path(
+        "chronicle/<int:pk>/stories/",
+        actions.ChronicleStoryCreateView.as_view(),
+        name="chronicle_create_story",
+    ),
+    path(
+        "chronicle/<int:pk>/scenes/",
+        actions.ChronicleSceneCreateView.as_view(),
+        name="chronicle_create_scene",
+    ),
+    path(
         "chronicle/<int:pk>/retired/",
         char_views.core.RetiredCharacterIndex.as_view(),
         name="retired",
@@ -107,9 +117,26 @@ urlpatterns = [
     path("chronicle/<int:pk>/npc/", char_views.core.NPCCharacterIndex.as_view(), name="npc"),
     path("scenes/", views.SceneListView.as_view(), name="scenes"),
     path("scene/<int:pk>/", views.SceneDetailView.as_view(), name="scene"),
+    path("scene/<int:pk>/close/", actions.SceneCloseView.as_view(), name="scene_close"),
+    path(
+        "scene/<int:pk>/characters/",
+        actions.SceneAddCharacterView.as_view(),
+        name="scene_add_character",
+    ),
+    path("scene/<int:pk>/posts/", actions.ScenePostView.as_view(), name="scene_post"),
     path("commands/", views.CommandsView.as_view(), name="commands"),
     path("journals/", views.JournalListView.as_view(), name="journals"),
     path("journal/<int:pk>/", views.JournalDetailView.as_view(), name="journal"),
+    path(
+        "journal/<int:pk>/entries/",
+        actions.JournalEntryCreateView.as_view(),
+        name="journal_add_entry",
+    ),
+    path(
+        "journal/<int:pk>/entries/<int:entry_pk>/response/",
+        actions.JournalResponseView.as_view(),
+        name="journal_respond",
+    ),
     path("story/", include((story_urls, "story"))),
     path("week/", include((week_urls, "week"))),
     path("weekly-xp-request/", include((weekly_xp_request_urls, "weekly_xp_request"))),

@@ -88,7 +88,7 @@ class PrivateVisibilityTests(TestCase):
         self.assertEqual(self.client.get(f"/game/scene/{self.scene.pk}/").status_code, 200)
         self.assertContains(self.client.get("/game/scenes/"), "Hidden scene")
         self.assertEqual(
-            self.client.post(f"/game/scene/{self.scene.pk}/", {"close_scene": "1"}).status_code,
+            self.client.post(f"/game/scene/{self.scene.pk}/close/").status_code,
             401,
         )
 

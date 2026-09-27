@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count, Max
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import (
@@ -16,7 +16,6 @@ from django.views.generic import (
 )
 
 from characters.models.core import CharacterModel
-from core.create_redirects import resolve_object_type_url
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
@@ -49,13 +48,11 @@ from game.models import (
     Chronicle,
     FreebieSpendingRecord,
     Journal,
-    JournalEntry,
     Post,
     Scene,
     SettingElement,
     Story,
     StoryXPRequest,
-    STRelationship,
     Week,
     WeeklyXPRequest,
     XPSpendingRequest,
@@ -99,11 +96,11 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         )
 
         context.update(chronicle_overview(chronicle, self.request.user))
+        # A creation action re-renders this page with its bound form (Step 5).
+        context.setdefault("form", SceneCreationForm(chronicle=chronicle, user=self.request.user))
+        context.setdefault("story_form", StoryForm())
         context.update(
             {
-                # Forms and other
-                "form": SceneCreationForm(chronicle=chronicle, user=self.request.user),
-                "story_form": StoryForm(),
                 "header": chronicle.headings,
                 # Creation forms for Characters, Locations, Items
                 "char_form": ChronicleCharacterCreationForm(
@@ -116,77 +113,6 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
             }
         )
         return context
-
-    def _get_create_redirect_url(self, obj_type, type_name):
-        """Get the redirect URL for creating an object of the given type."""
-        return resolve_object_type_url(obj_type, type_name)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        chronicle = self.object
-
-        # Handle character creation (redirects to create view)
-        if "create_character" in request.POST and "char_type" in request.POST:
-            type_name = request.POST["char_type"]
-            redirect_url = self._get_create_redirect_url("char", type_name)
-            if redirect_url:
-                return redirect(redirect_url)
-
-        # Handle location creation (redirects to create view)
-        if "create_location" in request.POST and "loc_type" in request.POST:
-            type_name = request.POST["loc_type"]
-            redirect_url = self._get_create_redirect_url("loc", type_name)
-            if redirect_url:
-                return redirect(redirect_url)
-
-        # Handle item creation (redirects to create view)
-        if "create_item" in request.POST and "item_type" in request.POST:
-            type_name = request.POST["item_type"]
-            redirect_url = self._get_create_redirect_url("obj", type_name)
-            if redirect_url:
-                return redirect(redirect_url)
-
-        # Story and scene creation require ST permissions
-        create_story_flag = request.POST.get("create_story")
-        create_scene_flag = request.POST.get("create_scene")
-
-        if create_story_flag is not None or create_scene_flag is not None:
-            if create_story_flag is not None:
-                if not PermissionManager.can_manage_chronicle(request.user, chronicle, request):
-                    raise PermissionDenied("Chronicle head ST required")
-                form = StoryForm(request.POST)
-                if not form.is_valid():
-                    return self.render_to_response(self.get_context_data())
-                story = form.save()
-                messages.success(request, f"Story '{story.name}' created successfully!")
-
-            if create_scene_flag is not None:
-                if not (
-                    PermissionManager.can_manage_chronicle(request.user, chronicle, request)
-                    or STRelationship.objects.filter(
-                        user=request.user, chronicle=chronicle
-                    ).exists()
-                ):
-                    raise PermissionDenied("Matching chronicle ST required")
-                form = SceneCreationForm(request.POST, chronicle=chronicle, user=request.user)
-                if not form.is_valid():
-                    return self.render_to_response(self.get_context_data())
-                gameline = form.cleaned_data["gameline"]
-                if not PermissionManager.can_manage_scope(
-                    request.user, chronicle, gameline, request
-                ):
-                    raise PermissionDenied("Matching chronicle ST required")
-                location = form.cleaned_data["location"]
-                scene = chronicle.add_scene(
-                    form.cleaned_data["name"],
-                    location,
-                    date_of_scene=form.cleaned_data["date_of_scene"],
-                    gameline=gameline,
-                )
-                messages.success(request, f"Scene '{scene.name}' created successfully!")
-                return redirect(scene)
-
-        return self.render_to_response(self.get_context_data())
 
 
 class SceneDetailView(DetailView):
@@ -219,66 +145,6 @@ class SceneDetailView(DetailView):
 
         return context
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        scene = self.object
-        if scene.finished:
-            raise PermissionDenied("Finished scenes are read-only")
-
-        if "close_scene" in request.POST.keys():
-            if not PermissionManager.can_manage_scope(
-                request.user, scene.chronicle, scene.gameline, request
-            ):
-                raise PermissionDenied("Matching chronicle ST required")
-            scene.close()
-            messages.success(request, f"Scene '{scene.name}' closed successfully!")
-        elif "character_to_add" in request.POST.keys():
-            character_pk = request.POST["character_to_add"]
-            if (
-                len(character_pk) > 20
-                or not character_pk.isascii()
-                or not character_pk.isdecimal()
-                or int(character_pk) < 1
-            ):
-                return HttpResponseBadRequest("Invalid character")
-            c = get_object_or_404(CharacterModel, pk=character_pk)
-            if c.owner != request.user and not PermissionManager.can_manage_scope(
-                request.user, scene.chronicle, scene.gameline, request
-            ):
-                raise PermissionDenied("Matching scene ST required to add another character")
-            if c.chronicle_id != scene.chronicle_id:
-                raise PermissionDenied("Character belongs to another chronicle")
-            scene.add_character(c)
-            messages.success(request, f"Character '{c.name}' added to scene!")
-        elif "message" in request.POST.keys():
-            post_form = PostForm(request.POST, user=request.user, scene=scene)
-            if post_form.is_valid():
-                num_logged_in_chars = scene.characters.owned_by(request.user).count()
-                if num_logged_in_chars == 0:
-                    raise PermissionDenied("No character in this scene")
-                if num_logged_in_chars == 1:
-                    character = scene.characters.owned_by(request.user).first()
-                else:
-                    character = post_form.cleaned_data["character"]
-                # Check that user owns the character
-                if character.owner != request.user:
-                    messages.error(request, "You can only post as your own characters.")
-                    raise PermissionDenied("You can only post as your own characters")
-                if (
-                    character.chronicle_id != scene.chronicle_id
-                    or not scene.characters.filter(pk=character.pk).exists()
-                ):
-                    raise PermissionDenied("Character is not in this scene")
-                try:
-                    message = self.straighten_quotes(post_form.cleaned_data["message"])
-                    scene.add_post(character, post_form.cleaned_data["display_name"], message)
-                    messages.success(request, "Post added successfully!")
-                except ValueError:
-                    messages.error(request, "Command does not match the expected format.")
-            else:
-                messages.error(request, "Failed to create post. Please check your input.")
-        return redirect(reverse("game:scene", kwargs={"pk": scene.pk}))
-
     straighten_quotes = staticmethod(straighten_quotes)
 
 
@@ -297,46 +163,6 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
             STResponseForm(entry=e, prefix=f"entry-{e.pk}") for e in self.object.all_entries()
         ]
         return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        submit_entry = request.POST.get("submit_entry")
-        submit_response = request.POST.get("submit_response")
-        if submit_entry is not None:
-            # Check that user owns the character/journal
-            if self.object.character.owner != request.user:
-                messages.error(request, "You can only add entries to your own journal.")
-                raise PermissionDenied("You can only add entries to your own journal")
-            f = JournalEntryForm(request.POST, instance=self.object)
-            if f.is_valid():
-                f.save()
-                messages.success(request, "Journal entry added successfully!")
-            else:
-                messages.error(request, "Failed to add journal entry. Please check your input.")
-        if submit_response is not None:
-            character = self.object.character
-            if not PermissionManager.user_has_permission(
-                request.user, character, Permission.EDIT_FULL, request=request
-            ):
-                raise PermissionDenied("Matching chronicle ST required")
-            if (
-                len(submit_response) > 20
-                or not submit_response.isascii()
-                or not submit_response.isdecimal()
-                or int(submit_response) < 1
-            ):
-                raise Http404("Entry not found")
-            entry = get_object_or_404(JournalEntry, pk=submit_response, journal=self.object)
-            f = STResponseForm(
-                {"st_message": request.POST.get(f"entry-{entry.pk}-st_message", "")},
-                entry=entry,
-            )
-            if f.is_valid():
-                f.save()
-                messages.success(request, "ST response added successfully!")
-            else:
-                messages.error(request, "Failed to add ST response. Please check your input.")
-        return render(request, "game/journal/detail.html", self.get_context_data(**kwargs))
 
 
 class ChronicleListView(LoginRequiredMixin, ListView):

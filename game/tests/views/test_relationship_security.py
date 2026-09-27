@@ -33,10 +33,12 @@ class RelationshipSecurityTests(TestCase):
     def test_scene_rejects_character_from_another_chronicle(self):
         self.client.force_login(self.owner)
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/",
+            f"/game/scene/{self.scene.pk}/characters/",
             {"character_to_add": str(self.other_character.pk)},
         )
-        self.assertEqual(response.status_code, 403)
+        # Step 5: AddCharForm offers only this chronicle's characters, so a
+        # forged ID is a form error (302 + message) that writes nothing.
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(self.scene.characters.filter(pk=self.other_character.pk).exists())
 
     def test_matching_st_and_staff_can_add_another_players_character(self):
@@ -47,7 +49,7 @@ class RelationshipSecurityTests(TestCase):
                 self.scene.characters.clear()
                 self.client.force_login(user)
                 response = self.client.post(
-                    f"/game/scene/{self.scene.pk}/",
+                    f"/game/scene/{self.scene.pk}/characters/",
                     {"character_to_add": str(self.character.pk)},
                 )
                 self.assertEqual(response.status_code, 302)
@@ -58,25 +60,27 @@ class RelationshipSecurityTests(TestCase):
     def test_other_gameline_st_cannot_add_another_players_character(self):
         self.client.force_login(self.other_line_st)
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/",
+            f"/game/scene/{self.scene.pk}/characters/",
             {"character_to_add": str(self.character.pk)},
         )
-        self.assertEqual(response.status_code, 403)
+        # A form error: the queryset holds only their own characters.
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(self.scene.characters.filter(pk=self.character.pk).exists())
 
     def test_scene_rejects_malformed_character_id(self):
         self.client.force_login(self.owner)
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/", {"character_to_add": "bad-id"}
+            f"/game/scene/{self.scene.pk}/characters/", {"character_to_add": "bad-id"}
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(self.scene.characters.exists())
 
     def test_finished_scene_rejects_character_addition(self):
         self.scene.finished = True
         self.scene.save(update_fields=["finished"])
         self.client.force_login(self.owner)
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/",
+            f"/game/scene/{self.scene.pk}/characters/",
             {"character_to_add": str(self.character.pk)},
         )
         self.assertEqual(response.status_code, 403)
@@ -85,7 +89,7 @@ class RelationshipSecurityTests(TestCase):
     def test_st_from_another_chronicle_cannot_close_scene(self):
         self.client.force_login(self.wrong_st)
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/", {"close_scene": "1"}
+            f"/game/scene/{self.scene.pk}/close/"
         )
         self.assertEqual(response.status_code, 404)
         self.scene.refresh_from_db()
@@ -97,8 +101,8 @@ class RelationshipSecurityTests(TestCase):
         entry = other_journal.add_post(timezone.now(), "private other journal entry")
         self.client.force_login(self.st)
         response = self.client.post(
-            f"/game/journal/{journal.pk}/",
-            {"submit_response": str(entry.pk), f"entry-{entry.pk}-st_message": "Leaked"},
+            f"/game/journal/{journal.pk}/entries/{entry.pk}/response/",
+            {f"entry-{entry.pk}-st_message": "Leaked"},
         )
         self.assertEqual(response.status_code, 404)
         entry.refresh_from_db()
@@ -108,8 +112,8 @@ class RelationshipSecurityTests(TestCase):
         journal = Journal.objects.get(character=self.character)
         self.client.force_login(self.st)
         response = self.client.post(
-            f"/game/journal/{journal.pk}/",
-            {"submit_response": "bad-id", "entry-bad-id-st_message": "No"},
+            f"/game/journal/{journal.pk}/entries/bad-id/response/",
+            {"entry-bad-id-st_message": "No"},
         )
         self.assertEqual(response.status_code, 404)
 

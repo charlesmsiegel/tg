@@ -139,9 +139,8 @@ class TestChronicleDetailView(TestCase):
         """Test that non-storytellers cannot create scenes."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.id}/",
+            f"/game/chronicle/{self.chronicle.id}/scenes/",
             {
-                "create_scene": "true",
                 "name": "New Scene",
                 "location": self.location.id,
                 "date_of_scene": "2024-01-01",
@@ -155,9 +154,8 @@ class TestChronicleDetailView(TestCase):
         self.client.login(username="stuser", password="password")
         initial_count = Scene.objects.count()
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.id}/",
+            f"/game/chronicle/{self.chronicle.id}/scenes/",
             {
-                "create_scene": "true",
                 "name": "New Scene",
                 "location": self.location.id,
                 "date_of_scene": "2024-01-01",
@@ -214,7 +212,7 @@ class TestSceneDetailView(TestCase):
     def test_non_st_cannot_close_scene(self):
         """Test that non-storytellers cannot close scenes."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}/", {"close_scene": "true"})
+        response = self.client.post(f"/game/scene/{self.scene.id}/close/")
         self.assertEqual(response.status_code, 403)
         self.scene.refresh_from_db()
         self.assertFalse(self.scene.finished)
@@ -222,7 +220,7 @@ class TestSceneDetailView(TestCase):
     def test_st_can_close_scene(self):
         """Test that storytellers can close scenes."""
         self.client.login(username="stuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}/", {"close_scene": "true"})
+        response = self.client.post(f"/game/scene/{self.scene.id}/close/")
         self.assertEqual(response.status_code, 302)
         self.scene.refresh_from_db()
         self.assertTrue(self.scene.finished)
@@ -232,7 +230,7 @@ class TestSceneDetailView(TestCase):
         self.client.login(username="testuser", password="password")
         initial_count = self.scene.characters.count()
         response = self.client.post(
-            f"/game/scene/{self.scene.id}/", {"character_to_add": self.char.id}
+            f"/game/scene/{self.scene.id}/characters/", {"character_to_add": self.char.id}
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.scene.characters.count(), initial_count + 1)
@@ -246,8 +244,13 @@ class TestSceneDetailView(TestCase):
             concept="Test",
         )
         self.client.login(username="testuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}/", {"character_to_add": char2.id})
-        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            f"/game/scene/{self.scene.id}/characters/", {"character_to_add": char2.id}
+        )
+        # Step 5: another player's character is not offered, so this is a
+        # form error that writes nothing.
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(self.scene.characters.filter(pk=char2.pk).exists())
 
     def test_404_for_nonexistent_scene(self):
         """Test that accessing nonexistent scene returns 404."""
@@ -1262,14 +1265,14 @@ class TestJournalDetailView(TestCase):
         """Test that character owner can add journal entries."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            reverse("game:journal", kwargs={"pk": self.journal.pk}),
+            reverse("game:journal_add_entry", kwargs={"pk": self.journal.pk}),
             {
-                "submit_entry": "true",
                 "date": "2024-01-15",
                 "message": "Test journal entry",
             },
         )
-        self.assertEqual(response.status_code, 200)
+        # Step 5: post/redirect/get.
+        self.assertRedirects(response, reverse("game:journal", kwargs={"pk": self.journal.pk}))
 
     def test_non_owner_cannot_add_entry(self):
         """Test that non-owners cannot add entries.
@@ -1279,9 +1282,8 @@ class TestJournalDetailView(TestCase):
         other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.client.login(username="otheruser", password="password")
         response = self.client.post(
-            reverse("game:journal", kwargs={"pk": self.journal.pk}),
+            reverse("game:journal_add_entry", kwargs={"pk": self.journal.pk}),
             {
-                "submit_entry": "true",
                 "date": "2024-01-15",
                 "message": "Malicious entry",
             },
@@ -1473,8 +1475,8 @@ class TestChronicleDetailViewPost(TestCase):
         """Test that non-storytellers cannot create stories."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.pk}/",
-            {"create_story": "true", "name": "New Story"},
+            f"/game/chronicle/{self.chronicle.pk}/stories/",
+            {"name": "New Story"},
         )
         self.assertEqual(response.status_code, 403)
 
@@ -1485,10 +1487,10 @@ class TestChronicleDetailViewPost(TestCase):
         self.client.login(username="stuser", password="password")
         initial_count = Story.objects.count()
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.pk}/",
-            {"create_story": "true", "name": "Epic Quest"},
+            f"/game/chronicle/{self.chronicle.pk}/stories/",
+            {"name": "Epic Quest"},
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(Story.objects.count(), initial_count + 1)
 
 
@@ -1637,7 +1639,7 @@ class TestSceneDetailViewPost(TestCase):
         """Test that posting with invalid form shows error message."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}/",
+            f"/game/scene/{self.scene.pk}/posts/",
             {
                 "character": self.char.pk,
                 "display_name": "",

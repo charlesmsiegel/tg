@@ -65,7 +65,7 @@
             {% if request.user.is_authenticated %}
                 <div class="tg-card mb-4">
                     <div class="tg-card-body">
-                        <form method="post" action="" id="post-form">
+                        <form method="post" action="{% url 'game:scene_post' object.pk %}" id="post-form">
                             {% csrf_token %}
                             <div class="mb-3">
                                 {% if num_logged_in_chars == 1 %}
@@ -94,7 +94,7 @@
                 </div>
                 <!-- Add Character Form -->
                 {% if num_chars != 0 %}
-                    <form method="post" action="" class="mb-3" id="add-char-form">
+                    <form method="post" action="{% url 'game:scene_add_character' object.pk %}" class="mb-3" id="add-char-form">
                         {% csrf_token %}
                         <select id="character-to-add" name="character_to_add" class="form-control d-inline-block" style="width: auto;">
                             <option value="">Add Character</option>
@@ -106,11 +106,10 @@
                     </form>
                 {% endif %}
                 <!-- Close Scene Form -->
-                <form method="post" action="" class="mb-3">
+                <form method="post" action="{% url 'game:scene_close' object.pk %}" class="mb-3">
                     {% csrf_token %}
                     <input type="submit"
                            value="Close Scene"
-                           name="close_scene"
                            class="btn btn-danger" />
                 </form>
                 <!-- Commands Link -->
