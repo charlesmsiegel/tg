@@ -118,7 +118,8 @@ class WtOHumanAbilityView(HumanAbilityView):
     )
 
     def form_invalid(self, form):
-        if not self.request._messages._queued_messages:
+        # A rule violation flashes its own message (AllocationStepMixin).
+        if not self.request._messages._queued_messages and not form.flash_errors:
             messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 

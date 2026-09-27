@@ -10,6 +10,8 @@ from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
 from characters.models.core.specialty import Specialty
+from characters.rules.limits import ability_rule, attribute_rule
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.character import CharacterDetailView
 from characters.views.core.chargen_mixins import ChargenProgressMixin, ChargenStepMixin
@@ -80,7 +82,9 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanAttributeView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView):
+class HumanAttributeView(
+    AllocationStepMixin, ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateView
+):
     """
     Character creation step: allocating attribute points.
     Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
@@ -104,44 +108,10 @@ class HumanAttributeView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateV
     secondary = 5
     tertiary = 3
 
+    def get_allocation_rules(self):
+        return [attribute_rule(self.primary, self.secondary, self.tertiary)]
+
     def form_valid(self, form):
-        strength = form.cleaned_data.get("strength")
-        dexterity = form.cleaned_data.get("dexterity")
-        stamina = form.cleaned_data.get("stamina")
-        perception = form.cleaned_data.get("perception")
-        intelligence = form.cleaned_data.get("intelligence")
-        wits = form.cleaned_data.get("wits")
-        charisma = form.cleaned_data.get("charisma")
-        manipulation = form.cleaned_data.get("manipulation")
-        appearance = form.cleaned_data.get("appearance")
-
-        for attribute in [
-            strength,
-            dexterity,
-            stamina,
-            perception,
-            intelligence,
-            wits,
-            charisma,
-            manipulation,
-            appearance,
-        ]:
-            if attribute < 1 or attribute > 5:
-                form.add_error(None, "Attributes must range from 1-5")
-                return self.form_invalid(form)
-
-        triple = [
-            strength + dexterity + stamina,
-            perception + intelligence + wits,
-            charisma + manipulation + appearance,
-        ]
-        triple.sort()
-        if triple != [3 + self.tertiary, 3 + self.secondary, 3 + self.primary]:
-            form.add_error(
-                None,
-                f"Attributes must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
-            )
-            return self.form_invalid(form)
         advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)
@@ -155,6 +125,7 @@ class HumanAttributeView(ChargenStepMixin, SpendFreebiesPermissionMixin, UpdateV
 
 
 class HumanAbilityView(
+    AllocationStepMixin,
     ChargenStepMixin,
     SpendFreebiesPermissionMixin,
     SpecialUserMixin,
@@ -170,44 +141,25 @@ class HumanAbilityView(
     rating_error_message = ""
     allocation_error_message = ""
 
+    def get_allocation_rules(self):
+        return [
+            ability_rule(
+                self.model,
+                tuple(self.fields),
+                self.primary,
+                self.secondary,
+                self.tertiary,
+                range_flash=self.rating_error_message,
+                flash=self.allocation_error_message,
+            )
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(primary=self.primary, secondary=self.secondary, tertiary=self.tertiary)
         return context
 
     def form_valid(self, form):
-        for ability in self.model.primary_abilities:
-            if not 0 <= form.cleaned_data[ability] <= 3:
-                form.add_error(None, "Abilities must range from 0-3")
-                if self.rating_error_message:
-                    messages.error(self.request, self.rating_error_message)
-                return self.form_invalid(form)
-
-        # Mage groups include secondary abilities which are not allocated here.
-        totals = [
-            sum(
-                form.cleaned_data[name]
-                for name in getattr(self.model, group)
-                if name in form.fields
-            )
-            for group in ("talents", "skills", "knowledges")
-        ]
-        if sorted(totals) != [self.tertiary, self.secondary, self.primary]:
-            allocation = (
-                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}"
-            )
-            form.add_error(None, allocation)
-            if self.allocation_error_message:
-                messages.error(
-                    self.request,
-                    self.allocation_error_message.format(
-                        allocation=allocation,
-                        talents=totals[0],
-                        skills=totals[1],
-                        knowledges=totals[2],
-                    ),
-                )
-            return self.form_invalid(form)
         advance(self.object, user=self.request.user)
         return super().form_valid(form)
 

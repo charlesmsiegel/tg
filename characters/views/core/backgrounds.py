@@ -27,21 +27,6 @@ class HumanBackgroundsView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormV
         return get_object_or_404(Human, pk=self.kwargs["pk"]).get_absolute_url()
 
     def form_valid(self, form):
-        self.get_context_data()
-        total_bg = sum(
-            [
-                f.cleaned_data["rating"] * f.cleaned_data["bg"].multiplier
-                for f in form
-                if "rating" in f.cleaned_data.keys() and "bg" in f.cleaned_data.keys()
-            ]
-        )
-        if total_bg != self.object.background_points:
-            for f in form:
-                f.add_error(
-                    None,
-                    f"Backgrounds must total {self.object.background_points} points",
-                )
-            return super().form_invalid(form)
         form.save()
         advance(self.object, user=self.request.user)
         self.object.save()
@@ -51,6 +36,7 @@ class HumanBackgroundsView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormV
         kwargs = super().get_form_kwargs()
         self.object = get_object_or_404(Human, pk=self.kwargs["pk"])
         kwargs["character"] = self.object
+        kwargs["enforce_allocation"] = True
         kwargs["instance"] = self.object  # Required for inline formset
         return kwargs
 

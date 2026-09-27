@@ -4,6 +4,8 @@ from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
+from characters.rules.allocation import RuleViolation
+from characters.rules.limits import KINFOLK_TRIBE_BACKGROUND_LIMITS
 from items.models.werewolf.fetish import Fetish
 
 
@@ -94,30 +96,40 @@ class Kinfolk(WtAHuman):
         self.save()
         return True
 
+    def tribe_background_limits(self):
+        if self.tribe is None:
+            return {}
+        return KINFOLK_TRIBE_BACKGROUND_LIMITS.get(self.tribe.name, {})
+
+    def background_violations(self, ratings):
+        """The first tribal restriction a chargen background allocation breaks."""
+        limits = self.tribe_background_limits()
+        if not limits:
+            return []
+        tribe = self.tribe.name
+        for index, (background, rating) in enumerate(ratings):
+            if rating == 0:
+                continue
+            if background.property_name in limits.get("forbidden", ()):
+                message = f"{tribe} may not purchase {background.name}"
+                return [(index, RuleViolation(message, field="bg"))]
+            cap = limits.get("max", {}).get(background.property_name)
+            if cap is not None and rating > cap:
+                message = f"{tribe} may not purchase more than {cap} dots of {background.name}"
+                return [(index, RuleViolation(message, field="rating"))]
+        for name in limits.get("required", ()):
+            if not any(bg.property_name == name and rating >= 1 for bg, rating in ratings):
+                label = name.replace("_", " ").title()
+                return [(0, RuleViolation(f"{tribe} must purchase at least 1 dot of {label}"))]
+        return []
+
     def add_background(self, background, maximum=5):
-        if self.tribe.name == "Bone Gnawers":
-            if background == "pure_breed":
-                return False
-            if background == "resources" and self.resources == 3:
-                return False
-        if self.tribe.name == "Glass Walkers":
-            if background in ["pure_breed", "mentor"]:
-                return False
-        if self.tribe.name == "Red Talons":
-            if background in ["resources", "allies", "contacts"]:
-                return False
-        if self.tribe.name == "Shadow Lords":
-            if background == "mentor":
-                return False
-        if self.tribe.name == "Silent Striders":
-            if background == "resources" and self.resources == 3:
-                return False
-        if self.tribe.name == "Stargazers":
-            if background == "resources" and self.resources == 3:
-                return False
-        if self.tribe.name == "Wendigo":
-            if background == "resources" and self.resources == 3:
-                return False
+        limits = self.tribe_background_limits()
+        if background in limits.get("forbidden", ()):
+            return False
+        cap = limits.get("max", {}).get(background)
+        if cap is not None and getattr(self, background, 0) == cap:
+            return False
         return super().add_background(background, maximum=maximum)
 
     def filter_gifts(self):
