@@ -14,6 +14,13 @@ class Ananasi(Fera):
 
     type = "ananasi"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "aspect")
+    chargen_help_text = {
+        "aspect": "Choose your aspect (role among the Ananasi).",
+    }
+    gift_group_fields = (("aspect_gifts", "aspect"),)
+
     # Ananasi breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

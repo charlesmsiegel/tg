@@ -14,6 +14,14 @@ class Mokole(Fera):
 
     type = "mokole"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "stream", "auspice")
+    chargen_help_text = {
+        "stream": "Choose your stream (cultural/regional grouping).",
+        "auspice": "Choose your auspice (based on sun position at birth).",
+    }
+    gift_group_fields = (("stream_gifts", "stream"), ("auspice_gifts", "auspice"))
+
     # Mokole breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

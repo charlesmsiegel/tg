@@ -14,6 +14,13 @@ class Kitsune(Fera):
 
     type = "kitsune"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "path")
+    chargen_help_text = {
+        "path": "Choose your path (role in society).",
+    }
+    gift_group_fields = (("path_gifts", "path"),)
+
     # Kitsune breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

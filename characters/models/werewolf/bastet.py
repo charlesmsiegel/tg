@@ -14,6 +14,14 @@ class Bastet(Fera):
 
     type = "bastet"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "tribe", "pryio")
+    chargen_help_text = {
+        "tribe": "Choose your tribe (cat species).",
+        "pryio": "Choose your Pryio (moon-based role).",
+    }
+    gift_group_fields = (("tribe_gifts", "tribe"), ("pryio_gifts", "pryio"))
+
     # Bastet tribes (9 tribes)
     TRIBES = [
         ("bagheera", "Bagheera"),  # Black panthers of India

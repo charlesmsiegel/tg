@@ -15,6 +15,16 @@ class Nuwisha(Fera):
 
     type = "nuwisha"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "role")
+    optional_choice_fields = ("role",)
+    chargen_help_text = {
+        "role": "Choose your role (optional, loose affiliation).",
+    }
+    gift_group_fields = (("role_gifts", "role"),)
+    fixed_gift_groups = (("nuwisha_gifts", "nuwisha"),)
+    starting_gifts_help_text = "Choose 3 starting Gifts: from your Breed and general Nuwisha gifts."
+
     # Nuwisha breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

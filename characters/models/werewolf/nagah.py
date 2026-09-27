@@ -14,6 +14,13 @@ class Nagah(Fera):
 
     type = "nagah"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "auspice")
+    chargen_help_text = {
+        "auspice": "Choose your auspice (role as assassin).",
+    }
+    gift_group_fields = (("auspice_gifts", "auspice"),)
+
     # Nagah breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

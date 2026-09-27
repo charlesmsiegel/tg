@@ -14,6 +14,11 @@ class Corax(Fera):
 
     type = "corax"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed",)
+    fixed_gift_groups = (("corax_gifts", "corax"),)
+    starting_gifts_help_text = "Choose 3 starting Gifts: all from the Corax gift list."
+
     # Corax breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human

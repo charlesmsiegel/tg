@@ -15,6 +15,13 @@ class Grondr(Fera):
 
     type = "grondr"
 
+    # Character creation: breed/faction step fields and starting gift groups.
+    chargen_choice_fields = ("breed", "auspice")
+    chargen_help_text = {
+        "auspice": "Choose your auspice (seasonal role).",
+    }
+    gift_group_fields = (("auspice_gifts", "auspice"),)
+
     # Grondr breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human
