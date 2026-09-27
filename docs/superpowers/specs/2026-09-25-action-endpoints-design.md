@@ -338,3 +338,80 @@ Each slice removes one old handler, adds its endpoints and moves its
 template, so reverting any one slice restores that handler alone. Slice 1's
 base class is the only shared code.
 
+## Implementation record
+
+This was implemented as ordered commits on one branch: the design and plan,
+then character actions (slices 1–3), then index and chronicle navigation
+(slice 7 and N4), then scene, journal and chronicle actions (slices 4–6),
+then the guard and this record (slice 8). Navigation lands before the game
+commit because deleting `ChronicleDetailView.post` also removes the old
+chronicle create-redirects.
+
+**Measured.** Across the existing view modules, 548 lines were removed and 43
+added. The new code is `core/actions.py` (181 lines, the base class),
+three action modules (393 lines, 20 endpoint classes), the navigation view
+(37) and three services (72). No project `DetailView` reachable from the
+URLconf defines `post`. No view module tests a posted button name. The
+guard (`core/tests/test_action_guard.py`) finds 23 button-dispatch sites and
+34 routed detail views with `post` at `cb4f3eb`, and none now.
+
+**Tests.** The suite at `cb4f3eb` ran 7,340 tests with 2 failures. Both
+predate this step, and Step 4's record already notes them
+(`test_human.TestAttributeView.test_update_view_template`,
+`TestHumanCharacterCreationView.test_creation_status_selector`). After this
+step the suite ran 7,394 tests with the same 2 failures and no others. New
+coverage:
+
+* `core/tests/test_actions.py`: order of checks, rollback on `ActionFailed`,
+  invalid form without writes, and the fragment hook on all three paths.
+* `characters/tests/views/test_character_actions.py`: the seven-member
+  audience matrix for approve, reject, retire, decease and specialties; GET
+  returns 405; double-submit approve applies once; reject after approve
+  does not undo the approval; a cross-character request returns 404;
+  PC/NPC self-approval; the every-type walk; the D8 redirect target.
+* `characters/tests/views/mage/test_mage_comprehensive.py::TestMageXPSpendAction`:
+  audience, non-Mage 404, invalid rote re-rendered on the sheet, old
+  button 405.
+* `game/tests/views/test_game_actions.py`: matrices for G1–G7, the D5 and
+  D10 regressions, PRG, and old buttons returning 405. The D5 and D10 tests
+  target the new URLs, so they could not run against the old handlers.
+  Reading the old code confirms both defects: `EDIT_FULL` was the check
+  for the ST response, and the invalid-form path re-rendered with
+  `get_context_data()`'s fresh forms.
+* `core/tests/security/test_index_redirects.py`: the typed endpoint, every
+  valid gameline code, unknown → 404, anonymous create → 401, POST → 405.
+
+**Deviations from the design above, and why.**
+
+* One PR with ordered commits instead of one PR per handler, as in Steps 0–4.
+  The slices are still separate commits.
+* An anonymous `create` on the typed endpoint gets **401**, not a login page.
+  The view redirects to login, and `AuthErrorHandlerMiddleware` turns that
+  redirect into the project's 401 for unauthenticated access, as it does
+  everywhere else.
+* Chronicle story and scene forms never displayed their errors, so D10 also
+  adds error output to `scenes_section.html`. Without it, re-rendering the
+  bound form would not show the user anything.
+* The Mage spend form now shows the rote form's non-field errors (for
+  example "Not enough Rote Points"). The sheet re-rendered the bound rote
+  form before, but never printed its errors.
+* A refused XP spend on the Mage sheet shows its error on the form
+  (`form.non_field_errors`) instead of as a flash message plus re-render.
+  The text is the same.
+* Autumn Person, Inanimae and Nunnehi rows that lack their required
+  chargen choices fail model validation on any save. Retiring one used to
+  return a 500; the endpoint now shows the validation message. Valid rows
+  are unaffected.
+
+**Changed expectations in existing tests,** each for a reason listed above:
+the second decision on a spending record raises `SpendingAlreadyDecided`
+(D1). A forged or foreign `character_to_add` is a form error (302, no
+write) instead of 403/400. An owner's decease POST is refused with 403 instead
+of being ignored. A journal entry redirects instead of rendering (D6).
+Story creation redirects instead of rendering. The `ApprovalMixin`
+key-parsing unit tests are deleted along with the mixin, because typed URL
+segments replace the parsing.
+
+**Reported to the owner, not changed:** the generic character router's
+`default_redirect = DetailView` for Vampire, Ghoul, DtF Human, Demon and
+Thrall (D8, Step 2's area), and `Story` having no chronicle field.
