@@ -50,14 +50,13 @@ class StaticPageConfigurationTests(SimpleTestCase):
                 self.assertNotIn("{#", html)
                 self.assertNotIn("#}", html)
 
-    def test_registered_vampire_virtues_loads_static_validator(self):
+    def test_registered_vampire_virtues_has_no_page_script(self):
+        # The interactive (htmx) Vampire workflow replaced vampire-virtues.js
+        # with the Alpine pool and the server validator.
         from characters.chargen import get_workflow
 
         step = next(step for step in get_workflow("vampire").steps if step.key == "virtues")
-        scripts = ScriptParser(render_to_string(step.template)).scripts
-        self.assertEqual(len(scripts), 1)
-        self.assertTrue(scripts[0]["attrs"]["src"].endswith("characters/js/vampire-virtues.js"))
-        self.assertEqual(scripts[0]["body"], "")
+        self.assertEqual(ScriptParser(render_to_string(step.template)).scripts, [])
 
     def test_ability_validation_requires_all_targets(self):
         template = "characters/core/ability_block/validation.html"

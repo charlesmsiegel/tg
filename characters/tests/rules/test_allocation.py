@@ -64,8 +64,24 @@ class AttributeRuleTest(TestCase):
                 "min": 1,
                 "max": 5,
                 "base": 1,
+                "groups": [
+                    ["physical", ["strength", "dexterity", "stamina"]],
+                    ["social", ["charisma", "manipulation", "appearance"]],
+                    ["mental", ["perception", "intelligence", "wits"]],
+                ],
+                "targets": [10, 8, 6],
             },
         )
+
+    def test_status_reports_group_totals_against_targets(self):
+        status = self.rule.status({**ATTRIBUTES, "strength": 4})
+        self.assertEqual(
+            [(g["name"], g["current"]) for g in status["groups"]],
+            [("physical", 11), ("social", 8), ("mental", 6)],
+        )
+        self.assertEqual(status["targets"], [10, 8, 6])
+        self.assertFalse(status["satisfied"])
+        self.assertTrue(self.rule.status(ATTRIBUTES)["satisfied"])
 
 
 class AbilityRuleTest(TestCase):
@@ -170,5 +186,35 @@ class AllocationRuleTest(TestCase):
     def test_client_data(self):
         self.assertEqual(
             WRAITH_ARCANOI.client_data(),
-            {"name": "arcanoi", "total": 5, "comparison": "exact", "max": 5},
+            {
+                "name": "arcanoi",
+                "total": 5,
+                "comparison": "exact",
+                "max": 5,
+                "fields": list(WRAITH_ARCANOI.fields),
+            },
         )
+
+    def test_status_is_satisfied_exactly_as_the_totals_phase(self):
+        exact = AllocationRule(name="x_y", fields=("a", "b"), total=3, message="")
+        at_most = AllocationRule(
+            name="z", fields=("a", "b"), total=3, message="", comparison="at_most"
+        )
+        self.assertEqual(
+            exact.status({"a": 1, "b": 1}),
+            {
+                "name": "x_y",
+                "label": "X Y",
+                "current": 2,
+                "target": 3,
+                "comparison": "exact",
+                "satisfied": False,
+            },
+        )
+        self.assertTrue(at_most.status({"a": 1, "b": 1})["satisfied"])
+        self.assertFalse(at_most.status({"a": 3, "b": 1})["satisfied"])
+        for rule in (exact, at_most):
+            for values in ({"a": 1, "b": 2}, {"a": 3, "b": 3}, {"a": 0, "b": 0}):
+                self.assertEqual(
+                    rule.status(values)["satisfied"], not rule.violations(values, TOTALS)
+                )

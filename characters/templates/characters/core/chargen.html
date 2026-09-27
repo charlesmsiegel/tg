@@ -1,4 +1,11 @@
 {% extends "core/form.html" %}
+{% block content %}
+    {% if chargen_interactive %}
+        {% include "characters/core/chargen/interactive.html" %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock content %}
 {% block progress %}
     {% include "characters/core/chargen_progress.html" %}
 {% endblock progress %}
@@ -22,3 +29,9 @@
         {% endif %}
     {% endif %}
 {% endblock buttons %}
+{% block extrascripts %}
+    {{ block.super }}
+    {% if chargen_interactive %}
+        {% include "core/includes/interactive_scripts.html" %}
+    {% endif %}
+{% endblock extrascripts %}

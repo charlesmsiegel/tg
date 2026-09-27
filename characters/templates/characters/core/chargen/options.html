@@ -1,0 +1,2 @@
+{% for value, label in choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+{% for select_id, empty_label in resets %}<select id="{{ select_id }}" hx-swap-oob="innerHTML"><option value="">{{ empty_label }}</option></select>{% endfor %}

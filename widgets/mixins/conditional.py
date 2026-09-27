@@ -49,6 +49,8 @@ Template (wrap each conditional field in a container whose id is
     {{ form.conditional_js }}
 """
 
+import json
+
 from django import forms
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -115,17 +117,107 @@ class ConditionalFieldsMixin:
 
     @property
     def media(self):
+        if getattr(self, "htmx_chains", False):
+            # Visibility is evaluated server-side (field_visibility) instead.
+            return super().media
         return super().media + forms.Media(js=("widgets/conditional.js",))
 
     def conditional_js(self):
         """Render inert visibility rules; behavior is supplied by form.media."""
         rules = self.get_conditional_rules()
-        if not rules:
+        if not rules or getattr(self, "htmx_chains", False):
             return ""
         return config_script(
             {"rules": rules, "context": self.get_conditional_context()},
             **{"data-conditional-rules": ""},
         )
+
+    # -- server-side evaluation (same semantics as widgets/conditional.js) --
+
+    def field_visibility(self, values):
+        """``{field: visible}`` for ``values`` (field name -> submitted string).
+
+        ``visible_when`` needs every condition, ``hidden_when`` any condition,
+        exactly as the browser manager evaluates them, so a rule declared once
+        behaves the same whether the browser or the server applies it.
+        """
+        context = self.get_conditional_context()
+        visibility = {}
+        for name, config in self.get_conditional_rules().items():
+            visible = True
+            if config.get("visible_when"):
+                visible = self._conditions_hold(config["visible_when"], True, values, context)
+            if config.get("hidden_when") and visible:
+                visible = not self._conditions_hold(config["hidden_when"], False, values, context)
+            visibility[name] = visible
+        return visibility
+
+    def _conditions_hold(self, conditions, require_all, values, context):
+        results = []
+        for source, checks in conditions.items():
+            if source == "_context":
+                results += [context.get(key) == expected for key, expected in checks.items()]
+                continue
+            if source not in self.fields:
+                results.append(False)
+                continue
+            value = values.get(source, "")
+            if "checked_is" in checks:
+                results.append(bool(value) == checks["checked_is"])
+                continue
+            if "value_is" in checks:
+                results.append(value == checks["value_is"])
+            if "value_in" in checks:
+                results.append(value in checks["value_in"])
+            if "value_not_in" in checks:
+                results.append(value not in checks["value_not_in"])
+            if "metadata_is" in checks or "metadata_truthy" in checks:
+                metadata = self._option_metadata(source, value, values)
+                for key, expected in checks.get("metadata_is", {}).items():
+                    results.append(key in metadata and str(metadata[key]) == expected)
+                if "metadata_truthy" in checks:
+                    results.append(
+                        metadata.get(checks["metadata_truthy"]) in ("true", "True", True)
+                    )
+        if not results:
+            return True
+        return all(results) if require_all else any(results)
+
+    def _option_metadata(self, name, value, values):
+        field = self.fields[name]
+        parent = getattr(field, "parent_field", None)
+        if parent and hasattr(field, "get_choices_for_parent"):
+            choices = field.get_choices_for_parent(values.get(parent, ""))
+        else:
+            choices = getattr(field, "choices", ())
+        for choice in choices:
+            if len(choice) >= 3 and str(choice[0]) == value:
+                return dict(choice[2] or {})
+        return {}
+
+    def current_values(self):
+        """What the browser would read from each control right now."""
+        values = {}
+        for name, field in self.fields.items():
+            if self.is_bound:
+                if isinstance(field.widget, forms.CheckboxInput):
+                    values[name] = self.add_prefix(name) in self.data
+                else:
+                    values[name] = self.data.get(self.add_prefix(name), "")
+                continue
+            initial = self.get_initial_for_field(field, name)
+            if initial in (None, "") and getattr(field, "choices", None):
+                # An unselected <select> shows (and submits) its first option.
+                initial = next(iter(field.choices), ("",))[0]
+            values[name] = "" if initial is None else initial
+        return values
+
+    @property
+    def visibility(self):
+        return self.field_visibility(self.current_values())
+
+    def visibility_json(self):
+        return json.dumps(self.visibility)
 
     def wrap_field(self, field_name, label_prefix=""):
         """

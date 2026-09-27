@@ -17,6 +17,7 @@ from characters.views.core.chargen_mixins import ChargenProgressMixin, ChargenSt
 from characters.views.core.form_steps import CharacterFormStepView
 from characters.views.core.spending import FreebieSpendingView
 from core.forms.language import HumanLanguageForm
+from core.htmx import hx_redirect, is_fragment_request, vary_on_htmx
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
@@ -278,3 +279,12 @@ class HumanCharacterCreationView(DictView):
 
     def is_valid_key(self, obj, key):
         return key in self.view_mapping and obj.status in {"Un", "Rev"}
+
+    def get_default_redirect(self, request, *args, **kwargs):
+        # A step fragment was requested for a character that has left the
+        # wizard (or that this user may only view): render the real page.
+        if is_fragment_request(request):
+            subject = kwargs.get("subject")
+            target = subject.get_absolute_url() if subject is not None else request.path
+            return vary_on_htmx(hx_redirect(target))
+        return super().get_default_redirect(request, *args, **kwargs)

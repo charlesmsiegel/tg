@@ -4,7 +4,9 @@
 {% comment %} Truthiness (not is-not-None) is deliberate: when this block is included
    without the target context vars (plain edit forms), they resolve to ''
    which must suppress the script. No gameline uses a 0 target (min is 3). {% endcomment %}
-{% if primary and secondary and tertiary %}
+{% if chargen_interactive %}
+    {% include "characters/core/chargen/pool.html" %}
+{% elif primary and secondary and tertiary %}
     <div class="row">
         <div class="col-sm">
             <div id="abilities-validation-status" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}" role="status" style="font-weight: 600; margin-top: 8px;"></div>

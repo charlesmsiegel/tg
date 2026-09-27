@@ -49,11 +49,7 @@ class BaseBackgroundRatingFormSet(BaseInlineFormSet):
         super().clean()
         if not self.enforce_allocation or any(form.errors for form in self.forms):
             return
-        rated = [
-            form
-            for form in self.forms
-            if "rating" in form.cleaned_data and "bg" in form.cleaned_data
-        ]
+        rated = self._rated_forms()
         pairs = [(form.cleaned_data["bg"], form.cleaned_data["rating"]) for form in rated]
         for index, violation in self.character.background_violations(pairs):
             target = rated[index] if rated else (self.forms[0] if self.forms else None)
@@ -61,11 +57,43 @@ class BaseBackgroundRatingFormSet(BaseInlineFormSet):
                 raise forms.ValidationError(violation.message)
             target.add_error(violation.field, violation.message)
             return
-        total = sum(rating * bg.multiplier for bg, rating in pairs)
+        total = self.points_spent(pairs)
         if total != self.character.background_points:
             message = f"Backgrounds must total {self.character.background_points} points"
             for form in self.forms:
                 form.add_error(None, message)
+
+    def _rated_forms(self):
+        return [
+            form
+            for form in self.forms
+            if "rating" in getattr(form, "cleaned_data", {}) and "bg" in form.cleaned_data
+        ]
+
+    @staticmethod
+    def points_spent(pairs):
+        return sum(rating * bg.multiplier for bg, rating in pairs)
+
+    def allocation_status(self):
+        """Running total of a validated formset: the arithmetic clean() enforces.
+
+        Rows whose background or rating failed validation do not count, as they
+        could not be saved.
+        """
+        pairs = [
+            (form.cleaned_data["bg"], form.cleaned_data["rating"])
+            for form in self._rated_forms()
+            if not form.cleaned_data.get("DELETE")
+        ]
+        budget = self.character.background_points
+        spent = self.points_spent(pairs)
+        return {
+            "name": "backgrounds",
+            "label": "Background points",
+            "current": spent,
+            "target": budget,
+            "satisfied": spent == budget,
+        }
 
     def add_fields(self, form, index):
         super().add_fields(form, index)

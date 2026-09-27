@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 from characters.chargen.transitions import advance
-from characters.forms.core.allocation import allocation_modelform
+from characters.forms.core.allocation import allocation_modelform, rating_values
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from core.mixins import SpecialUserMixin, SpendFreebiesPermissionMixin
 
@@ -25,6 +25,7 @@ class AllocationStepMixin:
     """
 
     allocation_rules = ()
+    live_validation = True
 
     def get_allocation_rules(self):
         return self.allocation_rules
@@ -48,6 +49,10 @@ class AllocationStepMixin:
         context = super().get_context_data(**kwargs)
         context["allocation_rules"] = [rule.client_data() for rule in self.get_allocation_rules()]
         return context
+
+    def validation_totals(self, form):
+        values = rating_values(form)
+        return [rule.status(values) for rule in self.get_allocation_rules()]
 
     def form_invalid(self, form):
         for text in getattr(form, "flash_errors", ()):

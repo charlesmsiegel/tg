@@ -22,7 +22,8 @@
 {% endfor %}
 {% comment %} Guard mirrors the abilities include: only render the counter where the
    character actually has a background budget in context. {% endcomment %}
-{% if object.background_points %}
+{% comment %} Interactive pages get server-computed totals from the live validator. {% endcomment %}
+{% if object.background_points and not chargen_interactive %}
 <div class="row">
     <div class="col-sm">
         <div id="backgrounds-validation-status" data-budget="{{ object.background_points }}" role="status" style="font-weight: 600; margin-top: 8px;"></div>

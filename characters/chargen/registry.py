@@ -29,6 +29,10 @@ class Step:
 @dataclass(frozen=True)
 class Workflow:
     steps: tuple[Step, ...]
+    # Interactive workflows swap step fragments with htmx and add live
+    # validation (see docs/superpowers/specs/2026-09-25-htmx-chargen-design.md).
+    # The same views and forms serve both modes; only rendering differs.
+    interactive: bool = False
 
     def __post_init__(self):
         keys = [step.key for step in self.steps]

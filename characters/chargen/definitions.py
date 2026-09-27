@@ -29,17 +29,18 @@ DETAIL_ONLY_FREEBIE_POSITIONS = {
 }
 
 
-def bind(tasks, module, prefix, *, templates=None, views=None):
+def bind(tasks, module, prefix, *, templates=None, views=None, interactive=False):
     templates, views = templates or {}, views or {}
     return Workflow(
-        tuple(
+        interactive=interactive,
+        steps=tuple(
             replace(
                 task,
                 view_path=f"{module}.{views.get(task.key, prefix + task.view_path + 'View')}",
                 template=templates.get(task.key, task.template),
             )
             for task in tasks
-        )
+        ),
     )
 
 
@@ -220,8 +221,10 @@ VAMPIRE = bind(
         "abilities": "characters/vampire/vtmhuman/ability_block_form.html",
         "disciplines": "characters/vampire/vampire/steps/disciplines.html",
         "virtues": "characters/vampire/vampire/steps/virtues.html",
+        "freebies": "characters/core/chargen/freebies_chained.html",
         "allies": "characters/core/chargen/form.html",
     },
+    interactive=True,
 )
 
 GHOUL = bind(

@@ -5,6 +5,8 @@ A widget that renders dependent/cascading dropdowns with zero configuration.
 Render the field and include {{ form.media }} in standalone templates.
 """
 
+import json
+
 from django import forms
 from django.utils.safestring import mark_safe
 
@@ -74,3 +76,38 @@ class ChainedSelect(forms.Select):
         if self.choices_tree and self.chain_position == 0 and self.chain_name:
             html += config_script(self.choices_tree, **{"data-chain-tree": self.chain_name})
         return mark_safe(html)
+
+
+class HtmxChainedSelect(forms.Select):
+    """A chained select whose child options come from the server via htmx.
+
+    No choice tree is embedded and no script is declared: a change asks
+    ``options_url`` (the page's own step URL) for the child's ``<option>``
+    elements. Without JavaScript the form still posts normally and the bound
+    re-render fills the child from the submitted parent.
+    """
+
+    def __init__(self, *, options_url=None, child=None, child_id=None, include=None, **kwargs):
+        self.options_url = options_url
+        self.child = child
+        self.child_id = child_id
+        self.include = include
+        super().__init__(**kwargs)
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super().build_attrs(base_attrs, extra_attrs)
+        if self.child:
+            attrs.update(
+                {
+                    "hx-get": self.options_url,
+                    "hx-trigger": "change",
+                    "hx-target": f"#{self.child_id}",
+                    "hx-swap": "innerHTML",
+                    "hx-sync": "this:replace",
+                    # Only the chain's own selects: never the CSRF token.
+                    "hx-include": self.include,
+                    "hx-vals": json.dumps({"_options": self.child}),
+                    "data-tg-expect": "chargen-options",
+                }
+            )
+        return attrs

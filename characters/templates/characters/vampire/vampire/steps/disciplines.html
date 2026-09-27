@@ -1,15 +1,16 @@
-{% load dots sanitize_text %}
 <div class="row">
-                    <div class="col-sm">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
-                                <p class="tg-card-subtitle">Spend 3 dots on Clan Disciplines</p>
-                            </div>
-                            <div class="tg-card-body">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="col-sm">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
+                {% for rule in allocation_rules %}
+                    <p class="tg-card-subtitle">Spend {{ rule.total }} dots on Clan Disciplines</p>
+                {% endfor %}
+            </div>
+            <div class="tg-card-body">
+                {{ form.as_p }}
+                {% include "characters/core/chargen/pool.html" %}
+            </div>
+        </div>
+    </div>
+</div>
