@@ -35,7 +35,6 @@ from core.mixins import (
     MessageMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
     prepare_created_object,
 )
 from core.permissions import Permission, PermissionManager
@@ -45,7 +44,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class CompanionDetailView(XPApprovalMixin, HumanDetailView):
+class CompanionDetailView(HumanDetailView):
     model = Companion
     template_name = "characters/mage/companion/detail.html"
 

@@ -5,10 +5,10 @@ from django.views.generic import UpdateView
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin, XPApprovalMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin
 
 
-class GhoulDetailView(XPApprovalMixin, HumanDetailView):
+class GhoulDetailView(HumanDetailView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/detail.html"
 

@@ -33,12 +33,11 @@ from core.mixins import (
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
     SpecialUserMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class WerewolfDetailView(XPApprovalMixin, HumanDetailView):
+class WerewolfDetailView(HumanDetailView):
     model = Werewolf
     template_name = "characters/werewolf/garou/detail.html"
 

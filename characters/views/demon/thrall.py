@@ -8,11 +8,10 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class ThrallDetailView(XPApprovalMixin, HumanDetailView):
+class ThrallDetailView(HumanDetailView):
     model = Thrall
     template_name = "characters/demon/thrall/detail.html"
 

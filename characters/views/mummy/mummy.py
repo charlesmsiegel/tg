@@ -12,11 +12,10 @@ from core.mixins import (
     MessageMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class MummyDetailView(XPApprovalMixin, HumanDetailView):
+class MummyDetailView(HumanDetailView):
     model = Mummy
     template_name = "characters/mummy/mummy/detail.html"
 

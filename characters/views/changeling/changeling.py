@@ -31,12 +31,11 @@ from core.mixins import (
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
     SpecialUserMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class ChangelingDetailView(XPApprovalMixin, HumanDetailView):
+class ChangelingDetailView(HumanDetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 

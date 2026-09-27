@@ -32,12 +32,11 @@ from core.mixins import (
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
     SpecialUserMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class FeraDetailView(XPApprovalMixin, HumanDetailView):
+class FeraDetailView(HumanDetailView):
     model = Fera
     template_name = "characters/werewolf/fera/detail.html"
 

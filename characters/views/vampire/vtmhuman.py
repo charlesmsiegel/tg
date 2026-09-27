@@ -28,12 +28,11 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class VtMHumanDetailView(XPApprovalMixin, HumanDetailView):
+class VtMHumanDetailView(HumanDetailView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/detail.html"
 

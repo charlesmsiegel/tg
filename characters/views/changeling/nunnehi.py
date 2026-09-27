@@ -3,10 +3,10 @@ from django.views.generic import CreateView, UpdateView
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.changeling.nunnehi import Nunnehi
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin, XPApprovalMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin
 
 
-class NunnehiDetailView(XPApprovalMixin, HumanDetailView):
+class NunnehiDetailView(HumanDetailView):
     model = Nunnehi
     template_name = "characters/changeling/nunnehi/detail.html"
 

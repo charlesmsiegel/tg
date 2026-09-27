@@ -44,7 +44,7 @@
                 Choose specialties. Recall that we use the Well-Skilled Craftsman rules so some Abilities require specialties before the 4th dot.
             </div>
         </div>
-        <form action="" enctype="multipart/form-data" method="post">
+        <form action="{% url 'characters:add_specialties' object.pk %}" method="post">
             {% csrf_token %}
             {% for field in spec_form %}
                 <div class="row">
@@ -54,7 +54,7 @@
             {% endfor %}
             <div class="row">
                 <div class="col-sm">
-                    <input type="submit" name="specialties" value="Add Specialties" />
+                    <input type="submit" value="Add Specialties" />
                 </div>
             </div>
         </form>

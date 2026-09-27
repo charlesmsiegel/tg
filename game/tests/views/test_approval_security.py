@@ -1,11 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
 from django.test import TestCase
 
 from characters.models.core.human import Human
 from game.models import Chronicle, FreebieSpendingRecord, Gameline, STRelationship
-from game.spending_approval import decide_spending_request
+from game.spending_approval import SpendingAlreadyDecided, decide_spending_request
 
 
 class ApprovalSecurityTests(TestCase):
@@ -48,7 +47,8 @@ class ApprovalSecurityTests(TestCase):
         self.assertTrue(result.success)
         self.record.refresh_from_db()
         self.assertEqual(self.record.approved, "Approved")
-        with self.assertRaises(Http404):
+        # A decided record is reported as such to an approver (Step 5, D1).
+        with self.assertRaises(SpendingAlreadyDecided):
             self.decide(FreebieSpendingRecord, self.character, self.record.pk, self.st, "approve")
 
     def test_st_can_self_approve_npc_only(self):

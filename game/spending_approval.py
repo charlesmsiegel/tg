@@ -14,6 +14,10 @@ class SpendingDecisionError(Exception):
     """The spending service rejected an attempted decision."""
 
 
+class SpendingAlreadyDecided(SpendingDecisionError):
+    """The request was approved or denied before this decision arrived."""
+
+
 def can_approve_spending(user, character, request=None):
     """Return the same scoped decision used by all spending endpoints."""
     if character is None or not PermissionManager.user_has_permission(
@@ -47,7 +51,7 @@ def decide_spending_request(record_model, character, record_id, approver, decisi
             record = (
                 record_model.objects.select_for_update()
                 .select_related("character")
-                .get(pk=record_id, character_id=character.pk, approved="Pending")
+                .get(pk=record_id, character_id=character.pk)
             )
         except record_model.DoesNotExist as exc:
             raise Http404("Spending request not found") from exc
@@ -58,6 +62,10 @@ def decide_spending_request(record_model, character, record_id, approver, decisi
         if not PermissionManager.user_has_permission(approver, subject, Permission.VIEW_FULL):
             raise Http404("Spending request not found")
         require_spending_approver(approver, subject)
+        # Checked under the row lock and only after authorization, so a
+        # double submit is reported without revealing records to outsiders.
+        if record.approved != "Pending":
+            raise SpendingAlreadyDecided(f"This request was already {record.approved.lower()}.")
 
         if record_model is XPSpendingRequest:
             service = XPSpendingServiceFactory.get_service(subject)

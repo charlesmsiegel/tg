@@ -9,11 +9,10 @@ from core.mixins import (
     MessageMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class MtRHumanDetailView(XPApprovalMixin, HumanDetailView):
+class MtRHumanDetailView(HumanDetailView):
     model = MtRHuman
     template_name = "characters/mummy/mtrhuman/detail.html"
 

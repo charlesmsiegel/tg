@@ -28,12 +28,11 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class CtDHumanDetailView(XPApprovalMixin, HumanDetailView):
+class CtDHumanDetailView(HumanDetailView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/detail.html"
 

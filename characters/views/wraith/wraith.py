@@ -5,10 +5,10 @@ from django.views.generic import UpdateView
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.wraith.wraith import Wraith
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin, XPApprovalMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin
 
 
-class WraithDetailView(XPApprovalMixin, HumanDetailView):
+class WraithDetailView(HumanDetailView):
     model = Wraith
     template_name = "characters/wraith/wraith/detail.html"
 

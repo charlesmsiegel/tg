@@ -6,10 +6,10 @@ from characters.forms.core.crud_fields import VAMPIRE_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin, XPApprovalMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ScopedEditFormMixin
 
 
-class VampireDetailView(XPApprovalMixin, HumanDetailView):
+class VampireDetailView(HumanDetailView):
     model = Vampire
     template_name = "characters/vampire/vampire/detail.html"
 

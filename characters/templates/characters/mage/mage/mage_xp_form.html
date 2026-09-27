@@ -132,28 +132,34 @@
         <div class="col-sm-3 border">8 x Current Rating</div>
         <div class="col-sm-3"></div>
     </div>
-    <form action="" enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        {% for request in object.get_xp_spending_history %}
-            <div class="row">
-                <div class="col-sm">
-                    {{ request.trait_name }}
-                    {% if request.trait_value %}({{ request.trait_value }}){% endif %}
-                </div>
-                <div class="col-sm">{{ request.cost }} XP</div>
-                <div class="col-sm">{{ request.approved }}</div>
-                {% if object_perms.can_approve_spending %}
-                    {% if request.approved != "Approved" %}
-                        <div class="col-sm">
-                            <input type="submit" name="xp_request_{{ request.id }}_approve" value="Approve" />
-                            <input type="submit" name="xp_request_{{ request.id }}_reject" value="Reject" />
-                        </div>
-                    {% else %}
-                        <div class="col-sm"></div>
-                    {% endif %}
-                {% endif %}
+    {% for request in object.get_xp_spending_history %}
+        <div class="row">
+            <div class="col-sm">
+                {{ request.trait_name }}
+                {% if request.trait_value %}({{ request.trait_value }}){% endif %}
             </div>
-        {% endfor %}
+            <div class="col-sm">{{ request.cost }} XP</div>
+            <div class="col-sm">{{ request.approved }}</div>
+            {% if object_perms.can_approve_spending %}
+                {% if request.approved == "Pending" %}
+                    <div class="col-sm d-flex">
+                        <form method="post" action="{% url 'characters:xp_request_approve' object.pk request.pk %}" class="mr-1">
+                            {% csrf_token %}
+                            <input type="submit" value="Approve" />
+                        </form>
+                        <form method="post" action="{% url 'characters:xp_request_reject' object.pk request.pk %}">
+                            {% csrf_token %}
+                            <input type="submit" value="Reject" />
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="col-sm"></div>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+    <form action="{% url 'characters:mage:spend_xp' object.pk %}" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
         <div class="row">
             <div class="col-sm">{{ form.category }}</div>
             <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
@@ -231,12 +237,11 @@
         </div>
         <div class="row">
             <div class="col-sm">
-                <input type="submit" name="spend_xp" value="Spend XP/Rote Points" />
+                <input type="submit" value="Spend XP/Rote Points" />
             </div>
         </div>
-        {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
-        {% endif %}
+        {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
+        {% for error in rote_form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
     </form>
 </div>
 <script src="{% static 'characters/js/mage-xp.js' %}" id="mage-xp-script" data-is-group-member="{{ object.is_group_member|yesno:'true,false' }}"></script>

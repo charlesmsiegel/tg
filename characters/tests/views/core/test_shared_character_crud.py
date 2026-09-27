@@ -9,13 +9,13 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.urls import reverse
 from django.utils.module_loading import import_string
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import HtRHuman
 from characters.models.mage.mage import Mage
 from characters.views.hunter.htrhuman import HtRHumanDetailView, HtRHumanUpdateView
-from characters.views.mage.mage import MageDetailView
 from core.permissions import Role
 from game.models import Chronicle, Gameline, Scene, STRelationship
 
@@ -226,33 +226,33 @@ class CharacterCRUDSecurityTests(TestCase):
             character.refresh_from_db()
             self.assertEqual(character.notes, "")
 
+    def status_action(self, user, name, character=None):
+        """POST the Step 5 retire/decease endpoint as ``user``."""
+        self.client.force_login(user)
+        pk = (character or self.character).pk
+        return self.client.post(reverse(f"characters:{name}", kwargs={"pk": pk}))
+
     def test_owner_can_retire_through_gameline_detail(self):
-        response = HtRHumanDetailView.as_view()(
-            self.request(self.owner, {"retire": "1"}), pk=self.character.pk
-        )
+        response = self.status_action(self.owner, "retire")
         self.assertEqual(response.status_code, 302)
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "Ret")
 
     def test_only_matching_storyteller_can_decease(self):
         HtRHuman.objects.filter(pk=self.character.pk).update(status="App")
-        HtRHumanDetailView.as_view()(
-            self.request(self.owner, {"decease": "1"}), pk=self.character.pk
-        )
+        self.assertEqual(self.status_action(self.owner, "decease").status_code, 403)
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "App")
-        HtRHumanDetailView.as_view()(
-            self.request(self.wrong_st, {"decease": "1"}), pk=self.character.pk
-        )
+        self.assertEqual(self.status_action(self.wrong_st, "decease").status_code, 403)
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "App")
-        HtRHumanDetailView.as_view()(self.request(self.st, {"decease": "1"}), pk=self.character.pk)
+        self.status_action(self.st, "decease")
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "Dec")
 
     def test_deceased_mage_cannot_be_retired(self):
         mage = Mage.objects.create(name="Deceased mage", owner=self.owner, status="Dec")
-        response = MageDetailView.as_view()(self.request(self.owner, {"retire": "1"}), pk=mage.pk)
+        response = self.status_action(self.owner, "retire", mage)
         self.assertEqual(response.status_code, 302)
         mage.refresh_from_db()
         self.assertEqual(mage.status, "Dec")
@@ -268,9 +268,7 @@ class CharacterCRUDSecurityTests(TestCase):
         for status in ("Un", "Sub", "Rev", "Ret", "Dec"):
             with self.subTest(status=status):
                 HtRHuman.objects.filter(pk=self.character.pk).update(status=status)
-                response = HtRHumanDetailView.as_view()(
-                    self.request(self.st, {"decease": "1"}), pk=self.character.pk
-                )
+                response = self.status_action(self.st, "decease")
                 self.assertEqual(response.status_code, 302)
                 self.character.refresh_from_db()
                 self.assertEqual(self.character.status, status)

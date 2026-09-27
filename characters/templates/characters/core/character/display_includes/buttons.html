@@ -1,16 +1,17 @@
 {% load static %}
 {% if can_retire or can_decease %}
-    <form method="post">
-        {% csrf_token %}
-        <div class="d-flex justify-content-center">
-            {% if can_retire %}<input type="submit"
-                   name="retire"
-                   value="Mark Retired"
-                   class="btn btn-warning mr-2" />{% endif %}
-            {% if can_decease %}<input type="submit"
-                   name="decease"
-                   value="Mark Deceased"
-                   class="btn btn-danger" />{% endif %}
-        </div>
-    </form>
+    <div class="d-flex justify-content-center">
+        {% if can_retire %}
+            <form method="post" action="{% url 'characters:retire' object.pk %}" class="mr-2">
+                {% csrf_token %}
+                <input type="submit" value="Mark Retired" class="btn btn-warning" />
+            </form>
+        {% endif %}
+        {% if can_decease %}
+            <form method="post" action="{% url 'characters:decease' object.pk %}">
+                {% csrf_token %}
+                <input type="submit" value="Mark Deceased" class="btn btn-danger" />
+            </form>
+        {% endif %}
+    </div>
 {% endif %}

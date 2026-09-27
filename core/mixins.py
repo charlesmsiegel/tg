@@ -7,7 +7,6 @@ This module consolidates all view mixins used throughout the application:
 - User verification mixins: For checking special user status
 """
 
-import re
 
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
@@ -22,7 +21,6 @@ from core.permissions import Permission, PermissionManager, Role, VisibilityTier
 from core.template_resolution import shared_template_names
 from game.models import Chronicle, STRelationship
 from game.security import readable_chronicles
-from game.spending_approval import SpendingDecisionError, decide_spending_request
 
 
 class SharedTemplateMixin:
@@ -530,116 +528,3 @@ class CharacterOwnerOrSTMixin(PermissionContextMixin, ObjectCachingMixin):
             return super().dispatch(request, *args, **kwargs)
 
         raise PermissionDenied("Only the character owner or storytellers can access this")
-
-
-class ApprovalMixin:
-    """
-    Base mixin for handling spending request approval and denial in character detail views.
-
-    Subclasses configure the specific approval type (XP, freebie) via class attributes.
-
-    Class Attributes:
-        approve_button_value: Button value to match for approve action
-        reject_button_value: Button value to match for reject action
-        spendings_related_name: Related manager name on character (e.g., 'xp_spendings')
-        request_key_prefix: Prefix for parsing request IDs (e.g., 'xp_request_')
-        spending_type: Human-readable name for messages (e.g., 'XP spending')
-    """
-
-    approve_button_value = None  # Override in subclass
-    reject_button_value = None  # Override in subclass
-    spendings_related_name = None  # Override in subclass
-    request_key_prefix = None  # Override in subclass
-    spending_type = None  # Override in subclass
-
-    def get_service_factory(self):
-        """Return the service factory for this approval type. Override in subclass."""
-        raise NotImplementedError("Subclasses must implement get_service_factory()")
-
-    def get_request_model(self):
-        """Return the model class for this spending request type. Override in subclass."""
-        raise NotImplementedError("Subclasses must implement get_request_model()")
-
-    def _get_spendings_manager(self):
-        """Get the related manager for spending requests."""
-        return getattr(self.object, self.spendings_related_name)
-
-    def _parse_request_id(self, request, button_value):
-        """Accept exactly one correctly named approval or rejection button."""
-        from django.core.exceptions import ValidationError
-
-        matching_keys = [k for k, v in request.POST.items() if v == button_value]
-        if len(matching_keys) != 1 or not self.request_key_prefix:
-            raise ValidationError("Invalid request: exactly one action button is required")
-        suffix = "approve" if button_value == self.approve_button_value else "reject"
-        match = re.fullmatch(
-            rf"{re.escape(self.request_key_prefix)}([1-9][0-9]*)_{suffix}",
-            matching_keys[0],
-        )
-        if match is None:
-            raise ValidationError("Invalid request: malformed action key")
-        return int(match.group(1))
-
-    def post(self, request, *args, **kwargs):
-        from django.core.exceptions import ValidationError
-        from django.shortcuts import redirect
-        from django.urls import reverse
-
-        self.object = self.get_object()
-        decision = None
-        button = None
-        if self.approve_button_value in request.POST.values():
-            decision, button = "approve", self.approve_button_value
-        elif self.reject_button_value in request.POST.values():
-            decision, button = "deny", self.reject_button_value
-
-        if decision is not None:
-            try:
-                request_id = self._parse_request_id(request, button)
-            except ValidationError as exc:
-                messages.error(request, str(exc))
-            else:
-                try:
-                    result = decide_spending_request(
-                        self.get_request_model(),
-                        self.object,
-                        request_id,
-                        request.user,
-                        decision,
-                    )
-                except SpendingDecisionError as exc:
-                    messages.error(request, str(exc))
-                else:
-                    messages.success(request, result.message)
-            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-        if hasattr(super(), "post"):
-            return super().post(request, *args, **kwargs)
-        return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-
-class XPApprovalMixin(ApprovalMixin):
-    """
-    Mixin for handling XP spending request approval and denial.
-
-    Usage:
-        class VampireDetailView(XPApprovalMixin, HumanDetailView):
-            model = Vampire
-            template_name = "characters/vampire/vampire/detail.html"
-    """
-
-    approve_button_value = "Approve"
-    reject_button_value = "Reject"
-    spendings_related_name = "xp_spendings"
-    request_key_prefix = "xp_request_"
-    spending_type = "XP spending"
-
-    def get_service_factory(self):
-        from characters.services.xp_spending import XPSpendingServiceFactory
-
-        return XPSpendingServiceFactory
-
-    def get_request_model(self):
-        from game.models import XPSpendingRequest
-
-        return XPSpendingRequest

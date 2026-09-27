@@ -57,9 +57,8 @@ class TestMageDetailViewPost(TestCase):
         strength = Attribute.objects.get(property_name="strength")
 
         response = self.client.post(
-            self.mage.get_absolute_url(),
+            reverse("characters:mage:spend_xp", kwargs={"pk": self.mage.pk}),
             {
-                "spend_xp": "true",
                 "category": "Attribute",
                 "example": strength.id,
                 "value": "",
@@ -80,9 +79,8 @@ class TestMageDetailViewPost(TestCase):
         occult = Ability.objects.get(property_name="occult")
 
         response = self.client.post(
-            self.mage.get_absolute_url(),
+            reverse("characters:mage:spend_xp", kwargs={"pk": self.mage.pk}),
             {
-                "spend_xp": "true",
                 "category": "Ability",
                 "example": occult.id,
                 "value": "",
@@ -98,9 +96,8 @@ class TestMageDetailViewPost(TestCase):
         self.client.login(username="owner", password="password")
 
         response = self.client.post(
-            self.mage.get_absolute_url(),
+            reverse("characters:mage:spend_xp", kwargs={"pk": self.mage.pk}),
             {
-                "spend_xp": "true",
                 "category": "Willpower",
                 "example": "",
                 "value": "",
@@ -117,9 +114,8 @@ class TestMageDetailViewPost(TestCase):
         forces = Sphere.objects.get(property_name="forces")
 
         response = self.client.post(
-            self.mage.get_absolute_url(),
+            reverse("characters:mage:spend_xp", kwargs={"pk": self.mage.pk}),
             {
-                "spend_xp": "true",
                 "category": "Sphere",
                 "example": forces.id,
                 "value": "",
@@ -140,22 +136,17 @@ class TestMageDetailViewPost(TestCase):
         self.mage.save()
 
         response = self.client.post(
-            self.mage.get_absolute_url(),
-            {
-                "specialties": "true",
-                "forces": "Fire",
-            },
+            reverse("characters:add_specialties", kwargs={"pk": self.mage.pk}),
+            {"forces": "Fire"},
         )
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(self.mage.specialties.filter(stat="forces", name="Fire").exists())
 
     def test_retire_character(self):
         """Test retiring a character from detail view."""
         self.client.login(username="owner", password="password")
 
-        response = self.client.post(
-            self.mage.get_absolute_url(),
-            {"retire": "true"},
-        )
+        response = self.client.post(reverse("characters:retire", kwargs={"pk": self.mage.pk}))
         self.assertEqual(response.status_code, 302)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.status, "Ret")
@@ -164,10 +155,7 @@ class TestMageDetailViewPost(TestCase):
         """An owner cannot mark an approved character deceased."""
         self.client.login(username="owner", password="password")
 
-        response = self.client.post(
-            self.mage.get_absolute_url(),
-            {"decease": "true"},
-        )
+        response = self.client.post(reverse("characters:decease", kwargs={"pk": self.mage.pk}))
         self.assertEqual(response.status_code, 403)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.status, "App")
@@ -317,3 +305,63 @@ class TestMageExtrasView(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
+
+
+class TestMageXPSpendAction(TestCase):
+    """The Mage spend endpoint (Step 5): audience, errors on the sheet, old URL."""
+
+    def setUp(self):
+        mage_setup()
+        users = User.objects
+        self.owner = users.create_user("spend_owner")
+        self.player = users.create_user("spend_player")
+        self.staff = users.create_user("spend_staff", is_staff=True)
+        self.mage = Mage.objects.create(
+            name="Spend Mage", owner=self.owner, status="App", arete=3, xp=50, willpower=5
+        )
+        self.url = reverse("characters:mage:spend_xp", kwargs={"pk": self.mage.pk})
+
+    def willpower(self):
+        return {"category": "Willpower", "example": "", "value": "", "note": "", "resonance": ""}
+
+    def test_audience(self):
+        from game.models import XPSpendingRequest
+
+        for user, status in ((None, 401), (self.player, 404), (self.owner, 302)):
+            with self.subTest(user=user):
+                self.client.logout()
+                if user is not None:
+                    self.client.force_login(user)
+                response = self.client.post(self.url, self.willpower())
+                self.assertEqual(response.status_code, status)
+        self.assertEqual(XPSpendingRequest.objects.filter(character=self.mage).count(), 1)
+
+    def test_get_is_rejected(self):
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_non_mage_is_404(self):
+        from characters.models.core.human import Human
+
+        human = Human.objects.create(name="Plain", owner=self.owner, status="App", xp=50)
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            reverse("characters:mage:spend_xp", kwargs={"pk": human.pk}), self.willpower()
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_rote_rerenders_the_sheet_with_the_rote_form(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            self.url, {"category": "Rote", "example": "", "value": "", "note": ""}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "characters/mage/mage/detail.html")
+        self.assertTrue(response.context["rote_form"].errors)
+
+    def test_old_spend_button_on_the_sheet_is_rejected(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            self.mage.get_absolute_url(), {"spend_xp": "true", **self.willpower()}
+        )
+        self.assertEqual(response.status_code, 405)
