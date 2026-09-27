@@ -1,9 +1,13 @@
+from dataclasses import replace
+
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
+from characters.rules.limits import GHOUL_DISCIPLINES
+from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.chained_freebies import ChainedGhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
@@ -81,7 +85,7 @@ class GhoulBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/ghoul/chargen.html"
 
 
-class GhoulDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class GhoulDisciplinesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Ghoul
     fields = [
         "potence",
@@ -125,36 +129,13 @@ class GhoulDisciplinesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         context["has_domitor"] = bool(self.object.domitor)
         return context
 
+    def get_allocation_rules(self):
+        available = self.object.get_available_disciplines()
+        return [
+            replace(GHOUL_DISCIPLINES, allowed=frozenset(d.property_name for d in available))
+        ]
+
     def form_valid(self, form):
-        # Calculate total disciplines (excluding Potence which is automatic)
-        total_disciplines = 0
-        for field in self.fields:
-            if field != "potence":
-                total_disciplines += form.cleaned_data.get(field, 0)
-
-        # Ghouls can spend up to 2 dots on additional disciplines during chargen
-        if total_disciplines > 2:
-            form.add_error(
-                None,
-                f"You can spend up to 2 dots on additional Disciplines. Currently: {total_disciplines}",
-            )
-            return self.form_invalid(form)
-
-        # Verify all disciplines are available
-        available_disciplines = self.object.get_available_disciplines()
-        available_property_names = [d.property_name for d in available_disciplines]
-
-        for field in self.fields:
-            if field == "potence":
-                continue
-            rating = form.cleaned_data.get(field, 0)
-            if rating > 0 and field not in available_property_names:
-                form.add_error(
-                    field,
-                    "You can only learn disciplines available from your domitor or physical disciplines if independent.",
-                )
-                return self.form_invalid(form)
-
         advance(self.object, user=self.request.user)
         self.object.save()
         return super().form_valid(form)

@@ -13,7 +13,9 @@ from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.core.merit_flaw_block import MeritFlawRating
+from characters.rules.limits import CHANGELING_ARTS, CHANGELING_REALMS
 from characters.views.changeling.ctdhuman import CtDHumanAbilityView
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -129,113 +131,15 @@ class ChangelingBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingArtsRealmsView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class ChangelingArtsRealmsView(
+    AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView
+):
     model = Changeling
-    fields = [
-        "autumn",
-        "chicanery",
-        "chronos",
-        "contract",
-        "dragons_ire",
-        "legerdemain",
-        "metamorphosis",
-        "naming",
-        "oneiromancy",
-        "primal",
-        "pyretics",
-        "skycraft",
-        "soothsay",
-        "sovereign",
-        "spring",
-        "summer",
-        "wayfare",
-        "winter",
-        "actor",
-        "fae",
-        "nature_realm",
-        "prop",
-        "scene",
-        "time",
-    ]
+    fields = [*CHANGELING_ARTS.fields, *CHANGELING_REALMS.fields]
+    allocation_rules = (CHANGELING_ARTS, CHANGELING_REALMS)
     template_name = "characters/changeling/changeling/chargen.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        return context
-
     def form_valid(self, form):
-        # Get all arts values
-        arts = {
-            "autumn": form.cleaned_data.get("autumn", 0),
-            "chicanery": form.cleaned_data.get("chicanery", 0),
-            "chronos": form.cleaned_data.get("chronos", 0),
-            "contract": form.cleaned_data.get("contract", 0),
-            "dragons_ire": form.cleaned_data.get("dragons_ire", 0),
-            "legerdemain": form.cleaned_data.get("legerdemain", 0),
-            "metamorphosis": form.cleaned_data.get("metamorphosis", 0),
-            "naming": form.cleaned_data.get("naming", 0),
-            "oneiromancy": form.cleaned_data.get("oneiromancy", 0),
-            "primal": form.cleaned_data.get("primal", 0),
-            "pyretics": form.cleaned_data.get("pyretics", 0),
-            "skycraft": form.cleaned_data.get("skycraft", 0),
-            "soothsay": form.cleaned_data.get("soothsay", 0),
-            "sovereign": form.cleaned_data.get("sovereign", 0),
-            "spring": form.cleaned_data.get("spring", 0),
-            "summer": form.cleaned_data.get("summer", 0),
-            "wayfare": form.cleaned_data.get("wayfare", 0),
-            "winter": form.cleaned_data.get("winter", 0),
-        }
-
-        # Get all realms values
-        realms = {
-            "actor": form.cleaned_data.get("actor", 0),
-            "fae": form.cleaned_data.get("fae", 0),
-            "nature_realm": form.cleaned_data.get("nature_realm", 0),
-            "prop": form.cleaned_data.get("prop", 0),
-            "scene": form.cleaned_data.get("scene", 0),
-            "time": form.cleaned_data.get("time", 0),
-        }
-
-        # Validate arts total is 3
-        total_arts = sum(arts.values())
-        if total_arts != 3:
-            form.add_error(None, f"Arts must total 3 dots (currently {total_arts})")
-            messages.error(
-                self.request,
-                f"Arts allocation error: You must spend exactly 3 dots. You have {total_arts}.",
-            )
-            return self.form_invalid(form)
-
-        # Validate realms total is 5
-        total_realms = sum(realms.values())
-        if total_realms != 5:
-            form.add_error(None, f"Realms must total 5 dots (currently {total_realms})")
-            messages.error(
-                self.request,
-                f"Realms allocation error: You must spend exactly 5 dots. You have {total_realms}.",
-            )
-            return self.form_invalid(form)
-
-        # Validate individual values don't exceed 5
-        for art_name, value in arts.items():
-            if value > 5:
-                form.add_error(art_name, "Cannot exceed 5 dots")
-                messages.error(
-                    self.request,
-                    f"{art_name.replace('_', ' ').title()} cannot exceed 5 dots.",
-                )
-                return self.form_invalid(form)
-
-        for realm_name, value in realms.items():
-            if value > 5:
-                form.add_error(realm_name, "Cannot exceed 5 dots")
-                messages.error(
-                    self.request,
-                    f"{realm_name.replace('_', ' ').title()} cannot exceed 5 dots.",
-                )
-                return self.form_invalid(form)
-
-        # All validations passed, increment creation_status and save
         advance(self.object, user=self.request.user)
         self.object.save()
         messages.success(self.request, "Arts and Realms allocated successfully!")
