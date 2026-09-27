@@ -44,6 +44,8 @@ def classify(name, view, step_names):
         return "PUBLIC_CARD"
     if name == "characters.views.core.CharacterIndexView":
         return "PUBLIC_INDEX"
+    if name == "core.views.object_type_redirect.ObjectTypeRedirectView":
+        return "PUBLIC_READ"
     if name.startswith("widgets."):
         return "WIDGET"
     if issubclass(view, ObjectActionView):

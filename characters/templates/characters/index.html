@@ -208,8 +208,7 @@
                                     Start a new character for your chronicle
                                 </p>
                             </div>
-                            <form id="charForm" method="post" novalidate>
-                                {% csrf_token %}
+                            <form id="charForm" method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}" novalidate>
                                 <div class="tg-form-group ci-form-group">
                                     <label class="tg-form-label ci-form-label">
                                         <i class="fas fa-book mr-2 ci-label-icon-primary"></i>Game Line
@@ -227,8 +226,6 @@
                                     {{ form.char_type }}
                                 </div>
                                 <button type="submit"
-                                        name="action"
-                                        value="create"
                                         class="tg-btn btn-primary btn-lg ci-action-button">
                                     <i class="fas fa-plus-circle mr-2"></i>Create Character
                                 </button>
@@ -252,8 +249,7 @@
                                     Form a cabal, pack, coterie, or motley
                                 </p>
                             </div>
-                            <form id="groupForm" method="post" novalidate>
-                                {% csrf_token %}
+                            <form id="groupForm" method="get" action="{% url 'core:object_type_redirect' 'group' 'create' %}" novalidate>
                                 <div class="tg-form-group ci-form-group">
                                     <label class="tg-form-label ci-form-label">
                                         <i class="fas fa-users-cog mr-2 ci-label-icon-success"></i>Group Type
@@ -264,9 +260,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <button type="submit" 
-                                        name="action" 
-                                        value="create_group" 
+                                <button type="submit"
                                         class="tg-btn btn-success btn-lg ci-action-button">
                                     <i class="fas fa-users-cog mr-2"></i>Create Group
                                 </button>

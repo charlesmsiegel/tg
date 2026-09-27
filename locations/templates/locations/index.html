@@ -262,8 +262,7 @@
                         </p>
                         
                         <!-- Form -->
-                        <form id="locForm" method="post" novalidate>
-                            {% csrf_token %}
+                        <form id="locForm" method="get" action="{% url 'core:object_type_redirect' 'location' 'create' %}" novalidate>
 
                             <!-- Game Line -->
                             <div style="margin-bottom: var(--spacing-3); text-align: left;">
@@ -287,8 +286,6 @@
 
                             <!-- Button - Full Width, Centered Text -->
                             <button type="submit"
-                                    name="action"
-                                    value="create"
                                     class="tg-btn btn-primary btn-lg"
                                     style="width: 100%;
                                            box-shadow: var(--shadow-sm);

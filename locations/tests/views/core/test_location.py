@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 from game.models import Chronicle, ObjectType
 from locations.models.core.location import LocationModel
@@ -36,54 +37,49 @@ class TestLocationIndexView(TestCase):
             self.assertContains(response, f"Location {i}")
 
 
-class TestLocationIndexViewPost(TestCase):
-    """Test POST actions on LocationIndexView."""
+class TestLocationTypeNavigation(TestCase):
+    """Choosing a location type is a GET to the typed endpoint (Step 5)."""
 
     def setUp(self):
-        self.url = "/locations/index/"
         # Create object types for different gamelines
         ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")
         ObjectType.objects.get_or_create(name="caern", type="loc", gameline="wta")
 
-    def test_post_create_action_mta(self):
+    def url(self, action):
+        return reverse("core:object_type_redirect", kwargs={"kind": "location", "action": action})
+
+    def test_create_action_mta(self):
         """Test create action redirects to Mage location create."""
         self.client.force_login(User.objects.create_user(username="creator"))
-        response = self.client.post(
-            self.url,
-            {"action": "create", "loc_type": "node"},
-        )
+        response = self.client.get(self.url("create"), {"loc_type": "node"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("mage", response.url)
         self.assertIn("create", response.url)
 
-    def test_post_create_action_wta(self):
+    def test_create_action_wta(self):
         """Test create action redirects to Werewolf location create."""
         self.client.force_login(User.objects.create_user(username="creator"))
-        response = self.client.post(
-            self.url,
-            {"action": "create", "loc_type": "caern"},
-        )
+        response = self.client.get(self.url("create"), {"loc_type": "caern"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("werewolf", response.url)
         self.assertIn("create", response.url)
 
-    def test_post_index_action_mta(self):
-        """Test index action redirects to Mage location list."""
-        response = self.client.post(
-            self.url,
-            {"action": "index", "loc_type": "node"},
-        )
+    def test_list_action_mta(self):
+        """Test list navigation redirects to the Mage location list."""
+        response = self.client.get(self.url("list"), {"loc_type": "node"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("mage", response.url)
 
-    def test_post_index_action_wta(self):
-        """Test index action redirects to Werewolf location list."""
-        response = self.client.post(
-            self.url,
-            {"action": "index", "loc_type": "caern"},
-        )
+    def test_list_action_wta(self):
+        """Test list navigation redirects to the Werewolf location list."""
+        response = self.client.get(self.url("list"), {"loc_type": "caern"})
         self.assertEqual(response.status_code, 302)
         self.assertIn("werewolf", response.url)
+
+    def test_index_post_is_rejected(self):
+        self.client.force_login(User.objects.create_user(username="creator"))
+        response = self.client.post("/locations/index/", {"action": "create", "loc_type": "node"})
+        self.assertEqual(response.status_code, 405)
 
 
 class TestLocationIndexViewContext(TestCase):

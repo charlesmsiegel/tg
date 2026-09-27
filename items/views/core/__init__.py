@@ -1,10 +1,9 @@
 from collections import defaultdict
 
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
 
-from core.create_redirects import resolve_object_type_url
 from core.model_registry import get_registry
 from core.utils import get_gameline_name
 from core.views.generic import DictView
@@ -66,23 +65,6 @@ class ItemIndexView(View):
             )
         context = self.get_context()
         return render(request, "items/index.html", context)
-
-    def post(self, request, *args, **kwargs):
-        action = request.POST.get("action")
-        item_type = request.POST.get("item_type")
-        if not item_type or action not in {"create", "index"}:
-            return HttpResponseBadRequest("Invalid item selection")
-        if action == "create":
-            if not request.user.is_authenticated:
-                return HttpResponseBadRequest("Login required")
-        return redirect(
-            resolve_object_type_url(
-                "obj",
-                item_type,
-                "create" if action == "create" else "list",
-                request.POST.get("gameline"),
-            )
-        )
 
     def get_context(self):
         game_items = get_registry("items").menu(self.request.user)
