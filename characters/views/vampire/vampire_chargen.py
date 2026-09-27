@@ -96,9 +96,7 @@ class VampireBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/vampire/chargen.html"
 
 
-class VampireDisciplinesView(
-    AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView
-):
+class VampireDisciplinesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = list(VAMPIRE_DISCIPLINES.fields)
     template_name = "characters/vampire/vampire/chargen.html"

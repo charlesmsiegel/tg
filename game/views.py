@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Count, Max, OuterRef, Subquery
+from django.db.models import Count, Max
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -16,7 +16,6 @@ from django.views.generic import (
 )
 
 from characters.models.core import CharacterModel
-from characters.models.core.character import Character
 from core.create_redirects import resolve_object_type_url
 from core.mixins import (
     CharacterOwnerOrSTMixin,
@@ -28,7 +27,6 @@ from core.mixins import (
 )
 from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
-from core.services import ChronicleDataService
 from game.forms import (
     AddCharForm,
     ChronicleCharacterCreationForm,
@@ -62,21 +60,19 @@ from game.models import (
     WeeklyXPRequest,
     XPSpendingRequest,
 )
-from game.selectors import annotate_week_scene_counts, chronicle_overview
 from game.security import (
     filter_private_records,
     filter_scenes,
     readable_chronicles,
     staffed_chronicles,
 )
+from game.selectors import annotate_week_scene_counts, chronicle_overview
 from game.spending_approval import (
     SpendingDecisionError,
     decide_spending_request,
     require_spending_approver,
 )
 from game.text import straighten_quotes
-from items.models.core import ItemModel
-from locations.models.core import LocationModel
 
 
 def _has_st_read_rows(request, rows):

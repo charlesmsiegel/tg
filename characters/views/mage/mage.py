@@ -15,8 +15,8 @@ import re
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -34,7 +34,7 @@ from characters.forms.mage.xp import MageXPForm
 from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
-from characters.models.mage.mage import Mage, PracticeRating, ResRating
+from characters.models.mage.mage import Mage, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.services.mage_chargen import set_starting_practices

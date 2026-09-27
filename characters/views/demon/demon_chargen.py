@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -6,18 +5,18 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
-from characters.rules.limits import (
-    APOCALYPTIC_FORM_POINT_BUDGET,
-    DEMON_LORES,
-    FALLEN_VIRTUES,
-)
-from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.apocalyptic_form import ApocalypticFormSelectionForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
 from characters.models.demon.demon import Demon
+from characters.rules.limits import (
+    APOCALYPTIC_FORM_POINT_BUDGET,
+    DEMON_LORES,
+    FALLEN_VIRTUES,
+)
 from characters.services.demon_chargen import apply_apocalyptic_form
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView

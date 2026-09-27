@@ -6,12 +6,12 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
-from characters.rules.limits import GHOUL_DISCIPLINES
-from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.chained_freebies import ChainedGhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
 from characters.models.vampire.ghoul import Ghoul
+from characters.rules.limits import GHOUL_DISCIPLINES
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
@@ -131,9 +131,7 @@ class GhoulDisciplinesView(AllocationStepMixin, ChargenStepMixin, SpecialUserMix
 
     def get_allocation_rules(self):
         available = self.object.get_available_disciplines()
-        return [
-            replace(GHOUL_DISCIPLINES, allowed=frozenset(d.property_name for d in available))
-        ]
+        return [replace(GHOUL_DISCIPLINES, allowed=frozenset(d.property_name for d in available))]
 
     def form_valid(self, form):
         advance(self.object, user=self.request.user)

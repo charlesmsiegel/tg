@@ -206,7 +206,9 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
 
         try:
             with transaction.atomic():
-                return handler_method(example=example, value=value, note=note, pooled=pooled, **kwargs)
+                return handler_method(
+                    example=example, value=value, note=note, pooled=pooled, **kwargs
+                )
         except ValidationError as e:
             return FreebieSpendResult(
                 success=False,
