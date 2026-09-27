@@ -12,7 +12,6 @@ from characters.models.mage.sorcerer import (
 from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.fields.create_or_select import CreateOrSelectField
 
-
 NUMINA_TOTAL = 5
 NUMINA_TOTAL_ERROR = "Must choose exactly five levels of Numina"
 

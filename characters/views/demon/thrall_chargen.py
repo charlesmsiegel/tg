@@ -3,12 +3,12 @@ from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
-from characters.rules.limits import FALLEN_VIRTUES
-from characters.views.core.allocations import AllocationStepMixin
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
 from characters.models.demon.thrall import Thrall
+from characters.rules.limits import FALLEN_VIRTUES
+from characters.views.core.allocations import AllocationStepMixin
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView

@@ -24,8 +24,8 @@ NOT_ENOUGH_ROTE_POINTS = "Not enough Rote Points"
 
 
 def _locked_rote_points(mage):
-    return type(mage).objects.select_for_update().values_list("rote_points", flat=True).get(
-        pk=mage.pk
+    return (
+        type(mage).objects.select_for_update().values_list("rote_points", flat=True).get(pk=mage.pk)
     )
 
 

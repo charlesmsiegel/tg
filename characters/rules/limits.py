@@ -34,9 +34,7 @@ def attribute_rule(primary, secondary, tertiary):
     )
 
 
-def ability_rule(
-    model, form_fields, primary, secondary, tertiary, range_flash=None, flash=None
-):
+def ability_rule(model, form_fields, primary, secondary, tertiary, range_flash=None, flash=None):
     """Abilities rated 0-3, talents/skills/knowledges summed over the form's fields.
 
     Mage ability groups include secondary abilities that are not allocated on
@@ -192,9 +190,7 @@ VAMPIRE_DISCIPLINES = AllocationRule(
     ),
     total=3,
     message="You must spend exactly {total} dots on Disciplines. Currently: {current}",
-    flash=(
-        "Discipline allocation error: You must spend exactly {total} dots. You have {current}."
-    ),
+    flash=("Discipline allocation error: You must spend exactly {total} dots. You have {current}."),
     allowed_message="You can only spend starting dots on clan Disciplines.",
     allowed_flash="You can only allocate starting dots to your clan's Disciplines.",
 )

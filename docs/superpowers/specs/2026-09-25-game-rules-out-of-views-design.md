@@ -77,7 +77,7 @@ Rule-bearing views that the brief did not list:
 | Kind of rule | Destination | Test |
 |---|---|---|
 | **Input validation.** Anything decidable from submitted data plus the character's current state, with no writes: distribution totals, per-trait bounds, required-choice ladders, "only clan disciplines", tribe background limits | `Form.clean()` / `Formset.clean()`, raising `ValidationError` with the existing message text | Is it a yes/no about *this submission*? |
-| **State-changing operation.** Writes more than the bound form's own fields, spends a pool, creates related rows, or must be atomic: learning a rote, starting practices, buying Arete with freebies, applying an Apocalyptic Form, awarding weekly XP | A **service** function or class in `characters/services/` or `game/services`, running in one transaction and returning a result object | Does it change state beyond `form.save()`? |
+| **State-changing operation.** Writes more than the bound form's own fields, spends a pool, creates related rows, or must be atomic: learning a rote, starting practices, buying Arete with freebies, applying an Apocalyptic Form, awarding weekly XP | A **service** function or class in `characters/services/`, running in one transaction and returning a result object | Does it change state beyond `form.save()`? |
 | **Derived value.** A value computed from other traits of the same object: Willpower from Courage, Humanity or Path from virtues, Fera breed and aspect side effects, starting gift groups | A **model method** on the most specific polymorphic class that owns the rule | Is it a function of the object's own fields? |
 | **Read-side aggregation.** Querysets grouped or counted for display | A **selector** (`game/selectors.py`) or QuerySet method | Is it read-only and presentation-shaped? |
 | **Rule data.** Totals, bounds, costs, tribe limits | `characters/rules/` (limits) and `characters/costs.py` (costs, unchanged) | Could a client-side hint need it? |
@@ -181,7 +181,9 @@ step can move it onto `Tribe` rows.
 
 `BackgroundRatingFormSet.clean()` gains the background-points total and asks
 the character for extra limits through `character.background_violations(ratings)`.
-`Human` returns `[]` and `Kinfolk` returns the tribe table checks. The
+`Human` returns `[]` and `Kinfolk` returns the tribe table checks.
+The formset enforces these only with `enforce_allocation=True`, which the
+chargen step passes. Other users of the formset are unaffected. The
 Silver Fangs check (a requirement across rows) runs after the per-row checks,
 as it does today.
 
@@ -211,22 +213,25 @@ total of 5.
 
 | Method | Owner | Replaces |
 |---|---|---|
-| `Human.apply_courage_willpower(courage)` → `set_willpower(courage)` | `Human` | direct `willpower =` in Demon and Thrall virtues (D1) |
-| `Vampire.apply_virtues(virtue_1, virtue_2, courage)` | `Vampire` | the humanity/path block in `VampireVirtuesView` |
-| `Vampire.active_virtue_values(cleaned)` | `Vampire` | conscience/conviction and self-control/instinct selection |
+| `Human.set_willpower(courage)` (existing) | `Human` | direct `willpower =` in Demon and Thrall virtues (D1) |
+| `Vampire.apply_starting_virtues()` | `Vampire` | the Willpower and Humanity/Path block in `VampireVirtuesView` |
+| `Vampire.active_virtue_fields()` | `Vampire` | the choice between Conscience and Conviction, and between Self-Control and Instinct |
 | `Mage.purchase_starting_arete(arete)` | `Mage` | `freebies -= 4` loop (`MageSpheresView`) |
-| `Fera.chargen_choice_fields`, `Fera.chargen_help_text`, `Fera.starting_gift_groups()`, `Fera.apply_chargen_choice(field, value)` | each Fera subclass (class attributes) + `Fera` | three 12-way `isinstance` switches and the 139-line context method |
+| `Fera.chargen_choice_fields`, `optional_choice_fields`, `chargen_help_text`, `gift_group_fields`, `fixed_gift_groups`, `starting_gifts_help_text`; `Fera.apply_chargen_choices(changed)`, `Fera.starting_gift_groups()`, `Fera.starting_gift_choices()` | each Fera subclass (class attributes) + `Fera` | three 12-way `isinstance` switches and the 139-line context method |
 | `Companion.prepare_starting_freebies()` | `Companion` | `CompanionExtrasView.prepare_character` body |
 | `Kinfolk.background_violations(ratings)` | `Kinfolk` (default on `Human`) | view `if tribe_name ==` chain and `add_background` chain |
 
 The Fera methods are polymorphic by **declaration**. Each subclass states
 `chargen_choice_fields = ("breed", "aspect")`, `chargen_help_text = {...}` and
 `gift_group_fields = (("aspect_gifts", "aspect"),)`. The base class turns those
-into the form class, the help text and the gift querysets. `apply_chargen_choice`
-calls `set_<field>` only when a subclass defines one, and otherwise leaves the
-plain field assignment that `form.save(commit=False)` already made. Nuwisha's
-"optional role" and Corax's and Nuwisha's fixed gift lists are expressed the same
-way (`optional_choice_fields`, `fixed_gift_groups`).
+into the form class, the help text and the gift querysets.
+`apply_chargen_choices` runs `set_<field>` for each changed field in declared
+order when the class defines that setter, and otherwise leaves the plain field
+assignment that `form.save(commit=False)` already made. Nuwisha's "optional
+role" and Corax's and Nuwisha's fixed gift lists are expressed the same way
+(`optional_choice_fields`, `fixed_gift_groups`). Gift count and availability
+move to `FeraStartingGiftsForm`, and the First Change checks move to
+`FeraFirstChangeForm`.
 
 ## Services
 
@@ -247,11 +252,11 @@ It has the same shape as `XPSpendResult` and `FreebieSpendResult`
 | Service | Signature | Transaction |
 |---|---|---|
 | `characters/services/rotes.py` | `learn_rote(mage, cleaned_data) -> ServiceResult` | `atomic`; locks the mage row (`select_for_update`); re-reads `rote_points`; creates Effect/Rote; deducts; fails with "Not enough Rote Points" when the locked balance is short |
-| `characters/services/mage_chargen.py` | `set_starting_practices(mage, tenet_form, practice_rows) -> ServiceResult` | `atomic`; saves tenets and replaces the mage's `PracticeRating` rows together, or does neither |
-| same | `apply_spheres_step(mage, form) -> ServiceResult` | `atomic`; saves the spheres form, adds resonance, calls `purchase_starting_arete` |
-| `characters/services/sorcerer_chargen.py` | `set_starting_numina(sorcerer, rows) -> ServiceResult` | `atomic`; creates `PathRating`s, then Willpower 5 and freebies 21 |
+| `characters/services/mage_chargen.py` | `set_starting_practices(focus_form) -> ServiceResult` | `atomic`; saves tenets and creates the starting `PracticeRating` rows together, or does neither (existing rows are kept, as before) |
+| `MageSpheresView.form_valid` | resonance + `purchase_starting_arete` + `form.save()` | `atomic` in the view; no separate service, because it is one model's writes |
+| `characters/services/sorcerer_chargen.py` | `set_starting_numina(sorcerer, rows, *, with_practice) -> ServiceResult` | `atomic`; creates `PathRating`s, then Willpower 5 and freebies 21 |
 | `characters/services/demon_chargen.py` | `apply_apocalyptic_form(demon, low, high) -> ServiceResult` | `atomic`; writes only after the form has validated |
-| `game/services.py` | `submit_weekly_xp_request(form) -> WeeklyXPRequest` | one save; the duplicate check runs inside the transaction |
+| `WeeklyXPRequestCreateView` | `form.player_save(commit=False)` then `ModelFormMixin` saves | one save; a service would add nothing |
 | `FreebieSpendingServiceFactory.locked(character)` / `XPSpendingServiceFactory.locked(character)` | context manager yielding a service bound to a `select_for_update` re-read of the character | `atomic` |
 
 **Locking.** `decide_spending_request` already locks for approval. For
@@ -321,20 +326,21 @@ tests call them.
 | R15 | Vampire virtues = 7; WP = Courage; Humanity/Path = v1 + v2 | `VampireVirtuesView` | rule + `Vampire.apply_virtues()` | model test + existing |
 | R16 | Ghoul disciplines ≤ 2, available only | `GhoulDisciplinesView` | `AllocationRule(comparison="at_most")` + form hook | existing |
 | R17 | Demon lores = 3 | `DemonLoresView` | `AllocationRule` | existing |
-| R18 | Demon/Thrall virtues = 6; WP = Courage | `DemonVirtuesView`, `ThrallVirtuesView` | rule + `apply_courage_willpower` (D1) | new regression test |
+| R18 | Demon/Thrall virtues = 6; WP = Courage | `DemonVirtuesView`, `ThrallVirtuesView` | rule + `set_willpower(courage)` (D1) | new regression test |
 | R19 | Wraith arcanoi = 5, each ≤ 5 | `WraithArcanosView` | `AllocationRule` | existing |
 | R20 | Numina = 5; WP 5; freebies 21 | `SorcererPsychicView`, `SorcererPathView` | formset `clean()` + `set_starting_numina` | new + existing sorcerer tests |
 | R21 | Apocalyptic form 4/4, ≤ 16, disjoint | `DemonApocalypticFormView` | `ApocalypticFormSelectionForm.clean()` + `apply_apocalyptic_form` | new test proving no mutation on invalid |
 | R22 | Fera breed/faction fields, help, setters | `FeraBreedFactionView` | Fera class attributes + `apply_chargen_choice` | existing `test_fera.py` + parametrized per type |
 | R23 | Fera starting gift groups | `FeraGiftsView.get_context_data` | `Fera.starting_gift_groups()` | per-type context test |
-| R24 | Fera gifts exactly 3 and allowed | `FeraGiftsView.form_valid` | `FeraGiftsForm.clean()` | existing |
+| R24 | Fera gifts exactly 3 and allowed | `FeraGiftsView.form_valid` | `FeraStartingGiftsForm.clean_gifts()` | `FeraStepTests` + existing |
 | R25 | Companion starting freebies and familiar package | `CompanionExtrasView.prepare_character` | `Companion.prepare_starting_freebies()` | existing Step 3 characterization |
 | R26 | Sorcerer fellowship-constrained casting attribute / affinity path | `SorcererBasicsView` bypass | `SorcererBasicsForm.clean_*` | new form tests |
 | R27 | Mage detail specialties | `MageDetailView.post` raw POST | `SpecialtiesForm` | new view test (unknown stat rejected) |
-| R28 | Weekly XP request duplicate + single save | `WeeklyXPRequestCreateView` | `submit_weekly_xp_request` | new test counting saves |
+| R28 | Weekly XP request duplicate + single save | `WeeklyXPRequestCreateView` | `player_save(commit=False)`; one `ModelFormMixin` save | new test counting saves |
 | R29 | Chronicle overview querysets | `ChronicleDetailView` | `chronicle_overview` selector | existing chronicle tests |
 | R30 | Week scene counts | `WeekListView` | `annotate_week_scene_counts` | existing + bisect boundary test |
 | R31 | `straighten_quotes` | two copies | `game/text.py` | existing both call sites |
+| R32 | Fera First Change described, 0 < age < current age | `FeraHistoryView.form_valid` | `FeraFirstChangeForm.clean_*` | existing fera tests |
 
 ## Defects found: owner decisions
 
@@ -347,16 +353,17 @@ but a crash, bypass or data-integrity problem.
 | D1 | Demon/Thrall virtues assign `willpower = courage` directly, which leaves `temporary_willpower` above permanent. Vampire uses `set_willpower`. | **Fixed** by routing through `set_willpower` (same permanent value; temporary is capped as it is for Vampire). This is a consistency fix, not a rules change |
 | D2 | `CompanionExtrasView` keys budgets on `"acoylte"`, `"backup"` and `"ally"`, which are not `companion_type` choices (`companion`, `consor`, `familiar`). A plain "companion" gets no budget. | **Preserved**; owner to decide the intended budget |
 | D3 | `Ratkin.set_breed` checks `"rodent"`, but the choice is `"rodens"`, so rodens never get Gnosis 5. `Ratkin.set_aspect` checks `"knife_skull"`, but the choice is `"knife_skulker"`. | **Preserved**; owner to confirm |
-| D4 | The base `Fera` has no `set_breed`. The generic branch of `FeraBreedFactionView` would crash for a plain `Fera`. | **Preserved** (declared fields `("breed", "faction")`; plain assignment only, no setter) |
+| D4 | The base `Fera` has no `set_breed`. The generic branch of `FeraBreedFactionView` would crash for a plain `Fera`. | Plain `Fera` is not a registered workflow, so this cannot be reached. The declared fields `("breed", "faction")` now fall back to plain assignment instead of raising `AttributeError`. No setter was invented |
 | D5 | Starting Arete bought on the Spheres step writes `spent_freebies` JSON but no `FreebieSpendingRecord`, so an ST cannot review it the way a later Arete freebie purchase is reviewed. | **Preserved**; owner to decide |
 | D6 | `SorcererPsychicView` has a no-op check (`if rating > willpower // 2: pass`). | **Preserved** (dropped as dead code; behaviour identical) |
 | D7 | Apocalyptic Forms are looked up by `"<demon name>'s Apocalyptic Form"`, so two demons with the same name share one form. | **Preserved**; owner to decide (fixing it needs a data migration) |
 | D8 | `MageFocusView` saved tenets and early `PracticeRating` rows before later checks failed. | **Fixed** (validation before mutation; atomic) |
 | D9 | `DemonApocalypticFormView` cleared saved traits before validating. | **Fixed** |
-| D10 | Sorcerer numina steps return a 500 on non-integer ratings and accept any path pk. | **Fixed** (formset validation; querysets restricted by `numina_type` as the formset already declares) |
-| D11 | `SorcererBasicsView` accepted any Attribute or path pk. | **Fixed** (restricted to the fellowship's favoured choices, as the UI offers) |
+| D10 | Sorcerer Psychic and Path numina steps returned a 500 on **every** submission: the mixin's formset validation assigned chained-choice strings to `PathRating` foreign keys. A valid row would also have been saved twice (by the view and by `formset.save()`). Non-integer ratings and paths of the wrong type were not caught. | **Fixed**: the numina forms clean the chained choices into instances, the formset validates the total, and `set_starting_numina` writes once. Paths are restricted by `numina_type`, as the formset already declared |
+| D11 | `SorcererBasicsView` accepted any Attribute or path pk. **Root cause:** `ChainedSelectMixin.clean()` compared a *cleaned model instance* by `str()` (its name) against pk choices, so every valid choice failed. The view deleted those errors and read raw `form.data`. | **Fixed** in `widgets/`: compare by pk, and look up choice maps by the string pk. Choices are restricted to the fellowship's favoured ones, as the UI offers |
 | D12 | Mage detail specialties accepted arbitrary `stat` keys. | **Fixed** (only `needed_specialties()` fields) |
 | D13 | Numeric checks (discipline, lore and virtue totals) have no per-trait upper bound beyond the model validators. | **Preserved** |
+| D14 | A blank Resonance on the Spheres step passed the `form_invalid` bypass and then raised a 500 creating a nameless `Resonance`. | **Fixed**: `resonance` is a required form `CharField` |
 
 ## Test strategy
 
@@ -371,8 +378,8 @@ but a crash, bypass or data-integrity problem.
    `characters/tests/forms/` cover `clean()` messages, and service tests in
    `characters/tests/services/` cover atomicity (inject a failure and assert no
    rows remain).
-3. **Regression tests for each fixed defect** (D1, D8–D12), written failing
-   first.
+3. **Regression tests for each fixed defect** (D1, D8–D12, D14), written
+   failing first.
 4. **Bypass guard.** An AST test (`characters/tests/test_view_rules_guard.py`)
    fails if any `form_invalid` under `characters/views` calls `form_valid`.
 
@@ -393,3 +400,60 @@ but a crash, bypass or data-integrity problem.
 
 Each slice is independently revertible. Slices 1 and 3 share only the mixin
 from slice 1.
+
+## Implementation record
+
+Implemented as seven commits on one branch, in the order: core allocation and
+Kinfolk (slice 1), game app (7), gameline steps (3), Mage (2), Sorcerer and
+Demon (4), Companion (5), Fera (6), then the guard and this record (8).
+
+**Measured.** Rule-bearing view code fell by 1,279 lines net across 18 view
+modules (283 added, 1,562 removed). For example, `fera.py` went from 552 to 228
+lines with 0 `isinstance` calls (48 before), `mage.py` from 687 to 526,
+`kinfolk.py` from 257 to 148, and `game/views.py` from 1,244 to 1,072. No view
+under `characters/views` now sums ratings, compares them against a limit, or
+calls `form_valid` from `form_invalid`. The AST guard
+(`characters/tests/test_view_rules_guard.py`) finds three such calls at
+`a0e23a0` and none now.
+
+**Characterization.** `characters/tests/views/test_game_rule_steps.py` was
+written against `a0e23a0` and passed there, except for the tests named
+`*_regression`. Each of those failed first with the defect it names:
+
+* D1: a 500 from "Temporary Willpower cannot exceed willpower".
+* D8: tenets were saved on a rejected Focus submission.
+* D9: saved traits were cleared.
+* D10: a 500 on every numina submission.
+* D11: a wrong-fellowship attribute was accepted.
+* D12: an unrequested specialty was stored.
+* D14: a 500 on a blank Resonance.
+
+The Fera per-type test passes on both the old and the new code. Game-app tests
+pin a single weekly-XP save and the shared quote normaliser.
+
+**Deviations from the design above, and why.**
+
+* The Spheres step and the weekly XP request needed no new service. The first
+  writes one model inside the view's transaction. The second only needed
+  `player_save(commit=False)`.
+* Existing `PracticeRating` rows are kept on the Focus step, matching the old
+  behaviour. The design's "replaces" would have been a rules change.
+* `RoteCreationForm` now reports field-level errors on the detail-page rote
+  purchase. The old view silently redirected in that case, and it lost the
+  "Not enough Rote Points" message.
+* When a Fera First Change is invalid, both of its field errors can show at
+  once. Before, only the first did, with the same text.
+* The existing test that asserted an empty `RoteCreationForm` is valid (a
+  consequence of validation living in the view) now asserts the form-level
+  rule instead.
+
+**Not changed.** Cost tables in `characters/costs.py`. The spending service
+handlers, apart from wrapping `spend()` in a transaction and adding the
+`locked()` factory entry points. Client JavaScript: Step 10 can read
+`allocation_rules` (each rule's `client_data()`), which every
+`AllocationStepMixin` view now puts in its context. Two pre-existing test
+failures unrelated to this step
+(`characters.tests.models.core.test_human.TestAttributeView.test_update_view_template`
+and `TestHumanCharacterCreationView.test_creation_status_selector`, both
+expecting a template name that Step 2 replaced) fail identically at
+`a0e23a0`.

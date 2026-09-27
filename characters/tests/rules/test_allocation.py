@@ -85,17 +85,38 @@ class AbilityRuleTest(TestCase):
         self.assertEqual(rule.groups[0], ("talents", ("alertness", "athletics")))
 
     def test_valid(self):
-        values = dict(alertness=3, athletics=3, crafts=2, drive=2, academics=1, occult=1)
+        values = {
+            "alertness": 3,
+            "athletics": 3,
+            "crafts": 2,
+            "drive": 2,
+            "academics": 1,
+            "occult": 1,
+        }
         self.assertIsNone(first_violation([self.rule()], values))
 
     def test_range_flash(self):
-        values = dict(alertness=4, athletics=2, crafts=2, drive=2, academics=1, occult=1)
+        values = {
+            "alertness": 4,
+            "athletics": 2,
+            "crafts": 2,
+            "drive": 2,
+            "academics": 1,
+            "occult": 1,
+        }
         violation = first_violation([self.rule(range_flash="too high")], values)
         self.assertEqual(violation.message, "Abilities must range from 0-3")
         self.assertEqual(violation.flash, "too high")
 
     def test_allocation_flash_uses_group_totals(self):
-        values = dict(alertness=3, athletics=3, crafts=2, drive=2, academics=1, occult=0)
+        values = {
+            "alertness": 3,
+            "athletics": 3,
+            "crafts": 2,
+            "drive": 2,
+            "academics": 1,
+            "occult": 0,
+        }
         violation = first_violation(
             [self.rule(flash="{allocation}: {talents}/{skills}/{knowledges}")], values
         )

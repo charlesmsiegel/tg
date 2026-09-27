@@ -104,9 +104,7 @@ class BackgroundStepTests(RuleStepTestCase):
         self.assertEqual(response.status_code, 302)
         human.refresh_from_db()
         self.assertEqual(human.creation_status, position("human", "backgrounds") + 1)
-        self.assertEqual(
-            BackgroundRating.objects.get(char=human, bg=self.resources).rating, 3
-        )
+        self.assertEqual(BackgroundRating.objects.get(char=human, bg=self.resources).rating, 3)
 
     def kinfolk(self, tribe_name):
         from characters.models.werewolf.kinfolk import Kinfolk
@@ -117,13 +115,21 @@ class BackgroundStepTests(RuleStepTestCase):
 
     def test_kinfolk_tribe_restrictions(self):
         cases = [
-            ("Bone Gnawers", ((self.pure_breed, 1), (self.allies, 4)), "Bone Gnawers may not purchase Pure Breed"),
+            (
+                "Bone Gnawers",
+                ((self.pure_breed, 1), (self.allies, 4)),
+                "Bone Gnawers may not purchase Pure Breed",
+            ),
             (
                 "Bone Gnawers",
                 ((self.resources, 4), (self.allies, 1)),
                 "Bone Gnawers may not purchase more than 3 dots of Resources",
             ),
-            ("Glass Walkers", ((self.mentor, 1), (self.allies, 4)), "Glass Walkers may not purchase Mentor"),
+            (
+                "Glass Walkers",
+                ((self.mentor, 1), (self.allies, 4)),
+                "Glass Walkers may not purchase Mentor",
+            ),
             ("Red Talons", ((self.allies, 5),), "Red Talons may not purchase Allies"),
             ("Shadow Lords", ((self.mentor, 5),), "Shadow Lords may not purchase Mentor"),
             (
@@ -136,8 +142,16 @@ class BackgroundStepTests(RuleStepTestCase):
                 ((self.resources, 4), (self.allies, 1)),
                 "Stargazers may not purchase more than 3 dots of Resources",
             ),
-            ("Wendigo", ((self.resources, 5),), "Wendigo may not purchase more than 3 dots of Resources"),
-            ("Silver Fangs", ((self.allies, 5),), "Silver Fangs must purchase at least 1 dot of Pure Breed"),
+            (
+                "Wendigo",
+                ((self.resources, 5),),
+                "Wendigo may not purchase more than 3 dots of Resources",
+            ),
+            (
+                "Silver Fangs",
+                ((self.allies, 5),),
+                "Silver Fangs must purchase at least 1 dot of Pure Breed",
+            ),
         ]
         for tribe_name, ratings, message in cases:
             with self.subTest(tribe=tribe_name, message=message):
@@ -171,10 +185,17 @@ class BackgroundStepTests(RuleStepTestCase):
 
 
 class AttributeAbilityStepTests(RuleStepTestCase):
-    ATTRS = dict(
-        strength=3, dexterity=3, stamina=4, charisma=2, manipulation=3, appearance=3,
-        perception=2, intelligence=2, wits=2,
-    )
+    ATTRS = {
+        "strength": 3,
+        "dexterity": 3,
+        "stamina": 4,
+        "charisma": 2,
+        "manipulation": 3,
+        "appearance": 3,
+        "perception": 2,
+        "intelligence": 2,
+        "wits": 2,
+    }
 
     def test_attribute_messages(self):
         from characters.models.core.human import Human
@@ -198,7 +219,7 @@ class VirtueStepTests(RuleStepTestCase):
         from characters.models.vampire.vampire import Vampire
 
         vampire = self.at("vampire", Vampire, "virtues")
-        data = dict(conscience=3, self_control=2, courage=3, conviction=0, instinct=0)
+        data = {"conscience": 3, "self_control": 2, "courage": 3, "conviction": 0, "instinct": 0}
         response = self.post(vampire, {**data, "courage": 1})
         self.assert_stays(vampire, response)
         self.assertEqual(
@@ -212,9 +233,7 @@ class VirtueStepTests(RuleStepTestCase):
         response = self.post(vampire, {**data, "conscience": 2, "self_control": 2})
         self.assertEqual(response.status_code, 302)
         vampire.refresh_from_db()
-        self.assertEqual(
-            (vampire.willpower, vampire.humanity, vampire.path_rating), (3, 4, 0)
-        )
+        self.assertEqual((vampire.willpower, vampire.humanity, vampire.path_rating), (3, 4, 0))
 
     def test_demon_and_thrall_virtue_total(self):
         from characters.models.demon.demon import Demon
@@ -223,13 +242,13 @@ class VirtueStepTests(RuleStepTestCase):
         for kind, model in (("demon", Demon), ("thrall", Thrall)):
             with self.subTest(kind=kind):
                 character = self.at(kind, model, "virtues")
-                response = self.post(character, dict(conviction=3, courage=3, conscience=3))
+                response = self.post(character, {"conviction": 3, "courage": 3, "conscience": 3})
                 self.assert_stays(character, response)
                 self.assertEqual(
                     list(response.context["form"].non_field_errors()),
                     ["Virtues must total 6 dots. Currently: 9"],
                 )
-                response = self.post(character, dict(conviction=2, courage=3, conscience=1))
+                response = self.post(character, {"conviction": 2, "courage": 3, "conscience": 1})
                 self.assertEqual(response.status_code, 302)
                 character.refresh_from_db()
                 self.assertEqual(character.willpower, 3)
@@ -242,7 +261,7 @@ class VirtueStepTests(RuleStepTestCase):
         for kind, model in (("demon", Demon), ("thrall", Thrall)):
             with self.subTest(kind=kind):
                 character = self.at(kind, model, "virtues", willpower=3, temporary_willpower=3)
-                response = self.post(character, dict(conviction=3, courage=1, conscience=2))
+                response = self.post(character, {"conviction": 3, "courage": 1, "conscience": 2})
                 self.assertEqual(response.status_code, 302)
                 character.refresh_from_db()
                 self.assertEqual((character.willpower, character.temporary_willpower), (1, 1))
@@ -333,11 +352,23 @@ class MageStepTests(RuleStepTestCase):
         self.assertEqual(mage.creation_status, position("mage", "focus") + 1)
 
     def spheres_data(self, arete, **extra):
-        data = dict(
-            arete=arete, correspondence=0, time=0, spirit=0, forces=2, matter=2, life=1,
-            entropy=0, mind=1, prime=0, affinity_sphere=self.forces.pk, corr_name="correspondence",
-            prime_name="prime", spirit_name="spirit", resonance="Dynamic",
-        )
+        data = {
+            "arete": arete,
+            "correspondence": 0,
+            "time": 0,
+            "spirit": 0,
+            "forces": 2,
+            "matter": 2,
+            "life": 1,
+            "entropy": 0,
+            "mind": 1,
+            "prime": 0,
+            "affinity_sphere": self.forces.pk,
+            "corr_name": "correspondence",
+            "prime_name": "prime",
+            "spirit_name": "spirit",
+            "resonance": "Dynamic",
+        }
         data.update(extra)
         return data
 
@@ -382,16 +413,13 @@ class MageStepTests(RuleStepTestCase):
 
     def test_detail_specialties_reject_unrequested_stats_regression(self):
         """D12: detail-page specialties only accept stats that need one."""
+        from characters.models.core.attribute_block import Attribute
         from characters.models.core.specialty import Specialty
         from characters.models.mage.mage import Mage
 
-        from characters.models.core.attribute_block import Attribute
-
         Attribute.objects.create(name="Strength", property_name="strength")
         admin = get_user_model().objects.create_superuser("rule-admin")
-        mage = Mage.objects.create(
-            name="Detail Mage", owner=self.owner, status="App", strength=4
-        )
+        mage = Mage.objects.create(name="Detail Mage", owner=self.owner, status="App", strength=4)
         self.client.force_login(admin)
         response = self.post(mage, {"specialties": "1", "strength": "Brawny", "wits": "Sneaky"})
         self.assertEqual(response.status_code, 302)
@@ -402,6 +430,7 @@ class MageStepTests(RuleStepTestCase):
 class SorcererStepTests(RuleStepTestCase):
     """D10: every numina submission used to raise a 500 (chained-choice strings
     assigned to PathRating foreign keys), so these pin the repaired step."""
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -418,10 +447,7 @@ class SorcererStepTests(RuleStepTestCase):
     def rows(self, *ratings, path=None):
         return formset_data(
             "numina_form",
-            [
-                {"path": (path or self.telepathy).pk, "rating": rating}
-                for rating in ratings
-            ],
+            [{"path": (path or self.telepathy).pk, "rating": rating} for rating in ratings],
         )
 
     def test_psychic_numina_total_regression(self):
@@ -578,7 +604,9 @@ class CompanionBudgetTests(RuleStepTestCase):
         for companion_type, before, after in cases:
             with self.subTest(companion_type=companion_type):
                 companion = Companion.objects.create(
-                    name=companion_type, owner=self.owner, companion_type=companion_type,
+                    name=companion_type,
+                    owner=self.owner,
+                    companion_type=companion_type,
                     freebies=before,
                 )
                 companion.prepare_starting_freebies()
@@ -588,7 +616,11 @@ class CompanionBudgetTests(RuleStepTestCase):
 
 FERA_BREED_STEP = {
     # kind: (fields, {field: help text} beyond breed, gift context keys given all choices)
-    "ratkin": (["breed", "aspect"], {"aspect": "Choose your aspect (similar to auspice for Garou)."}, {"breed_gifts", "aspect_gifts"}),
+    "ratkin": (
+        ["breed", "aspect"],
+        {"aspect": "Choose your aspect (similar to auspice for Garou)."},
+        {"breed_gifts", "aspect_gifts"},
+    ),
     "mokole": (
         ["breed", "stream", "auspice"],
         {
@@ -599,18 +631,53 @@ FERA_BREED_STEP = {
     ),
     "bastet": (
         ["breed", "tribe", "pryio"],
-        {"tribe": "Choose your tribe (cat species).", "pryio": "Choose your Pryio (moon-based role)."},
+        {
+            "tribe": "Choose your tribe (cat species).",
+            "pryio": "Choose your Pryio (moon-based role).",
+        },
         {"breed_gifts", "tribe_gifts", "pryio_gifts"},
     ),
     "corax": (["breed"], {}, {"breed_gifts", "corax_gifts"}),
-    "nuwisha": (["breed", "role"], {"role": "Choose your role (optional, loose affiliation)."}, {"breed_gifts", "nuwisha_gifts", "role_gifts"}),
-    "gurahl": (["breed", "auspice"], {"auspice": "Choose your auspice (seasonal role)."}, {"breed_gifts", "auspice_gifts"}),
-    "ananasi": (["breed", "aspect"], {"aspect": "Choose your aspect (role among the Ananasi)."}, {"breed_gifts", "aspect_gifts"}),
-    "rokea": (["breed", "auspice"], {"auspice": "Choose your auspice (time of birth)."}, {"breed_gifts", "auspice_gifts"}),
-    "kitsune": (["breed", "path"], {"path": "Choose your path (role in society)."}, {"breed_gifts", "path_gifts"}),
-    "nagah": (["breed", "auspice"], {"auspice": "Choose your auspice (role as assassin)."}, {"breed_gifts", "auspice_gifts"}),
-    "ajaba": (["breed", "auspice"], {"auspice": "Choose your auspice (lunar cycle)."}, {"breed_gifts", "auspice_gifts"}),
-    "grondr": (["breed", "auspice"], {"auspice": "Choose your auspice (seasonal role)."}, {"breed_gifts", "auspice_gifts"}),
+    "nuwisha": (
+        ["breed", "role"],
+        {"role": "Choose your role (optional, loose affiliation)."},
+        {"breed_gifts", "nuwisha_gifts", "role_gifts"},
+    ),
+    "gurahl": (
+        ["breed", "auspice"],
+        {"auspice": "Choose your auspice (seasonal role)."},
+        {"breed_gifts", "auspice_gifts"},
+    ),
+    "ananasi": (
+        ["breed", "aspect"],
+        {"aspect": "Choose your aspect (role among the Ananasi)."},
+        {"breed_gifts", "aspect_gifts"},
+    ),
+    "rokea": (
+        ["breed", "auspice"],
+        {"auspice": "Choose your auspice (time of birth)."},
+        {"breed_gifts", "auspice_gifts"},
+    ),
+    "kitsune": (
+        ["breed", "path"],
+        {"path": "Choose your path (role in society)."},
+        {"breed_gifts", "path_gifts"},
+    ),
+    "nagah": (
+        ["breed", "auspice"],
+        {"auspice": "Choose your auspice (role as assassin)."},
+        {"breed_gifts", "auspice_gifts"},
+    ),
+    "ajaba": (
+        ["breed", "auspice"],
+        {"auspice": "Choose your auspice (lunar cycle)."},
+        {"breed_gifts", "auspice_gifts"},
+    ),
+    "grondr": (
+        ["breed", "auspice"],
+        {"auspice": "Choose your auspice (seasonal role)."},
+        {"breed_gifts", "auspice_gifts"},
+    ),
 }
 
 
@@ -644,9 +711,13 @@ class FeraDispatchTests(RuleStepTestCase):
         response = self.post(fera, {"breed": "homid", "aspect": "warrior"})
         self.assertEqual(response.status_code, 302)
         fera.refresh_from_db()
-        self.assertEqual((fera.breed, fera.aspect, fera.gnosis, fera.rage), ("homid", "warrior", 1, 4))
+        self.assertEqual(
+            (fera.breed, fera.aspect, fera.gnosis, fera.rage), ("homid", "warrior", 1, 4)
+        )
         self.assertTrue(
-            fera.gift_permissions.filter(pk=GiftPermission.objects.get(shifter="ratkin", condition="warrior").pk).exists()
+            fera.gift_permissions.filter(
+                pk=GiftPermission.objects.get(shifter="ratkin", condition="warrior").pk
+            ).exists()
         )
 
     def test_gift_groups_per_type(self):

@@ -1,6 +1,6 @@
 """Forms that enforce ``characters.rules`` point-allocation rules in ``clean()``."""
 
-from functools import lru_cache
+from functools import cache
 
 from django import forms
 
@@ -45,7 +45,7 @@ class AllocationModelForm(AllocationFormMixin, forms.ModelForm):
     pass
 
 
-@lru_cache(maxsize=None)
+@cache
 def allocation_modelform(model, fields):
     """A ModelForm over ``fields`` (a tuple) whose clean() applies allocation rules."""
     return forms.modelform_factory(model, form=AllocationModelForm, fields=list(fields))

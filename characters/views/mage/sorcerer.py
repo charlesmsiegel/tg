@@ -21,12 +21,10 @@ from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.human import Human
-from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
     LinearMagicPath,
     LinearMagicRitual,
-    PathRating,
     Sorcerer,
 )
 from characters.services.sorcerer_chargen import set_starting_numina

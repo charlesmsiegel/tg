@@ -139,15 +139,13 @@ class PriorityRule:
         return tuple(name for _, names in self.groups for name in names)
 
     def group_totals(self, values: Mapping[str, int | None]) -> dict[str, int]:
-        return {
-            group: sum(_value(values, name) for name in names) for group, names in self.groups
-        }
+        return {group: sum(_value(values, name) for name in names) for group, names in self.groups}
 
     def _targets(self) -> list[int]:
         primary, secondary, tertiary = self.points
         return sorted(
             self.base * len(names) + points
-            for (_, names), points in zip(self.groups, (tertiary, secondary, primary))
+            for (_, names), points in zip(self.groups, (tertiary, secondary, primary), strict=False)
         )
 
     def violations(self, values: Mapping[str, int | None], phase: str) -> list[RuleViolation]:

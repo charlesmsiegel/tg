@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, UpdateView
@@ -131,9 +129,7 @@ class ChangelingBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingArtsRealmsView(
-    AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView
-):
+class ChangelingArtsRealmsView(AllocationStepMixin, ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [*CHANGELING_ARTS.fields, *CHANGELING_REALMS.fields]
     allocation_rules = (CHANGELING_ARTS, CHANGELING_REALMS)
