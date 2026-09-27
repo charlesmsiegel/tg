@@ -3,7 +3,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.core.human import Human
 from characters.models.demon.conclave import Conclave
-from core.mixins import MessageMixin
+from core.mixins import ListHeadingMixin, MessageMixin, SharedTemplateMixin
 
 
 class ConclaveDetailView(DetailView):
@@ -56,7 +56,9 @@ class ConclaveUpdateView(MessageMixin, UpdateView):
         return response
 
 
-class ConclaveListView(ListView):
+class ConclaveListView(ListHeadingMixin, SharedTemplateMixin, ListView):
     model = Conclave
     ordering = ["name"]
     template_name = "characters/demon/conclave/list.html"
+    shared_template_name = "characters/shared/group/list.html"
+    extra_context = {"show_group_type": True}

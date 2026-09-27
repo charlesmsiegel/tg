@@ -41,7 +41,7 @@ class TestDerangementCreateView(TestCase):
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/derangement/form.html")
+        self.assertTemplateUsed(response, "characters/shared/reference/form.html")
 
     def test_create_view_successful_post(self):
         self.client.force_login(
@@ -73,7 +73,7 @@ class TestDerangementUpdateView(TestCase):
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/derangement/form.html")
+        self.assertTemplateUsed(response, "characters/shared/reference/form.html")
 
     def test_update_view_successful_post(self):
         self.client.force_login(

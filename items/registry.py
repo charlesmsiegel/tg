@@ -283,9 +283,9 @@ registry = ModelRegistry(
                 "glamour_storage",
                 "glamour_affinity",
             ),
+            list_title="Changeling Treasures",
             templates={
                 "detail": "items/changeling/treasure/detail.html",
-                "list": "items/changeling/treasure/list.html",
                 "create": "items/changeling/treasure/form.html",
                 "update": "items/changeling/treasure/form.html",
             },
@@ -396,6 +396,8 @@ registry = ModelRegistry(
                 "list": "items:list:item",
             },
             templates={
+                # Base-model list: plain rows showing str(), not the card list.
+                "list": "core/registry/object_list.html",
                 "detail": "items/core/item/detail.html",
                 "create": "items/core/item/form.html",
                 "update": "items/core/item/form.html",
@@ -561,7 +563,6 @@ registry = ModelRegistry(
             fields=("name", "description", "difficulty", "damage", "damage_type", "conceal"),
             templates={
                 "detail": "items/core/weapon/detail.html",
-                "list": "items/core/meleeweapon/list.html",
                 "create": "items/core/meleeweapon/form.html",
                 "update": "items/core/meleeweapon/form.html",
             },
@@ -630,7 +631,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/core/rangedweapon/detail.html",
-                "list": "items/core/rangedweapon/list.html",
                 "create": "items/core/rangedweapon/form.html",
                 "update": "items/core/rangedweapon/form.html",
             },
@@ -689,7 +689,6 @@ registry = ModelRegistry(
             fields=("name", "description", "difficulty", "damage", "damage_type", "conceal"),
             templates={
                 "detail": "items/core/weapon/detail.html",
-                "list": "items/core/thrownweapon/list.html",
                 "create": "items/core/thrownweapon/form.html",
                 "update": "items/core/thrownweapon/form.html",
             },
@@ -744,7 +743,6 @@ registry = ModelRegistry(
             fields=("name", "description", "difficulty", "damage", "damage_type", "conceal"),
             templates={
                 "detail": "items/core/weapon/detail.html",
-                "list": "items/core/weapon/list.html",
                 "create": "items/core/weapon/form.html",
                 "update": "items/core/weapon/form.html",
             },
@@ -813,9 +811,9 @@ registry = ModelRegistry(
                 "difficulty",
                 "dice_pool",
             ),
+            list_title="Demon Relics",
             templates={
                 "detail": "items/demon/relic/detail.html",
-                "list": "items/demon/relic/list.html",
                 "create": "items/demon/relic/form.html",
                 "update": "items/demon/relic/form.html",
             },
@@ -1002,7 +1000,6 @@ registry = ModelRegistry(
             fields=("name", "rank", "background_cost", "quintessence_max", "description", "power"),
             templates={
                 "detail": "items/mage/artifact/detail.html",
-                "list": "items/mage/artifact/list.html",
                 "create": "items/mage/artifact/form.html",
                 "update": "items/mage/artifact/form.html",
             },
@@ -1070,7 +1067,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/mage/charm/detail.html",
-                "list": "items/mage/charm/list.html",
                 "create": "items/mage/charm/form.html",
                 "update": "items/mage/charm/form.html",
             },
@@ -1166,7 +1162,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "items/mage/grimoire/detail.html",
-                "list": "items/mage/grimoire/list.html",
                 "create": "items/mage/grimoire/form.html",
                 "update": "items/mage/grimoire/form.html",
             },
@@ -1237,7 +1232,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/mage/periapt/detail.html",
-                "list": "items/mage/periapt/list.html",
                 "create": "items/mage/periapt/form.html",
                 "update": "items/mage/periapt/form.html",
             },
@@ -1294,9 +1288,9 @@ registry = ModelRegistry(
                 "list": "items:mage:list:sorcerer_artifact",
             },
             fields=("name", "rank", "background_cost", "description", "power"),
+            list_title="Sorcerer Artifacts",
             templates={
                 "detail": "items/mage/sorcerer_artifact/detail.html",
-                "list": "items/mage/sorcerer_artifact/list.html",
                 "create": "items/mage/sorcerer_artifact/form.html",
                 "update": "items/mage/sorcerer_artifact/form.html",
             },
@@ -1364,7 +1358,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/mage/talisman/detail.html",
-                "list": "items/mage/talisman/list.html",
                 "create": "items/mage/talisman/form.html",
                 "update": "items/mage/talisman/form.html",
             },
@@ -1417,7 +1410,6 @@ registry = ModelRegistry(
             form_class="items.forms.mage.wonder.WonderForm",
             templates={
                 "detail": "items/mage/wonder/detail.html",
-                "list": "items/mage/wonder/list.html",
                 "create": "items/mage/wonder/form.html",
                 "update": "items/mage/wonder/form.html",
             },
@@ -1470,7 +1462,6 @@ registry = ModelRegistry(
             form_class="items.forms.vampire.artifact.VampireArtifactForm",
             templates={
                 "detail": "items/vampire/artifact/detail.html",
-                "list": "items/vampire/artifact/list.html",
                 "create": "items/vampire/artifact/form.html",
                 "update": "items/vampire/artifact/form.html",
             },
@@ -1521,7 +1512,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/vampire/bloodstone/detail.html",
-                "list": "items/vampire/bloodstone/list.html",
                 "create": "items/vampire/bloodstone/form.html",
                 "update": "items/vampire/bloodstone/form.html",
             },
@@ -1588,7 +1578,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/werewolf/fetish/detail.html",
-                "list": "items/werewolf/fetish/list.html",
                 "create": "items/werewolf/fetish/form.html",
                 "update": "items/werewolf/fetish/form.html",
             },
@@ -1655,7 +1644,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "items/werewolf/talen/detail.html",
-                "list": "items/werewolf/talen/list.html",
                 "create": "items/werewolf/talen/form.html",
                 "update": "items/werewolf/talen/form.html",
             },
@@ -1696,9 +1684,9 @@ registry = ModelRegistry(
                 "list": "items:wraith:list:relic",
             },
             fields=("name", "description", "level", "rarity", "pathos_cost"),
+            list_title="Wraith Relics",
             templates={
                 "detail": "items/wraith/relic/detail.html",
-                "list": "items/wraith/relic/list.html",
                 "create": "items/wraith/relic/form.html",
                 "update": "items/wraith/relic/form.html",
             },
@@ -1747,9 +1735,9 @@ registry = ModelRegistry(
                 "corpus",
                 "pathos_cost",
             ),
+            list_title="Wraith Artifacts",
             templates={
                 "detail": "items/wraith/artifact/detail.html",
-                "list": "items/wraith/artifact/list.html",
                 "create": "items/wraith/artifact/form.html",
                 "update": "items/wraith/artifact/form.html",
             },

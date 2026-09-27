@@ -1,7 +1,7 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.changeling.motley import Motley
-from core.mixins import MessageMixin
+from core.mixins import ListHeadingMixin, MessageMixin, SharedTemplateMixin
 
 
 class MotleyDetailView(DetailView):
@@ -25,10 +25,11 @@ class MotleyUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Motley."
 
 
-class MotleyListView(ListView):
+class MotleyListView(ListHeadingMixin, SharedTemplateMixin, ListView):
     model = Motley
     ordering = ["name"]
     template_name = "characters/changeling/motley/list.html"
+    shared_template_name = "characters/shared/group/list.html"
 
     def get_queryset(self):
         return super().get_queryset().select_related("leader").prefetch_related("members")

@@ -474,7 +474,6 @@ registry = ModelRegistry(
             ),
             templates={
                 "detail": "locations/core/city/detail.html",
-                "list": "locations/core/city/list.html",
                 "create": "locations/core/city/form.html",
                 "update": "locations/core/city/form.html",
             },
@@ -539,6 +538,8 @@ registry = ModelRegistry(
                 "list": "locations:list:location",
             },
             templates={
+                # Base-model list: plain rows showing str(), not the card list.
+                "list": "core/registry/object_list.html",
                 "detail": "locations/core/location/detail.html",
                 "create": "locations/core/location/form.html",
                 "update": "locations/core/location/form.html",
@@ -615,7 +616,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "locations/demon/bastion/detail.html",
-                "list": "locations/demon/bastion/list.html",
                 "create": "locations/demon/bastion/form.html",
                 "update": "locations/demon/bastion/form.html",
             },
@@ -701,7 +701,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "locations/demon/reliquary/detail.html",
-                "list": "locations/demon/reliquary/list.html",
                 "create": "locations/demon/reliquary/form.html",
                 "update": "locations/demon/reliquary/form.html",
             },
@@ -1001,7 +1000,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "locations/mage/demesne/detail.html",
-                "list": "locations/mage/demesne/list.html",
                 "create": "locations/mage/demesne/form.html",
                 "update": "locations/mage/demesne/form.html",
             },
@@ -1065,7 +1063,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "locations/mage/library/detail.html",
-                "list": "locations/mage/library/list.html",
                 "create": "locations/mage/library/form.html",
                 "update": "locations/mage/library/form.html",
             },
@@ -1118,7 +1115,6 @@ registry = ModelRegistry(
             form_class="locations.forms.mage.node.NodeForm",
             templates={
                 "detail": "locations/mage/node/detail.html",
-                "list": "locations/mage/node/list.html",
                 "create": "locations/mage/node/form.html",
                 "update": "locations/mage/node/form.html",
             },
@@ -1233,7 +1229,6 @@ registry = ModelRegistry(
             fields=("name", "description", "contained_within"),
             templates={
                 "detail": "locations/mage/realm/detail.html",
-                "list": "locations/mage/realm/list.html",
                 "create": "locations/mage/realm/form.html",
                 "update": "locations/mage/realm/form.html",
             },
@@ -1283,9 +1278,9 @@ registry = ModelRegistry(
                 "list": "locations:mage:list:sanctum",
             },
             form_class="locations.forms.mage.sanctum.SanctumForm",
+            list_title="Sanctums",
             templates={
                 "detail": "locations/mage/sanctum/detail.html",
-                "list": "locations/mage/sanctum/list.html",
                 "create": "locations/mage/sanctum/form.html",
                 "update": "locations/mage/sanctum/form.html",
             },
@@ -1336,7 +1331,6 @@ registry = ModelRegistry(
             form_class="locations.forms.mage.sector.SectorForm",
             templates={
                 "detail": "locations/mage/sector/detail.html",
-                "list": "locations/mage/sector/list.html",
                 "create": "locations/mage/sector/form.html",
                 "update": "locations/mage/sector/form.html",
             },
@@ -1779,7 +1773,6 @@ registry = ModelRegistry(
             },
             templates={
                 "detail": "locations/werewolf/caern/detail.html",
-                "list": "locations/werewolf/caern/list.html",
                 "create": "locations/werewolf/caern/form.html",
                 "update": "locations/werewolf/caern/form.html",
             },

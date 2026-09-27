@@ -1,12 +1,7 @@
 {% extends "characters/core/human/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
 {% block basics %}
     {% include "characters/shared/human/basics_display_include.html" %}
 {% endblock basics %}
-{% block abilities %}
-    {% include "characters/mage/mtahuman/ability_block_display.html" %}
-{% endblock abilities %}
 {% block health %}
     {% include "characters/core/human/health_block_display.html" %}
 {% endblock health %}

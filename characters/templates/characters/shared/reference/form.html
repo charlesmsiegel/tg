@@ -1,6 +1,7 @@
 {% extends "core/form.html" %}
+{% load model_meta %}
 {% block creation_title %}
-    Create Archetype
+    Create {{ form.instance|verbose_name|title }}
 {% endblock creation_title %}
 {% block contents %}
     <div class="row">

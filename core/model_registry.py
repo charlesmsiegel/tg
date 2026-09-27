@@ -19,6 +19,7 @@ from core.mixins import (
     prepare_created_object,
 )
 from core.route_policy_manifest import POLICIES
+from core.template_resolution import shared_template_names
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class ModelSpec:
     form_class: str | None = None
     templates: dict = field(default_factory=dict)
     label: str = ""
+    list_title: str = ""
     model_urls: dict = field(default_factory=dict)
     dispatch_view: str | None = None
 
@@ -58,6 +60,11 @@ class ModelSpec:
     @property
     def menu_label(self):
         return self.label or self.model._meta.verbose_name.title()
+
+    @property
+    def plural_label(self):
+        """Title of the shared list page (``core/registry/list.html``)."""
+        return self.list_title or str(self.model._meta.verbose_name_plural)
 
 
 class RegistryViewMixin(PermissionContextMixin):
@@ -87,9 +94,15 @@ class RegistryViewMixin(PermissionContextMixin):
         return super().get_object(queryset)
 
     def get_template_names(self):
-        names = list(super().get_template_names())
         action = "form" if self.registry_action in {"create", "update"} else self.registry_action
-        return names + [f"core/registry/{action}.html"]
+        return shared_template_names(super().get_template_names(), f"core/registry/{action}.html")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.registry_action == "list" and self.registry_spec is not None:
+            context.setdefault("list_title", self.registry_spec.plural_label)
+            context.setdefault("list_heading", f"{self.registry_spec.gameline}_heading")
+        return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
