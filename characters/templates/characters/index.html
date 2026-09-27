@@ -350,7 +350,7 @@
                                              id="{{ status }}-{{ chron.id|default:'no-chronicle' }}"
                                              role="tabpanel">
                                             {% if chars %}
-                                                {% regroup chars by group_set.first as grouplist %}
+                                                {% regroup chars by first_group as grouplist %}
                                                 <!-- Single unified table with group headers as rows -->
                                                 <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
                                                     <table class="tg-table table-striped" style="margin-bottom: 0;">

@@ -1,4 +1,4 @@
-{% regroup character_queryset by group_set.first as grouplist %}
+{% regroup character_queryset by first_group as grouplist %}
 {% if grouplist %}
     <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
         <table class="tg-table table-striped" style="margin-bottom: 0;">

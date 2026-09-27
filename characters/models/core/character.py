@@ -505,3 +505,21 @@ class Character(CharacterModel):
             int: Available XP to spend
         """
         return self.xp
+
+
+def attach_first_groups(characters):
+    """Set ``character.first_group`` for rows annotated by ``with_group_ordering()``.
+
+    Templates regroup character tables by group. Reading ``group_set.first`` there runs
+    one query per character; this loads every group named by the ``first_group_id``
+    annotation in one query (polymorphic, so each is its concrete Cabal, Pack, ...).
+    Returns the characters as a list.
+    """
+    from characters.models.core.group import Group  # deferred: circular import
+
+    characters = list(characters)
+    ids = {c.first_group_id for c in characters if getattr(c, "first_group_id", None)}
+    groups = Group.objects.in_bulk(ids) if ids else {}
+    for character in characters:
+        character.first_group = groups.get(getattr(character, "first_group_id", None))
+    return characters

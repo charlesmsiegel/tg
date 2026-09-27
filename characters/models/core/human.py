@@ -1,7 +1,7 @@
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, prefetch_related_objects
 from django.urls import reverse
 
 from characters.costs import get_freebie_cost, get_xp_cost
@@ -369,11 +369,26 @@ class Human(
         self.derangements.add(derangement)
         return True
 
+    def specialties_by_stat(self):
+        """``{stat: [specialty names]}``, first-created first, for one character sheet.
+
+        Reads the ``specialties`` prefetch cache and fills it on first use, so a sheet
+        that looks up every attribute and ability costs one query in total, and none
+        when the view prefetched ``specialties``. The relation's own
+        ``add()``/``remove()``/``set()``/``clear()`` drop that cache, so changes made
+        through this instance are seen immediately.
+        """
+        if "specialties" not in getattr(self, "_prefetched_objects_cache", {}):
+            prefetch_related_objects([self], "specialties")
+        by_stat = {}
+        for specialty in sorted(self.specialties.all(), key=lambda spec: spec.pk):
+            by_stat.setdefault(specialty.stat, []).append(specialty.name)
+        return by_stat
+
     def get_specialty(self, stat):
-        spec = self.specialties.filter(stat=stat).first()
-        if spec is None:
-            return None
-        return spec.name
+        """Name of the character's first specialty in ``stat``, else None."""
+        names = self.specialties_by_stat().get(stat)
+        return names[0] if names else None
 
     def filter_specialties(self, stat=None):
         if stat is None:
