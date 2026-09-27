@@ -1,7 +1,11 @@
 # Template consolidation: analysis output
 
 Output of `python scripts/template_similarity.py --threshold 0.9` at the base commit
-(before any Step 8 change). Diffs are against each group's first member.
+(before any Step 8 change) and after the last Step 8 commit. Diffs are against each
+group's first member. The remaining byte-identical groups are Step 2's one-line
+`chargen.html` stubs and the five four-line gameline sheet templates (level 4 of the
+extends policy); the remaining near-identical groups are listed as candidates for
+later passes.
 
 ## Before
 
@@ -1482,6 +1486,664 @@ Templates scanned: 890 (generated docs excluded)
 -{% block creation_title %}
 -    Create Human (Vampire)
 -{% endblock creation_title %}
+```
+
+### x2 power.html
+    items/templates/items/mage/artifact/display_includes/power.html  (best sibling 0.909)
+    items/templates/items/mage/charm/display_includes/power.html  (best sibling 0.909)
+```diff
+--- items/templates/items/mage/artifact/display_includes/power.html
++++ items/templates/items/mage/charm/display_includes/power.html
+@@ -2 +2 @@
+-    <div class="tg-card-header">
++    <div class="tg-card-header d-flex justify-content-between align-items-center">
+@@ -3,0 +4 @@
++        <span class="tg-badge badge-pill badge-light">Arete {{ object.arete }}</span>
+```
+
+### x2 form.html
+    items/templates/items/werewolf/fetish/form.html  (best sibling 0.938)
+    items/templates/items/werewolf/talen/form.html  (best sibling 0.938)
+```diff
+--- items/templates/items/werewolf/fetish/form.html
++++ items/templates/items/werewolf/talen/form.html
+@@ -3 +3 @@
+-    Create Fetish
++    Create Talen
+```
+
+### x2 detail.html
+    locations/templates/locations/demon/bastion/detail.html  (best sibling 0.920)
+    locations/templates/locations/demon/reliquary/detail.html  (best sibling 0.920)
+```diff
+--- locations/templates/locations/demon/bastion/detail.html
++++ locations/templates/locations/demon/reliquary/detail.html
+@@ -23,3 +23 @@
+-    <div class="row mb-4">
+-        {% include "locations/demon/bastion/display_includes/basics.html" %}
+-    </div>
++    {% include "locations/demon/reliquary/display_includes/basics.html" %}
+```
+
+````
+
+## After
+
+````text
+Templates scanned: 755 (generated docs excluded)
+
+## Byte-identical: 2 groups, 26 files
+
+- x21 chargen.html
+    characters/templates/characters/changeling/changeling/chargen.html
+    characters/templates/characters/changeling/ctdhuman/chargen.html
+    characters/templates/characters/core/human/chargen.html
+    characters/templates/characters/demon/demon/chargen.html
+    characters/templates/characters/demon/dtfhuman/chargen.html
+    characters/templates/characters/demon/thrall/chargen.html
+    characters/templates/characters/mage/companion/chargen.html
+    characters/templates/characters/mage/mage/chargen.html
+    characters/templates/characters/mage/mtahuman/chargen.html
+    characters/templates/characters/mage/sorcerer/chargen.html
+    characters/templates/characters/vampire/ghoul/chargen.html
+    characters/templates/characters/vampire/vampire/chargen.html
+    characters/templates/characters/vampire/vtmhuman/chargen.html
+    characters/templates/characters/werewolf/drone/chargen.html
+    characters/templates/characters/werewolf/fera/chargen.html
+    characters/templates/characters/werewolf/fomor/chargen.html
+    characters/templates/characters/werewolf/garou/chargen.html
+    characters/templates/characters/werewolf/kinfolk/chargen.html
+    characters/templates/characters/werewolf/wtahuman/chargen.html
+    characters/templates/characters/wraith/wraith/chargen.html
+    characters/templates/characters/wraith/wtohuman/chargen.html
+- x5 detail.html
+    characters/templates/characters/changeling/ctdhuman/detail.html
+    characters/templates/characters/mummy/mtrhuman/detail.html
+    characters/templates/characters/vampire/vtmhuman/detail.html
+    characters/templates/characters/werewolf/wtahuman/detail.html
+    characters/templates/characters/wraith/wtohuman/detail.html
+
+## Near-identical (>= 0.90): 22 groups, 66 files
+
+### x8 basics.html
+    characters/templates/characters/changeling/ctdhuman/basics.html  (best sibling 0.965)
+    characters/templates/characters/mage/mtahuman/basics.html  (best sibling 0.965)
+    characters/templates/characters/vampire/vtmhuman/basics.html  (best sibling 0.965)
+    characters/templates/characters/werewolf/fomor/basics.html  (best sibling 0.965)
+    characters/templates/characters/werewolf/kinfolk/basics.html  (best sibling 0.902)
+    characters/templates/characters/werewolf/wtahuman/basics.html  (best sibling 0.965)
+    characters/templates/characters/wraith/wraith/basics.html  (best sibling 0.931)
+    characters/templates/characters/wraith/wtohuman/basics.html  (best sibling 0.965)
+```diff
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/mage/mtahuman/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Human (Mage)
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="mageHumanForm"
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/vampire/vtmhuman/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Human (Vampire)
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="vtmhumanForm"
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/werewolf/fomor/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Fomor
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="mageForm"
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/werewolf/kinfolk/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Kinfolk
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="mageForm"
+@@ -15 +15 @@
+-        <div class="col-sm">Decide identity and motivation; choose concept and Archetypes.</div>
++        <div class="col-sm">Decide identity and motivation; choose concept, Tribe, Breed, Relation and Archetypes.</div>
+@@ -28,0 +29,2 @@
++            <div class="col-sm-2">Tribe</div>
++            <div class="col-sm-2">{{ form.tribe }}</div>
+@@ -34,0 +37,2 @@
++            <div class="col-sm-2">Breed</div>
++            <div class="col-sm-2">{{ form.breed }}</div>
+@@ -36,0 +41,2 @@
++            <div class="col-sm-2"></div>
++            <div class="col-sm-2"></div>
+@@ -38,0 +45,2 @@
++            <div class="col-sm-2">Relation</div>
++            <div class="col-sm-2">{{ form.relation }}</div>
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/werewolf/wtahuman/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Human (Werewolf)
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="wtahumanForm"
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/wraith/wraith/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Wraith
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="wraithForm"
+@@ -15 +15 @@
+-        <div class="col-sm">Decide identity and motivation; choose concept and Archetypes.</div>
++        <div class="col-sm">Decide identity, motivation, and Guild; choose concept and Archetypes.</div>
+@@ -38,0 +39,2 @@
++            <div class="col-sm-2">Guild</div>
++            <div class="col-sm-2">{{ form.guild }}</div>
+--- characters/templates/characters/changeling/ctdhuman/basics.html
++++ characters/templates/characters/wraith/wtohuman/basics.html
+@@ -3 +3 @@
+-    Create Human (Changeling)
++    Create Human (Wraith)
+@@ -7 +7 @@
+-    id="ctdhumanForm"
++    id="wtoHumanForm"
+```
+
+### x6 detail.html
+    locations/templates/locations/vampire/barrens/detail.html  (best sibling 0.960)
+    locations/templates/locations/vampire/chantry/detail.html  (best sibling 0.960)
+    locations/templates/locations/vampire/domain/detail.html  (best sibling 0.960)
+    locations/templates/locations/vampire/elysium/detail.html  (best sibling 0.960)
+    locations/templates/locations/vampire/haven/detail.html  (best sibling 0.941)
+    locations/templates/locations/vampire/rack/detail.html  (best sibling 0.960)
+```diff
+--- locations/templates/locations/vampire/barrens/detail.html
++++ locations/templates/locations/vampire/chantry/detail.html
+@@ -23 +23 @@
+-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
++        {% include "locations/vampire/chantry/display_includes/basics.html" %}
+--- locations/templates/locations/vampire/barrens/detail.html
++++ locations/templates/locations/vampire/domain/detail.html
+@@ -23 +23 @@
+-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
++        {% include "locations/vampire/domain/display_includes/basics.html" %}
+--- locations/templates/locations/vampire/barrens/detail.html
++++ locations/templates/locations/vampire/elysium/detail.html
+@@ -23 +23 @@
+-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
++        {% include "locations/vampire/elysium/display_includes/basics.html" %}
+--- locations/templates/locations/vampire/barrens/detail.html
++++ locations/templates/locations/vampire/haven/detail.html
+@@ -23 +23,2 @@
+-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
++        {% include "locations/vampire/haven/display_includes/basics.html" %}
++        {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+--- locations/templates/locations/vampire/barrens/detail.html
++++ locations/templates/locations/vampire/rack/detail.html
+@@ -23 +23 @@
+-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
++        {% include "locations/vampire/rack/display_includes/basics.html" %}
+```
+
+### x4 list.html
+    core/templates/core/book/list.html  (best sibling 0.900)
+    core/templates/core/registry/list.html  (best sibling 0.900)
+    game/templates/game/chronicle/list.html  (best sibling 0.900)
+    game/templates/game/story/list.html  (best sibling 0.900)
+```diff
+--- core/templates/core/book/list.html
++++ core/templates/core/registry/list.html
+@@ -3 +3 @@
+-    Books
++    {{ list_title }}
+@@ -9 +9 @@
+-                <h3 class="tg-card-title wod_heading">Books</h3>
++                <h3 class="tg-card-title {{ list_heading }}">{{ list_title }}</h3>
+@@ -23 +23 @@
+-                            <p class="text-muted">No books found.</p>
++                            <p class="text-muted">No {{ list_title|lower }} found.</p>
+--- core/templates/core/book/list.html
++++ game/templates/game/chronicle/list.html
+@@ -3 +3 @@
+-    Books
++    Chronicles
+@@ -9 +9 @@
+-                <h3 class="tg-card-title wod_heading">Books</h3>
++                <h3 class="tg-card-title wod_heading">Chronicles</h3>
+@@ -23 +23 @@
+-                            <p class="text-muted">No books found.</p>
++                            <p class="text-muted">No chronicles found.</p>
+--- core/templates/core/book/list.html
++++ game/templates/game/story/list.html
+@@ -3 +3 @@
+-    Books
++    Stories
+@@ -9 +9 @@
+-                <h3 class="tg-card-title wod_heading">Books</h3>
++                <h3 class="tg-card-title wod_heading">Stories</h3>
+@@ -23 +23 @@
+-                            <p class="text-muted">No books found.</p>
++                            <p class="text-muted">No stories found.</p>
+```
+
+### x4 list.html
+    items/templates/items/hunter/gear/list.html  (best sibling 0.900)
+    items/templates/items/hunter/relic/list.html  (best sibling 0.900)
+    locations/templates/locations/hunter/huntingground/list.html  (best sibling 0.900)
+    locations/templates/locations/hunter/safehouse/list.html  (best sibling 0.900)
+```diff
+--- items/templates/items/hunter/gear/list.html
++++ items/templates/items/hunter/relic/list.html
+@@ -3 +3 @@
+-    Hunter Gear
++    Hunter Relics
+@@ -12 +12 @@
+-                            <h1 class="tg-card-title htr_heading">Hunter Gear</h1>
++                            <h1 class="tg-card-title htr_heading">Hunter Relics</h1>
+@@ -27 +27 @@
+-                                        {{ obj.get_gear_type_display }}
++                                        Power Level: {{ obj.power_level }}
+@@ -32 +32 @@
+-                                    <div class="col-sm">No gear found.</div>
++                                    <div class="col-sm">No relics found.</div>
+@@ -43 +43 @@
+-                            <a href="{% url 'items:hunter:create:gear' %}" class="tg-btn btn-primary">Create Gear</a>
++                            <a href="{% url 'items:hunter:create:relic' %}" class="tg-btn btn-primary">Create Relic</a>
+--- items/templates/items/hunter/gear/list.html
++++ locations/templates/locations/hunter/huntingground/list.html
+@@ -3 +3 @@
+-    Hunter Gear
++    Hunting Grounds
+@@ -12 +12 @@
+-                            <h1 class="tg-card-title htr_heading">Hunter Gear</h1>
++                            <h1 class="tg-card-title htr_heading">Hunting Grounds</h1>
+@@ -27 +27 @@
+-                                        {{ obj.get_gear_type_display }}
++                                        {% if obj.primary_threat %}{{ obj.get_primary_threat_display }}{% else %}Unknown Threat{% endif %}
+@@ -32 +32 @@
+-                                    <div class="col-sm">No gear found.</div>
++                                    <div class="col-sm">No hunting grounds found.</div>
+@@ -43 +43 @@
+-                            <a href="{% url 'items:hunter:create:gear' %}" class="tg-btn btn-primary">Create Gear</a>
++                            <a href="{% url 'locations:hunter:create:hunting_ground' %}" class="tg-btn btn-primary">Create Hunting Ground</a>
+--- items/templates/items/hunter/gear/list.html
++++ locations/templates/locations/hunter/safehouse/list.html
+@@ -3 +3 @@
+-    Hunter Gear
++    Safehouses
+@@ -12 +12 @@
+-                            <h1 class="tg-card-title htr_heading">Hunter Gear</h1>
++                            <h1 class="tg-card-title htr_heading">Safehouses</h1>
+@@ -27 +27 @@
+-                                        {{ obj.get_gear_type_display }}
++                                        Rating: {{ obj.total_rating }}
+@@ -32 +32 @@
+-                                    <div class="col-sm">No gear found.</div>
++                                    <div class="col-sm">No safehouses found.</div>
+@@ -43 +43 @@
+-                            <a href="{% url 'items:hunter:create:gear' %}" class="tg-btn btn-primary">Create Gear</a>
++                            <a href="{% url 'locations:hunter:create:safehouse' %}" class="tg-btn btn-primary">Create Safehouse</a>
+```
+
+### x4 detail.html
+    locations/templates/locations/mage/node/detail.html  (best sibling 0.912)
+    locations/templates/locations/mage/realm/detail.html  (best sibling 0.981)
+    locations/templates/locations/mage/sanctum/detail.html  (best sibling 0.960)
+    locations/templates/locations/mage/sector/detail.html  (best sibling 0.981)
+```diff
+--- locations/templates/locations/mage/node/detail.html
++++ locations/templates/locations/mage/realm/detail.html
+@@ -23,5 +22,0 @@
+-    <div class="row mb-4">
+-        {% include "locations/mage/node/display_includes/basics.html" %}
+-        {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+-    </div>
+-    {% include "characters/mage/resonance/display_includes/resonance.html" %}
+--- locations/templates/locations/mage/node/detail.html
++++ locations/templates/locations/mage/sanctum/detail.html
+@@ -22,7 +21,0 @@
+-{% block model_specific %}
+-    <div class="row mb-4">
+-        {% include "locations/mage/node/display_includes/basics.html" %}
+-        {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+-    </div>
+-    {% include "characters/mage/resonance/display_includes/resonance.html" %}
+-{% endblock model_specific %}
+--- locations/templates/locations/mage/node/detail.html
++++ locations/templates/locations/mage/sector/detail.html
+@@ -23,5 +23 @@
+-    <div class="row mb-4">
+-        {% include "locations/mage/node/display_includes/basics.html" %}
+-        {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+-    </div>
+-    {% include "characters/mage/resonance/display_includes/resonance.html" %}
++    {% include "locations/mage/sector/display_includes/basics.html" %}
+```
+
+### x3 basics.html
+    characters/templates/characters/demon/demon/basics.html  (best sibling 0.912)
+    characters/templates/characters/demon/dtfhuman/basics.html  (best sibling 0.947)
+    characters/templates/characters/demon/thrall/basics.html  (best sibling 0.947)
+```diff
+--- characters/templates/characters/demon/demon/basics.html
++++ characters/templates/characters/demon/dtfhuman/basics.html
+@@ -3 +3 @@
+-    Create Demon
++    Create Demon: The Fallen Human
+@@ -7 +7 @@
+-    id="demonForm"
++    id="dtfhumanForm"
+@@ -15 +15 @@
+-        <div class="col-sm">Create a fallen angel character for Demon: The Fallen.</div>
++        <div class="col-sm">Create a mortal character for the Demon: The Fallen setting.</div>
+@@ -37,2 +37,2 @@
+-            <div class="col-sm-2">House</div>
+-            <div class="col-sm-2">{{ form.house }}</div>
++            <div class="col-sm-2"></div>
++            <div class="col-sm-2"></div>
+--- characters/templates/characters/demon/demon/basics.html
++++ characters/templates/characters/demon/thrall/basics.html
+@@ -3 +3 @@
+-    Create Demon
++    Create Thrall
+@@ -7 +7 @@
+-    id="demonForm"
++    id="thrallForm"
+@@ -15 +15 @@
+-        <div class="col-sm">Create a fallen angel character for Demon: The Fallen.</div>
++        <div class="col-sm">Create a thrall character - a mortal bound to serve a demon.</div>
+@@ -37,2 +37,2 @@
+-            <div class="col-sm-2">House</div>
+-            <div class="col-sm-2">{{ form.house }}</div>
++            <div class="col-sm-2"></div>
++            <div class="col-sm-2"></div>
+```
+
+### x3 list.html
+    characters/templates/characters/demon/faction/list.html  (best sibling 0.909)
+    characters/templates/characters/demon/house/list.html  (best sibling 0.909)
+    characters/templates/characters/demon/lore/list.html  (best sibling 0.909)
+```diff
+--- characters/templates/characters/demon/faction/list.html
++++ characters/templates/characters/demon/house/list.html
+@@ -3 +3 @@
+-    Demon Factions
++    Houses
+@@ -12 +12 @@
+-                            <h1 class="tg-card-title dtf_heading">Demon Factions</h1>
++                            <h1 class="tg-card-title dtf_heading">Houses of the Fallen</h1>
+@@ -25,0 +26 @@
++                                    <div class="col-sm">{{ obj.celestial_name }}</div>
+@@ -29 +30 @@
+-                                    <div class="col-sm">No factions found.</div>
++                                    <div class="col-sm">No houses found.</div>
+--- characters/templates/characters/demon/faction/list.html
++++ characters/templates/characters/demon/lore/list.html
+@@ -3 +3 @@
+-    Demon Factions
++    Lores
+@@ -12 +12 @@
+-                            <h1 class="tg-card-title dtf_heading">Demon Factions</h1>
++                            <h1 class="tg-card-title dtf_heading">Lores</h1>
+@@ -25,0 +26 @@
++                                    <div class="col-sm">{{ obj.property_name }}</div>
+@@ -29 +30 @@
+-                                    <div class="col-sm">No factions found.</div>
++                                    <div class="col-sm">No lores found.</div>
+```
+
+### x3 basics_display_include.html
+    characters/templates/characters/mage/companion/basics_display_include.html  (best sibling 0.900)
+    characters/templates/characters/shared/human/basics_display_include.html  (best sibling 0.944)
+    characters/templates/characters/werewolf/fomor/basics_display_include.html  (best sibling 0.944)
+```diff
+--- characters/templates/characters/mage/companion/basics_display_include.html
++++ characters/templates/characters/shared/human/basics_display_include.html
+@@ -1 +1 @@
+-<div class="row mb-3">
++<div class="row mb-2">
+@@ -14,4 +13,0 @@
+-                    <div class="px-3 py-2">
+-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Companion Type:</span>
+-                        {{ object.get_companion_type_display }}
+-                    </div>
+--- characters/templates/characters/mage/companion/basics_display_include.html
++++ characters/templates/characters/werewolf/fomor/basics_display_include.html
+@@ -14,4 +13,0 @@
+-                    <div class="px-3 py-2">
+-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Companion Type:</span>
+-                        {{ object.get_companion_type_display }}
+-                    </div>
+```
+
+### x3 list.html
+    characters/templates/characters/mummy/title/list.html  (best sibling 0.904)
+    characters/templates/characters/vampire/discipline/list.html  (best sibling 0.917)
+    characters/templates/characters/vampire/sect/list.html  (best sibling 0.917)
+```diff
+--- characters/templates/characters/mummy/title/list.html
++++ characters/templates/characters/vampire/discipline/list.html
+@@ -3 +3 @@
+-    Mummy Titles
++    Disciplines
+@@ -11 +11 @@
+-                        <h3 class="tg-card-title mtr_heading">Mummy Titles</h3>
++                        <h3 class="tg-card-title vtm_heading">Disciplines</h3>
+@@ -23 +22,0 @@
+-                                <span class="tg-badge badge-pill badge-secondary">Rank {{ obj.rank_level }}</span>
+@@ -32 +31 @@
+-                    <p class="text-center" style="color: var(--theme-text-secondary);">No titles found.</p>
++                    <p class="text-center" style="color: var(--theme-text-secondary);">No disciplines found.</p>
+--- characters/templates/characters/mummy/title/list.html
++++ characters/templates/characters/vampire/sect/list.html
+@@ -3 +3 @@
+-    Mummy Titles
++    Vampire Sects
+@@ -11 +11 @@
+-                        <h3 class="tg-card-title mtr_heading">Mummy Titles</h3>
++                        <h3 class="tg-card-title vtm_heading">Vampire Sects</h3>
+@@ -23 +22,0 @@
+-                                <span class="tg-badge badge-pill badge-secondary">Rank {{ obj.rank_level }}</span>
+@@ -32 +31 @@
+-                    <p class="text-center" style="color: var(--theme-text-secondary);">No titles found.</p>
++                    <p class="text-center" style="color: var(--theme-text-secondary);">No vampire sects found.</p>
+```
+
+### x3 detail.html
+    characters/templates/characters/vampire/ghoul/detail.html  (best sibling 0.933)
+    characters/templates/characters/vampire/revenant/detail.html  (best sibling 0.923)
+    characters/templates/characters/vampire/vampire/detail.html  (best sibling 0.933)
+```diff
+--- characters/templates/characters/vampire/ghoul/detail.html
++++ characters/templates/characters/vampire/revenant/detail.html
+@@ -5 +5 @@
+-    Ghoul Character Sheet
++    Revenant Character Sheet
+@@ -8 +8 @@
+-    {% include "characters/vampire/ghoul/basics_display_include.html" %}
++    {% include "characters/vampire/revenant/basics_display_include.html" %}
+@@ -17 +17 @@
+-    {% include "characters/shared/vampire/powers_block_display.html" %}
++    {% include "characters/vampire/revenant/revenant_powers_block_display.html" %}
+@@ -29,3 +28,0 @@
+-    {% if object.status == "Sub" %}
+-        {% include "characters/vampire/ghoul/freebies_form.html" %}
+-    {% endif %}
+--- characters/templates/characters/vampire/ghoul/detail.html
++++ characters/templates/characters/vampire/vampire/detail.html
+@@ -5 +5 @@
+-    Ghoul Character Sheet
++    Vampire Character Sheet
+@@ -8 +8 @@
+-    {% include "characters/vampire/ghoul/basics_display_include.html" %}
++    {% include "characters/vampire/vampire/basics_display_include.html" %}
+@@ -11 +11 @@
+-    {% include "characters/shared/vampire/ghoul_advantage_display.html" %}
++    {% include "characters/vampire/vampire/vampire_advantage_display.html" %}
+@@ -30 +30 @@
+-        {% include "characters/vampire/ghoul/freebies_form.html" %}
++        {% include "characters/vampire/vampire/freebies_form.html" %}
+```
+
+### x3 form.html
+    game/templates/game/chronicle/form.html  (best sibling 0.948)
+    game/templates/game/setting_element/form.html  (best sibling 0.948)
+    game/templates/game/week/form.html  (best sibling 0.914)
+```diff
+--- game/templates/game/chronicle/form.html
++++ game/templates/game/setting_element/form.html
+@@ -6 +6 @@
+-        Create Chronicle
++        Create Setting Element
+@@ -17 +17 @@
+-                        Create Chronicle
++                        Create Setting Element
+@@ -50 +50 @@
+-                                <a href="{% url 'game:chronicles' %}" class="btn btn-secondary">Cancel</a>
++                                <a href="{% url 'game:setting_element:list' %}" class="btn btn-secondary">Cancel</a>
+--- game/templates/game/chronicle/form.html
++++ game/templates/game/week/form.html
+@@ -4 +4 @@
+-        Update {{ object.name }}
++        Update Week
+@@ -6 +6 @@
+-        Create Chronicle
++        Create Week
+@@ -15 +15 @@
+-                        Update {{ object.name }}
++                        Update Week
+@@ -17 +17 @@
+-                        Create Chronicle
++                        Create Week
+@@ -50 +50 @@
+-                                <a href="{% url 'game:chronicles' %}" class="btn btn-secondary">Cancel</a>
++                                <a href="{% url 'game:week:list' %}" class="btn btn-secondary">Cancel</a>
+```
+
+### x2 advantages_display.html
+    characters/templates/characters/core/human/advantages_display.html  (best sibling 0.936)
+    characters/templates/characters/mage/sorcerer/sorcerer_advantage_display.html  (best sibling 0.936)
+```diff
+--- characters/templates/characters/core/human/advantages_display.html
++++ characters/templates/characters/mage/sorcerer/sorcerer_advantage_display.html
+@@ -18,0 +19,3 @@
++                <div class="mt-3">
++                    {% include "characters/mage/sorcerer/quintessence_wheel.html" %}
++                </div>
+```
+
+### x2 list.html
+    characters/templates/characters/demon/demon/list.html  (best sibling 0.922)
+    characters/templates/characters/demon/earthbound/list.html  (best sibling 0.922)
+```diff
+--- characters/templates/characters/demon/demon/list.html
++++ characters/templates/characters/demon/earthbound/list.html
+@@ -3 +3 @@
+-    Demons
++    Earthbound
+@@ -11 +11 @@
+-                        <h3 class="tg-card-title dtf_heading">Demons</h3>
++                        <h3 class="tg-card-title dtf_heading">Earthbound</h3>
+@@ -16 +16 @@
+-        {% for obj in demons %}
++        {% for obj in earthbounds %}
+@@ -46 +46 @@
+-                    <p class="text-center" style="color: var(--theme-text-secondary);">No demons found.</p>
++                    <p class="text-center" style="color: var(--theme-text-secondary);">No earthbound found.</p>
+```
+
+### x2 list.html
+    characters/templates/characters/demon/dtfhuman/list.html  (best sibling 0.902)
+    characters/templates/characters/demon/thrall/list.html  (best sibling 0.902)
+```diff
+--- characters/templates/characters/demon/dtfhuman/list.html
++++ characters/templates/characters/demon/thrall/list.html
+@@ -3 +3 @@
+-    DtF Humans
++    Thralls
+@@ -11 +11 @@
+-                        <h3 class="tg-card-title dtf_heading">DtF Humans</h3>
++                        <h3 class="tg-card-title dtf_heading">Thralls</h3>
+@@ -16 +16 @@
+-        {% for obj in dtfhumans %}
++        {% for obj in thralls %}
+@@ -36 +36 @@
+-                    <p class="text-center" style="color: var(--theme-text-secondary);">No DtF humans found.</p>
++                    <p class="text-center" style="color: var(--theme-text-secondary);">No thralls found.</p>
+```
+
+### x2 sorcerer_path_block_form.html
+    characters/templates/characters/mage/sorcerer/sorcerer_path_block_form.html  (best sibling 0.920)
+    characters/templates/characters/mage/sorcerer/sorcerer_psychic_block_form.html  (best sibling 0.920)
+```diff
+--- characters/templates/characters/mage/sorcerer/sorcerer_path_block_form.html
++++ characters/templates/characters/mage/sorcerer/sorcerer_psychic_block_form.html
+@@ -13,2 +12,0 @@
+-            <div class="col-sm">{{ f.practice }}</div>
+-            <div class="col-sm">{{ f.ability }}</div>
+@@ -23,2 +20,0 @@
+-        <div class="col-sm">{{ numina_form_context.empty_form.practice }}</div>
+-        <div class="col-sm">{{ numina_form_context.empty_form.ability }}</div>
+```
+
+### x2 powers_block_display.html
+    characters/templates/characters/shared/vampire/powers_block_display.html  (best sibling 0.962)
+    characters/templates/characters/vampire/revenant/revenant_powers_block_display.html  (best sibling 0.962)
+```diff
+--- characters/templates/characters/shared/vampire/powers_block_display.html
++++ characters/templates/characters/vampire/revenant/revenant_powers_block_display.html
+@@ -10 +10 @@
+-                    {% for discipline in object.get_disciplines.items %}
++                    {% for discipline in disciplines.items %}
+```
+
+### x2 disciplines.html
+    characters/templates/characters/vampire/ghoul/steps/disciplines.html  (best sibling 0.933)
+    characters/templates/characters/vampire/vampire/steps/disciplines.html  (best sibling 0.933)
+```diff
+--- characters/templates/characters/vampire/ghoul/steps/disciplines.html
++++ characters/templates/characters/vampire/vampire/steps/disciplines.html
+@@ -7 +7 @@
+-                                <p class="tg-card-subtitle">You have Potence 1 automatically. You may spend up to 2 dots on additional disciplines{% if has_domitor %} from your domitor's clan{% else %} (Physical disciplines only){% endif %}.</p>
++                                <p class="tg-card-subtitle">Spend 3 dots on Clan Disciplines</p>
+```
+
+### x2 form.html
+    characters/templates/characters/vampire/vtmhuman/form.html  (best sibling 0.988)
+    characters/templates/characters/wraith/wtohuman/form.html  (best sibling 0.988)
+```diff
+--- characters/templates/characters/vampire/vtmhuman/form.html
++++ characters/templates/characters/wraith/wtohuman/form.html
+@@ -2,0 +3,3 @@
++{% block creation_title %}
++    Create Human (Wraith)
++{% endblock creation_title %}
+@@ -4,3 +6,0 @@
+-{% block creation_title %}
+-    Create Human (Vampire)
+-{% endblock creation_title %}
+```
+
+### x2 breed_faction_form.html
+    characters/templates/characters/werewolf/fera/breed_faction_form.html  (best sibling 0.918)
+    characters/templates/characters/werewolf/fera/history_form.html  (best sibling 0.918)
+```diff
+--- characters/templates/characters/werewolf/fera/breed_faction_form.html
++++ characters/templates/characters/werewolf/fera/history_form.html
+@@ -6 +6 @@
+-                <h5 class="tg-card-title wta_heading">Breed and Faction Selection</h5>
++                <h5 class="tg-card-title wta_heading">First Change</h5>
+@@ -17,5 +16,0 @@
+-
+-                    <p class="mb-4">
+-                        Choose your character's breed (birth form) and faction/aspect/tribe based on your Fera type.
+-                        These choices will determine your starting Gnosis, Rage, and available Gifts.
+-                    </p>
 ```
 
 ### x2 power.html
