@@ -116,6 +116,49 @@ class Companion(MtAHuman):
         verbose_name = "Companion"
         verbose_name_plural = "Companions"
 
+    # Starting freebies by companion_type. The keys are preserved from the
+    # original chargen step; see the Step 4 spec, defect D2 ("acoylte",
+    # "backup" and "ally" are not companion_type choices).
+    STARTING_FREEBIES = {"acoylte": 15, "backup": 15, "consor": 21, "ally": 21}
+    FAMILIAR_FREEBIES = 25
+    FAMILIAR_PACKAGE_FLAW = ("Thaumivore", -5)
+    FAMILIAR_PACKAGE_ADVANTAGES = (("Bond-Sharing", 4), ("Paradox Nullification", 2))
+    FAMILIAR_PACKAGE_CHARM = "Airt Sense"
+
+    def prepare_starting_freebies(self):
+        """Set the chargen freebie budget; familiars also get their fixed package.
+
+        A player familiar starts with 25 freebies (NPC familiars keep theirs),
+        takes Thaumivore, Bond-Sharing, Paradox Nullification and Airt Sense,
+        and the package costs one freebie net. Raises ``DoesNotExist`` when the
+        package's reference rows are missing. The caller saves.
+        """
+        if self.companion_type in self.STARTING_FREEBIES:
+            self.freebies = self.STARTING_FREEBIES[self.companion_type]
+        elif self.companion_type == "familiar":
+            from characters.models.core.merit_flaw_block import MeritFlaw
+
+            if not self.npc:
+                self.freebies = self.FAMILIAR_FREEBIES
+            flaw_name, flaw_rating = self.FAMILIAR_PACKAGE_FLAW
+            flaw = MeritFlaw.objects.get(name=flaw_name)
+            advantages = [
+                (Advantage.objects.get(name=name), rating)
+                for name, rating in self.FAMILIAR_PACKAGE_ADVANTAGES
+            ]
+            charm = SpiritCharm.objects.get(name=self.FAMILIAR_PACKAGE_CHARM)
+            self.add_mf(flaw, flaw_rating)
+            self.spent_freebies.append(
+                self.freebie_spend_record(flaw.name, "meritflaw", flaw_rating, cost=flaw_rating)
+            )
+            for advantage, rating in advantages:
+                self.add_advantage(advantage, rating)
+                self.spent_freebies.append(
+                    self.freebie_spend_record(advantage.name, "advantage", rating, cost=rating)
+                )
+            self.add_charm(charm)
+            self.freebies -= 1
+
     def add_advantage(self, advantage, rating):
         if rating in advantage.get_ratings():
             ar, _ = AdvantageRating.objects.get_or_create(character=self, advantage=advantage)

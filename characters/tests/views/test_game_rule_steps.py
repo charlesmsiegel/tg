@@ -567,3 +567,20 @@ class SorcererBasicsTests(RuleStepTestCase):
         sorcerer = Sorcerer.objects.get(name="Hedge")
         self.assertEqual((sorcerer.casting_attribute, sorcerer.affinity_path), (wits, path))
         self.assertEqual(sorcerer.owner, self.owner)
+
+
+class CompanionBudgetTests(RuleStepTestCase):
+    def test_budget_by_type_preserves_d2(self):
+        """Budgets keep the original keys; plain companions get none (defect D2)."""
+        from characters.models.mage.companion import Companion
+
+        cases = (("consor", 7, 21), ("companion", 7, 7))
+        for companion_type, before, after in cases:
+            with self.subTest(companion_type=companion_type):
+                companion = Companion.objects.create(
+                    name=companion_type, owner=self.owner, companion_type=companion_type,
+                    freebies=before,
+                )
+                companion.prepare_starting_freebies()
+                self.assertEqual(companion.freebies, after)
+                self.assertEqual(companion.spent_freebies, [])
