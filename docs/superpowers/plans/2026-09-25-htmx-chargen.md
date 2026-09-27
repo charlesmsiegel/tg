@@ -142,7 +142,7 @@ converting that gameline's step fragments.
 
 ### Go/no-go evidence
 
-1. Existing chargen tests plus 34 contract tests pass, and non-interactive gamelines are unchanged (`NonInteractiveWorkflowTests`). The full-suite result is recorded below.
+1. Existing chargen tests plus 34 contract tests pass, and non-interactive gamelines are unchanged (`NonInteractiveWorkflowTests`). Full suite after rebasing onto `main` (Step 8), with browser tests enabled: 7,392 tests, 33 skipped, 3 failures. Two of them (`TestHumanCharacterCreationView.test_creation_status_selector` and `TestAttributeView.test_update_view_template`) fail identically on `main` (7,387 tests). The third was a query-budget test under load: `main` failed a different one in the same concurrent run, and `core.tests.test_query_budgets` passes in isolation on this branch.
 2. The no-JS 13-step walkthrough passes (`test_chargen_nojs_walkthrough`).
 3. The Playwright walkthrough passes with one wizard page load and no console errors from application code (7 browser tests).
 4. There are no client rule copies (table above). Validate and submit verdicts agree (`test_verdict_matches_submit_for_virtues`).
