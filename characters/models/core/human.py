@@ -582,6 +582,15 @@ class Human(
         """DEPRECATED: Use character.background_manager.add_background()"""
         return self.background_manager.add_background(background, maximum)
 
+    def background_violations(self, ratings):
+        """Limits beyond the point total on a chargen background allocation.
+
+        ``ratings`` lists (Background, rating) pairs in submission order. Returns
+        ``(index, RuleViolation)`` pairs naming the offending pair; types with
+        restricted backgrounds (Kinfolk tribes) override this.
+        """
+        return []
+
     def total_backgrounds(self):
         """DEPRECATED: Use character.background_manager.total_backgrounds()"""
         return self.background_manager.total_backgrounds()

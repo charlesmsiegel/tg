@@ -32,9 +32,40 @@ class BackgroundRatingForm(forms.ModelForm):
 
 
 class BaseBackgroundRatingFormSet(BaseInlineFormSet):
+    """Background ratings; with ``enforce_allocation`` also the chargen limits.
+
+    The chargen step spends exactly ``character.background_points`` (each dot
+    costs the background's multiplier) and obeys the character's own
+    ``background_violations`` (for example Kinfolk tribal restrictions, which
+    are reported before the total).
+    """
+
     def __init__(self, *args, **kwargs):
         self.character = kwargs.pop("character", None)
+        self.enforce_allocation = kwargs.pop("enforce_allocation", False)
         super().__init__(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if not self.enforce_allocation or any(form.errors for form in self.forms):
+            return
+        rated = [
+            form
+            for form in self.forms
+            if "rating" in form.cleaned_data and "bg" in form.cleaned_data
+        ]
+        pairs = [(form.cleaned_data["bg"], form.cleaned_data["rating"]) for form in rated]
+        for index, violation in self.character.background_violations(pairs):
+            target = rated[index] if rated else (self.forms[0] if self.forms else None)
+            if target is None:
+                raise forms.ValidationError(violation.message)
+            target.add_error(violation.field, violation.message)
+            return
+        total = sum(rating * bg.multiplier for bg, rating in pairs)
+        if total != self.character.background_points:
+            message = f"Backgrounds must total {self.character.background_points} points"
+            for form in self.forms:
+                form.add_error(None, message)
 
     def add_fields(self, form, index):
         super().add_fields(form, index)
