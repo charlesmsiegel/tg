@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
+from characters.forms.core.crud_fields import KINFOLK_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
@@ -9,24 +10,28 @@ from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
-from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
+from characters.views.core.human import (
+    HumanAttributeView,
+    HumanCharacterCreationView,
+    HumanDetailView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
+)
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
     WtAHumanExtrasView,
     WtAHumanFreebiesView,
-    WtAHumanLanguagesView,
-    WtAHumanSpecialtiesView,
 )
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
-    ViewPermissionMixin,
+    ScopedEditFormMixin,
     XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class KinfolkDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
+class KinfolkDetailView(XPApprovalMixin, HumanDetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 
@@ -54,94 +59,14 @@ class KinfolkDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
         return context
 
 
-class KinfolkUpdateView(EditPermissionMixin, UpdateView):
+class KinfolkUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Kinfolk
     success_message = "Kinfolk updated successfully."
     error_message = "Error updating kinfolk."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "breed",
-        "tribe",
-        "relation",
-        "gifts",
-        "gnosis",
-        "fetishes_owned",
-        "glory",
-        "temporary_glory",
-        "wisdom",
-        "temporary_wisdom",
-        "honor",
-        "temporary_honor",
-    ]
+    fields = KINFOLK_UPDATE_FIELDS
     template_name = "characters/werewolf/kinfolk/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class KinfolkBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -308,7 +233,8 @@ class KinfolkFreebiesView(WtAHumanFreebiesView):
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
 
-class KinfolkLanguagesView(WtAHumanLanguagesView):
+class KinfolkLanguagesView(HumanLanguagesView):
+    model = Kinfolk
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
 
@@ -319,7 +245,8 @@ class KinfolkAlliesView(GenericBackgroundView):
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
 
-class KinfolkSpecialtiesView(WtAHumanSpecialtiesView):
+class KinfolkSpecialtiesView(HumanSpecialtiesView):
+    model = Kinfolk
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
 

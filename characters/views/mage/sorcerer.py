@@ -1,7 +1,7 @@
 from typing import Any
 
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
@@ -10,7 +10,6 @@ from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import SorcererFreebiesForm
 from characters.forms.mage.numina import (
@@ -22,7 +21,6 @@ from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
@@ -31,30 +29,32 @@ from characters.models.mage.sorcerer import (
     PathRating,
     Sorcerer,
 )
-from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
+    HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
 from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
 from characters.views.mage.mtahuman import MtAHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     ScopedCreationFormMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     XPApprovalMixin,
 )
-from core.models import Language
 from core.permissions import PermissionManager
 from core.views.generic import MultipleFormsetsMixin
 from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
@@ -105,26 +105,14 @@ class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMix
         return super().form_valid(form)
 
 
-class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+class SorcererUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
     model = Sorcerer
     form_class = SorcererForm
     template_name = "characters/mage/sorcerer/form.html"
     success_message = "Sorcerer '{name}' updated successfully."
     error_message = "Error updating sorcerer."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class SorcererDetailView(XPApprovalMixin, HumanDetailView):
@@ -325,7 +313,7 @@ class SorcererRitualView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormVie
         return HttpResponseRedirect(context["object"].get_absolute_url())
 
 
-class SorcererExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class SorcererExtrasView(CharacterExtrasView):
     model = Sorcerer
     fields = [
         "date_of_birth",
@@ -338,224 +326,67 @@ class SorcererExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/sorcerer/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appeareance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with mage society since, particularly mentioning important backgrounds."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
-            }
-        )
-        return form
+    field_widget_attrs = {
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
+        }
+    }
 
 
-class SorcererFreebiesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
-    """Freebie spending view for Sorcerer characters.
-
-    Uses FreebieSpendingServiceFactory to get the SorcererFreebieSpendingService
-    which handles all spending logic including Paths and Rituals.
-    """
-
+class SorcererFreebiesView(HumanFreebiesView):
     model = Sorcerer
     form_class = SorcererFreebiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
+    example_models = {
+        **HumanFreebiesView.example_models,
+        "Path": LinearMagicPath,
+        "Select Ritual": LinearMagicRitual,
+    }
+    category_aliases = {"New Path": "Path", "Existing Path": "Path"}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ritual_form"] = NuminaRitualForm(pk=self.object.id)
         return context
 
-    def form_valid(self, form):
-        # Validation
-        if form.data["category"] == "-----":
-            form.add_error(None, "Must Choose Freebie Expenditure Type")
-            return super().form_invalid(form)
-        elif form.data["category"] == "MeritFlaw" and (
-            form.data["example"] == "" or form.data["value"] == ""
-        ):
-            form.add_error(None, "Must Choose Merit/Flaw and rating")
-            return super().form_invalid(form)
-        elif (
-            form.data["category"]
-            in [
-                "Attribute",
-                "Ability",
-                "New Background",
-                "Existing Background",
-                "Path",
-                "Select Ritual",
-            ]
-            and form.data["example"] == ""
-        ):
-            form.add_error(None, "Must Choose Trait")
-            return super().form_invalid(form)
-
-        # Get the spending service
-        service = FreebieSpendingServiceFactory.get_service(self.object)
-
-        # Extract form data
-        category = form.data["category"]
-        example = form.cleaned_data.get("example")
-        value = form.cleaned_data.get("value")
-        note = form.data.get("note", "")
-
-        # Convert value to int if present
-        if value and value != "":
-            try:
-                value = int(value)
-            except (ValueError, TypeError):
-                pass
-
-        # Build kwargs based on category
-        kwargs = {"note": note}
-
-        # Path requires practice and ability
-        if category == "Path":
-            prac_pk = form.data.get("practice", "")
-            ability_pk = form.data.get("ability", "")
-            kwargs["practice"] = get_object_or_404(Practice, pk=prac_pk) if prac_pk else None
-            kwargs["ability"] = get_object_or_404(Ability, pk=ability_pk) if ability_pk else None
-
-        # Create Ritual requires special kwargs
-        if category == "Create Ritual":
-            kwargs["ritual_name"] = form.data.get("name", "")
-            path_pk = form.data.get("path", "")
-            kwargs["ritual_path"] = (
-                get_object_or_404(LinearMagicPath, pk=int(path_pk)) if path_pk else None
+    def get_spending_kwargs(self, form):
+        kwargs = super().get_spending_kwargs(form)
+        if kwargs["category"] == "Path":
+            for key, model in (("practice", Practice), ("ability", Ability)):
+                value = form.cleaned_data.get(key)
+                kwargs[key] = self.resolve_choice(model, value) if value else None
+        elif kwargs["category"] == "Create Ritual":
+            ritual_form = NuminaRitualForm(form.data, pk=self.object.pk)
+            if not ritual_form.is_valid():
+                raise ValidationError("Invalid ritual details")
+            data = ritual_form.cleaned_data
+            kwargs.update(
+                ritual_name=data.get("name", ""),
+                ritual_path=data.get("path"),
+                ritual_level=data.get("level") or 1,
+                ritual_description=data.get("description", ""),
             )
-            kwargs["ritual_level"] = int(form.data.get("level", 1))
-            kwargs["ritual_description"] = form.data.get("description", "")
-
-        # Use the service to handle the spending
-        result = service.spend(
-            category=category,
-            example=example,
-            value=value,
-            **kwargs,
-        )
-
-        if not result.success:
-            form.add_error(None, result.error)
-            return super().form_invalid(form)
-
-        # Post-spending logic: advance creation status when freebies exhausted
-        if self.object.freebies == 0:
-            advance(self.object, user=self.request.user)
-            self.object.save()
-
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        if form.data["category"] == "-----":
-            form.add_error(None, "Must Choose Freebie Expenditure Type")
-            return super().form_invalid(form)
-        elif form.data["category"] == "MeritFlaw" and (
-            form.data["example"] == "" or form.data["value"] == ""
-        ):
-            form.add_error(None, "Must Choose Merit/Flaw and rating")
-            return super().form_invalid(form)
-        elif (
-            form.data["category"] in ["Attribute", "Ability", "Background"]
-            and form.data["example"] == ""
-        ):
-            form.add_error(None, "Must Choose Trait")
-            return super().form_invalid(form)
-        return self.form_valid(form)
-
-
-class SorcererLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
-    form_class = HumanLanguageForm
-    template_name = "characters/mage/sorcerer/chargen.html"
-
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
-
-    # Overriding `get_form_kwargs` to pass custom arguments to the form
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
         return kwargs
 
-    # Overriding `form_valid` to handle saving the data
-    def form_valid(self, form):
-        # Get the human instance from the pased `pk`
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
 
-        for key, value in form.cleaned_data.items():
-            if key.startswith("language_"):
-                language_name = value
-                if language_name:
-                    language, _ = Language.objects.get_or_create(name=language_name)
-                    human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-
-class SorcererSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
-    form_class = SpecialtiesForm
+class SorcererLanguagesView(HumanLanguagesView):
+    model = Sorcerer
     template_name = "characters/mage/sorcerer/chargen.html"
 
-    def get_object(self):
-        """Return the Sorcerer object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Sorcerer, id=self.kwargs["pk"])
-        return self.object
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
+class SorcererSpecialtiesView(HumanSpecialtiesView):
+    model = Sorcerer
+    template_name = "characters/mage/sorcerer/chargen.html"
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        companion = get_object_or_404(Sorcerer, id=self.kwargs["pk"])
-        kwargs["object"] = companion
+    def get_specialties_needed(self):
+        character = self.get_object()
         stats = list(Attribute.objects.all()) + list(
             Ability.objects.all().exclude(property_name="rituals")
         )
-        stats = [x for x in stats if getattr(companion, x.property_name, 0) >= 4] + [
+        stats = [x for x in stats if getattr(character, x.property_name, 0) >= 4] + [
             x
             for x in stats
-            if getattr(companion, x.property_name, 0) >= 1
+            if getattr(character, x.property_name, 0) >= 1
             and x.property_name
             in [
                 "arts",
@@ -571,19 +402,8 @@ class SorcererSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, Fo
                 "science",
             ]
         ]
-        stats.extend([x for x in LinearMagicPath.objects.all() if companion.path_rating(x) >= 4])
-        kwargs["specialties_needed"] = [x.property_name for x in stats]
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        companion = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            companion.specialties.add(spec)
-        companion.status = "Sub"
-        companion.save()
-        return HttpResponseRedirect(companion.get_absolute_url())
+        stats.extend([x for x in LinearMagicPath.objects.all() if character.path_rating(x) >= 4])
+        return [x.property_name for x in stats]
 
 
 class SorcererAlliesView(GenericBackgroundView):

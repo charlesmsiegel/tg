@@ -1,125 +1,50 @@
-from typing import Any
-
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
+from characters.forms.core.crud_fields import FOMOR_UPDATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.fomor import FomorCreationForm
-from characters.models.core.specialty import Specialty
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.fomoripower import FomoriPower
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
+    HumanDetailView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
-    ViewPermissionMixin,
 )
-from core.models import Language
 from core.permissions import PermissionManager
 
 
-class FomorDetailView(ViewPermissionMixin, DetailView):
+class FomorDetailView(HumanDetailView):
     model = Fomor
     template_name = "characters/werewolf/fomor/detail.html"
 
 
-class FomorUpdateView(EditPermissionMixin, UpdateView):
+class FomorUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = Fomor
     success_message = "Fomor updated successfully."
     error_message = "Error updating fomor."
-    fields = [
-        "name",
-        "description",
-        "concept",
-        "nature",
-        "demeanor",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "leadership",
-        "primal_urge",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "law",
-        "occult",
-        "rituals",
-        "technology",
-        "rage",
-        "gnosis",
-        "powers",
-    ]
+    fields = FOMOR_UPDATE_FIELDS
     template_name = "characters/werewolf/fomor/form.html"
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class FomorBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
@@ -187,7 +112,7 @@ class FomorPowersView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FomorExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class FomorExtrasView(CharacterExtrasView):
     model = Fomor
     fields = [
         "date_of_birth",
@@ -200,33 +125,12 @@ class FomorExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/fomor/chargen.html"
-
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appearance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their transformation into a Fomor, how they gained their powers, and their relationship with the Wyrm."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {"placeholder": "Describe your character's goals and motivations."}
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {"placeholder": "This will be displayed to all players who look at your character."}
-        )
-        return form
+    field_widget_attrs = {
+        "history": {
+            "placeholder": "Describe character history/backstory. Include information about their transformation into a Fomor, how they gained their powers, and their relationship with the Wyrm."
+        },
+        "goals": {"placeholder": "Describe your character's goals and motivations."},
+    }
 
 
 class FomorFreebiesView(HumanFreebiesView):
@@ -235,42 +139,9 @@ class FomorFreebiesView(HumanFreebiesView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorLanguagesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = HumanLanguageForm
+class FomorLanguagesView(HumanLanguagesView):
+    model = Fomor
     template_name = "characters/werewolf/fomor/chargen.html"
-
-    def get_object(self):
-        """Return the Fomor object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Fomor, pk=self.kwargs.get("pk"))
-        return self.object
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        fomor_pk = self.kwargs.get("pk")
-        num_languages = Fomor.objects.get(pk=fomor_pk).num_languages()
-        kwargs.update({"pk": fomor_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    def form_valid(self, form):
-        fomor_pk = self.kwargs.get("pk")
-        fomor = get_object_or_404(Fomor, pk=fomor_pk)
-        num_languages = fomor.num_languages()
-        english, _ = Language.objects.get_or_create(name="English")
-        fomor.languages.add(english)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i+1}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                fomor.languages.add(language)
-        advance(fomor, user=self.request.user)
-        fomor.save()
-        return HttpResponseRedirect(fomor.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
 
 
 class FomorAlliesView(GenericBackgroundView):
@@ -287,37 +158,9 @@ class FomorContactsView(GenericBackgroundView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorSpecialtiesView(ChargenStepMixin, EditPermissionMixin, FormView):
-    form_class = SpecialtiesForm
+class FomorSpecialtiesView(HumanSpecialtiesView):
+    model = Fomor
     template_name = "characters/werewolf/fomor/chargen.html"
-
-    def get_object(self):
-        """Return the Fomor object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = Fomor.objects.get(id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        fomor = self.get_object()
-        kwargs["object"] = fomor
-        kwargs["specialties_needed"] = fomor.needed_specialties()
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        fomor = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            fomor.specialties.add(spec)
-        fomor.status = "Sub"
-        fomor.save()
-        return HttpResponseRedirect(fomor.get_absolute_url())
 
 
 class FomorCharacterCreationView(HumanCharacterCreationView):

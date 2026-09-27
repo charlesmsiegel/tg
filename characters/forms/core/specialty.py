@@ -18,7 +18,8 @@ class SpecialtiesForm(forms.Form):
             )
             self.fields[field] = forms.CharField(
                 widget=AutocompleteTextInput(
-                    suggestions=[x.name for x in Specialty.objects.filter(stat=s.property_name)]
+                    suggestions=[x.name for x in Specialty.objects.filter(stat=field)]
                 ),
             )
-            self.fields[field].label = s.name
+            # Linear magic paths supply specialty keys without being Statistics.
+            self.fields[field].label = s.name if s else field.replace("_", " ").title()

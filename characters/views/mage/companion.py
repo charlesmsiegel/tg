@@ -1,51 +1,43 @@
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
-from characters.chargen.transitions import advance
-from characters.costs import get_freebie_cost
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.freebies import CompanionFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
-from characters.models.core.specialty import Specialty
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.faction import MageFaction
 from characters.models.werewolf.charm import SpiritCharm
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.chargen_mixins import ChargenStepMixin
+from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
+    HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
 from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
 from characters.views.mage.mtahuman import MtAHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     ScopedCreationFormMixin,
-    SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
+    ScopedEditFormMixin,
     XPApprovalMixin,
     prepare_created_object,
 )
-from core.models import Language
 from core.permissions import Permission, PermissionManager
 from items.forms.mage.wonder import WonderForm
 from locations.forms.mage.library import LibraryForm
@@ -95,7 +87,7 @@ class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class CompanionUpdateView(EditPermissionMixin, UpdateView):
+class CompanionUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     """
     Update view for companions.
 
@@ -139,19 +131,7 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
     success_message = "Companion updated successfully."
     error_message = "There was an error updating the Companion."
 
-    def get_form_class(self):
-        """
-        Return different form based on user permissions.
-        Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form with ST_EDIT_FIELDS.
-        """
-        has_full_edit = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, self.get_object(), request=self.request
-        )
-        if has_full_edit:
-            return super().get_form_class()
-        else:
-            return LimitedHumanEditForm
+    limited_form_class = LimitedHumanEditForm
 
 
 class CompanionBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, CreateView):
@@ -228,7 +208,7 @@ class CompanionBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/companion/chargen.html"
 
 
-class CompanionExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class CompanionExtrasView(CharacterExtrasView):
     model = Companion
     fields = [
         "date_of_birth",
@@ -241,9 +221,13 @@ class CompanionExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/companion/chargen.html"
+    field_widget_attrs = {
+        "public_info": {
+            "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
+        }
+    }
 
-    def form_valid(self, form):
-        advance(self.object, user=self.request.user)
+    def prepare_character(self, form):
         if self.object.companion_type in ["acoylte", "backup"]:
             self.object.freebies = 15
         elif self.object.companion_type in ["consor", "ally"]:
@@ -258,7 +242,6 @@ class CompanionExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
             self.object.spent_freebies.append(
                 self.object.freebie_spend_record(thaumivore.name, "meritflaw", -5, cost=-5)
             )
-
             self.object.add_advantage(bond_sharing, 4)
             self.object.spent_freebies.append(
                 self.object.freebie_spend_record(bond_sharing.name, "advantage", 4, cost=4)
@@ -267,233 +250,38 @@ class CompanionExtrasView(ChargenStepMixin, SpecialUserMixin, UpdateView):
             self.object.spent_freebies.append(
                 self.object.freebie_spend_record(paradox_nullification.name, "advantage", 2, cost=2)
             )
-
             self.object.add_charm(get_object_or_404(SpiritCharm, name="Airt Sense"))
-
             self.object.freebies -= 1
 
-        self.object.save()
-        return super().form_valid(form)
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
-        form.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's physical appeareance. Be detailed, this will be visible to other players."
-            }
-        )
-        form.fields["history"].widget.attrs.update(
-            {
-                "placeholder": "Describe character history/backstory. Include information about their childhood, when and how they Awakened, and how they've interacted with mage society since, particularly mentioning important backgrounds."
-            }
-        )
-        form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals, whether personal, professional, or magical."
-            }
-        )
-        form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
-        form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
-            }
-        )
-        return form
-
-
-class CompanionFreebiesView(ChargenStepMixin, SpecialUserMixin, UpdateView):
+class CompanionFreebiesView(HumanFreebiesView):
     model = Companion
     form_class = CompanionFreebiesForm
     template_name = "characters/mage/companion/chargen.html"
-
-    def form_valid(self, form):
-        if form.data["category"] == "-----":
-            form.add_error(None, "Must Choose Freebie Expenditure Type")
-            return super().form_invalid(form)
-        elif form.data["category"] == "MeritFlaw" and (
-            form.data["example"] == "" or form.data["value"] == ""
-        ):
-            form.add_error(None, "Must Choose Merit/Flaw and rating")
-            return super().form_invalid(form)
-        elif (
-            form.data["category"]
-            in [
-                "Attribute",
-                "Ability",
-                "New Background",
-                "Existing Background",
-            ]
-            and form.data["example"] == ""
-        ):
-            form.add_error(None, "Must Choose Trait")
-            return super().form_invalid(form)
-        trait_type = form.data["category"].lower()
-        if "background" in trait_type:
-            trait_type = "background"
-        cost = get_freebie_cost(trait_type)
-        if cost == "rating":
-            cost = int(form.data["value"])
-        if cost > self.object.freebies:
-            form.add_error(None, "Not Enough Freebies!")
-            return super().form_invalid(form)
-        if form.data["category"] == "Attribute":
-            trait = get_object_or_404(Attribute, pk=form.data["example"])
-            value = getattr(self.object, trait.property_name) + 1
-            self.object.add_attribute(trait.property_name)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "Ability":
-            trait = get_object_or_404(Ability, pk=form.data["example"])
-            value = getattr(self.object, trait.property_name) + 1
-            self.object.add_ability(trait.property_name)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "New Background":
-            trait = get_object_or_404(Background, pk=form.data["example"])
-            cost *= trait.multiplier
-            value = 1
-            BackgroundRating.objects.create(
-                bg=trait, rating=1, char=self.object, note=form.data["note"]
-            )
-            self.object.freebies -= cost
-            trait = str(trait)
-            if form.data["note"]:
-                trait += f" ({form.data['note']})"
-        elif form.data["category"] == "Existing Background":
-            trait = get_object_or_404(BackgroundRating, pk=form.data["example"])
-            cost *= trait.bg.multiplier
-            value = trait.rating + 1
-            trait.rating += 1
-            trait.save()
-            self.object.freebies -= cost
-            trait = str(trait)
-        elif form.data["category"] == "Willpower":
-            trait = "Willpower"
-            cost *= 2
-            value = self.object.willpower + 1
-            self.object.add_willpower()
-            self.object.freebies -= cost
-        elif form.data["category"] == "MeritFlaw":
-            trait = get_object_or_404(MeritFlaw, pk=form.data["example"])
-            value = int(form.data["value"])
-            self.object.add_mf(trait, value)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "Advantage":
-            trait = get_object_or_404(Advantage, pk=form.data["example"])
-            value = int(form.data["value"])
-            self.object.add_advantage(trait, value)
-            self.object.freebies -= cost
-            trait = trait.name
-            if trait == "Ferocity":
-                r = value // 2
-                self.object.rage = r
-        elif form.data["category"] == "Charms":
-            trait = get_object_or_404(SpiritCharm, pk=form.data["example"])
-            cost *= trait.point_cost
-            value = cost
-            self.object.add_charm(trait)
-            self.object.freebies -= cost
-            trait = trait.name
-        if form.data["category"] != "MeritFlaw":
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(trait, trait_type, value, cost=cost)
-            )
-        else:
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(trait, trait_type, value, cost=cost)
-            )
-        if self.object.companion_type == "familiar":
-            self.object.essence = self.object.willpower * 5
-        if self.object.freebies == 0:
-            advance(self.object, user=self.request.user)
-        self.object.save()
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        if form.data["category"] == "-----":
-            form.add_error(None, "Must Choose Freebie Expenditure Type")
-            return super().form_invalid(form)
-        elif form.data["category"] == "MeritFlaw" and (
-            form.data["example"] == "" or form.data["value"] == ""
-        ):
-            form.add_error(None, "Must Choose Merit/Flaw and rating")
-            return super().form_invalid(form)
-        elif (
-            form.data["category"] in ["Attribute", "Ability", "Background"]
-            and form.data["example"] == ""
-        ):
-            form.add_error(None, "Must Choose Trait")
-            return super().form_invalid(form)
-        return self.form_valid(form)
+    example_models = {
+        **HumanFreebiesView.example_models,
+        "Advantage": Advantage,
+        "Charm": SpiritCharm,
+    }
+    category_aliases = {"Charms": "Charm"}
 
 
-class CompanionLanguagesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
-    form_class = HumanLanguageForm
+class CompanionLanguagesView(HumanLanguagesView):
+    model = Companion
     template_name = "characters/mage/companion/chargen.html"
 
-    def get_object(self):
-        """Return the Human object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        return self.object
 
-    # Overriding `get_form_kwargs` to pass custom arguments to the form
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-        num_languages = human.num_languages()
-        kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
-        return kwargs
-
-    # Overriding `form_valid` to handle saving the data
-    def form_valid(self, form):
-        # Get the human instance from the pased `pk`
-        human_pk = self.kwargs.get("pk")
-        human = get_object_or_404(Human, pk=human_pk)
-
-        num_languages = form.cleaned_data.get("num_languages", 1)
-        for i in range(num_languages):
-            language_name = form.cleaned_data.get(f"language_{i}")
-            if language_name:
-                language, created = Language.objects.get_or_create(name=language_name)
-                human.languages.add(language)
-        advance(human, user=self.request.user)
-        human.save()
-        return HttpResponseRedirect(human.get_absolute_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-
-class CompanionSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormView):
-    form_class = SpecialtiesForm
+class CompanionSpecialtiesView(HumanSpecialtiesView):
+    model = Companion
     template_name = "characters/mage/companion/chargen.html"
 
-    def get_object(self):
-        """Return the Companion object for permission checking."""
-        if not hasattr(self, "object") or self.object is None:
-            self.object = get_object_or_404(Companion, id=self.kwargs["pk"])
-        return self.object
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object"] = self.get_object()
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        companion = self.get_object()
-        kwargs["object"] = companion
+    def get_specialties_needed(self):
+        character = self.get_object()
         stats = list(Attribute.objects.all()) + list(Ability.objects.all())
-        stats = [x for x in stats if getattr(companion, x.property_name, 0) >= 4] + [
+        stats = [x for x in stats if getattr(character, x.property_name, 0) >= 4] + [
             x
             for x in stats
-            if getattr(companion, x.property_name, 0) >= 1
+            if getattr(character, x.property_name, 0) >= 1
             and x.property_name
             in [
                 "arts",
@@ -509,18 +297,7 @@ class CompanionSpecialtiesView(ChargenStepMixin, SpendFreebiesPermissionMixin, F
                 "science",
             ]
         ]
-        kwargs["specialties_needed"] = [x.property_name for x in stats]
-        return kwargs
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        companion = context["object"]
-        for field in form.fields:
-            spec = Specialty.objects.get_or_create(name=form.data[field], stat=field)[0]
-            companion.specialties.add(spec)
-        companion.status = "Sub"
-        companion.save()
-        return HttpResponseRedirect(companion.get_absolute_url())
+        return [x.property_name for x in stats]
 
 
 class CompanionAlliesView(GenericBackgroundView):
