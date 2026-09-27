@@ -50,28 +50,6 @@ Template:
 
 The shared base template renders combined form media. In standalone fragments,
 include {{ form.media }} after the markup.
-
-Point Pool Usage:
-    from django import forms
-    from widgets import DistributionPoolMixin
-
-    class AttributesForm(DistributionPoolMixin, forms.Form):
-        distribution_pool_name = 'attributes'
-        distribution_groups = {
-            'physical': ['strength', 'dexterity', 'stamina'],
-            'social': ['charisma', 'manipulation', 'appearance'],
-            'mental': ['perception', 'intelligence', 'wits'],
-        }
-        distribution_targets = [6, 8, 10]  # tertiary, secondary, primary
-        distribution_min = 1
-        distribution_max = 5
-
-        strength = forms.IntegerField(min_value=1, max_value=5)
-        # ...
-
-Template (add status displays):
-    <div data-pool-total="attributes"></div>
-    <div data-pool-group-status="attributes:physical"></div>
 """
 
 # Chained Select exports (primary widget functionality)
@@ -80,7 +58,6 @@ from .fields.create_or_select import CreateOrSelectField
 from .mixins.chained import ChainedSelectMixin
 from .mixins.conditional import ConditionalFieldsMixin
 from .mixins.create_or_select import CreateOrSelectMixin
-from .mixins.point_pool import DistributionPoolMixin, PointPoolMixin, SimplePoolMixin
 from .views import auto_chained_ajax_view
 from .widgets.chained import ChainedSelect
 from .widgets.create_or_select import CreateOrSelectWidget
@@ -88,16 +65,12 @@ from .widgets.create_or_select import CreateOrSelectWidget
 # FilterableList exports
 from .widgets.filterable import render_filterable_list_script
 from .widgets.metadata_select import OptionMetadataSelect
-from .widgets.point_pool import PointPoolInput, PointPoolSelect
 
 __all__ = [
     # Chained Select Widgets
     "ChainedSelect",
     "CreateOrSelectWidget",
     "OptionMetadataSelect",
-    # Point Pool Widgets
-    "PointPoolInput",
-    "PointPoolSelect",
     # Fields
     "ChainedChoiceField",
     "ChainedModelChoiceField",
@@ -106,9 +79,6 @@ __all__ = [
     "ChainedSelectMixin",
     "ConditionalFieldsMixin",
     "CreateOrSelectMixin",
-    "PointPoolMixin",
-    "SimplePoolMixin",
-    "DistributionPoolMixin",
     # Views
     "auto_chained_ajax_view",
     # FilterableList

@@ -31,7 +31,6 @@ from widgets.widgets.create_or_select import CreateOrSelectWidget
 from widgets.widgets.filterable import render_filterable_list_script
 from widgets.widgets.formset_manager import render_formset_manager_script
 from widgets.widgets.metadata_select import OptionMetadataSelect
-from widgets.widgets.point_pool import PointPoolInput
 
 ROOT = Path(__file__).resolve().parents[2]
 urlpatterns = []
@@ -147,28 +146,6 @@ class StaticAssetsBrowserTests(SimpleTestCase):
         self.assertIsNotNone(match, completed.stderr[-3000:] + completed.stdout[-3000:])
         result = json.loads(html.unescape(match.group(1)))
         self.assertTrue(result["passed"], result.get("error"))
-
-    def test_point_pool_totals_and_limits(self):
-        first = PointPoolInput(
-            pool_name="points",
-            is_root=True,
-            pool_config={"mode": "simple", "total_budget": 5, "min_value": 0, "max_value": 5},
-        )
-        second = PointPoolInput(pool_name="points")
-        self.run_browser(
-            first.render("allies", 1, {"id": "allies"})
-            + second.render("contacts", 1, {"id": "contacts"})
-            + '<p id="total" data-pool-total="points"></p>',
-            """
-            check(get('total').textContent.includes('3 points remaining'), 'initial total');
-            change('allies', '4');
-            check(get('total').textContent.includes('All points allocated'), 'changed total');
-            check(get('contacts').max === '1', 'remaining input constrained');
-            change('allies', '5');
-            check(get('total').textContent.includes('1 point over limit'), 'over budget');
-            """,
-            first.media + second.media,
-        )
 
     def test_chained_select_populates_and_clears(self):
         root = ChainedSelect(
@@ -400,26 +377,12 @@ class StaticAssetsBrowserTests(SimpleTestCase):
                 widget=OptionMetadataSelect,
             )
             create = forms.BooleanField(required=False, widget=CreateOrSelectWidget)
-            points = forms.IntegerField(
-                initial=0,
-                widget=PointPoolInput(
-                    pool_name="dynamic",
-                    is_root=True,
-                    pool_config={
-                        "mode": "simple",
-                        "total_budget": 5,
-                        "min_value": 0,
-                        "max_value": 5,
-                    },
-                ),
-            )
 
         formset = forms.formset_factory(RowForm, extra=0)(prefix="rows")
         page = Template("""
             {% load formset_tags widget_media %}
-            <p id="dynamic-total" data-pool-total="dynamic"></p>
             {% formset formset %}
-                {{ subform.choice }}{{ subform.points }}{{ subform.create }}
+                {{ subform.choice }}{{ subform.create }}
                 <div id="select-{{ subform.prefix }}"
                      data-create-or-select-container="{{ subform.create.html_name }}"
                      data-create-or-select-mode="select">Existing</div>
@@ -441,8 +404,6 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             get('id_rows-0-choice').addEventListener('metadata:change', () => changes++);
             change('id_rows-0-choice', 'b');
             check(changes === 1, 'new metadata widget has one listener');
-            change('id_rows-0-points', '3');
-            check(get('dynamic-total').textContent.includes('2 points remaining'), 'new point pool responds');
         """,
         )
 
