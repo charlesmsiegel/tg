@@ -90,3 +90,22 @@ class RoteRuleTests(TestCase):
         self.assertFalse(result.success)
         self.assertEqual(result.error, "Not enough Rote Points")
         self.assertFalse(Rote.objects.filter(name="Spark").exists())
+
+    def test_selecting_a_rote_learned_meanwhile_charges_nothing(self):
+        form = RoteCreationForm(data=self.complete(), instance=self.mage)
+        self.assertTrue(form.is_valid(), form.errors)
+        learn_rote(self.mage, form.cleaned_data)
+        rote = Rote.objects.get(name="Spark")
+        rote.status = "App"
+        rote.save()
+        other = Mage.objects.create(name="Other", owner=self.user, arete=3, forces=2)
+        PracticeRating.objects.create(mage=other, practice=self.practice, rating=3)
+        form = RoteCreationForm(data={"rote_options": rote.pk}, instance=other)
+        self.assertTrue(form.is_valid(), form.errors)
+        # A concurrent request taught the same rote after this form was bound.
+        other.rotes.add(rote)
+        result = learn_rote(other, form.cleaned_data)
+        self.assertFalse(result.success)
+        self.assertEqual(result.error, "Rote already known")
+        other.refresh_from_db()
+        self.assertEqual(other.rote_points, 6)

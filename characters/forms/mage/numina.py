@@ -90,6 +90,10 @@ class BaseNuminaPathRatingFormSet(StartingNuminaFormSetMixin, forms.BaseInlineFo
 
         for form in self.forms:
             form.fields["path"].queryset = LinearMagicPath.objects.filter(numina_type="hedge_magic")
+            # Hedge magic is cast through a practice and ability; rows lacking
+            # either never counted toward the starting five levels.
+            form.fields["practice"].required = True
+            form.fields["ability"].required = True
 
 
 NuminaPathRatingFormSet = forms.inlineformset_factory(
