@@ -29,12 +29,11 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class WtAHumanDetailView(XPApprovalMixin, HumanDetailView):
+class WtAHumanDetailView(HumanDetailView):
     model = WtAHuman
     template_name = "characters/werewolf/wtahuman/detail.html"
 

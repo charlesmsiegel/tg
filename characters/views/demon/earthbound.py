@@ -10,11 +10,10 @@ from core.mixins import (
     MessageMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class EarthboundDetailView(XPApprovalMixin, HumanDetailView):
+class EarthboundDetailView(HumanDetailView):
     model = Earthbound
     template_name = "characters/demon/earthbound/detail.html"
 

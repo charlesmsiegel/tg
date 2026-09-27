@@ -26,12 +26,11 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 
 
-class KinfolkDetailView(XPApprovalMixin, HumanDetailView):
+class KinfolkDetailView(HumanDetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 

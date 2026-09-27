@@ -371,7 +371,8 @@ class D6RemovedTests(SimpleTestCase):
         ):
             with self.subTest(name=name):
                 self.assertFalse(hasattr(core.mixins, name))
-        for name in ("SpendFreebiesPermissionMixin", "XPApprovalMixin", "MessageMixin"):
+        # XPApprovalMixin was replaced by the Step 5 XP decision endpoints.
+        for name in ("SpendFreebiesPermissionMixin", "MessageMixin"):
             with self.subTest(kept=name):
                 self.assertTrue(hasattr(core.mixins, name))
 

@@ -8,11 +8,10 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class DtFHumanDetailView(XPApprovalMixin, HumanDetailView):
+class DtFHumanDetailView(HumanDetailView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/detail.html"
 

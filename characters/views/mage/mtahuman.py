@@ -35,7 +35,6 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
     ScopedEditFormMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 from items.forms.mage.wonder import WonderForm
@@ -44,7 +43,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class MtAHumanDetailView(XPApprovalMixin, HumanDetailView):
+class MtAHumanDetailView(HumanDetailView):
     model = MtAHuman
     template_name = "characters/mage/mtahuman/detail.html"
 

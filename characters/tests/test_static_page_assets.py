@@ -118,7 +118,7 @@ class StaticPageConfigurationTests(SimpleTestCase):
             with self.subTest(is_member=is_member):
                 html = render_to_string(
                     "characters/mage/mage/mage_xp_form.html",
-                    {"object": SimpleNamespace(is_group_member=is_member)},
+                    {"object": SimpleNamespace(pk=1, is_group_member=is_member)},
                 )
                 script = next(
                     script

@@ -421,7 +421,10 @@ class MageStepTests(RuleStepTestCase):
         admin = get_user_model().objects.create_superuser("rule-admin")
         mage = Mage.objects.create(name="Detail Mage", owner=self.owner, status="App", strength=4)
         self.client.force_login(admin)
-        response = self.post(mage, {"specialties": "1", "strength": "Brawny", "wits": "Sneaky"})
+        response = self.client.post(
+            reverse("characters:add_specialties", args=[mage.pk]),
+            {"strength": "Brawny", "wits": "Sneaky"},
+        )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(mage.specialties.filter(stat="strength", name="Brawny").exists())
         self.assertFalse(Specialty.objects.filter(stat="wits").exists())

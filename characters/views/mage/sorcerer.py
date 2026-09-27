@@ -52,7 +52,6 @@ from core.mixins import (
     ScopedEditFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    XPApprovalMixin,
 )
 from core.permissions import PermissionManager
 from core.views.generic import MultipleFormsetsMixin
@@ -94,7 +93,7 @@ class SorcererUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin,
     limited_form_class = LimitedHumanEditForm
 
 
-class SorcererDetailView(XPApprovalMixin, HumanDetailView):
+class SorcererDetailView(HumanDetailView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/detail.html"
 

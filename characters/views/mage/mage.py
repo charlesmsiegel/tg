@@ -10,17 +10,13 @@ from core.mixins import ScopedCreationFormMixin, ScopedEditFormMixin
 
 logger = logging.getLogger(__name__)
 
-import re
 from itertools import zip_longest
 
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
 
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -32,7 +28,6 @@ from characters.forms.mage.mage import MageCreationForm, MageFocusForm, MageSphe
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
 from characters.forms.mage.xp import MageXPForm
-from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage, ResRating
@@ -40,7 +35,6 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.services.mage_chargen import set_starting_practices
 from characters.services.rotes import learn_rote
-from characters.services.xp_spending import XPSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -60,10 +54,8 @@ from core.mixins import (
     MessageMixin,
     SpecialUserMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 from core.widgets import AutocompleteTextInput
-from game.models import XPSpendingRequest
-from game.spending_approval import SpendingDecisionError, decide_spending_request
 from items.forms.mage.wonder import WonderForm
 from items.models.core.item import ItemModel
 from locations.forms.mage.library import LibraryForm
@@ -80,7 +72,8 @@ class MageDetailView(HumanDetailView):
         context["items_owned"] = ItemModel.objects.filter(owned_by=self.object)
         if "form" not in context:
             context["form"] = MageXPForm(character=self.object)
-        context["rote_form"] = RoteCreationForm(instance=self.object)
+        if "rote_form" not in context:
+            context["rote_form"] = RoteCreationForm(instance=self.object)
         context["spec_form"] = SpecialtiesForm(
             object=self.object, specialties_needed=self.object.needed_specialties()
         )
@@ -90,108 +83,6 @@ class MageDetailView(HumanDetailView):
             .order_by("resonance__name")
         )
         return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if "Approve" in request.POST.values() or "Reject" in request.POST.values():
-            buttons = [
-                (key, value)
-                for key, value in request.POST.items()
-                if value in {"Approve", "Reject"}
-            ]
-            if len(buttons) != 1:
-                return HttpResponseBadRequest("Invalid approval action")
-            key, value = buttons[0]
-            match = re.fullmatch(r"xp_request_([1-9][0-9]*)_(approve|reject)", key)
-            if match is None or (value == "Approve") != (match.group(2) == "approve"):
-                return HttpResponseBadRequest("Invalid approval action")
-            try:
-                result = decide_spending_request(
-                    XPSpendingRequest,
-                    self.object,
-                    int(match.group(1)),
-                    request.user,
-                    "approve" if value == "Approve" else "deny",
-                )
-            except SpendingDecisionError as exc:
-                messages.error(request, str(exc))
-            else:
-                messages.success(request, result.message)
-            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-        if "spend_xp" in request.POST and not PermissionManager.user_has_permission(
-            request.user, self.object, Permission.SPEND_XP
-        ):
-            raise PermissionDenied("Cannot spend XP for this character")
-        if "specialties" in request.POST and not PermissionManager.user_has_permission(
-            request.user, self.object, Permission.EDIT_FULL
-        ):
-            raise PermissionDenied("Cannot edit this character")
-        can_edit = PermissionManager.user_has_scoped_editor_role(
-            request.user, self.object, request=request
-        )
-        if "retire" in request.POST and not (can_edit or self.object.owner_id == request.user.pk):
-            raise PermissionDenied("Cannot retire this character")
-        if "decease" in request.POST and not can_edit:
-            raise PermissionDenied("Cannot mark this character deceased")
-        if "retire" in request.POST or "decease" in request.POST:
-            return super().post(request, *args, **kwargs)
-        context = self.get_context_data()
-        form = MageXPForm(request.POST, request.FILES, character=self.object)
-        if "spend_xp" in form.data and form.is_valid():
-            category = form.cleaned_data["category"]
-            if category == "Image":
-                self.object.image = form.cleaned_data["image_field"]
-                self.object.save()
-            elif category == "Rote":
-                rote_form = RoteCreationForm(request.POST, instance=self.object)
-                if not self.learn_rote(rote_form):
-                    context["rote_form"] = rote_form
-                    return render(request, self.template_name, context)
-            else:
-                with XPSpendingServiceFactory.locked(self.object) as service:
-                    result = service.spend(
-                        category=category,
-                        example=form.cleaned_data["example"],
-                        value=form.cleaned_data["value"],
-                        note=form.cleaned_data["note"],
-                        pooled=form.cleaned_data["pooled"],
-                        resonance=form.cleaned_data["resonance"],
-                    )
-                if not result.success:
-                    messages.error(request, result.error)
-                    context["form"] = form
-                    return self.render_to_response(context)
-                messages.success(request, result.message)
-        if "specialties" in request.POST:
-            self.add_specialties(request.POST)
-        return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-    @staticmethod
-    def learn_rote(rote_form):
-        if not rote_form.is_valid():
-            return False
-        try:
-            rote_form.save(rote_form.instance)
-        except forms.ValidationError as error:
-            rote_form.add_error(None, error)
-            return False
-        return True
-
-    def add_specialties(self, data):
-        """Record the submitted specialties the character actually needs."""
-        spec_form = SpecialtiesForm(
-            data, object=self.object, specialties_needed=self.object.needed_specialties()
-        )
-        for field in spec_form.fields.values():
-            field.required = False
-        if not spec_form.is_valid():
-            return
-        for stat, name in spec_form.cleaned_data.items():
-            if name:
-                specialty, _ = Specialty.objects.get_or_create(name=name, stat=stat)
-                self.object.specialties.add(specialty)
-        self.object.save()
 
 
 class MageFormContextMixin:

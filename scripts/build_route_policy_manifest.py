@@ -27,6 +27,7 @@ from characters.models.core import CharacterModel, Group
 from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.models import CharacterTemplate
+from core.actions import ObjectActionView
 from core.views.generic import DictView
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
@@ -45,6 +46,8 @@ def classify(name, view, step_names):
         return "PUBLIC_INDEX"
     if name.startswith("widgets."):
         return "WIDGET"
+    if issubclass(view, ObjectActionView):
+        return "ACTION"
     if name.startswith("accounts."):
         return "PUBLIC_READ" if name.rsplit(".", 1)[-1] in {
             "SignUp", "CustomLoginView", "CustomPasswordResetView"

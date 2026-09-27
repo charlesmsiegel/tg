@@ -73,7 +73,9 @@ class PublicCharacterDetailTests(TestCase):
     def test_owner_cannot_mark_character_deceased(self):
         Human.objects.filter(pk=self.character.pk).update(status="App")
         self.client.force_login(self.owner)
-        self.assertEqual(self.client.post(self.url, {"decease": "1"}).status_code, 302)
+        # Step 5: the decease endpoint refuses explicitly instead of ignoring it.
+        decease = reverse("characters:decease", kwargs={"pk": self.character.pk})
+        self.assertEqual(self.client.post(decease).status_code, 403)
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "App")
 
@@ -231,11 +233,12 @@ class MageStepAuthorizationTests(TestCase):
 
     def test_owner_cannot_mark_mage_deceased_but_head_st_can(self):
         Mage.objects.filter(pk=self.mage.pk).update(status="App")
+        decease = reverse("characters:decease", kwargs={"pk": self.mage.pk})
         self.client.force_login(self.owner)
-        self.assertEqual(self.client.post(self.url, {"decease": "1"}).status_code, 403)
+        self.assertEqual(self.client.post(decease).status_code, 403)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.status, "App")
         self.client.force_login(self.head)
-        self.assertEqual(self.client.post(self.url, {"decease": "1"}).status_code, 302)
+        self.assertEqual(self.client.post(decease).status_code, 302)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.status, "Dec")

@@ -172,6 +172,7 @@ def main():
     def effective_login(policy):
         if policy in {
             "ACCOUNT",
+            "ACTION",
             "CHARGEN_STEP",
             "LOGIN",
             "OBJECT_ACTION",

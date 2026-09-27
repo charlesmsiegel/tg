@@ -14,6 +14,14 @@ accounts.views.SceneXPAwardView
 accounts.views.WeeklyXPApprovalView
 accounts.views.WeeklyXPRequestView
     """.split()),
+    "ACTION": frozenset("""
+characters.views.core.actions.CharacterDeceaseView
+characters.views.core.actions.CharacterRetireView
+characters.views.core.actions.CharacterSpecialtiesView
+characters.views.core.actions.XPRequestApproveView
+characters.views.core.actions.XPRequestRejectView
+characters.views.mage.actions.MageXPSpendView
+    """.split()),
     "CHARGEN_STEP": frozenset("""
 characters.views.changeling.changeling.ChangelingAbilityView
 characters.views.changeling.changeling.ChangelingAlliesView

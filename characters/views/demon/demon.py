@@ -8,11 +8,10 @@ from core.mixins import (
     EditPermissionMixin,
     ScopedEditFormMixin,
     VisibilityFilterMixin,
-    XPApprovalMixin,
 )
 
 
-class DemonDetailView(XPApprovalMixin, HumanDetailView):
+class DemonDetailView(HumanDetailView):
     model = Demon
     template_name = "characters/demon/demon/detail.html"
 

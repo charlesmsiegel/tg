@@ -1,9 +1,6 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
-from django.shortcuts import redirect
-from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
@@ -70,39 +67,6 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
             )
         )
         return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        # Check if user has permission to change status
-        can_change_status = PermissionManager.user_has_scoped_editor_role(
-            request.user, self.object, request=request
-        )
-
-        # Use atomic transaction for status changes
-        with transaction.atomic():
-            if not can_change_status:
-                # Only owners can retire their own characters
-                if (
-                    "retire" in request.POST
-                    and self.object.owner == request.user
-                    and self.can_transition_to("Ret")
-                ):
-                    self.object.status = "Ret"
-                    self.object.save()
-                # STs/Admins can mark as deceased
-                elif "decease" in request.POST:
-                    return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-            else:
-                # Handle retirement and death status changes
-                if "retire" in request.POST and self.can_transition_to("Ret"):
-                    self.object.status = "Ret"
-                    self.object.save()
-                if "decease" in request.POST and self.can_transition_to("Dec"):
-                    self.object.status = "Dec"
-                    self.object.save()
-
-        return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
 class CharacterCreateView(LoginRequiredMixin, CreateView):

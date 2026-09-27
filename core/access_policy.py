@@ -1,7 +1,7 @@
 """One fail-closed evaluator for declared URL and DictView targets."""
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseNotAllowed, JsonResponse
 
 from characters.models.core import CharacterModel
 from core.models import CharacterTemplate
@@ -51,6 +51,13 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
         raise PermissionDenied("View has no declared access policy")
 
     if policy in {"PUBLIC_READ", "PUBLIC_INDEX", "PUBLIC_CARD", "ROUTER"}:
+        return None
+    if policy == "ACTION":
+        # Method and login gate only; the action class authorizes its object.
+        if request.method != "POST":
+            return HttpResponseNotAllowed(["POST"])
+        if not request.user.is_authenticated:
+            return HttpResponse("Login required", status=401, content_type="text/plain")
         return None
     if policy == "WIDGET":
         if not request.user.is_authenticated:

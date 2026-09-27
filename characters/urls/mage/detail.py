@@ -1,12 +1,18 @@
 from django.urls import path
 
 from characters import views
+from characters.views.mage.actions import MageXPSpendView
 from characters.views.mage import (
     MtAHumanCharacterCreationView,
     MtAHumanTemplateSelectView,
 )
 
 urls = [
+    path(
+        "mage/<int:pk>/xp/spend/",
+        MageXPSpendView.as_view(),
+        name="spend_xp",
+    ),
     # MtAHuman character creation paths
     path(
         "mtahuman/<int:pk>/template/",
