@@ -38,6 +38,18 @@ class FreebieSpendingView(ChargenStepMixin, SpendFreebiesPermissionMixin, Update
     category_aliases = {"Rotes": "Rote Points"}
     live_validation = True
 
+    # The spending service (costs, trait maximums, path requirements) only
+    # runs on submit; it writes as it checks, so validation cannot dry-run it.
+    validation_is_final = False
+
+    def validate_submission(self, form):
+        try:
+            self.get_spending_kwargs(form)
+        except ValidationError as error:
+            form.add_error(None, error)
+            return False
+        return True
+
     def validation_totals(self, form):
         # A per-choice cost preview needs a side-effect-free quote() on the
         # spending services; until then only the pool itself is reported.

@@ -38,14 +38,24 @@ def mark_fragment(response, kind):
     return response
 
 
+# Every request header is_fragment_request() reads: a cache must key on all of
+# them, or a cached fragment could answer a history restore or boosted request.
+FRAGMENT_REQUEST_HEADERS = ["HX-Request", "HX-History-Restore-Request", "HX-Boosted"]
+
+
 def vary_on_htmx(response):
-    patch_vary_headers(response, ["HX-Request"])
+    patch_vary_headers(response, FRAGMENT_REQUEST_HEADERS)
     return response
 
 
-def trigger(response, event, detail):
-    """Add a client event (``HX-Trigger``) carrying JSON detail, keeping existing ones."""
-    events = json.loads(response.get("HX-Trigger") or "{}")
+def trigger(response, event, detail, *, header="HX-Trigger"):
+    """Add a client event carrying JSON detail, keeping existing ones.
+
+    ``HX-Trigger`` fires as soon as the response arrives, even if the client
+    then cancels the swap; pass ``header="HX-Trigger-After-Swap"`` for events
+    that must only follow content that was actually swapped in.
+    """
+    events = json.loads(response.get(header) or "{}")
     events[event] = detail
-    response["HX-Trigger"] = json.dumps(events)
+    response[header] = json.dumps(events)
     return response

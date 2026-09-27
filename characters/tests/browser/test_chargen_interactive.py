@@ -225,6 +225,38 @@ class ContractSafetyTests(BrowserTestCase):
         self.assertNotIn("Physical", self.feedback())
         self.assertEqual(self.page.locator("form#chargen-step").count(), 1)
 
+    def test_stale_options_answer_never_repaints_a_changed_chain(self):
+        self.open(self.vampire(7, freebies=15, freebies_approved=True))
+        held = []
+
+        def hold_value_options(route):
+            if "_options=value" in route.request.url:
+                held.append(route)
+            else:
+                route.continue_()
+
+        self.page.select_option("#id_category", "Background")
+        self.page.wait_for_selector(
+            f'#id_example option[value="bg_{self.resources.pk}"]', state="attached"
+        )
+        self.page.wait_for_selector("#note_wrap", state="visible")
+        self.page.route("**/characters/*/?*", hold_value_options)
+        self.page.select_option("#id_example", f"bg_{self.resources.pk}")
+        self.page.wait_for_function("document.querySelector('#id_example.htmx-request')")
+        # While that answer is held, the player picks another category.
+        self.page.select_option("#id_category", "Discipline")
+        self.page.wait_for_selector(
+            f'#id_example option[value="{self.potence.pk}"]', state="attached"
+        )
+        self.page.wait_for_selector("#note_wrap", state="hidden")
+        for route in held:
+            route.continue_()
+        self.page.wait_for_timeout(500)
+        # The Background answer arrived last but belongs to the old chain.
+        self.assertTrue(self.page.is_hidden("#note_wrap"))
+        self.assertEqual(self.page.input_value("#id_category"), "Discipline")
+        self.assertEqual(self.errors, [])
+
     def test_non_fragment_response_loads_as_a_full_page(self):
         character = self.vampire(1)
         self.open(character)

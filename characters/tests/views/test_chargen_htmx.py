@@ -101,7 +101,8 @@ class FullPageAndFragmentTests(InteractiveChargenTestCase):
         self.assertContains(response, 'integrity="sha384-')
         self.assertContains(response, "characters/js/chargen-components.js")
         self.assertContains(response, "<html")
-        self.assertIn("HX-Request", response["Vary"])
+        for header in ("HX-Request", "HX-History-Restore-Request", "HX-Boosted"):
+            self.assertIn(header, response["Vary"])
         self.assertNotIn("TG-Fragment", response)
 
     def test_fragment_is_the_form_plus_out_of_band_progress_and_messages(self):
@@ -302,8 +303,22 @@ class ValidateOnlyTests(InteractiveChargenTestCase):
             response = self.validate(character, {"category": "Willpower"})
         self.assertEqual(writes(queries.captured_queries), [])
         self.assertContains(response, "Freebies remaining:")
+        # The spending service only runs on submit, so a clean form is not
+        # announced as a guaranteed save.
+        self.assertNotContains(response, "Ready to save.")
+        self.assertContains(response, "No problems found so far")
         character.refresh_from_db()
         self.assertEqual(character.freebies, 15)
+
+    def test_freebies_feedback_runs_the_submits_choice_resolution(self):
+        character = self.vampire(7, freebies=15, freebies_approved=True)
+        # The chained form accepts a Discipline without a trait; the submit's
+        # get_spending_kwargs() refuses it, and so must the live feedback.
+        response = self.validate(character, {"category": "Discipline"})
+        self.assertContains(response, "Must Choose Trait")
+        self.assertNotContains(response, "No problems found")
+        submit = self.client.post(self.url(character), {"category": "Discipline"}, headers=HX)
+        self.assertContains(submit, "Must Choose Trait")
 
     @override_settings(CHARGEN_PARTIAL_LIMIT=2)
     def test_partial_requests_are_throttled_per_character(self):
@@ -339,18 +354,26 @@ class OptionsTests(InteractiveChargenTestCase):
         self.assertIn('<option value="">---------</option>', html)
         # The grandchild is reset out of band.
         self.assertIn('<select id="id_value" hx-swap-oob="innerHTML">', html)
-        visibility = json.loads(response["HX-Trigger"])["tg-visibility"]
+        # Applied only if the options are actually swapped in (not on a
+        # response the client drops as stale).
+        self.assertNotIn("HX-Trigger", response)
+        visibility = json.loads(response["HX-Trigger-After-Swap"])["tg-visibility"]
         self.assertEqual(
             visibility,
             {"example": True, "value": False, "note": False, "pooled": False},
         )
+        self.assertEqual(json.loads(response["TG-Chain"]), {"category": "Discipline"})
 
     def test_visibility_follows_the_selected_example_metadata(self):
         resources = self.resources
         response = self.options(
             _options="value", category="Background", example=f"bg_{resources.pk}"
         )
-        visibility = json.loads(response["HX-Trigger"])["tg-visibility"]
+        visibility = json.loads(response["HX-Trigger-After-Swap"])["tg-visibility"]
+        self.assertEqual(
+            json.loads(response["TG-Chain"]),
+            {"category": "Background", "example": f"bg_{resources.pk}"},
+        )
         self.assertTrue(visibility["note"])
         self.assertFalse(visibility["pooled"])  # not a group member
 

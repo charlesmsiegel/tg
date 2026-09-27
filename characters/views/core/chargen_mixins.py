@@ -1,5 +1,6 @@
 """Mixins for character creation views."""
 
+import json
 import time
 from itertools import zip_longest
 
@@ -127,12 +128,15 @@ class ChargenStepMixin:
         character = self._partial_object()
         form = self.get_form()
         valid = form.is_valid()
+        if valid:
+            valid = self.validate_submission(form)
         return self._partial_response(
             self.feedback_template,
             {
                 "object": character,
                 "step": self.chargen_step,
                 "valid": valid,
+                "verdict_is_final": self.validation_is_final,
                 "errors": form_error_messages(form),
                 "totals": self.validation_totals(form),
             },
@@ -142,6 +146,18 @@ class ChargenStepMixin:
     def validation_totals(self, form):
         """Authoritative running totals for the feedback fragment; steps override."""
         return []
+
+    # Whether a valid form means the submit will succeed. Steps whose submit
+    # runs further checks that cannot be dry-run (a spending service) say no,
+    # and the feedback says "no problems found so far" instead of "ready".
+    validation_is_final = True
+
+    def validate_submission(self, form):
+        """Side-effect-free checks the submit runs after ``is_valid()``.
+
+        Add errors to ``form`` and return False when the submit would refuse.
+        """
+        return True
 
     def render_options(self):
         """``<option>`` elements for one chained child, from the step's own form."""
@@ -173,8 +189,18 @@ class ChargenStepMixin:
             },
             "chargen-options",
         )
+        # The ancestors this answer was computed for: the client drops it if the
+        # chain changed meanwhile (a newer upstream request may already be in
+        # flight). Visibility rides HX-Trigger-After-Swap so a dropped answer
+        # cannot change which fields show.
+        response["TG-Chain"] = json.dumps({name: values[name] for name in chain[:position]})
         if hasattr(form, "field_visibility"):
-            trigger(response, "tg-visibility", form.field_visibility(values))
+            trigger(
+                response,
+                "tg-visibility",
+                form.field_visibility(values),
+                header="HX-Trigger-After-Swap",
+            )
         return response
 
     # -- rendering -----------------------------------------------------------
