@@ -6,7 +6,7 @@ from core.mixins import MessageMixin
 
 class FomoriPowerDetailView(DetailView):
     model = FomoriPower
-    template_name = "characters/werewolf/fomoripower/detail.html"
+    template_name = "core/object.html"
 
 
 class FomoriPowerCreateView(MessageMixin, CreateView):

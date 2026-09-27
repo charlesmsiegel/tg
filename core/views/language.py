@@ -6,7 +6,7 @@ from core.models import Language
 
 class LanguageDetailView(DetailView):
     model = Language
-    template_name = "core/language/detail.html"
+    template_name = "core/object.html"
 
 
 class LanguageCreateView(MessageMixin, CreateView):

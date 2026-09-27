@@ -18,7 +18,7 @@ class TestThrownWeaponDetailView(TestCase):
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "items/core/thrownweapon/detail.html")
+        self.assertTemplateUsed(response, "items/core/weapon/detail.html")
 
 
 class TestThrownWeaponCreateView(TestCase):
