@@ -44,7 +44,7 @@
              hx-post="{{ request.path }}"
              hx-vals='{"_validate": "1"}'
              hx-include="#chargen-step"
-             hx-trigger="load, change from:#chargen-step delay:250ms, input from:#chargen-step delay:600ms"
+             hx-trigger="load, change from:#chargen-step delay:250ms, input from:#chargen-step delay:600ms, tg-options-swapped from:#chargen-step delay:250ms"
              hx-target="#chargen-feedback"
              hx-swap="innerHTML"
              hx-sync="this:replace"

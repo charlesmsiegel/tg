@@ -9,6 +9,7 @@
  *    and option responses for chain values the player has since changed
  *    (a validation still in flight when the step is saved; htmx resolved its
  *    target when it started, and never starts requests from removed elements);
+ *  - revalidate after an options swap resets a chain's descendants;
  *  - move focus to the errors or the new step heading after a step swap.
  */
 (function () {
@@ -59,9 +60,16 @@
 
     document.addEventListener('htmx:afterSettle', function (evt) {
         var source = evt.detail.requestConfig && evt.detail.requestConfig.elt;
-        if (expectation(source) !== 'chargen-step') return;
+        var kind = expectation(source);
         var form = document.getElementById('chargen-step');
         if (!form) return;
+        if (kind === 'chargen-options') {
+            /* The swap reset descendant selects without an input or change
+             * event; revalidate so feedback about the old values goes away. */
+            form.dispatchEvent(new CustomEvent('tg-options-swapped', { bubbles: true }));
+            return;
+        }
+        if (kind !== 'chargen-step') return;
         var target = form.querySelector('#chargen-errors') ||
             document.getElementById('chargen-step-heading');
         if (target) target.focus();

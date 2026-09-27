@@ -127,6 +127,7 @@ converting that gameline's step fragments.
 - **Baseline:** 428 chargen, Vampire and widget tests passed before any change.
 - **Deviation:** there is no abort-on-submit for in-flight validation; see the spec's implementation record. A browser test holds a validation across the swap instead.
 - **Defects found and fixed on the Vampire path:** the freebies Trait select never received options (confirmed in Chromium); a bound re-render crashed on option metadata; conditional fields were dead on the chargen freebies step; the Disciplines and Virtues text hard-coded their totals; client validators disagreed with the server (the abilities script disabled Save, the attributes script rewrote `max`); duplicate CSRF inputs; double submission (Save is now disabled while a request is in flight).
+- **Rollout follow-ups from review:** the totals row read by `feedback.html` (`label`, `current`, `target`, `comparison`, `groups`, `satisfied`) is built by hand in three places (`AllocationRule`/`PriorityRule.status()`, `BaseBackgroundRatingFormSet.allocation_status()` and `FreebieSpendingView.validation_totals()`); give it one constructor before a second gameline adds a fourth. `ChainedHumanFreebiesForm.freebie_cost_rows()` maps category labels to `costs.py` keys through a hand-kept `cost_keys` dict plus a `Background` special case; a new freebie category must extend both, so move that mapping next to the cost table when the rollout touches it. Reusing the dispatch-time `Character` for partial requests (one query each) waits for the rollout PRs that change the views which re-fetch it as a concrete model.
 - **Defects confirmed but left for their owners:** the same freebies Trait defect on ten non-pilot chargen views, which their rollout PRs fix; a 403 on the generic router fallback for submitted Vampires; the missing out-of-clan Discipline freebie cost; `object.name|safe` in `core/form.html`.
 
 ### Measurements (pilot success criteria)
@@ -136,7 +137,7 @@ converting that gameline's step fragments.
 | Full page loads for the 13-step walkthrough (17 saves, 9 of them freebies) | 18 (1 plus one Post/Redirect/Get page per save) | **1** for the wizard, plus 1 for the submitted character's page |
 | XHRs in that walkthrough | 0 | 61-65 (varies with debounce timing): 17 saves, their followed redirects, debounced validations and option fetches |
 | HTML per step response | full page, 22-48 KB | fragment, 10.6-36.5 KB (about 11.5 KB of page chrome saved on every step) |
-| Application JS loaded across Vampire chargen pages | 895 lines (attribute 231, ability 84, background 80, core validation 43, virtues 52, chained 215, conditional 190) | **174 lines** (`chargen.js` 57, `chargen-components.js` 117), plus vendored htmx 2.0.11 (52 KB) and Alpine CSP 3.17.4 (72 KB) |
+| Application JS loaded across Vampire chargen pages | 895 lines (attribute 231, ability 84, background 80, core validation 43, virtues 52, chained 215, conditional 190) | **195 lines** (`chargen.js` 79, `chargen-components.js` 116), plus vendored htmx 2.0.11 (52 KB) and Alpine CSP 3.17.4 (72 KB) |
 | Application JS deleted | | 494 lines (`point_pool.js` 442, `vampire-virtues.js` 52); 2,383 lines in total with the unused point-pool Python and tests |
 | Client-side rule copies on Vampire pages | 4 (distribution, ability cap, background budget, virtue total) | 0: only server data is read |
 
@@ -144,7 +145,7 @@ converting that gameline's step fragments.
 
 1. Existing chargen tests plus 34 contract tests pass, and non-interactive gamelines are unchanged (`NonInteractiveWorkflowTests`). Full suite after rebasing onto `main` (Step 8), with browser tests enabled: 7,392 tests, 33 skipped, 3 failures. Two of them (`TestHumanCharacterCreationView.test_creation_status_selector` and `TestAttributeView.test_update_view_template`) fail identically on `main` (7,387 tests). The third was a query-budget test under load: `main` failed a different one in the same concurrent run, and `core.tests.test_query_budgets` passes in isolation on this branch.
 2. The no-JS 13-step walkthrough passes (`test_chargen_nojs_walkthrough`).
-3. The Playwright walkthrough passes with one wizard page load and no console errors from application code (7 browser tests).
+3. The Playwright walkthrough passes with one wizard page load and no console errors from application code (9 browser tests).
 4. There are no client rule copies (table above). Validate and submit verdicts agree (`test_verdict_matches_submit_for_virtues`).
 5. Authorization tests cover every mode for other players, anonymous users and submitted characters, and validate-only is shown to make zero INSERT/UPDATE/DELETE statements.
 6. Production observation (one week without unexpected guard navigations) is the owner's call and cannot be checked from here.

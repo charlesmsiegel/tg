@@ -78,16 +78,15 @@ document.addEventListener('alpine:init', function () {
             },
             describe: function (rule) {
                 var self = this;
-                var title = function (text) { return text.charAt(0).toUpperCase() + text.slice(1); };
                 if (rule.groups) {
                     var parts = rule.groups.map(function (group) {
-                        return title(group[0]) + ' ' + self.sum(group[1]);
+                        return rule.group_labels[group[0]] + ' ' + self.sum(group[1]);
                     });
                     return parts.join(' · ') + ' (need ' + rule.targets.join('/') + ')';
                 }
                 var current = this.sum(rule.fields || []);
                 var bound = rule.comparison === 'at_most' ? 'at most ' : '';
-                return title(rule.name) + ' ' + current + ' of ' + bound + rule.total;
+                return rule.label + ' ' + current + ' of ' + bound + rule.total;
             },
             update: function () {
                 this.summary = this.rules.map(this.describe.bind(this)).join('; ');
