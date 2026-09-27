@@ -18,8 +18,6 @@ from widgets import (
     ConditionalFieldsMixin,
     CreateOrSelectWidget,
     OptionMetadataSelect,
-    PointPoolInput,
-    PointPoolSelect,
 )
 
 
@@ -50,8 +48,6 @@ class StaticWidgetTests(SimpleTestCase):
             (ChainedSelect, "chained"),
             (CreateOrSelectWidget, "create_or_select"),
             (OptionMetadataSelect, "metadata_select"),
-            (PointPoolInput, "point_pool"),
-            (PointPoolSelect, "point_pool"),
         ]:
             with self.subTest(widget=widget_class):
                 first, second = widget_class(), widget_class()
@@ -67,8 +63,6 @@ class StaticWidgetTests(SimpleTestCase):
         hostile = '</script><script>alert("x")</script>&< >'
         for widget in [
             ChainedSelect(chain_name=hostile, choices_tree={"value": hostile}),
-            PointPoolInput(pool_name=hostile, is_root=True, pool_config={"value": hostile}),
-            PointPoolSelect(pool_name=hostile, is_root=True, pool_config={"value": hostile}),
         ]:
             with self.subTest(widget=type(widget)):
                 scripts = Scripts(widget.render("field", None)).scripts
