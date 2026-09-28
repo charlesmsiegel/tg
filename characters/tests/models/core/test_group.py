@@ -26,7 +26,7 @@ class TestGroupDetailView(TestCase):
 
 
 class TestGroupRoster(TestCase):
-    """Group.roster(): the members table order on the group page (Spread M4)."""
+    """Group.roster: the members table order on the group page (Spread M4)."""
 
     def setUp(self):
         self.player = User.objects.create_user(username="roster-player", password="12345")
@@ -37,19 +37,19 @@ class TestGroupRoster(TestCase):
 
     def test_members_by_name_without_leader(self):
         self.group.members.add(self.zed, self.alma)
-        self.assertEqual(self.group.roster(), [self.alma, self.zed])
+        self.assertEqual(self.group.roster, [self.alma, self.zed])
 
     def test_leader_first_and_listed_once(self):
         self.group.members.add(self.alma, self.zed, self.theo)
         self.group.leader = self.zed
         self.group.save()
-        self.assertEqual(self.group.roster(), [self.zed, self.alma, self.theo])
+        self.assertEqual(self.group.roster, [self.zed, self.alma, self.theo])
 
     def test_leader_outside_members_is_still_listed(self):
         self.group.members.add(self.alma)
         self.group.leader = self.theo
         self.group.save()
-        self.assertEqual(self.group.roster(), [self.theo, self.alma])
+        self.assertEqual(self.group.roster, [self.theo, self.alma])
 
     def test_detail_page_tags_the_leader_first(self):
         self.player.is_staff = True

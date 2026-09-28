@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import cached_property
 
 from django.db import models
 from django.urls import reverse
@@ -41,8 +42,11 @@ class Group(Model):
     def get_creation_url(cls):
         return reverse("characters:create:group")
 
+    @cached_property
     def roster(self):
         """The leader first, then the other members by name, owners loaded.
+
+        Cached per instance: the group page reads it for the cover count and the table.
 
         The leader is listed even when it is not among ``members``; members come
         back as their concrete character types, so gameline fields are available.
