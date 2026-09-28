@@ -31,7 +31,7 @@ class TransitionHookTests(TestCase):
         ):
             with self.assertRaises(ValidationError) as caught:
                 ApprovalService.transition_object("location", self.location.pk, self.owner, "Sub")
-        self.assertEqual(caught.exception.messages, ["First problem; Second problem"])
+        self.assertEqual(caught.exception.messages, ["First problem", "Second problem"])
         self.location.refresh_from_db()
         self.assertEqual(self.location.status, "Un")
 

@@ -90,25 +90,25 @@ class ApprovalService:
             raise ValueError("Unsupported object transition")
         with transaction.atomic():
             obj = get_object_or_404(model_class.objects.select_for_update(), pk=object_id)
+            # Someone who cannot see the object learns nothing about its state; its
+            # owner and storytellers get the state message (e.g. on a double submit).
+            if not PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL):
+                raise PermissionDenied("Cannot change this object")
             if target_status == "Sub":
                 if obj.status not in {"Un", "Rev"}:
                     raise ValidationError("Only drafts can be submitted")
-                if not PermissionManager.user_has_permission(
-                    user, obj, Permission.EDIT_FULL
-                ):
+                if not PermissionManager.user_has_permission(user, obj, Permission.EDIT_FULL):
                     raise PermissionDenied("Cannot submit this object")
                 # Opt-in hook: a model lists what still blocks submission.
                 submission_errors = getattr(obj, "submission_errors", None)
                 if submission_errors is not None:
                     errors = submission_errors()
                     if errors:
-                        raise ValidationError("; ".join(errors))
+                        raise ValidationError(list(errors))
             else:
                 if obj.status != "Sub":
                     raise ValidationError("Only submitted objects can be returned")
-                if not PermissionManager.user_has_permission(
-                    user, obj, Permission.APPROVE
-                ):
+                if not PermissionManager.user_has_permission(user, obj, Permission.APPROVE):
                     raise PermissionDenied("Matching chronicle ST required")
             update_fields = ["status"]
             if target_status == "Rev":

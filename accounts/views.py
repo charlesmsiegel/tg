@@ -4,7 +4,7 @@ from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Prefetch
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -65,9 +65,19 @@ def verify_st_for_chronicle(request, chronicle, action_description="this action"
         else PermissionManager.can_manage_chronicle(request.user, chronicle, request)
     )
     if not allowed:
-        msg = f"You are not a storyteller for this chronicle. Cannot perform {action_description}."
-        messages.error(request, msg)
-        raise PermissionDenied(msg)
+        # No messages.error here: the 403 page is rendered instead, so a queued
+        # message would only surface on some later, unrelated page.
+        raise PermissionDenied(
+            f"You are not a storyteller for this chronicle. Cannot perform {action_description}."
+        )
+
+
+def object_error_redirect(request, object_type, pk, exc):
+    """Back to the object with the validation messages (a browser form post, not an API)."""
+    obj = get_object_or_404(ApprovalService.OBJECT_MODEL_MAP[object_type], pk=pk)
+    for message in exc.messages:
+        messages.error(request, message)
+    return redirect(obj.get_absolute_url())
 
 
 def profile_tab_redirect(request, tab):
@@ -113,7 +123,7 @@ class ObjectApprovalView(LoginRequiredMixin, View):
         try:
             _, msg = ApprovalService.approve_object(object_type, pk, request.user)
         except ValidationError as exc:
-            return HttpResponseBadRequest(str(exc))
+            return object_error_redirect(request, object_type, pk, exc)
         messages.success(request, msg)
         return redirect("accounts:profile", pk=request.user.profile.pk)
 
@@ -129,7 +139,7 @@ class ObjectSubmissionView(LoginRequiredMixin, View):
         try:
             obj = ApprovalService.transition_object(object_type, pk, request.user, "Sub")
         except ValidationError as exc:
-            return HttpResponseBadRequest(str(exc))
+            return object_error_redirect(request, object_type, pk, exc)
         messages.success(request, f"'{obj.name}' submitted for approval.")
         return redirect(obj.get_absolute_url())
 
@@ -145,7 +155,7 @@ class ObjectRevisionView(LoginRequiredMixin, View):
         try:
             obj = ApprovalService.transition_object(object_type, pk, request.user, "Rev")
         except ValidationError as exc:
-            return HttpResponseBadRequest(str(exc))
+            return object_error_redirect(request, object_type, pk, exc)
         messages.success(request, f"'{obj.name}' returned for revisions.")
         return redirect(obj.get_absolute_url())
 
@@ -195,7 +205,6 @@ class WeeklyXPRequestView(LoginRequiredMixin, View):
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=character_pk)
         if char.owner != request.user:
-            messages.error(request, "You can only submit requests for your own characters.")
             raise PermissionDenied("You can only submit requests for your own characters.")
         form = WeeklyXPRequestForm(request.POST, week=week, character=char)
         if form.is_valid():
