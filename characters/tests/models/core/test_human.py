@@ -2,6 +2,11 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.timezone import now
 
+from characters.forms.core.crud_fields import (
+    COMMON_KNOWLEDGE_FIELDS,
+    COMMON_SKILL_FIELDS,
+    COMMON_TALENT_FIELDS,
+)
 from characters.models.core import (
     Archetype,
     Derangement,
@@ -11,11 +16,6 @@ from characters.models.core import (
 )
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
-from characters.forms.core.crud_fields import (
-    COMMON_KNOWLEDGE_FIELDS,
-    COMMON_SKILL_FIELDS,
-    COMMON_TALENT_FIELDS,
-)
 from characters.tests.utils import human_setup
 from core.models import Language, Number
 from game.models import Chronicle, ObjectType

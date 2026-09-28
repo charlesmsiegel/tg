@@ -18,9 +18,16 @@ Each reference model maps to one source describing where characters record it:
 Every source costs one query per holder model, whatever the number of holders.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from operator import attrgetter
-from typing import Callable
+
+from django.core.exceptions import FieldDoesNotExist
+from django.db import models
+from django.db.models import Q
+from django.urls import reverse
+from django.utils.cache import patch_cache_control, patch_vary_headers
+from django.utils.text import slugify
 
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
 from characters.models.demon.demon import Demon
@@ -46,12 +53,6 @@ from characters.models.werewolf.rite import Rite
 from characters.models.wraith.arcanos import Arcanos
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import ThornRating, Wraith
-from django.core.exceptions import FieldDoesNotExist
-from django.db import models
-from django.db.models import Q
-from django.urls import reverse
-from django.utils.cache import patch_cache_control, patch_vary_headers
-from django.utils.text import slugify
 from game.security import staffed_chronicles
 
 # Rows shown at most; a staff viewer on a common Merit could otherwise pull every sheet.

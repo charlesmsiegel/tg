@@ -24,7 +24,7 @@ def form_data(form, **changes):
         if isinstance(value, bool):
             if value:
                 data[name] = "on"
-        elif isinstance(value, (list, tuple)):
+        elif isinstance(value, list | tuple):
             data[name] = [str(item) for item in value]
         else:
             data[name] = value
