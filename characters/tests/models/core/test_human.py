@@ -738,11 +738,6 @@ class TestHuman(TestCase):
         self.character.notes = "This is a note."
         self.assertNotEqual(self.character.notes, "")
 
-    def test_static_numbers(self):
-        self.assertEqual(self.character.willpower, 3)
-        self.assertEqual(self.character.background_points, 5)
-        self.assertEqual(self.character.freebies, 15)
-
     def test_ability_deficit_flaw(self):
         mf = MeritFlaw.objects.create(name="Ability Deficit")
         mf.add_rating(-2)

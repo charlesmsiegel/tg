@@ -82,9 +82,6 @@ class BloodstoneAdmin(admin.ModelAdmin):
 
 
 # Demon items
-from items.models.demon.relic import Relic
-
-
 @admin.register(Relic)
 class RelicAdmin(admin.ModelAdmin):
     list_display = ("name", "relic_type", "complexity", "house", "difficulty")
