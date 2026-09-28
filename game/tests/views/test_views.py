@@ -1471,6 +1471,28 @@ class TestChronicleDetailViewPost(TestCase):
         # Create object types for character/location/item creation
         ObjectType.objects.create(name="human", type="char", gameline="wod")
 
+    def test_creation_dropdowns_render_independent_chains(self):
+        ObjectType.objects.create(name="vampire", type="char", gameline="vtm")
+        ObjectType.objects.create(name="mage", type="char", gameline="mta")
+        ObjectType.objects.create(name="haven", type="loc", gameline="vtm")
+        ObjectType.objects.create(name="sanctum", type="loc", gameline="mta")
+        ObjectType.objects.create(name="stake", type="obj", gameline="vtm")
+        ObjectType.objects.create(name="wand", type="obj", gameline="mta")
+        self.client.force_login(self.st_user)
+
+        response = self.client.get(self.chronicle.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        page = response.content.decode()
+        for category, child in (("char", "char_type"), ("loc", "loc_type"), ("obj", "item_type")):
+            with self.subTest(category=category):
+                self.assertTrue(f'data-chain-tree="chronicle_{category}"' in page, "missing choice tree")
+                self.assertEqual(page.count(f'data-chain-name="chronicle_{category}"'), 2)
+                self.assertTrue('"gameline:vtm"' in page, "missing Vampire choices")
+                self.assertTrue('"gameline:mta"' in page, "missing Mage choices")
+        self.assertEqual(response.context["char_form"]["gameline"].value(), "vtm")
+        self.assertIn('<option value="vampire">Vampire</option>', str(response.context["char_form"]["char_type"]))
+        self.assertTrue('widgets/chained.js' in page, "missing chained select script")
+
     def test_non_st_cannot_create_story(self):
         """Test that non-storytellers cannot create stories."""
         self.client.login(username="testuser", password="password")

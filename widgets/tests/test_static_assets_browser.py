@@ -25,6 +25,7 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase
 
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.mixins.conditional import ConditionalFieldsMixin
 from widgets.widgets.chained import ChainedSelect
 from widgets.widgets.create_or_select import CreateOrSelectWidget
@@ -172,6 +173,26 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             check(get('child').options.length === 1, 'empty parent clears children');
             """,
             root.media + child.media,
+        )
+
+    def test_form_choice_map_updates_child_on_change(self):
+        class GameForm(ChainedSelectMixin, forms.Form):
+            gameline = ChainedChoiceField(choices=[("vtm", "Vampire"), ("mta", "Mage")])
+            char_type = ChainedChoiceField(
+                parent_field="gameline",
+                choices_map={"vtm": [("vampire", "Vampire")], "mta": [("mage", "Mage")]},
+            )
+
+        form = GameForm()
+        self.run_browser(
+            str(form["gameline"]) + str(form["char_type"]),
+            """
+            change('id_gameline', 'vtm');
+            check(get('id_char_type').options[1]?.value === 'vampire', 'VTM types');
+            change('id_gameline', 'mta');
+            check(get('id_char_type').options[1]?.value === 'mage', 'Mage types');
+            """,
+            form.media,
         )
 
     def test_conditional_fields_change_visibility(self):

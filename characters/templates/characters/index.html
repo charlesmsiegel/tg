@@ -213,11 +213,7 @@
                                     <label class="tg-form-label ci-form-label">
                                         <i class="fas fa-book mr-2 ci-label-icon-primary"></i>Game Line
                                     </label>
-                                    <select name="gameline" id="id_gameline" class="tg-form-control tg-form-select" required>
-                                        {% for value, label in form.gameline.field.choices %}
-                                            <option value="{{ value }}">{{ label }}</option>
-                                        {% endfor %}
-                                    </select>
+                                    {{ form.gameline }}
                                 </div>
                                 <div class="tg-form-group ci-form-group">
                                     <label class="tg-form-label ci-form-label">

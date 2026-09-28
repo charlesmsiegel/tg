@@ -100,6 +100,21 @@ class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
     gameline = ChainedChoiceField(choices=[], label="Game Line")
     # type field is added dynamically in subclasses
 
+    def _setup_chains(self):
+        if not self.is_bound and not self.initial.get("gameline"):
+            first_choice = next(iter(self.fields["gameline"].choices), None)
+            if first_choice:
+                self.initial["gameline"] = first_choice[0]
+        super()._setup_chains()
+        # All three creation forms appear on one page, so their chain names and
+        # field IDs must be distinct even though they share the same field names.
+        chain_name = f"chronicle_{self.object_type_code}"
+        for field_name in ("gameline", self.type_field_name):
+            widget = self.fields[field_name].widget
+            widget.chain_name = chain_name
+            widget.attrs["id"] = f"id_{chain_name}_{field_name}"
+            widget.attrs.setdefault("class", "tg-form-control tg-form-select")
+
     def _format_label(self, name):
         """Format type labels with special handling."""
         # Mapping of gameline prefixes to full names for humans

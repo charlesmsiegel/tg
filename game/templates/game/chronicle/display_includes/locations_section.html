@@ -70,11 +70,7 @@
                     <form method="get" action="{% url 'core:object_type_redirect' 'location' 'create' %}">
                         <div class="tg-form-group mb-3">
                             <label for="id_chronicle_loc_gameline" class="tg-form-label">Game Line</label>
-                            <select name="gameline" id="id_chronicle_loc_gameline" class="tg-form-control tg-form-select">
-                                {% for value, label in loc_form.gameline.field.choices %}
-                                    <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
+                            {{ loc_form.gameline }}
                         </div>
                         <div class="tg-form-group mb-3">
                             <label for="id_chronicle_loc_type" class="tg-form-label">Location Type</label>

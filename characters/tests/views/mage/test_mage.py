@@ -1,5 +1,7 @@
 """Tests for mage views module."""
 
+import re
+
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -150,6 +152,26 @@ class TestMageBasicsView(TestCase):
         url = reverse("characters:mage:create:mage")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/mage/mage/magebasics.html")
+
+    def test_basics_page_chains_affiliation_faction_and_subfaction(self):
+        MageFaction.objects.create(name="House Bonisagus", parent=self.faction)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("characters:mage:create:mage"))
+        self.assertEqual(response.status_code, 200)
+        page = response.content.decode()
+        for name, position, parent in (
+            ("affiliation", "0", None),
+            ("faction", "1", "affiliation"),
+            ("subfaction", "2", "faction"),
+        ):
+            select = re.search(rf'<select\b[^>]*name="{name}"[^>]*>', page)
+            self.assertIsNotNone(select)
+            self.assertIn(f'data-chain-position="{position}"', select.group())
+            if parent:
+                self.assertIn(f'data-parent-field="{parent}"', select.group())
+                self.assertIn('data-ajax-url="/__chained_select__/"', select.group())
+        self.assertIn("widgets/chained.js", page)
 
 
 class TestMageUpdateView(TestCase):

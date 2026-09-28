@@ -138,6 +138,7 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
 
         # Set widget ids
         self.fields["gameline"].widget.attrs["id"] = "id_gameline"
+        self.fields["gameline"].widget.attrs["class"] = "tg-form-control tg-form-select"
         self.fields["char_type"].widget.attrs["id"] = "id_char_type"
 
         if user and user.is_authenticated:

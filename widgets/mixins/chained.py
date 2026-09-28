@@ -158,7 +158,7 @@ class ChainedSelectMixin:
                 # Get choices map for children to use (for embedded mode)
                 if field.choices_map:
                     for parent_val, child_choices in field.choices_map.items():
-                        key = f"{field_name}:{parent_val}"
+                        key = f"{parent_field}:{parent_val}"
                         choices_tree[key] = [
                             self._choice_to_dict(choice) for choice in child_choices
                         ]

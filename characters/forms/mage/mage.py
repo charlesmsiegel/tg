@@ -5,7 +5,7 @@ from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from core.permissions import PermissionManager
 from game.models import Chronicle
-from widgets import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedModelChoiceField, ChainedSelectMixin
 
 
 def get_child_factions(parent_id):
@@ -18,6 +18,11 @@ def get_child_factions(parent_id):
 
 
 class MageCreationForm(ChainedSelectMixin, forms.ModelForm):
+    affiliation = ChainedModelChoiceField(
+        queryset=MageFaction.objects.none(),
+        empty_label="Select affiliation...",
+    )
+
     # Override faction and subfaction with ChainedChoiceField (excluded from Meta.fields)
     faction = ChainedChoiceField(
         parent_field="affiliation",

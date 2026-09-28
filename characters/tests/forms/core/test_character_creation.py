@@ -10,8 +10,11 @@ Tests cover:
 - Data attributes for JavaScript filtering
 """
 
+import re
+
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 from characters.forms.core.character_creation import CharacterCreationForm
 from game.models import Chronicle, Gameline, ObjectType, STRelationship
@@ -77,6 +80,25 @@ class CharacterCreationFormTestCase(TestCase):
             chronicle=self.chronicle,
             gameline=self.gameline_mta,
         )
+
+
+class TestCharacterIndexChain(CharacterCreationFormTestCase):
+    def test_game_line_renders_chain_configuration_for_character_type(self):
+        self.st_user.is_staff = True
+        self.st_user.save(update_fields=["is_staff"])
+        self.client.force_login(self.st_user)
+        response = self.client.get(reverse("characters:index"))
+
+        self.assertEqual(response.status_code, 200)
+        page = response.content.decode()
+        form_html = re.search(r'<form id="charForm".*?</form>', page, re.DOTALL)
+        self.assertIsNotNone(form_html)
+        parent_select = re.search(r'<select\b[^>]*name="gameline"[^>]*>', form_html.group())
+        self.assertIsNotNone(parent_select)
+        self.assertIn('data-chain-position="0"', parent_select.group())
+        self.assertIn('data-chain-tree="chain_0"', form_html.group())
+        self.assertIn('"gameline:vtm"', form_html.group())
+        self.assertIn('data-parent-field="gameline"', form_html.group())
 
 
 class TestCharacterCreationFormInitialization(CharacterCreationFormTestCase):

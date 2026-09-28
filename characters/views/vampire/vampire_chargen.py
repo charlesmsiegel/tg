@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.urls import reverse
 from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
@@ -74,7 +75,7 @@ class VampireBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return reverse("characters:character", kwargs={"pk": self.object.pk})
 
 
 class VampireAttributeView(HumanAttributeView):
@@ -191,7 +192,6 @@ class VampireExtrasView(CharacterExtrasView):
     fields = ["age", "apparent_age", "date_of_birth", "history", "goals", "notes"]
     template_name = "characters/vampire/vampire/chargen.html"
     success_message = "Character details saved successfully!"
-    date_fields = ()
     optional_fields = ("notes", "history", "goals")
     field_widget_attrs = {
         "history": {

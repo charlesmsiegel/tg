@@ -11,6 +11,11 @@
             </p>
         </div>
     </div>
+    {% if object_perms.can_chargen and chargen_url %}
+        <div class="text-center mb-4">
+            <a class="tg-btn btn-primary" href="{{ chargen_url }}">Continue character creation</a>
+        </div>
+    {% endif %}
 {% endblock objectname %}
 {% block contents %}
     {% if object_perms.can_view_full %}

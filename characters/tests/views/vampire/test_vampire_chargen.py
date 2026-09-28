@@ -153,13 +153,30 @@ class TestVampireBasicsView(VampireChargenTestCase):
             "concept": "Warrior",
         }
         response = self.client.post(url, data)
-        # Should redirect to character page on success
-        self.assertEqual(response.status_code, 302)
         # Vampire should be created
         vampire = Vampire.objects.get(name="Test Vampire")
+        self.assertRedirects(
+            response,
+            reverse("characters:character", kwargs={"pk": vampire.pk}),
+            fetch_redirect_response=False,
+        )
         self.assertEqual(vampire.owner, self.user)
         self.assertEqual(vampire.clan, self.brujah)
         self.assertEqual(vampire.chronicle, self.chronicle)
+
+    def test_unfinished_vampire_sheet_links_to_current_creation_step(self):
+        vampire = Vampire.objects.create(
+            name="Unfinished Vampire", owner=self.user, clan=self.brujah, creation_status=1
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(vampire.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, reverse("characters:character", kwargs={"pk": vampire.pk})
+        )
+        self.assertContains(response, "Continue character creation")
 
     def test_basics_view_rejects_chronicle_user_is_not_in(self):
         """A chronicle the user neither plays in nor runs is not a valid choice."""
@@ -329,6 +346,19 @@ class TestVampireDisciplinesView(VampireChargenTestCase):
         url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.vampire.pk})
         response = self.client.get(url)
         self.assertIn("clan_disciplines", response.context)
+
+    def test_disciplines_view_shows_clan_controls(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.vampire.pk})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        page = response.content.decode()
+        for name in ("potence", "celerity", "presence"):
+            self.assertIn(f'type="number" name="{name}"', page)
+        self.assertIn('type="hidden" name="dominate"', page)
 
     def test_disciplines_view_accepts_valid_allocation(self):
         """Test that valid discipline allocation (3 dots) is accepted."""
@@ -606,6 +636,19 @@ class TestVampireExtrasView(VampireChargenTestCase):
         url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.vampire.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_biography_uses_date_picker_for_birth_date(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.vampire.pk})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            'type="date" name="date_of_birth"' in response.content.decode(),
+            "Date of Birth must render as a browser date picker",
+        )
 
     def test_extras_view_accepts_optional_data(self):
         """Test that extras fields are optional."""

@@ -170,7 +170,7 @@ class TestChainedSelectWithMetadata(TestCase):
         self.assertIsNotNone(root_widget.choices_tree)
 
         # Check that metadata is preserved in the tree
-        bg_key = "example:bg"
+        bg_key = "category:bg"
         self.assertIn(bg_key, root_widget.choices_tree)
 
         bg_choices = root_widget.choices_tree[bg_key]
@@ -202,7 +202,7 @@ class TestChainedSelectWithMetadata(TestCase):
 
         # The choices tree should work without metadata
         root_widget = form.fields["category"].widget
-        bg_choices = root_widget.choices_tree["example:bg"]
+        bg_choices = root_widget.choices_tree["category:bg"]
 
         # Choices should not have metadata key
         self.assertNotIn("metadata", bg_choices[0])

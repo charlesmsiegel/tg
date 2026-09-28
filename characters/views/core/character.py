@@ -1,8 +1,10 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
 
+from characters.chargen import get_workflow
 from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
 from characters.models.core import Character
 from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
@@ -55,6 +57,13 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
             ).values_list("pk", flat=True)
         )
         context["scenes"] = [scene for scene in scenes if scene.pk in visible_ids]
+        workflow = get_workflow(self.object.type)
+        if (
+            workflow
+            and self.object.status in {"Un", "Rev"}
+            and 1 <= self.object.creation_status <= len(workflow.steps)
+        ):
+            context["chargen_url"] = reverse("characters:character", kwargs={"pk": self.object.pk})
         can_edit = PermissionManager.user_has_permission(
             self.request.user, self.object, Permission.EDIT_FULL, request=self.request
         )

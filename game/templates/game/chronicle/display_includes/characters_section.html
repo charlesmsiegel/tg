@@ -62,11 +62,7 @@
                     <form method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}">
                         <div class="tg-form-group mb-3">
                             <label for="{{ char_form.gameline.id_for_label }}" class="tg-form-label">Game Line</label>
-                            <select name="gameline" id="id_chronicle_gameline" class="tg-form-control tg-form-select">
-                                {% for value, label in char_form.gameline.field.choices %}
-                                    <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
+                            {{ char_form.gameline }}
                         </div>
                         <div class="tg-form-group mb-3">
                             <label for="{{ char_form.char_type.id_for_label }}" class="tg-form-label">Character Type</label>
