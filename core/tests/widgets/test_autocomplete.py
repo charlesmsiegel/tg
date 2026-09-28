@@ -1,115 +1,68 @@
 """Tests for AutocompleteTextInput widget."""
 
-import json
-
 from django.test import TestCase
 
 from core.widgets import AutocompleteTextInput
 
 
 class AutocompleteTextInputTests(TestCase):
-    """Tests for the AutocompleteTextInput widget."""
+    """AutocompleteTextInput offers suggestions through a native <datalist>, no script."""
 
     def test_render_basic(self):
-        """Test basic rendering with simple name and suggestions."""
         widget = AutocompleteTextInput(suggestions=["apple", "banana", "cherry"])
         html = widget.render("fruit", "")
 
         self.assertIn("<input", html)
-        self.assertIn("<script>", html)
-        self.assertIn('["apple", "banana", "cherry"]', html)
+        self.assertIn('list="fruit-suggestions"', html)
+        self.assertIn('<datalist id="fruit-suggestions">', html)
+        for fruit in ("apple", "banana", "cherry"):
+            self.assertIn(f'<option value="{fruit}"></option>', html)
+        self.assertNotIn("<script", html)
+
+    def test_list_follows_the_input_id(self):
+        widget = AutocompleteTextInput(suggestions=["x"])
+        html = widget.render("fruit", "", attrs={"id": "id_fruit"})
+        self.assertIn('list="id_fruit-suggestions"', html)
+        self.assertIn('<datalist id="id_fruit-suggestions">', html)
 
     def test_render_empty_suggestions(self):
-        """Test rendering with no suggestions."""
         widget = AutocompleteTextInput(suggestions=[])
         html = widget.render("field_name", "")
 
         self.assertIn("<input", html)
-        self.assertIn("<script>", html)
-        self.assertIn("[]", html)
+        self.assertIn('<datalist id="field_name-suggestions"></datalist>', html)
 
     def test_render_no_suggestions(self):
-        """Test rendering when suggestions is None."""
         widget = AutocompleteTextInput()
         html = widget.render("field_name", "")
 
         self.assertIn("<input", html)
-        self.assertIn("[]", html)
+        self.assertIn('<datalist id="field_name-suggestions"></datalist>', html)
 
     def test_render_with_value(self):
-        """Test rendering with an initial value."""
         widget = AutocompleteTextInput(suggestions=["test"])
         html = widget.render("field_name", "initial_value")
 
-        self.assertIn("initial_value", html)
+        self.assertIn('value="initial_value"', html)
 
-    def test_suggestions_json_escaped(self):
-        """Test that suggestions with special characters are properly JSON escaped."""
-        suggestions = ['He said "hello"', "It's fine", "back\\slash"]
+    def test_suggestions_are_html_escaped(self):
+        suggestions = ['He said "hello"', "It's fine", "<script>alert(1)</script>"]
         widget = AutocompleteTextInput(suggestions=suggestions)
         html = widget.render("test_field", "")
 
-        # The suggestions should be valid JSON
-        self.assertIn(json.dumps(suggestions), html)
+        self.assertIn('value="He said &quot;hello&quot;"', html)
+        self.assertIn('value="It&#x27;s fine"', html)
+        self.assertNotIn("<script", html)
 
     def test_field_name_with_special_chars_escaped(self):
-        """Test that field names with special characters are safely escaped.
-
-        Even though field names typically come from developer-controlled code,
-        the widget should handle edge cases defensively.
-        """
         widget = AutocompleteTextInput(suggestions=["test"])
-
-        # Test with quotes in field name
         html = widget.render('field"name', "")
-        # The rendered HTML should not have unescaped quotes that break JS
-        self.assertIn("<script>", html)
-        # Verify the field name is properly JSON-escaped (quote escaped with backslash)
-        # json.dumps('field"name') produces "field\"name" (with outer quotes)
-        self.assertIn(json.dumps('field"name'), html)
-        # Verify the broken unescaped selector is NOT present
-        self.assertNotIn('input[name="field"name"]', html)
-
-    def test_field_name_with_backslash_escaped(self):
-        """Test that backslashes in field names are properly escaped."""
-        widget = AutocompleteTextInput(suggestions=["test"])
-        html = widget.render("field\\name", "")
-
-        # Should not break the JavaScript
-        self.assertIn("<script>", html)
-        # Verify the field name is properly JSON-escaped (backslash doubled)
-        # json.dumps("field\\name") produces "field\\name" (backslash escaped)
-        self.assertIn(json.dumps("field\\name"), html)
-
-    def test_field_name_with_single_quotes_escaped(self):
-        """Test that single quotes in field names are handled."""
-        widget = AutocompleteTextInput(suggestions=["test"])
-        html = widget.render("field'name", "")
-
-        self.assertIn("<script>", html)
-        # Single quotes don't need escaping in JSON strings, verify the field name is present
-        # json.dumps("field'name") produces "field'name" (with outer double quotes)
-        self.assertIn(json.dumps("field'name"), html)
+        self.assertNotIn('list="field"name', html)
+        self.assertIn("field&quot;name-suggestions", html)
 
     def test_get_context_includes_suggestions(self):
-        """Test that get_context includes suggestions in widget context."""
         widget = AutocompleteTextInput(suggestions=["a", "b", "c"])
         context = widget.get_context("test", "", {})
 
         self.assertEqual(context["widget"]["suggestions"], ["a", "b", "c"])
-
-    def test_jquery_selector_uses_name(self):
-        """Test that the jQuery selector properly targets the input by name."""
-        widget = AutocompleteTextInput(suggestions=["test"])
-        html = widget.render("my_field", "")
-
-        # Should have proper selector structure
-        self.assertIn("input[name=", html)
-        self.assertIn("my_field", html)
-
-    def test_autocomplete_minlength(self):
-        """Test that autocomplete has minLength set to 2."""
-        widget = AutocompleteTextInput(suggestions=["test"])
-        html = widget.render("field", "")
-
-        self.assertIn("minLength: 2", html)
+        self.assertEqual(context["widget"]["attrs"]["list"], "test-suggestions")

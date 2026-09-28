@@ -38,10 +38,13 @@ layer styles it, and tl.js hides the old header card whose title the cover repea
                 </div>
             {% endif %}
             {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
-            {% if object.get_status_display %}{% fact "Status" object.get_status_display %}{% endif %}
-            {% for reference in object.sources.all %}
-                {% fact "Source" reference reference.book.get_absolute_url %}
-            {% endfor %}
+            {% if object.get_status_display %}
+                <div class="tl-facts__row">
+                    <span class="tl-facts__k">Status</span>
+                    <span class="tl-facts__v{% if object.status == 'Dec' %} tl-status--dec{% endif %}">{{ object.get_status_display }}</span>
+                </div>
+            {% endif %}
+            {% include "core/tl/source_facts.html" %}
         {% endblock cover_facts %}
     </div>
 {% endblock cover_body %}

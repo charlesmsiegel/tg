@@ -91,9 +91,10 @@
     if (box) box.scrollTop = cur.offsetTop - box.clientHeight / 2;
   }
 
-  // 6. Bootstrap data-API shim for templates still on legacy markup (collapse, tab,
-  //    pill, dropdown, alert dismiss), so legacy pages need neither jQuery nor
-  //    bootstrap.js. Toggles the same classes Bootstrap would (.show / .active).
+  // 6. Bootstrap data-API shim for markup not yet rewritten (collapse, tab, pill,
+  //    dropdown, alert dismiss), so no page needs jQuery or bootstrap.js. Works on
+  //    any page, since legacy includes can sit inside a Spread page. Toggles the
+  //    same classes Bootstrap would (.show / .active).
   function targetsFor(el) {
     var sel = el.getAttribute('data-target') || el.getAttribute('data-bs-target') || el.getAttribute('href');
     if (!sel || sel.charAt(0) !== '#' && sel.charAt(0) !== '.') return [];
@@ -101,12 +102,15 @@
   }
   document.addEventListener('click', function (e) {
     var el = e.target.closest('[data-toggle], [data-bs-toggle], [data-dismiss="alert"]');
-    if (!el || !el.closest('.tl-legacy, .tl-cover')) {
+    if (!el) {
       if (!e.target.closest('.dropdown-menu')) {
-        document.querySelectorAll('.tl-legacy .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
       }
       return;
     }
+    // A real link inside a trigger (e.g. a cabal name in a collapsible row) navigates.
+    var link = e.target.closest('a[href]');
+    if (link && link !== el && el.contains(link) && link.getAttribute('href').charAt(0) !== '#') return;
     var kind = el.getAttribute('data-toggle') || el.getAttribute('data-bs-toggle');
     if (el.getAttribute('data-dismiss') === 'alert') {
       var alert = el.closest('.alert, .tg-message');
@@ -136,7 +140,7 @@
       var menu = el.parentElement && el.parentElement.querySelector('.dropdown-menu');
       if (menu) {
         var wasOpen = menu.classList.contains('show');
-        document.querySelectorAll('.tl-legacy .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
         menu.classList.toggle('show', !wasOpen);
         el.setAttribute('aria-expanded', wasOpen ? 'false' : 'true');
       }
@@ -153,7 +157,8 @@
     var title = card && card.querySelector('h1, .tg-card-title');
     if (!title || !title.textContent.trim()) return;
     slot.textContent = title.textContent.trim();
-    var sub = card.querySelector('.tg-card-subtitle, p');
+    // Only an explicit subtitle moves: a stray first <p> (a warning, a note) stays put.
+    var sub = card.querySelector('.tg-card-subtitle');
     if (sub && sub.textContent.trim()) {
       var subSlot = document.querySelector('[data-legacy-sub]');
       if (subSlot) { subSlot.innerHTML = sub.innerHTML; subSlot.hidden = false; }

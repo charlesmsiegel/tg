@@ -28,7 +28,7 @@ from game import scene_chat
 from game.forms import AddCharForm, PostForm
 from game.models import Scene
 from game.security import can_view_scene
-from game.selectors import scene_post, scene_posts_after
+from game.selectors import scene_cast, scene_post, scene_posts_after
 from game.text import straighten_quotes
 
 logger = logging.getLogger(__name__)
@@ -190,7 +190,10 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         character = CharacterModel.objects.filter(pk=character_id).first()
         if character is None:
             return ""
-        parts = [self.notice([f"{character.name} joined the scene."], level="info")]
+        parts = [
+            self.notice([f"{character.name} joined the scene."], level="info"),
+            render_to_string("game/scene/_cast.html", {"oob": True, "cast": scene_cast(scene)}),
+        ]
         # Signed-in viewers of an open scene have the forms these regions live in.
         if self.user.is_authenticated and not scene.finished:
             if character.owner_id == self.user.pk:

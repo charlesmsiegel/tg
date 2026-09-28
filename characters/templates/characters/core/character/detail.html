@@ -22,7 +22,7 @@ characters/core/human/detail.html and overrides the same block names as before:
 {% endblock cover_top %}
 {% block cover_title %}
     <span class="tl-cover__eyebrow">
-        {{ object.get_type }}{% if object.chronicle %} · {{ object.chronicle }}{% endif %}
+        {{ object.get_type }}{% if object.chronicle %} · <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>{% endif %}
         {% if object.npc %} · NPC{% endif %}
     </span>
     <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>
@@ -38,13 +38,14 @@ characters/core/human/detail.html and overrides the same block names as before:
             {% block basics %}
                 {% fact "Concept" object.concept %}
             {% endblock basics %}
+            {% include "core/tl/source_facts.html" %}
         </div>
     {% endif %}
 {% endblock cover_body %}
 {% block cover_actions %}
     <div class="tl-cover__stat">
         <span class="tl-mono">
-            {{ object.get_status_display }}{% if object.owner %} · {{ object.owner.username }}{% endif %}
+            <span{% if object.status == "Dec" %} class="tl-status--dec"{% endif %}>{{ object.get_status_display }}</span>{% if object.owner %} · <a href="{% url 'accounts:profile' object.owner.id %}">{{ object.owner.username }}</a>{% endif %}
         </span>
         {% if object_perms.can_view_full %}
             <span class="tl-cover__xp">{{ object.xp }} <span class="tl-mono">XP</span></span>

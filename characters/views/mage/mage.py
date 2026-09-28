@@ -97,8 +97,7 @@ class MageFormContextMixin:
         context = super().get_context_data(**kwargs)
         mage = self.object  # None while creating
         form = context["form"]
-        affiliation = getattr(mage, "affiliation", None)
-        context["technocratic"] = bool(affiliation and affiliation.name == "Technocratic Union")
+        context["technocratic"] = mage is not None and mage.is_technocrat
         groups = []
         for _heading, group in Mage.ABILITY_GROUPS:
             stats = sorted(

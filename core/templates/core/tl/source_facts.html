@@ -1,0 +1,8 @@
+{% comment %}Sourcebook citations as cover fact rows (book title in italics, page). Built from
+reference.book / reference.page: BookReference's own str() carries HTML.{% endcomment %}
+{% for reference in object.sources.all %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Source</span>
+        <span class="tl-facts__v"><a href="{{ reference.book.get_absolute_url }}"><i>{{ reference.book }}</i></a> p. {{ reference.page }}</span>
+    </div>
+{% endfor %}

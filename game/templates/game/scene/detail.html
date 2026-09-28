@@ -14,10 +14,11 @@ Keep every id scene-chat.js and the ws extension use: #scene-live, #posts-contai
 {% block cover_label %}{{ object.name }}{% endblock cover_label %}
 {% block cover_top %}
     {{ block.super }}
+    {# Replaced by "Closed" over the socket when the scene closes. #}
     {% if live %}
-        <span class="tl-live" data-live-badge>● Live</span>
+        <span id="scene-live-badge" class="tl-live">● Live</span>
     {% elif object.finished %}
-        <span class="tl-cover__top-aside">Closed</span>
+        <span id="scene-live-badge" class="tl-cover__top-aside">Closed</span>
     {% endif %}
 {% endblock cover_top %}
 {% block cover_title %}
@@ -37,21 +38,7 @@ Keep every id scene-chat.js and the ws extension use: #scene-live, #posts-contai
             {% endif %}
         </div>
     {% endif %}
-    {% with cast=object.characters.all %}
-        <div class="tl-stack">
-            <span class="tl-cover__eyebrow">In scene · {{ cast|length }}</span>
-            <div class="tl-facts">
-                {% for character in cast %}
-                    <div class="tl-facts__row">
-                        <a class="tl-facts__v tl-cast__name" href="{% url 'characters:character' character.pk %}">{{ character.name }}</a>
-                        <span class="tl-facts__k">{{ character.owner.username|default:"NPC" }}</span>
-                    </div>
-                {% empty %}
-                    <p class="tl-cover__desc">No one yet.</p>
-                {% endfor %}
-            </div>
-        </div>
-    {% endwith %}
+    {% include "game/scene/_cast.html" %}
 {% endblock cover_body %}
 {% block cover_actions %}
     <div id="scene-cover-actions" class="tl-stack">

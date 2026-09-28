@@ -6,5 +6,12 @@
     {% if tech %}{% fact "Convention" object.faction %}{% else %}{% fact "Faction" object.faction %}{% endif %}
     {% if tech %}{% fact "Methodology" object.subfaction %}{% else %}{% fact "Subfaction" object.subfaction %}{% endif %}
     {% if tech %}{% fact "Eidolon" object.get_essence_display %}{% else %}{% fact "Essence" object.get_essence_display %}{% endif %}
-    {% fact "Group" object.group_set.first %}
+    {% with groups=object.group_set.all %}
+        {% if groups %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Group{{ groups|length|pluralize }}</span>
+                <span class="tl-facts__v">{% for group in groups %}<a href="{{ group.get_absolute_url }}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+            </div>
+        {% endif %}
+    {% endwith %}
 {% endwith %}

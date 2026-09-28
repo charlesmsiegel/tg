@@ -1,0 +1,14 @@
+{% comment %}The scene's cast on the cover (page render, and live for every viewer when a
+character joins). Inputs: cast (characters with owner joined), oob.{% endcomment %}<div id="scene-cast"{% if oob %} hx-swap-oob="true"{% endif %} class="tl-stack">
+    <span class="tl-cover__eyebrow">In scene · {{ cast|length }}</span>
+    <div class="tl-facts">
+        {% for character in cast %}
+            <div class="tl-facts__row">
+                <a class="tl-facts__v tl-cast__name" href="{% url 'characters:character' character.pk %}">{{ character.name }}</a>
+                <span class="tl-facts__k">{{ character.owner.username|default:"NPC" }}</span>
+            </div>
+        {% empty %}
+            <p class="tl-cover__desc">No one yet.</p>
+        {% endfor %}
+    </div>
+</div>
