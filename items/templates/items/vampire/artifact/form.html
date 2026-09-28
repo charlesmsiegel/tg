@@ -1,99 +1,37 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Vampire Artifact
-    {% else %}
-        Create Vampire Artifact
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a Vampire artifact. Owners without full edit rights get
+LimitedVampireArtifactEditForm (description and history only), hence the guards.
+{% endcomment %}
+{% block creation_title %}Create Vampire Artifact{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
-            {% if form.name.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.name.errors }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            {% if form.name %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
             {% endif %}
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.power_level.id_for_label }}" class="form-label">Power Level</label>
-            {{ form.power_level }}
-            {% if form.power_level.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.power_level.errors }}</div>
+            {% if form.power_level %}
+                {% include "core/tl/field.html" with field=form.power_level label="Power level" help=form.power_level.help_text %}
             {% endif %}
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.background_cost.id_for_label }}" class="form-label">Background Cost</label>
-            {{ form.background_cost }}
-            {% if form.background_cost.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.background_cost.errors }}</div>
+            {% if form.background_cost %}
+                {% include "core/tl/field.html" with field=form.background_cost label="Background cost" help=form.background_cost.help_text %}
             {% endif %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-            {% if form.description.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.description.errors }}</div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="form-check">
-                {{ form.is_cursed }}
-                <label class="form-check-label" for="{{ form.is_cursed.id_for_label }}">
-                    Cursed
-                </label>
+        {% if form.is_cursed %}
+            <div class="tl-formgrid">
+                {% include "core/misc/check.html" with field=form.is_cursed label="Cursed" %}
+                {% include "core/misc/check.html" with field=form.is_unique label="Unique artifact" %}
+                {% include "core/misc/check.html" with field=form.requires_blood label="Requires blood" %}
             </div>
-            {% if form.is_cursed.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.is_cursed.errors }}</div>
+        {% endif %}
+        <div class="tl-formgrid">
+            {% if form.powers %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.powers label="Powers & effects" %}</div>
             {% endif %}
-        </div>
-        <div class="col-md-4">
-            <div class="form-check">
-                {{ form.is_unique }}
-                <label class="form-check-label" for="{{ form.is_unique.id_for_label }}">
-                    Unique Artifact
-                </label>
+            <div class="tl-field--full">
+                {% include "core/tl/field.html" with field=form.history label="History & lore" help=form.history.help_text %}
             </div>
-            {% if form.is_unique.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.is_unique.errors }}</div>
-            {% endif %}
-        </div>
-        <div class="col-md-4">
-            <div class="form-check">
-                {{ form.requires_blood }}
-                <label class="form-check-label" for="{{ form.requires_blood.id_for_label }}">
-                    Requires Blood
-                </label>
-            </div>
-            {% if form.requires_blood.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.requires_blood.errors }}</div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.powers.id_for_label }}" class="form-label">Powers & Effects</label>
-            {{ form.powers }}
-            {% if form.powers.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.powers.errors }}</div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.history.id_for_label }}" class="form-label">History & Lore</label>
-            {{ form.history }}
-            {% if form.history.errors %}
-                <div class="text-danger" style="font-size: 0.875rem;">{{ form.history.errors }}</div>
-            {% endif %}
         </div>
     </div>
 {% endblock contents %}

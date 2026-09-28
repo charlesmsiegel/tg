@@ -1,0 +1,19 @@
+{% extends "core/form.html" %}
+{% comment %}
+Create / edit shell for every item form (Spread). It keeps core/form.html's blocks and
+buttons but renders outside the legacy wrapper: children fill `contents` with Spread
+fields only (core/tl/field.html inside .tl-formgrid, core/misc/check.html for
+checkboxes, .tl-section for groups). Creating an item shows its gameline on the cover
+(from the registry spec); errors use the M14 summary; the approval actions under an
+edit form use the Spread include.
+{% endcomment %}
+{% load tl %}
+{% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}{{ view.registry_spec.gameline|gameline_code }}{% endif %}{% endblock gameline %}
+{% block cover_kind %}{% if object or view.registry_spec.gameline|gameline_code != "wod" %}line{% else %}ink{% endif %}{% endblock cover_kind %}
+{% block content_mod %}{% endblock content_mod %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
+{% block after_content %}
+    {% tl_object_actions %}
+{% endblock after_content %}

@@ -1,68 +1,47 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Ushabti
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="ushabtiForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit an Ushabti. The animation fields exist only on the update form.
+{% endcomment %}
+{% block creation_title %}Create Ushabti{% endblock creation_title %}
+{% block formdetails %}method="post" id="ushabtiForm" action="" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Purpose</div>
-            <div class="col-sm">{{ form.purpose }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Rank</div>
-            <div class="col-sm">{{ form.rank }}</div>
-            <div class="col-sm">Material</div>
-            <div class="col-sm">{{ form.material }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Physical Rating</div>
-            <div class="col-sm">{{ form.physical_rating }}</div>
-            <div class="col-sm">Mental Rating</div>
-            <div class="col-sm">{{ form.mental_rating }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.purpose %}
+            {% include "core/tl/field.html" with field=form.rank %}
+            {% include "core/tl/field.html" with field=form.material %}
+            {% include "core/tl/field.html" with field=form.physical_rating label="Physical rating" %}
+            {% include "core/tl/field.html" with field=form.mental_rating label="Mental rating" %}
+            {% include "core/tl/field.html" with field=form.size_description label="Size description" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
         {% if form.is_currently_animated %}
-            <div class="row">
-                <div class="col-sm">Currently Animated</div>
-                <div class="col-sm">{{ form.is_currently_animated }}</div>
-                <div class="col-sm">Animation Duration (hours)</div>
-                <div class="col-sm">{{ form.animation_duration_hours }}</div>
+            <div class="tl-formgrid">
+                {% include "core/misc/check.html" with field=form.is_currently_animated label="Currently animated" %}
+                {% include "core/tl/field.html" with field=form.animation_duration_hours label="Animation duration (hours)" %}
             </div>
         {% endif %}
-        <div class="row">
-            <div class="col-sm">Size Description</div>
-            <div class="col-sm">{{ form.size_description }}</div>
-            <div class="col-sm">Command Word</div>
-            <div class="col-sm">{{ form.command_word }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Obeys Only Creator</div>
-            <div class="col-sm">{{ form.obeys_only_creator }}</div>
-            <div class="col-sm">Creator</div>
-            <div class="col-sm">{{ form.creator }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Appearance</div>
-            <div class="col-sm">{{ form.appearance }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Special Abilities</div>
-            <div class="col-sm">{{ form.special_abilities }}</div>
-        </div>
+        <section class="tl-section" aria-labelledby="ushabti-command-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="ushabti-command-title">Command</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.creator %}
+                {% include "core/tl/field.html" with field=form.command_word label="Command word" %}
+                {% include "core/misc/check.html" with field=form.obeys_only_creator label="Obeys only its creator" %}
+            </div>
+        </section>
+        <section class="tl-section" aria-labelledby="ushabti-form-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="ushabti-form-title">Form</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.appearance %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.special_abilities label="Special abilities" %}</div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

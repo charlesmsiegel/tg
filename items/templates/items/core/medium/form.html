@@ -1,13 +1,11 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Medium
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Medium{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Length Modifier</div>
-        <div class="col-sm">{{ form.length_modifier }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.length_modifier_type label="Length modifier type" %}
+            {% include "core/tl/field.html" with field=form.length_modifier label="Length modifier" %}
+        </div>
     </div>
 {% endblock contents %}

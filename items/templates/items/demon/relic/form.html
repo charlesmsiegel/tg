@@ -1,78 +1,27 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Demon Relic
-    {% else %}
-        Create Demon Relic
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Demon Relic{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.relic_type label="Relic type" %}
+            {% include "core/tl/field.html" with field=form.house label="House" help="For House-specific relics" %}
+            {% include "core/misc/check.html" with field=form.is_permanent label="Permanent" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-        <div class="col-md-4">
-            <label for="{{ form.relic_type.id_for_label }}" class="form-label">Relic Type</label>
-            {{ form.relic_type }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="{{ form.complexity.id_for_label }}" class="form-label">Complexity (1-10)</label>
-            {{ form.complexity }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.difficulty.id_for_label }}" class="form-label">Difficulty</label>
-            {{ form.difficulty }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.dice_pool.id_for_label }}" class="form-label">Dice Pool</label>
-            {{ form.dice_pool }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.lore_used.id_for_label }}" class="form-label">Lore Used</label>
-            {{ form.lore_used }}
-        </div>
-        <div class="col-md-6">
-            <label for="{{ form.house.id_for_label }}" class="form-label">House (for House-Specific Relics)</label>
-            {{ form.house }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.material.id_for_label }}" class="form-label">Material</label>
-            {{ form.material }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.power.id_for_label }}" class="form-label">Power & Effects</label>
-            {{ form.power }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="form-check">
-                {{ form.is_permanent }}
-                <label class="form-check-label" for="{{ form.is_permanent.id_for_label }}">
-                    Permanent
-                </label>
+        <section class="tl-section" aria-labelledby="relic-power-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="relic-power-title">Power</h2>
             </div>
-        </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.complexity label="Complexity (1–10)" %}
+                {% include "core/tl/field.html" with field=form.difficulty %}
+                {% include "core/tl/field.html" with field=form.dice_pool label="Dice pool" %}
+                {% include "core/tl/field.html" with field=form.lore_used label="Lore used" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.power label="Power & effects" %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.material %}</div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}

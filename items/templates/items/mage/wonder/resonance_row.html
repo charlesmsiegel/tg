@@ -1,0 +1,10 @@
+{% comment %}
+One Resonance trait of the Wonder form (FormsetManager row).
+  {% include "items/mage/wonder/resonance_row.html" with subform=... %}
+{% endcomment %}
+{% load formset_tags %}
+<div class="tl-formgrid tl-formgrid--2" {% formset_form_wrapper %}>
+    {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+    {% include "core/tl/field.html" with field=subform.resonance label="Resonance" %}
+    {% include "core/tl/field.html" with field=subform.rating label="Rating" %}
+</div>

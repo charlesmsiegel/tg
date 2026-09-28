@@ -1287,7 +1287,7 @@ registry = ModelRegistry(
                 "create": "items:create:item",
                 "list": "items:mage:list:sorcerer_artifact",
             },
-            fields=("name", "rank", "background_cost", "description", "power"),
+            fields=("name", "rank", "description"),
             list_title="Sorcerer Artifacts",
             templates={
                 "detail": "items/mage/sorcerer_artifact/detail.html",

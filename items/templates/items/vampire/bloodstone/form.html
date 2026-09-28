@@ -1,53 +1,15 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Bloodstone
-    {% else %}
-        Create Bloodstone
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Bloodstone{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.stone_type.id_for_label }}" class="form-label">Stone Type</label>
-            {{ form.stone_type }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="{{ form.blood_stored.id_for_label }}" class="form-label">Blood Stored</label>
-            {{ form.blood_stored }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.max_blood.id_for_label }}" class="form-label">Maximum Blood</label>
-            {{ form.max_blood }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.created_by_generation.id_for_label }}" class="form-label">Creator Generation</label>
-            {{ form.created_by_generation }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="form-check">
-                {{ form.is_active }}
-                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                    Active
-                </label>
-            </div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.stone_type label="Stone type" %}
+            {% include "core/tl/field.html" with field=form.created_by_generation label="Creator generation" %}
+            {% include "core/misc/check.html" with field=form.is_active label="Active" %}
+            {% include "core/tl/field.html" with field=form.blood_stored label="Blood stored" %}
+            {% include "core/tl/field.html" with field=form.max_blood label="Maximum blood" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
     </div>
 {% endblock contents %}

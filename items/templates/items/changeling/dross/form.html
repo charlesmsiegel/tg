@@ -1,107 +1,44 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Dross
-    {% else %}
-        Create Dross
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Dross{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.quality %}
+            {% include "core/tl/field.html" with field=form.glamour_value label="Glamour value" %}
+            {% include "core/tl/field.html" with field=form.estimated_value label="Estimated value" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-        <div class="col-md-3">
-            <label for="{{ form.quality.id_for_label }}" class="form-label">Quality</label>
-            {{ form.quality }}
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.glamour_value.id_for_label }}" class="form-label">Glamour Value</label>
-            {{ form.glamour_value }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="{{ form.physical_form.id_for_label }}" class="form-label">Physical Form</label>
-            {{ form.physical_form }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
-            {{ form.color }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.source.id_for_label }}" class="form-label">Source</label>
-            {{ form.source }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.resonance.id_for_label }}" class="form-label">Resonance</label>
-            {{ form.resonance }}
-            <small class="text-muted">Emotional or thematic resonance (joy, sorrow, courage, etc.)</small>
-        </div>
-        <div class="col-md-3">
-            <div class="form-check" style="margin-top: 32px;">
-                {{ form.is_stable }}
-                <label class="form-check-label" for="{{ form.is_stable.id_for_label }}">
-                    Stable
-                </label>
+        <section class="tl-section" aria-labelledby="dross-nature-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="dross-nature-title">Nature</h2>
             </div>
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.decay_rate.id_for_label }}" class="form-label">Decay Rate</label>
-            {{ form.decay_rate }}
-            <small class="text-muted">If unstable</small>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.special_effects.id_for_label }}" class="form-label">Special Effects</label>
-            {{ form.special_effects }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.restricted_to.id_for_label }}" class="form-label">Restricted To</label>
-            {{ form.restricted_to }}
-            <small class="text-muted">Can only be used by specific kiths, courts, or individuals</small>
-        </div>
-        <div class="col-md-3">
-            <div class="form-check" style="margin-top: 32px;">
-                {{ form.is_consumable }}
-                <label class="form-check-label" for="{{ form.is_consumable.id_for_label }}">
-                    Consumable
-                </label>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.physical_form label="Physical form" %}
+                {% include "core/tl/field.html" with field=form.color %}
+                {% include "core/tl/field.html" with field=form.source %}
+                {% include "core/tl/field.html" with field=form.resonance help="Emotional or thematic resonance (joy, sorrow, courage, etc.)" %}
+                {% include "core/tl/field.html" with field=form.decay_rate label="Decay rate" help="If unstable" %}
+                {% include "core/misc/check.html" with field=form.is_stable label="Stable" %}
             </div>
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.estimated_value.id_for_label }}" class="form-label">Estimated Value</label>
-            {{ form.estimated_value }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.recharge_method.id_for_label }}" class="form-label">Recharge Method</label>
-            {{ form.recharge_method }}
-            <small class="text-muted">If renewable, how does it recharge?</small>
-        </div>
-        <div class="col-md-6">
-            <label for="{{ form.container_description.id_for_label }}" class="form-label">Container</label>
-            {{ form.container_description }}
-            <small class="text-muted">What contains this dross (vial, pouch, etc.)</small>
-        </div>
+        </section>
+        <section class="tl-section" aria-labelledby="dross-use-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="dross-use-title">Use</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.restricted_to label="Restricted to" help="Can only be used by specific kiths, courts, or individuals" %}
+                {% include "core/misc/check.html" with field=form.is_consumable label="Consumable" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.special_effects label="Special effects" %}</div>
+                <div class="tl-field--full">
+                    {% include "core/tl/field.html" with field=form.recharge_method label="Recharge method" help="If renewable, how does it recharge?" %}
+                </div>
+                <div class="tl-field--full">
+                    {% include "core/tl/field.html" with field=form.container_description label="Container" help="What contains this dross (vial, pouch, etc.)" %}
+                </div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}

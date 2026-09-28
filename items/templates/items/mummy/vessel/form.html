@@ -1,64 +1,35 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Vessel
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="vesselForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a Vessel. Current Ba exists only on the update form.
+{% endcomment %}
+{% block creation_title %}Create Vessel{% endblock creation_title %}
+{% block formdetails %}method="post" id="vesselForm" action="" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Type</div>
-            <div class="col-sm">{{ form.vessel_type }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.vessel_type label="Type" %}
+            {% include "core/tl/field.html" with field=form.rank %}
+            {% include "core/tl/field.html" with field=form.material %}
+            {% if form.current_ba %}
+                {% include "core/tl/field.html" with field=form.current_ba label="Current Ba" %}
+            {% endif %}
+            {% include "core/tl/field.html" with field=form.transfer_rate label="Transfer rate" %}
+            {% include "core/tl/field.html" with field=form.efficiency label="Efficiency (%)" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-        <div class="row">
-            <div class="col-sm">Rank</div>
-            <div class="col-sm">{{ form.rank }}</div>
-            <div class="col-sm">Material</div>
-            <div class="col-sm">{{ form.material }}</div>
-        </div>
-        {% if form.current_ba %}
-            <div class="row">
-                <div class="col-sm">Current Ba</div>
-                <div class="col-sm">{{ form.current_ba }}</div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
+        <section class="tl-section" aria-labelledby="vessel-use-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="vessel-use-title">Use</h2>
             </div>
-        {% endif %}
-        <div class="row">
-            <div class="col-sm">Transfer Rate</div>
-            <div class="col-sm">{{ form.transfer_rate }}</div>
-            <div class="col-sm">Efficiency (%)</div>
-            <div class="col-sm">{{ form.efficiency }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Portable</div>
-            <div class="col-sm">{{ form.is_portable }}</div>
-            <div class="col-sm">Requires Ritual</div>
-            <div class="col-sm">{{ form.requires_ritual }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Attuned</div>
-            <div class="col-sm">{{ form.is_attuned }}</div>
-            <div class="col-sm">Attuned To</div>
-            <div class="col-sm">{{ form.attuned_to }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Inscriptions</div>
-            <div class="col-sm">{{ form.inscriptions }}</div>
-        </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/misc/check.html" with field=form.is_portable label="Portable" %}
+                {% include "core/misc/check.html" with field=form.requires_ritual label="Requires ritual" %}
+                {% include "core/misc/check.html" with field=form.is_attuned label="Attuned" %}
+                {% include "core/tl/field.html" with field=form.attuned_to label="Attuned to" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.inscriptions %}</div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

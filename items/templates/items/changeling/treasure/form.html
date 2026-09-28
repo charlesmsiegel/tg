@@ -1,71 +1,34 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Treasure
-    {% else %}
-        Create Treasure
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Treasure{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.rating %}
+            {% include "core/tl/field.html" with field=form.treasure_type label="Type" %}
+            {% include "core/misc/check.html" with field=form.permanence label="Permanent" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-        <div class="col-md-3">
-            <label for="{{ form.rating.id_for_label }}" class="form-label">Rating</label>
-            {{ form.rating }}
-        </div>
-        <div class="col-md-3">
-            <label for="{{ form.treasure_type.id_for_label }}" class="form-label">Type</label>
-            {{ form.treasure_type }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.creator.id_for_label }}" class="form-label">Creator</label>
-            {{ form.creator }}
-        </div>
-        <div class="col-md-6">
-            <div class="form-check" style="margin-top: 32px;">
-                {{ form.permanence }}
-                <label class="form-check-label" for="{{ form.permanence.id_for_label }}">
-                    Permanent
-                </label>
+        <section class="tl-section" aria-labelledby="treasure-making-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="treasure-making-title">Making</h2>
             </div>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.creation_method.id_for_label }}" class="form-label">Creation Method</label>
-            {{ form.creation_method }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.glamour_storage.id_for_label }}" class="form-label">Glamour Storage</label>
-            {{ form.glamour_storage }}
-        </div>
-        <div class="col-md-6">
-            <label for="{{ form.glamour_affinity.id_for_label }}" class="form-label">Glamour Affinity</label>
-            {{ form.glamour_affinity }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.special_abilities.id_for_label }}" class="form-label">Special Abilities</label>
-            {{ form.special_abilities }}
-        </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.creator %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.creation_method label="Creation method" %}</div>
+            </div>
+        </section>
+        <section class="tl-section" aria-labelledby="treasure-glamour-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="treasure-glamour-title">Glamour</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.glamour_storage label="Glamour storage" %}
+                {% include "core/tl/field.html" with field=form.glamour_affinity label="Glamour affinity" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.special_abilities label="Special abilities" %}</div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}

@@ -1,50 +1,27 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Hunter Gear
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Hunter Gear{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Gear Type</div>
-        <div class="col-sm">{{ form.gear_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Damage</div>
-        <div class="col-sm">{{ form.damage }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Range</div>
-        <div class="col-sm">{{ form.range }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rate</div>
-        <div class="col-sm">{{ form.rate }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Capacity</div>
-        <div class="col-sm">{{ form.capacity }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concealability</div>
-        <div class="col-sm">{{ form.concealability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Availability</div>
-        <div class="col-sm">{{ form.availability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Legality</div>
-        <div class="col-sm">{{ form.legality }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Requires Training</div>
-        <div class="col-sm">{{ form.requires_training }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.gear_type label="Gear type" %}
+            {% include "core/tl/field.html" with field=form.availability %}
+            {% include "core/tl/field.html" with field=form.legality %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        </div>
+        <section class="tl-section" aria-labelledby="gear-stats-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="gear-stats-title">Statistics</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.damage %}
+                {% include "core/tl/field.html" with field=form.range %}
+                {% include "core/tl/field.html" with field=form.rate %}
+                {% include "core/tl/field.html" with field=form.capacity %}
+                {% include "core/tl/field.html" with field=form.concealability %}
+                {% include "core/misc/check.html" with field=form.requires_training label="Requires training" %}
+            </div>
+        </section>
     </div>
 {% endblock contents %}

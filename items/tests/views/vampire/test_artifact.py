@@ -74,7 +74,7 @@ class VampireArtifactCreateViewTest(TestCase):
         self.assertIn("name", form.errors)
 
         # Verify the error is rendered in the template
-        self.assertContains(response, "text-danger")
+        self.assertContains(response, "tl-field__error")
         self.assertContains(response, "This field is required")
 
 
@@ -116,5 +116,5 @@ class VampireArtifactUpdateViewTest(TestCase):
         self.assertIn("name", form.errors)
 
         # Verify the error is rendered in the template
-        self.assertContains(response, "text-danger")
+        self.assertContains(response, "tl-field__error")
         self.assertContains(response, "This field is required")
