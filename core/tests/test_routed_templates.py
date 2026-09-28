@@ -25,12 +25,7 @@ from django.views.generic.base import TemplateResponseMixin
 from core.access_policy import PROJECT_PREFIXES, route_name
 from scripts.inventory_authorization_routes import descendants
 
-KNOWN_MISSING = {
-    "characters/wraith/wraith/form.html": (
-        "characters.views.wraith.wraith.WraithUpdateView",
-        "Step 7",
-    ),
-}
+KNOWN_MISSING: dict = {}
 
 # Routed template views that return their own response and never render the
 # template name Django would derive for them.

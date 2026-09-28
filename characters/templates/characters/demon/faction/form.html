@@ -1,32 +1,14 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Demon Faction
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Demon Faction{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    {% load sanitize_text %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Philosophy</div>
-        <div class="col-sm">{{ form.philosophy }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goal</div>
-        <div class="col-sm">{{ form.goal }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leadership</div>
-        <div class="col-sm">{{ form.leadership }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Tactics</div>
-        <div class="col-sm">{{ form.tactics }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.philosophy %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.goal %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.leadership %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.tactics %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

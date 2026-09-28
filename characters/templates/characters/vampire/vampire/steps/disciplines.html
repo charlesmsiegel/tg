@@ -1,16 +1,16 @@
-<div class="row">
-    <div class="col-sm">
-        <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
-                {% for rule in allocation_rules %}
-                    <p class="tg-card-subtitle">Spend {{ rule.total }} dots on Clan Disciplines</p>
-                {% endfor %}
-            </div>
-            <div class="tg-card-body">
-                {{ form.as_p }}
-                {% include "characters/core/chargen/pool.html" %}
-            </div>
-        </div>
+{% comment %} Disciplines step (interactive workflow): the clan's Disciplines as clickable
+   dots under one ruled head (the others ride along as hidden inputs), then the tgPool
+   running total against the step's rule. {% endcomment %}
+{% for rule in allocation_rules %}
+    <p class="tl-lede">Spend {{ rule.total }} dots on Clan Disciplines.</p>
+{% endfor %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+<section class="tl-block" aria-labelledby="disciplines-head">
+    <h2 class="tl-subhead" id="disciplines-head">{% if clan_disciplines %}Clan Disciplines{% else %}Disciplines{% endif %}</h2>
+    <div class="tl-allocflow">
+        {% for field in form.visible_fields %}
+            {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+        {% endfor %}
     </div>
-</div>
+</section>
+{% include "characters/core/chargen/pool.html" %}

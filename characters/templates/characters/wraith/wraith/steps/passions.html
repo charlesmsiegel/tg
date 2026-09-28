@@ -1,24 +1,24 @@
-{% load dots sanitize_text %}
-<div class="row">
-                    <h2 class="col-sm {{ object.get_heading }}">Passions ({{ passion_points_spent }}/{{ passion_points_total }})</h2>
+{% load tl %}
+{% comment %} Passions step: add one Passion per save until the points are spent; the
+   Passions taken so far are listed below the form. {% endcomment %}
+<p class="tl-lede">
+    Passions are the emotional drives that keep you anchored to the world. You have {{ passion_points_remaining }} points remaining.
+</p>
+<p class="tl-chargen__pool">Spent {{ passion_points_spent }} of {{ passion_points_total }}</p>
+{% include "characters/core/chargen/fields.html" with fields_form=form %}
+{% if object.passions.all %}
+    <section class="tl-block" aria-labelledby="passions-head">
+        <h2 class="tl-subhead" id="passions-head">Current Passions</h2>
+        <div class="tl-col">
+            {% for passion in object.passions.all %}
+                <div class="tl-kv">
+                    <span>
+                        <strong>{{ passion.emotion }}:</strong> {{ passion.description }}
+                        {% if passion.is_dark_passion %}<span class="tl-status tl-status--problem">Dark</span>{% endif %}
+                    </span>
+                    {% dots passion.rating %}
                 </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <p>Passions are the emotional drives that keep you anchored to the world. You have {{ passion_points_remaining }} points remaining.</p>
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                    </div>
-                </div>
-                {% if object.passions.all %}
-                    <div class="row mt-3">
-                        <div class="col-sm">
-                            <h4>Current Passions:</h4>
-                            {% for passion in object.passions.all %}
-                                <div class="mb-2">
-                                    <strong>{{ passion.emotion }}:</strong> {{ passion.description }} ({{ passion.rating|dots }})
-                                    {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

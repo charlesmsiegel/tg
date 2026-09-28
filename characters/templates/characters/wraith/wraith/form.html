@@ -1,7 +1,7 @@
 {% extends "core/form.html" %}
 {% comment %} Every field of the form, grouped into sections by characters/tl/character_edit_fields.html. {% endcomment %}
 {% block content_mod %}{% endblock content_mod %}
-{% block creation_title %}{% if object %}Edit{% else %}Create{% endif %} Mummy{% endblock creation_title %}
-{% block formdetails %}method="post" id="mummyForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
+{% block creation_title %}Edit Wraith{% endblock creation_title %}
+{% block formdetails %}method="post" id="wraithForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
 {% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}{% include "characters/tl/character_edit_fields.html" %}{% endblock contents %}

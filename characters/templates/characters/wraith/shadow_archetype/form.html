@@ -1,42 +1,17 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit Shadow Archetype{% else %}Create Shadow Archetype{% endif %}
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Shadow Archetype{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Point Cost</div>
-        <div class="col-sm">{{ form.point_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Core Function</div>
-        <div class="col-sm">{{ form.core_function }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Modus Operandi</div>
-        <div class="col-sm">{{ form.modus_operandi }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Dominance Behavior</div>
-        <div class="col-sm">{{ form.dominance_behavior }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Effect on Psyche</div>
-        <div class="col-sm">{{ form.effect_on_psyche }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Strengths</div>
-        <div class="col-sm">{{ form.strengths }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Weaknesses</div>
-        <div class="col-sm">{{ form.weaknesses }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.point_cost %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.core_function %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.modus_operandi %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.dominance_behavior %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.effect_on_psyche label="Effect on Psyche" %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.strengths %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.weaknesses %}</div>
     </div>
 {% endblock contents %}

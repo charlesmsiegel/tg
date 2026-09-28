@@ -1,34 +1,15 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Hunter Organization
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Hunter Organization{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Organization Type</div>
-        <div class="col-sm">{{ form.organization_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Philosophy</div>
-        <div class="col-sm">{{ form.philosophy }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goals</div>
-        <div class="col-sm">{{ form.goals }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Resources</div>
-        <div class="col-sm">{{ form.resources }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <div class="col-sm">{{ form.leader }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Members</div>
-        <div class="col-sm">{{ form.members }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.organization_type %}
+        {% include "core/tl/field.html" with field=form.resources %}
+        {% include "core/tl/field.html" with field=form.leader %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.members %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.philosophy %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.goals %}</div>
     </div>
 {% endblock contents %}

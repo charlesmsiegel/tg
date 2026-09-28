@@ -1,22 +1,12 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit Wraith Faction{% else %}Create Wraith Faction{% endif %}
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Wraith Faction{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Faction Type</div>
-        <div class="col-sm">{{ form.faction_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Parent Faction</div>
-        <div class="col-sm">{{ form.parent }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.faction_type %}
+        {% include "core/tl/field.html" with field=form.parent label="Parent faction" %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

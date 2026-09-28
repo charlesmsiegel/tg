@@ -1,5 +1,7 @@
 {% extends "core/form.html" %}
+{% block content_mod %}{% endblock content_mod %}
 {% block creation_title %}Create Ritual{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
     <div class="tl-formgrid">
         {% include "core/tl/field.html" with field=form.name %}

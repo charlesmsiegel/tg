@@ -1,54 +1,20 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Thorn
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Thorn{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Thorn Type</div>
-        <div class="col-sm">{{ form.thorn_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Point Cost</div>
-        <div class="col-sm">{{ form.point_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Activation Cost</div>
-        <div class="col-sm">{{ form.activation_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Activation Trigger</div>
-        <div class="col-sm">{{ form.activation_trigger }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Mechanical Description</div>
-        <div class="col-sm">{{ form.mechanical_description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Resistance System</div>
-        <div class="col-sm">{{ form.resistance_system }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Resistance Difficulty</div>
-        <div class="col-sm">{{ form.resistance_difficulty }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Duration</div>
-        <div class="col-sm">{{ form.duration }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Frequency Limitation</div>
-        <div class="col-sm">{{ form.frequency_limitation }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Limitations</div>
-        <div class="col-sm">{{ form.limitations }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.thorn_type %}
+        {% include "core/tl/field.html" with field=form.point_cost %}
+        {% include "core/tl/field.html" with field=form.activation_cost %}
+        {% include "core/tl/field.html" with field=form.resistance_difficulty %}
+        {% include "core/tl/field.html" with field=form.duration %}
+        {% include "core/tl/field.html" with field=form.frequency_limitation %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.activation_trigger %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.mechanical_description %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.resistance_system %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.limitations %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

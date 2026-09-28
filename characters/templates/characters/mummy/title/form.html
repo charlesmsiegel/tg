@@ -1,30 +1,12 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Mummy Title
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="titleForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Mummy Title{% endblock creation_title %}
+{% block formdetails %}method="post" id="titleForm" action="" novalidate{% endblock formdetails %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Rank Level</div>
-            <div class="col-sm">{{ form.rank_level }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.rank_level %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}
