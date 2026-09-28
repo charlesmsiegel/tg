@@ -66,6 +66,9 @@ def decide_spending_request(record_model, character, record_id, approver, decisi
         # double submit is reported without revealing records to outsiders.
         if record.approved != "Pending":
             raise SpendingAlreadyDecided(f"This request was already {record.approved.lower()}.")
+        # The services save the whole character (a refund, the new trait): lock and
+        # re-read it so a concurrent spend's deduction is not overwritten.
+        subject = type(subject).objects.select_for_update().get(pk=subject.pk)
 
         if record_model is XPSpendingRequest:
             service = XPSpendingServiceFactory.get_service(subject)
