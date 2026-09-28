@@ -1,11 +1,9 @@
-{% extends "core/base.html" %}
+{% extends "core/tl_base.html" %}
 {% comment %}
 Detail shell for items, locations and reference objects (Spread C9–C12, M13). The cover
 is built from the object — type and gameline eyebrow, name with rank dots, owner /
 owned by, status and sources — and the children's blocks (objectname, status_row,
 contents, model_specific, description, post_content, buttons) render on the pages.
-Children that have not been rewritten keep their Bootstrap / tg-card markup; the legacy
-layer styles it, and tl.js hides the old header card whose title the cover repeats.
 {% endcomment %}
 {% load static tl sanitize_text %}
 {% block title %}{{ object.name|sanitize_html }}{% endblock title %}
@@ -16,11 +14,10 @@ layer styles it, and tl.js hides the old header card whose title the cover repea
     <span class="tl-cover__eyebrow">
         {{ object|type_label }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
     </span>
-    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-legacy-title data-fit-title>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>
         {{ object.name|sanitize_html }}
     </h1>
     {% if object.rank %}<span class="tl-cover__rank">{% dots object.rank %}</span>{% endif %}
-    <p class="tl-cover__sub" data-legacy-sub hidden></p>
 {% endblock cover_title %}
 {% block cover_body %}
     <div class="tl-facts">
@@ -55,6 +52,9 @@ layer styles it, and tl.js hides the old header card whose title the cover repea
         {% endwith %}
     {% endif %}
 {% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
+{% endblock nav %}
 {% block content %}
     {% csrf_token %}
     {% block image %}
@@ -66,11 +66,7 @@ layer styles it, and tl.js hides the old header card whose title the cover repea
     {% endblock image %}
     {% block objectname %}{% endblock objectname %}
     {% block references %}{% endblock references %}
-    {% block status %}
-        <div class="row">
-            {% block status_row %}{% endblock status_row %}
-        </div>
-    {% endblock status %}
+    {% block status %}{% block status_row %}{% endblock status_row %}{% endblock status %}
     {% block contents %}{% endblock contents %}
     {% block description %}
         {% if object.description %}
@@ -85,4 +81,5 @@ layer styles it, and tl.js hides the old header card whose title the cover repea
     {% endblock description %}
     {% block post_content %}{% endblock post_content %}
     {% block buttons %}{% endblock buttons %}
+    {% tl_object_actions %}
 {% endblock content %}

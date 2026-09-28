@@ -9,7 +9,6 @@ a .tl-locform of .tl-locgroup sections of locations/tl/field.html rows.
 {% load tl %}
 {% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}{% block form_line %}wod{% endblock form_line %}{% endif %}{% endblock gameline %}
 {% block cover_kind %}line{% endblock cover_kind %}
-{% block content_mod %}{% endblock content_mod %}
 {% block errors %}
     {% include "core/misc/form_errors.html" %}
 {% endblock errors %}

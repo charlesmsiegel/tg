@@ -1,7 +1,6 @@
 {% comment %}
 One chargen step inside its form (chargen.html's plain form or step.html's htmx form):
-error summary, "STEP 01 OF 21" + the step label, the step's own template (still
-legacy markup in some gamelines, hence .tl-legacy), the live verdict on interactive
+error summary, "STEP 01 OF 21" + the step label, the step's own template, the live verdict on interactive
 workflows, then Save & continue (first, so Enter submits it), Back and Cancel.
 Builtin tags only: core/tests/permissions/test_permission_context.py renders it alone.
 {% endcomment %}
@@ -23,7 +22,7 @@ Builtin tags only: core/tests/permissions/test_permission_context.py renders it 
     <h1 id="chargen-step-heading" class="tl-h1" tabindex="-1" data-fit-title>{{ step.label }}</h1>
 </header>
 {% if object_perms.can_chargen %}
-    <div class="tl-chargen__fields tl-legacy">
+    <div class="tl-chargen__fields">
         {% if skip_step %}
             {% include "characters/core/chargen/skip.html" %}
         {% else %}

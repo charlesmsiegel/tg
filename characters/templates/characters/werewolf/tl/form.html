@@ -10,7 +10,6 @@ character forms carry a portrait.
 {% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}wta{% endif %}{% endblock gameline %}
 {% block cover_kind %}line{% endblock cover_kind %}
 {% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
-{% block content_mod %}{% endblock content_mod %}
 {% block errors %}
     {% include "core/misc/form_errors.html" %}
 {% endblock errors %}

@@ -3,15 +3,11 @@
 Character creation step (Spread). The line cover carries the draft's identity and the
 step list (chargen/progress_region.html, swapped out of band on interactive
 workflows); the pages hold one step: chargen/step_body.html inside either the htmx
-form (interactive workflows, chargen/interactive.html) or a plain POST form.
-Step templates that are still legacy markup render inside .tl-legacy in the body,
-so tl-legacy.css is loaded here.
+form (interactive workflows, chargen/interactive.html) or a plain POST form, which is
+multipart so steps with an image field (e.g. the familiar) can upload.
 {% endcomment %}
 {% load static tl %}
 {% block title %}Edit {{ object.name }}{% if step %} · {{ step.label }}{% endif %}{% endblock title %}
-{% block legacy_styling %}
-    <link rel="stylesheet" href="{% static 'core/tl/tl-legacy.css' %}">
-{% endblock legacy_styling %}
 {% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
 {% block cover_kind %}line{% endblock cover_kind %}
 {% block cover_mod %}tl-cover--chargen{% endblock cover_mod %}
@@ -41,7 +37,7 @@ so tl-legacy.css is loaded here.
     {% if chargen_interactive %}
         {% include "characters/core/chargen/interactive.html" %}
     {% else %}
-        <form class="tl-chargen" action="" method="post">
+        <form class="tl-chargen" action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if object_perms.can_chargen and not skip_step %}{{ form.media }}{% endif %}
             {% include "characters/core/chargen/step_body.html" %}

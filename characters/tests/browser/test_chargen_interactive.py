@@ -76,9 +76,8 @@ class BrowserTestCase(StaticLiveServerTestCase):
         self.context = self.browser.new_context()
         self.page = self.context.new_page()
         self.page.set_default_timeout(10000)
-        # Only the live server is reachable; external CDNs (jQuery, fonts) are
-        # cut off so the tests are deterministic. Bootstrap then fails on the
-        # missing jQuery; that error is not the wizard's.
+        # Only the live server is reachable; external requests (web fonts) are
+        # cut off so the tests are deterministic.
         self.context.route(
             "**/*",
             lambda route: (
@@ -88,11 +87,7 @@ class BrowserTestCase(StaticLiveServerTestCase):
             ),
         )
         self.errors = []
-        self.page.on(
-            "pageerror",
-            lambda error: "boot/js/bootstrap" not in (error.stack or "")
-            and self.errors.append(str(error)),
-        )
+        self.page.on("pageerror", lambda error: self.errors.append(str(error)))
         self.page.on(
             "console",
             lambda message: message.type == "error"

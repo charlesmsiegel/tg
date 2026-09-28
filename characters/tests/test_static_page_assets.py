@@ -36,7 +36,7 @@ class StaticPageConfigurationTests(SimpleTestCase):
 
         for template in (
             "core/form.html",
-            "characters/core/ability_block/validation.html",
+            "characters/core/ability_block/status.html",
             "characters/core/background_block/form.html",
         ):
             with self.subTest(template=template):
@@ -59,7 +59,7 @@ class StaticPageConfigurationTests(SimpleTestCase):
         self.assertEqual(ScriptParser(render_to_string(step.template)).scripts, [])
 
     def test_ability_validation_requires_all_targets(self):
-        template = "characters/core/ability_block/validation.html"
+        template = "characters/core/ability_block/status.html"
         for context in (
             {},
             {"primary": 13, "secondary": 9},
