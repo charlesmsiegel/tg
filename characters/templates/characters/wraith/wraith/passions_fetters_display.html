@@ -1,0 +1,34 @@
+{% load tl %}
+{% comment %}
+Passions & Fetters (the Wraith line block): the Psyche's Passions and the Fetters in two
+columns, description with the emotion / fetter type beside it. Dark Passions belong to the
+Shadow and are listed in shadow_display.html.
+{% endcomment %}
+{% with psyche=object.get_psyche_passions %}
+    {% if psyche or fetters %}
+        <section class="tl-section tl-section--cols" id="passions-fetters">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Passions &amp; Fetters</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col" id="passions">
+                    <span class="tl-col__head">Passions</span>
+                    {% for passion in psyche %}
+                        {% trait passion.description passion.rating passion.emotion %}
+                    {% empty %}
+                        <p class="tl-muted">No Passions.</p>
+                    {% endfor %}
+                </div>
+                <div class="tl-col" id="fetters">
+                    <span class="tl-col__head">Fetters</span>
+                    {% for fetter in fetters %}
+                        {% trait fetter.description fetter.rating fetter.get_fetter_type_display %}
+                    {% empty %}
+                        <p class="tl-muted">No Fetters.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

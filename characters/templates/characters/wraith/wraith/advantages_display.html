@@ -1,0 +1,22 @@
+{% load tl %}
+{% comment %}Pathos, Willpower, Corpus (squares) and Angst, then Backgrounds (as on the Mage sheet).{% endcomment %}
+<section class="tl-section tl-span-5" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
+    </div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div>
+            {% track "Pathos" perm=object.pathos temp=object.temporary_pathos %}
+            {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+            {% track "Corpus" temp=object.corpus %}
+            {% track "Angst" perm=object.angst temp=object.temporary_angst %}
+        </div>
+        {% if object.backgrounds.exists %}
+            <div class="tl-stack">
+                <span class="tl-subhead">Backgrounds</span>
+                {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds bare=True %}
+            </div>
+        {% endif %}
+    </div>
+</section>

@@ -317,6 +317,39 @@ class TestWraithArcanoi(WraithTestCase):
         self.assertTrue(self.wraith.has_arcanoi())
 
 
+class TestWraithSheetHelpers(WraithTestCase):
+    """Helpers the Spread sheet reads."""
+
+    def test_arcanoi_ratings_skip_zero_and_label(self):
+        self.wraith.argos = 3
+        self.wraith.usury = 1
+        self.assertEqual(self.wraith.get_arcanoi_ratings(), [("Argos", 3), ("Usury", 1)])
+
+    def test_dark_arcanoi_ratings_label_underscores(self):
+        self.wraith.false_life = 2
+        self.wraith.blighted_insight = 1
+        self.assertEqual(
+            self.wraith.get_dark_arcanoi_ratings(),
+            [("Blighted Insight", 1), ("False Life", 2)],
+        )
+
+    def test_psyche_and_dark_passions_split(self):
+        self.wraith.add_passion("Love", "Protect my brother", 3)
+        self.wraith.add_passion("Spite", "Ruin them", 2, is_dark=True)
+        self.assertEqual(
+            [p.emotion for p in self.wraith.get_psyche_passions()],
+            ["Love"],
+        )
+        self.assertEqual([p.emotion for p in self.wraith.get_dark_passions()], ["Spite"])
+
+    def test_thorn_ratings_skip_zero(self):
+        rated = Thorn.objects.create(name="Shadow Call")
+        unrated = Thorn.objects.create(name="Pact")
+        ThornRating.objects.create(wraith=self.wraith, thorn=rated, rating=2)
+        ThornRating.objects.create(wraith=self.wraith, thorn=unrated, rating=0)
+        self.assertEqual([tr.thorn for tr in self.wraith.get_thorn_ratings()], [rated])
+
+
 class TestWraithPassions(WraithTestCase):
     """Tests for Wraith passion methods."""
 

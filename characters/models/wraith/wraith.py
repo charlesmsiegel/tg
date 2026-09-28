@@ -223,6 +223,17 @@ class Wraith(WtOHuman):
             "connaissance": self.connaissance,
         }
 
+    @staticmethod
+    def _rated(ratings):
+        """(label, rating) for each rating above 0, e.g. ("False Life", 2)."""
+        return [(key.replace("_", " ").title(), value) for key, value in ratings.items() if value]
+
+    def get_arcanoi_ratings(self):
+        return self._rated(self.get_arcanoi())
+
+    def get_dark_arcanoi_ratings(self):
+        return self._rated(self.get_dark_arcanoi())
+
     def total_arcanoi(self):
         return sum(self.get_arcanoi().values())
 
@@ -287,6 +298,19 @@ class Wraith(WtOHuman):
 
     def has_shadow(self):
         return self.shadow_archetype is not None
+
+    def get_psyche_passions(self):
+        return self.passions.filter(is_dark_passion=False)
+
+    def get_dark_passions(self):
+        return self.passions.filter(is_dark_passion=True)
+
+    def get_thorn_ratings(self):
+        return (
+            self.thorn_ratings.filter(rating__gt=0, thorn__isnull=False)
+            .select_related("thorn")
+            .order_by("thorn__name")
+        )
 
     def set_shadow_archetype(self, archetype):
         self.shadow_archetype = archetype

@@ -6,8 +6,12 @@ from django.urls import reverse
 
 from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.guild import Guild
+from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.passion import Passion
-from characters.models.wraith.wraith import Wraith
+from characters.models.wraith.shadow_archetype import ShadowArchetype
+from characters.models.wraith.thorn import Thorn
+from characters.models.wraith.wraith import ThornRating, Wraith
 from game.models import Chronicle
 
 
@@ -117,7 +121,7 @@ class TestWraithDetailView(TestCase):
         self.assertContains(response, "Passions")
 
     def test_detail_view_displays_dark_passion_badge(self):
-        """Test that dark passions show the Dark badge."""
+        """Dark passions are listed under the Shadow, not with the Psyche's Passions."""
         Passion.objects.create(
             wraith=self.wraith,
             emotion="Jealousy",
@@ -127,7 +131,11 @@ class TestWraithDetailView(TestCase):
         )
         self.client.login(username="owner", password="password")
         response = self.client.get(self.wraith.get_absolute_url())
-        self.assertContains(response, "Dark")
+        self.assertContains(response, "Dark Passions")
+        content = response.content.decode()
+        shadow = content[content.index('id="shadow"') :]
+        self.assertIn("Destroy my rival", shadow)
+        self.assertNotIn('id="passions-fetters"', content)
 
     def test_detail_view_unapproved_hidden_from_others(self):
         """Test that unapproved characters are hidden from non-owners."""
@@ -154,6 +162,153 @@ class TestWraithDetailView(TestCase):
         self.client.login(username="owner", password="password")
         response = self.client.get(unapproved.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+
+class TestWraithSheetSpread(TestCase):
+    """The Wraith sheet in Spread markup (C18)."""
+
+    def setUp(self):
+        self.client = Client()
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.chronicle = Chronicle.objects.create(name="Stygian Chicago")
+        self.guild = Guild.objects.create(name="Harbingers", willpower=5)
+        self.legion = WraithFaction.objects.create(name="Grim Legion")
+        self.faction = WraithFaction.objects.create(name="Hierarchy")
+        self.archetype = ShadowArchetype.objects.create(name="The Martyr")
+        self.wraith = Wraith.objects.create(
+            name="Harriet Vosk",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="App",
+            guild=self.guild,
+            legion=self.legion,
+            faction=self.faction,
+            shadow_archetype=self.archetype,
+            age_at_death=34,
+            argos=3,
+            false_life=2,
+            pathos=7,
+            temporary_pathos=5,
+            corpus=8,
+            angst=4,
+            temporary_angst=6,
+            death_description="Drowned in the lock.",
+        )
+        self.client.login(username="owner", password="password")
+
+    def get(self, **params):
+        return self.client.get(self.wraith.get_absolute_url(), params).content.decode()
+
+    def test_cover_basics_are_fact_rows(self):
+        content = self.get()
+        for label, value in [
+            ("Guild", "Harbingers"),
+            ("Legion", "Grim Legion"),
+            ("Faction", "Hierarchy"),
+            ("Shadow", "The Martyr"),
+            ("Age at death", "34"),
+        ]:
+            self.assertIn(f'<span class="tl-facts__k">{label}</span>', content)
+            self.assertIn(value, content)
+        self.assertIn(f'href="{self.guild.get_absolute_url()}"', content)
+
+    def test_age_at_death_hidden_when_zero(self):
+        self.wraith.age_at_death = 0
+        self.wraith.save()
+        self.assertNotIn("Age at death", self.get())
+
+    def test_arcanoi_power_section(self):
+        content = self.get()
+        self.assertIn('class="tl-section tl-section--power tl-span-7" id="arcanoi"', content)
+        section = content[content.index('id="arcanoi"') : content.index('id="advantages"')]
+        self.assertIn("Argos", section)
+        self.assertIn('aria-label="3 of 5"', section)
+        self.assertNotIn("Castigate", section)
+        self.assertNotIn("False Life", section)
+
+    def test_arcanoi_hidden_when_none(self):
+        self.wraith.argos = 0
+        self.wraith.save()
+        self.assertNotIn('id="arcanoi"', self.get())
+
+    def test_advantage_tracks(self):
+        content = self.get()
+        section = content[content.index('id="advantages"') :]
+        for label in ["Pathos", "Willpower", "Corpus", "Angst"]:
+            self.assertIn(label, section)
+        # Pathos 7 permanent / 5 temporary; Corpus as squares only; Angst 4 / 6.
+        self.assertIn('aria-label="7 of 10"', section)
+        self.assertIn('<span class="tl-boxes" role="img" aria-label="5 of 10">', section)
+        self.assertIn('<span class="tl-boxes" role="img" aria-label="8 of 10">', section)
+        self.assertNotIn('<span class="tl-dots" role="img" aria-label="8 of 10">', section)
+        self.assertIn('aria-label="4 of 10"', section)
+        self.assertIn('aria-label="6 of 10"', section)
+        self.assertNotIn('id="backgrounds"', content)
+        self.assertNotIn("Backgrounds", section)
+
+    def test_backgrounds_sit_in_advantages(self):
+        memoriam = Background.objects.create(name="Memoriam", property_name="memoriam")
+        BackgroundRating.objects.create(char=self.wraith, bg=memoriam, rating=2, note="Plaque")
+        content = self.get()
+        section = content[content.index('id="advantages"') :]
+        self.assertIn('<span class="tl-subhead">Backgrounds</span>', section)
+        self.assertIn("Memoriam", section)
+        self.assertIn("Plaque", section)
+
+    def test_passions_and_fetters_block(self):
+        Passion.objects.create(
+            wraith=self.wraith, emotion="Love", description="Protect my brother", rating=3
+        )
+        Fetter.objects.create(
+            wraith=self.wraith, fetter_type="object", description="Hockey jersey", rating=2
+        )
+        content = self.get()
+        self.assertIn("Passions &amp; Fetters", content)
+        section = content[content.index('id="passions-fetters"') :]
+        self.assertIn("Protect my brother", section)
+        self.assertIn('<span class="tl-trait__spec">Love</span>', section)
+        self.assertIn("Hockey jersey", section)
+        self.assertIn('<span class="tl-trait__spec">Object</span>', section)
+
+    def test_passions_and_fetters_hidden_when_empty(self):
+        self.assertNotIn('id="passions-fetters"', self.get())
+
+    def test_shadow_section_thorns_and_history(self):
+        thorn = Thorn.objects.create(name="Shadow Call")
+        ThornRating.objects.create(wraith=self.wraith, thorn=thorn, rating=2)
+        self.wraith.harrowing_count = 2
+        self.wraith.catharsis_count = 1
+        self.wraith.save()
+        content = self.get()
+        section = content[content.index('id="shadow"') :]
+        self.assertIn(f'href="{self.archetype.get_absolute_url()}"', section)
+        self.assertIn("Harrowings", section)
+        self.assertIn("Catharses", section)
+        self.assertIn(f'<a href="{thorn.get_absolute_url()}">Shadow Call</a>', section)
+
+    def test_shadow_hidden_without_shadow_data(self):
+        self.assertNotIn('id="shadow"', self.get())
+
+    def test_dark_arcanoi_only_for_spectres(self):
+        self.wraith.harrowing_count = 1
+        self.wraith.save()
+        self.assertNotIn("Dark Arcanoi", self.get())
+        self.wraith.character_type = "spectre"
+        self.wraith.save()
+        content = self.get()
+        self.assertIn("Dark Arcanoi", content)
+        self.assertIn("False Life", content)
+
+    def test_history_includes_death(self):
+        content = self.get()
+        section = content[content.index('id="history"') :]
+        self.assertIn("Death", section)
+        self.assertIn("Drowned in the lock.", section)
+
+    def test_no_bootstrap_markup(self):
+        content = self.get()
+        for legacy in ["tg-card", 'class="row', "col-sm", "tg-badge", 'style="']:
+            self.assertNotIn(legacy, content)
 
 
 class TestWraithCreateRoute(TestCase):
