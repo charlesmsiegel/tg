@@ -1,36 +1,30 @@
 {% extends "characters/vampire/vtmhuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Ghoul Character Sheet
-{% endblock creation_title %}
+{% comment %}
+Ghoul sheet: the Vampire sheet's pieces a ghoul has. Disciplines beside Willpower and
+Blood pool, then Virtues, then Backgrounds, Health and Merits in three columns.
+{% endcomment %}
 {% block basics %}
     {% include "characters/vampire/ghoul/basics_display_include.html" %}
 {% endblock basics %}
-{% block advantages %}
-    {% include "characters/shared/vampire/ghoul_advantage_display.html" %}
-{% endblock advantages %}
-{% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-{% endblock backgrounds %}
 {% block powers %}
     {% include "characters/shared/vampire/powers_block_display.html" %}
 {% endblock powers %}
-{% block equipment %}
-    {% include "characters/core/human/equipment_block.html" %}
-{% endblock equipment %}
-{% block appearance %}
-    {% include "characters/vampire/vtmhuman/appearance_block_display.html" %}
-{% endblock appearance %}
-{% block history %}
-    {% include "characters/vampire/vtmhuman/history_block_display.html" %}
-{% endblock history %}
+{% block advantages %}
+    {% include "characters/shared/vampire/ghoul_advantage_display.html" %}
+{% endblock advantages %}
+{% block backgrounds %}{% endblock backgrounds %}
+{% block line %}
+    {% include "characters/shared/vampire/virtues_display.html" with v1_name="Conscience" v1=object.conscience v2_name="Self-Control" v2=object.self_control courage=object.courage %}
+    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds span="tl-span-4" %}
+{% endblock line %}
+{% block health %}
+    {% include "characters/core/human/health_block_display.html" with span="tl-span-4" %}
+{% endblock health %}
+{% block mfs %}
+    {% include "characters/tl/merits.html" with span="tl-span-4" %}
+{% endblock mfs %}
 {% block freebies %}
     {% if object.status == "Sub" %}
         {% include "characters/vampire/ghoul/freebies_form.html" %}
     {% endif %}
 {% endblock freebies %}
-{% block xp %}
-{% endblock xp %}
-{% block description %}
-{% endblock description %}

@@ -1,0 +1,21 @@
+{% load tl %}
+{% comment %}
+Virtues, the Vampire line block, in two columns: the first virtue over Courage, then the
+second virtue.
+  {% include "characters/shared/vampire/virtues_display.html" with v1_name=… v1=… v2_name=… v2=… courage=… %}
+{% endcomment %}
+<section class="tl-section" id="virtues">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Virtues</h2>
+    </div>
+    <div class="tl-section__body tl-cols tl-cols--2">
+        <div class="tl-stack">
+            {% trait v1_name v1 %}
+            {% trait "Courage" courage %}
+        </div>
+        <div class="tl-stack">
+            {% trait v2_name v2 %}
+        </div>
+    </div>
+</section>

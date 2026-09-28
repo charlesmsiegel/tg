@@ -1203,3 +1203,7 @@ body.tl {
 .tl-ref-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 400 17px var(--serif); }
 .tl-ref-links a { text-decoration-color: var(--rule); }
 .tl-cover__actions .tl-btnpair:not(:has(*)) { display: none; }
+/* ---- vampire sheet ---- */
+/* Blood pool runs to max_blood_pool squares (up to 50 at low generations): let them wrap. */
+.tl-vtm-tracks .tl-boxes { flex-wrap: wrap; justify-content: flex-end; max-width: 100%; }
+/* ---- end vampire sheet ---- */
