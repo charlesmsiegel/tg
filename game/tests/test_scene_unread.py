@@ -104,6 +104,21 @@ class MarkReadTests(ReadMarkerBase):
         UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, newer)
         self.assertTrue(self.status().read)
 
+    def test_shown_posts_do_not_skip_an_unread_backlog(self):
+        read = self.post(self.character, "Read")
+        self.post(self.st_character, "Not loaded")
+        live = self.post(self.st_character, "Live")
+        self.set_status(read=False, marker=read)
+        owner = self.users["owner"].pk
+        UserSceneReadStatus.objects.mark_read(self.scene, owner, live, shown_from=live)
+        self.assertEqual(self.status().last_read_post, read)
+        self.assertFalse(self.status().read)
+        # Caught up to just before the shown posts: the marker moves.
+        self.set_status(read=False, marker=Post.objects.get(message="Not loaded"))
+        UserSceneReadStatus.objects.mark_read(self.scene, owner, live, shown_from=live)
+        self.assertEqual(self.status().last_read_post, live)
+        self.assertTrue(self.status().read)
+
     def test_only_updates_existing_rows(self):
         self.post(self.character, "One")
         self.assertEqual(

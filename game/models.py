@@ -633,18 +633,27 @@ class UserSceneReadStatusManager(models.Manager):
             self.mark_read(scene, author_id, post)
         others.update(read=False)
 
-    def mark_read(self, scene, user_id, post=None):
+    def mark_read(self, scene, user_id, post=None, shown_from=None):
         """``user_id`` has read ``scene`` through ``post`` (by default its latest post).
 
         Updates existing rows only, in one query; the marker never moves back
         to an older post. ``read`` becomes true only if no post is newer than the
         new marker, checked in the same UPDATE: a post that lands after the page
-        was rendered (and was never shown) keeps the scene unread. Returns the
-        number of rows updated.
+        was rendered (and was never shown) keeps the scene unread. With
+        ``shown_from`` (the first of the posts just shown, e.g. delivered live), a
+        row moves only if no unread post precedes it: a backlog the reader has not
+        loaded yet keeps its marker. Returns the number of rows updated.
         """
         if post is None:
             post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
         rows = self.filter(scene=scene, user_id=user_id)
+        if shown_from is not None:
+            unseen = Post.objects.filter(
+                scene=scene,
+                pk__lt=shown_from.pk,
+                pk__gt=Coalesce(OuterRef("last_read_post"), Value(0)),
+            )
+            rows = rows.exclude(Exists(unseen))
         if post is None:
             return rows.update(read=True)
         marker = Greatest(Coalesce("last_read_post", Value(post.pk)), Value(post.pk))

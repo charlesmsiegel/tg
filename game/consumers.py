@@ -10,7 +10,8 @@ Group events carry ids, never markup: each connection re-checks its viewer's
 access and renders the event for that viewer, so one viewer's rendering never
 reaches another connection. Posting goes through ``game.scene_chat``, the same
 path as the HTTP fallback. Posts delivered to a signed-in viewer count as read:
-their scene read marker moves up to the newest one (``mark_read``).
+their scene read marker moves up to the newest one (``mark_read``), unless an
+unread backlog before them has not been loaded on the page yet.
 """
 
 import json
@@ -272,11 +273,14 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         return list(AddCharForm(user=self.user, scene=scene).fields["character_to_add"].queryset)
 
     def render_posts(self, scene, posts):
-        """New posts for this viewer, who has now seen them (their read marker moves)."""
+        """New posts for this viewer, who has now seen them. Their read marker moves
+        unless unread posts before these are still unloaded on their page."""
         if not posts:
             return ""
         if self.viewer_id is not None:
-            UserSceneReadStatus.objects.mark_read(scene, self.viewer_id, posts[-1])
+            UserSceneReadStatus.objects.mark_read(
+                scene, self.viewer_id, posts[-1], shown_from=posts[0]
+            )
         return render_to_string(
             "game/scene/ws/_posts.html", {"posts": posts, "viewer_id": self.viewer_id}
         )
