@@ -1,9 +1,18 @@
+from unittest import mock
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 
 from characters.models.core.human import Human
-from game.models import Chronicle, FreebieSpendingRecord, Gameline, STRelationship
+from game import spending_approval
+from game.models import (
+    Chronicle,
+    FreebieSpendingRecord,
+    Gameline,
+    STRelationship,
+    XPSpendingRequest,
+)
 from game.spending_approval import SpendingAlreadyDecided, decide_spending_request
 
 
@@ -75,3 +84,21 @@ class ApprovalSecurityTests(TestCase):
         self.character.save()
         with self.assertRaises(PermissionDenied):
             self.decide(FreebieSpendingRecord, self.character, self.record.pk, staff, "approve")
+
+    def test_denial_refunds_onto_the_current_xp(self):
+        """A spend that lands while a denial is being checked keeps its deduction: the
+        refund is applied to the character as it is now, not as it was first read."""
+        Human.objects.filter(pk=self.character.pk).update(xp=10)
+        request = XPSpendingRequest.objects.create(
+            character=self.character, trait_name="Trait", trait_type="custom", trait_value=1, cost=3
+        )
+        check = spending_approval.require_spending_approver
+
+        def concurrent_spend(user, character):
+            check(user, character)
+            Human.objects.filter(pk=character.pk).update(xp=4)
+
+        with mock.patch.object(spending_approval, "require_spending_approver", concurrent_spend):
+            self.decide(XPSpendingRequest, self.character, request.pk, self.st, "deny")
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.xp, 7)
