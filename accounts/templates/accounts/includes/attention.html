@@ -1,27 +1,19 @@
+{% load tl %}
 {% if scenes_waiting %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#attention-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> Scenes Needing Attention
-            </h3>
+    <section class="tl-section tl-queue tl-queue--sm"
+             id="attention-section"
+             aria-labelledby="attention-title">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="attention-title">Scenes needing attention</h2>
+            <span class="tl-queue__count">{{ scenes_waiting|length }}</span>
         </div>
-        <div id="attention-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for scene in scenes_waiting %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
-                                    </h5>
-                                    <div class="text-muted small">{{ scene.st_message }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+        <div class="tl-section__body">
+            {% for scene in scenes_waiting %}
+                <div class="tl-scenerow" data-gameline="{{ scene|gameline_code }}">
+                    <span class="tl-scenerow__name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></span>
+                    <span class="tl-scenerow__when is-live">{{ scene.st_message }}</span>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}

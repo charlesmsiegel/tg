@@ -1,51 +1,15 @@
-{% if object.items_to_approve %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#item-approval-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> Items To Approve
-            </h3>
+{% if items_to_approve %}
+    <section class="tl-section tl-queue tl-queue--sm"
+             id="item-approval-section"
+             aria-labelledby="item-approval-title">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="item-approval-title">Items to approve</h2>
+            <span class="tl-queue__count">{{ items_to_approve|length }}</span>
         </div>
-        <div id="item-approval-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for obj in object.items_to_approve %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-                                    </h5>
-                                    <div class="mb-2">
-                                        {% if obj.owner is not None %}
-                                            <a href="{{ obj.owner.profile.get_absolute_url }}">{{ obj.owner }}</a>
-                                        {% else %}
-                                            <span class="text-muted">No Owner</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="mb-2">
-                                        <span class="tg-badge badge-{{ obj.status|lower }}">{{ obj.get_status_display }}</span>
-                                    </div>
-                                    <div class="text-muted small mb-3">
-                                        {% if obj.get_type %}
-                                            {{ obj.get_type }}
-                                        {% else %}
-                                            {{ obj.type.title }}
-                                        {% endif %}
-                                    </div>
-                                    <form action="{% url 'accounts:object_approval' object_type='item' pk=obj.pk %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" class="tg-btn btn-success btn-sm">
-                                            <i class="fas fa-check"></i> Approve
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col text-center text-muted">No Items.</div>
-                    {% endfor %}
-                </div>
-            </div>
+        <div class="tl-section__body">
+            {% for obj in items_to_approve %}
+                {% include "accounts/includes/approval_row.html" with object_type="item" %}
+            {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}

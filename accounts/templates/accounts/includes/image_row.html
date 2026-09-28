@@ -1,0 +1,22 @@
+{% load tl %}
+{% comment %}
+One pending image: name and owner, the image, APPROVE (POST to accounts:image_approval).
+  {% include "accounts/includes/image_row.html" with obj=obj object_type="character" %}
+{% endcomment %}
+<div class="tl-imagerow" data-gameline="{{ obj|gameline_code }}">
+    <div class="tl-approvalrow__id">
+        <a class="tl-approvalrow__name" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+        <span class="tl-approvalrow__sub">
+            {{ obj|type_label }}{% if obj.owner is not None %} · {{ obj.owner }}{% endif %}
+        </span>
+    </div>
+    {% if obj.image %}
+        <img class="tl-imagerow__img" src="{{ obj.image.url }}" alt="image of {{ obj.name }}">
+    {% else %}
+        <span class="tl-note">No image uploaded</span>
+    {% endif %}
+    <form action="{% url 'accounts:image_approval' object_type=object_type pk=obj.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="tl-btn tl-btn--sm">Approve</button>
+    </form>
+</div>

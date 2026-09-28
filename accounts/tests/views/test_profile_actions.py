@@ -50,6 +50,15 @@ class TestSceneXPAwardView(TestCase):
         self.assertEqual(self.char.xp, 1)
         self.assertTrue(self.scene.xp_given)
 
+    def test_award_returns_to_experience_tab(self):
+        self.client.login(username="stuser", password="password")
+        url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
+        response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": "on"})
+        profile_url = reverse("accounts:profile", kwargs={"pk": self.st_user.profile.pk})
+        self.assertRedirects(
+            response, f"{profile_url}?tab=experience", fetch_redirect_response=False
+        )
+
     def test_non_st_cannot_award_xp(self):
         self.client.login(username="player", password="password")
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})

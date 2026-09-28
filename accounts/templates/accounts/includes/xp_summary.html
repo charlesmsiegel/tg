@@ -1,0 +1,26 @@
+{% comment %}
+Weekly XP summary on NEEDS YOU: what waits in the Experience tab (scene XP to award,
+weekly requests to approve, the user's own weekly requests to file) and a button there.
+{% endcomment %}
+{% with s=weekly_xp_summary %}
+    {% if s.scenes or s.to_approve or s.to_file %}
+        <section class="tl-section tl-queue tl-queue--sm" aria-labelledby="weekly-xp-title">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title" id="weekly-xp-title">Weekly XP</h2>
+                {% if s.week %}
+                    <span class="tl-queue__count">{{ s.week.start_date|date:"j M" }} – {{ s.week.end_date|date:"j M" }}</span>
+                {% endif %}
+            </div>
+            <div class="tl-section__body">
+                <div class="tl-queuerow">
+                    <span class="tl-queuerow__text">
+                        {% if s.scenes %}{{ s.scenes }} scene{{ s.scenes|pluralize }} to award{% endif %}
+                        {% if s.to_approve %}{% if s.scenes %}·{% endif %} {{ s.to_approve }} request{{ s.to_approve|pluralize }} to approve{% endif %}
+                        {% if s.to_file %}{% if s.scenes or s.to_approve %}·{% endif %} {{ s.to_file }} request{{ s.to_file|pluralize }} to file{% endif %}
+                    </span>
+                    <a class="tl-btn tl-btn--sm" href="?tab=experience">{% if s.scenes or s.to_approve %}Award XP{% else %}Request XP{% endif %}</a>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

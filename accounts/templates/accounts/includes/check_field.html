@@ -1,0 +1,13 @@
+{% comment %}
+A checkbox field: the box and its label on one line, help and errors below.
+  {% include "accounts/includes/check_field.html" with field=form.highlight_text label="Highlight text" %}
+{% endcomment %}
+<div class="tl-field{% if field.errors %} is-invalid{% endif %}">
+    <label class="tl-check" for="{{ field.id_for_label }}">{{ field }} {{ label|default:field.label }}</label>
+    {% if field.errors %}
+        <ul class="tl-field__error" id="{{ field.auto_id }}_error">
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% if field.help_text %}<div class="tl-field__help">{{ field.help_text }}</div>{% endif %}
+</div>

@@ -834,4 +834,76 @@ body.tl {
   .tl-slot__label { display: none; }
   .tl-itemtable--index td:nth-child(3), .tl-itemtable--index td:nth-child(4) { display: none; }
   .tl-itemtable--index td:nth-child(1) { width: auto; }
+/* ---- profile & approvals (accounts/detail.html, accounts/form.html) ---- */
+@media (min-width: 1101px) { .tl-cover__name--profile { font-size: 84px; line-height: .95; } }
+.tl-facts__row--stack { flex-direction: column; align-items: stretch; gap: 4px; }
+.tl-facts__row--stack .tl-facts__v { text-align: left; font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+.tl-facts__note { font: italic 400 13px var(--serif); opacity: .7; }
+.tl-nav--profile > a { display: flex; align-items: center; align-self: stretch; text-decoration: none; white-space: nowrap; }
+.tl-nav--profile .tl-nav__end { font: 400 12px var(--mono); }
+/* Queue sections: Spectral headings with a mono count, rows straight under the rule. */
+.tl-queue { gap: 12px; }
+.tl-queue .tl-section__title { font-family: var(--serif); }
+.tl-queue--sm .tl-section__title { font-size: 24px; }
+.tl-queue__count { font: 400 13px var(--mono); color: var(--ink2); }
+.tl-queue > .tl-section__body { padding-top: 0; }
+.tl-queue > .tl-section__body.tl-grid { padding-top: 14px; }
+.tl-approvalrow {
+  display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px auto;
+  gap: 20px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--rule);
+}
+.tl-approvalrow__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tl-approvalrow__name { font: 400 24px/1.15 var(--display); text-decoration: none; overflow-wrap: anywhere; }
+.tl-approvalrow__name--sm { font-size: 20px; }
+.tl-approvalrow__sub { font: 400 12px var(--mono); color: var(--ink2); }
+.tl-approvalrow__type { display: flex; flex-direction: column; gap: 2px; font: 400 15px var(--serif); min-width: 0; }
+.tl-approvalrow__type .tl-status { color: var(--ink2); }
+.tl-approvalrow__who { font: 400 13px var(--mono); min-width: 0; overflow-wrap: anywhere; }
+.tl-approvalrow__actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin: 0; }
+.tl-approvalrow__actions form { margin: 0; }
+.tl-approvalrow .tl-btn--ghost { border-color: var(--rule); }
+.tl-approvalrow .tl-btn, .tl-queuerow .tl-btn, .tl-imagerow .tl-btn, .tl-scenerow .tl-btn { white-space: nowrap; flex: none; }
+.tl-queuerow, .tl-imagerow {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--rule);
+}
+.tl-queuerow__text { font: 400 16px var(--serif); }
+.tl-queuerow form, .tl-imagerow form, .tl-queue .tl-scenerow form { margin: 0; }
+.tl-imagerow__img { max-width: 240px; max-height: 240px; border: 1px solid var(--rule); }
+.tl-queueinput input {
+  width: 56px; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent;
+  color: var(--ink); font: 400 16px var(--mono); padding: 4px 0; text-align: center;
+}
+.tl-queueinput input:focus { outline: 0; border-bottom: 2px solid var(--acc); padding-bottom: 3px; }
+/* Other queues: four counters in a row, each linking down to its list. */
+.tl-counters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.tl-counter {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding: 14px 16px 14px 0; border-bottom: 1px solid var(--rule);
+  font: 400 16px var(--serif); text-decoration: none;
+}
+.tl-counter__n { font: 500 15px var(--mono); }
+.tl-counter:not(a) { color: var(--ink2); }
+/* Experience tab: one card per XP form. */
+.tl-xpcard { border: 1px solid var(--rule); background: var(--sheet); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.tl-xpcard__name { font: 400 24px/1.1 var(--display); color: var(--acc); text-decoration: none; overflow-wrap: anywhere; }
+.tl-xpcard > .tl-btn { align-self: flex-start; }
+.tl-xpcard .tl-check input { width: 18px; height: 18px; accent-color: var(--acc); flex: none; }
+.tl-xptable .tl-field select { font-size: 15px; padding: 4px 22px 4px 0; }
+.tl-xptable .tl-field--select::after { bottom: 6px; }
+.tl-xptable tr:hover td { background: none; }
+.tl-profileform { align-items: start; }
+.tl-profileform__row { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.tl-profileform textarea { min-height: 0; height: 7.5em; }
+.tl-check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--acc); flex: none; }
+@media (max-width: 1100px) {
+  .tl-approvalrow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .tl-approvalrow__actions { justify-content: flex-start; }
+}
+@media (max-width: 720px) {
+  .tl-approvalrow { grid-template-columns: 1fr; gap: 8px; }
+  .tl-counters { grid-template-columns: 1fr 1fr; }
+  .tl-imagerow { flex-wrap: wrap; }
+  .tl-profileform__row { grid-template-columns: 1fr; }
+  .tl-facts.tl-profile-settings { display: flex; }
 }

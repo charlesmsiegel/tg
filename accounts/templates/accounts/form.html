@@ -1,167 +1,71 @@
-{% extends "core/form.html" %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Profile settings form (Spread). Ink cover with the username in the preferred heading font;
+the pages hold one form in two sections, Display preferences and Privacy & safety.
+{% endcomment %}
+{% load tl %}
 {% block title %}Edit Profile Settings - {{ object.user.username }}{% endblock title %}
-{% block contents %}
-    <!-- Display Preferences Section -->
-    <div class="mb-5">
-        <h4 class="mb-4 pb-2 border-bottom {{ object.preferred_heading }}">
-            <i class="fas fa-palette"></i> Display Preferences
-        </h4>
-        
-        <div class="tg-form-group">
-            <label for="{{ form.preferred_heading.id_for_label }}" class="tg-form-label">
-                <i class="fas fa-heading"></i> Heading Style
-            </label>
-            {{ form.preferred_heading }}
-            {% if form.preferred_heading.help_text %}
-                <div class="tg-form-help">
-                    <i class="fas fa-info-circle"></i> {{ form.preferred_heading.help_text }}
-                </div>
-            {% endif %}
-            {% if form.preferred_heading.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.preferred_heading.errors }}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="tg-form-group">
-            <label for="{{ form.theme.id_for_label }}" class="tg-form-label">
-                <i class="fas fa-moon"></i> Theme
-            </label>
-            {{ form.theme }}
-            {% if form.theme.help_text %}
-                <div class="tg-form-help">
-                    <i class="fas fa-info-circle"></i> {{ form.theme.help_text }}
-                </div>
-            {% endif %}
-            {% if form.theme.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.theme.errors }}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="tg-form-group">
-            <div class="tg-form-check">
-                {{ form.highlight_text }}
-                <label for="{{ form.highlight_text.id_for_label }}" class="tg-form-check-label">
-                    <i class="fas fa-highlighter"></i> Highlight Text
-                </label>
+{% block cover_label %}Edit profile of {{ object.user.username }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Edit · Profile settings</span>
+    {% with code=object.preferred_heading|gameline_code %}
+        {% with size=object.user.username|cover_title_class:code %}
+            <h1 class="tl-cover__name {{ size|default:'tl-cover__name--profile' }}"
+                data-gameline="{{ code }}"
+                data-fit-title>{{ object.user.username }}</h1>
+        {% endwith %}
+    {% endwith %}
+{% endblock cover_title %}
+{% block cover_actions %}
+    <a class="tl-btn tl-btn--ghost" href="{% url 'accounts:profile' object.pk %}">← Back to profile</a>
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="profile" %}
+{% endblock nav %}
+{% block content %}
+    <form action="" method="post" class="tl-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="tl-errors" role="alert">
+                <ul>
+                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
             </div>
-            {% if form.highlight_text.help_text %}
-                <div class="tg-form-help ml-4">
-                    <i class="fas fa-info-circle"></i> {{ form.highlight_text.help_text }}
+        {% endif %}
+        <section class="tl-section" aria-labelledby="display-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="display-title">Display preferences</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid tl-profileform">
+                {% include "core/tl/field.html" with field=form.preferred_heading label="Heading style" help=form.preferred_heading.help_text %}
+                {% include "core/tl/field.html" with field=form.theme help=form.theme.help_text %}
+                {% include "accounts/includes/check_field.html" with field=form.highlight_text label="Highlight text" %}
+            </div>
+        </section>
+        <section class="tl-section" aria-labelledby="privacy-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="privacy-title">Privacy &amp; safety</h2>
+            </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                <div class="tl-formgrid tl-profileform tl-profileform__row">
+                    {% include "core/tl/field.html" with field=form.discord_id label="Discord ID" help=form.discord_id.help_text %}
+                    {% include "accounts/includes/check_field.html" with field=form.discord_toggle label="Visible to others?" %}
                 </div>
-            {% endif %}
-            {% if form.highlight_text.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.highlight_text.errors }}
+                <div class="tl-formgrid tl-profileform tl-profileform__row">
+                    {% include "core/tl/field.html" with field=form.veils help=form.veils.help_text %}
+                    {% include "accounts/includes/check_field.html" with field=form.veils_toggle label="Visible to others?" %}
                 </div>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- Privacy & Safety Section -->
-    <div class="mb-4">
-        <h4 class="mb-4 pb-2 border-bottom {{ object.preferred_heading }}">
-            <i class="fas fa-user-shield"></i> Privacy & Safety
-        </h4>
-        
-        <div class="tg-form-group">
-            <label for="{{ form.discord_id.id_for_label }}" class="tg-form-label">
-                <i class="fab fa-discord"></i> Discord ID
-            </label>
-            <div class="row">
-                <div class="col-md-8">
-                    {{ form.discord_id }}
-                    {% if form.discord_id.help_text %}
-                        <div class="tg-form-help">
-                            <i class="fas fa-info-circle"></i> {{ form.discord_id.help_text }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-4 d-flex align-items-center">
-                    <div class="tg-form-check">
-                        {{ form.discord_toggle }}
-                        <label for="{{ form.discord_toggle.id_for_label }}" class="tg-form-check-label">
-                            <i class="fas fa-eye"></i> Visible to others?
-                        </label>
-                    </div>
+                <div class="tl-formgrid tl-profileform tl-profileform__row">
+                    {% include "core/tl/field.html" with field=form.lines help=form.lines.help_text %}
+                    {% include "accounts/includes/check_field.html" with field=form.lines_toggle label="Visible to others?" %}
                 </div>
             </div>
-            {% if form.discord_id.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.discord_id.errors }}
-                </div>
-            {% endif %}
+        </section>
+        <div class="tl-actions tl-formactions">
+            <button type="submit" class="tl-btn">Save changes</button>
+            <a href="{% url 'accounts:profile' object.pk %}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
         </div>
-        
-        <div class="tg-form-group">
-            <label for="{{ form.veils.id_for_label }}" class="tg-form-label">
-                <i class="fas fa-veil"></i> Veils
-            </label>
-            <div class="row">
-                <div class="col-md-8">
-                    {{ form.veils }}
-                    {% if form.veils.help_text %}
-                        <div class="tg-form-help">
-                            <i class="fas fa-info-circle"></i> {{ form.veils.help_text }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-4 d-flex align-items-center">
-                    <div class="tg-form-check">
-                        {{ form.veils_toggle }}
-                        <label for="{{ form.veils_toggle.id_for_label }}" class="tg-form-check-label">
-                            <i class="fas fa-eye"></i> Visible to others?
-                        </label>
-                    </div>
-                </div>
-            </div>
-            {% if form.veils.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.veils.errors }}
-                </div>
-            {% endif %}
-        </div>
-        
-        <div class="tg-form-group">
-            <label for="{{ form.lines.id_for_label }}" class="tg-form-label">
-                <i class="fas fa-ban"></i> Lines
-            </label>
-            <div class="row">
-                <div class="col-md-8">
-                    {{ form.lines }}
-                    {% if form.lines.help_text %}
-                        <div class="tg-form-help">
-                            <i class="fas fa-info-circle"></i> {{ form.lines.help_text }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-4 d-flex align-items-center">
-                    <div class="tg-form-check">
-                        {{ form.lines_toggle }}
-                        <label for="{{ form.lines_toggle.id_for_label }}" class="tg-form-check-label">
-                            <i class="fas fa-eye"></i> Visible to others?
-                        </label>
-                    </div>
-                </div>
-            </div>
-            {% if form.lines.errors %}
-                <div class="tg-form-feedback invalid-feedback d-block">
-                    {{ form.lines.errors }}
-                </div>
-            {% endif %}
-        </div>
-    </div>
-{% endblock contents %}
-{% block buttons %}
-    <div class="mt-4 text-center">
-        <button type="submit" class="tg-btn btn-primary btn-lg">
-            <i class="fas fa-save"></i> Save Changes
-        </button>
-        <a href="{% url 'accounts:profile' object.pk %}" class="tg-btn btn-secondary btn-lg ml-2">
-            <i class="fas fa-times"></i> Cancel
-        </a>
-    </div>
-{% endblock buttons %}
+    </form>
+{% endblock content %}

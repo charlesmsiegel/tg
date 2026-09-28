@@ -1,0 +1,17 @@
+{% load tl %}
+{% comment %}
+Tile for something the user owns (character, location, item): type + status, name in its
+gameline font and colour, gameline, and the character's concept when it has one.
+  {% include "accounts/includes/owned_tile.html" with obj=char %}
+{% endcomment %}
+<article class="tl-tile" data-gameline="{{ obj|gameline_code }}">
+    <span class="tl-tile__meta">
+        <span>{{ obj.get_type }}</span>
+        <span class="{% if obj.status == 'Dec' %}tl-status--dec{% endif %}">{{ obj.get_status_display }}</span>
+    </span>
+    <h3 class="tl-tile__name">
+        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    </h3>
+    {% if obj.concept %}<span class="tl-tile__sub">{{ obj.concept }}</span>{% endif %}
+    <span class="tl-tile__who">{{ obj.get_full_gameline }}</span>
+</article>

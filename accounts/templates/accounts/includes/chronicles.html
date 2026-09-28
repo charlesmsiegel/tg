@@ -1,32 +1,25 @@
-{% load field %}
-{% if object.st_relations %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#chronicles-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> Chronicles STed
-            </h3>
-        </div>
-        <div id="chronicles-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for chronicle in object.st_relations %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a>
-                                    </h5>
-                                    {% for str in object.st_relations|field:chronicle %}
-                                        <div class="text-muted small">
-                                            {{ str.gameline }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+{% load field tl %}
+{% with relations=object.st_relations %}
+    {% if relations %}
+        <section class="tl-section tl-queue" id="chronicles-section" aria-labelledby="chronicles-title">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title" id="chronicles-title">Chronicles you storytell</h2>
+                <span class="tl-queue__count">{{ relations|length }}</span>
             </div>
-        </div>
-    </div>
-{% endif %}
+            <div class="tl-section__body">
+                {% for chronicle in relations %}
+                    <div class="tl-scenerow" data-gameline="{{ chronicle|gameline_code }}">
+                        <span class="tl-scenerow__name"><a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a></span>
+                        <span class="tl-scenerow__when">
+                            {% for str in relations|field:chronicle %}
+                                {{ str.gameline }}{% if not forloop.last %} ·{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% else %}
+        {% include "core/tl/empty.html" with text="You do not storytell any chronicles." %}
+    {% endif %}
+{% endwith %}

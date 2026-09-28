@@ -1,74 +1,86 @@
-{% extends "core/base.html" %}
-{% load static %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Profile & approvals (Spread C6). Ink cover: role and join date, the username in the
+user's preferred heading font, the settings as a rule list, Edit profile / Log out.
+The pages are tabbed through the nav (?tab=needs|characters|chronicles|experience|journals);
+ProfileView.get_tab picks NEEDS YOU when something waits on the user, else MY CHARACTERS.
+Each include hides itself when it has nothing to show.
+{% endcomment %}
+{% load tl %}
 {% block title %}{{ object.user.username }}{% endblock title %}
+{% block cover_label %}Profile of {{ object.user.username }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {% if is_st %}Storyteller{% else %}Player{% endif %} · Joined {{ object.user.date_joined|date:"F Y" }}
+    </span>
+    {% with code=object.preferred_heading|gameline_code %}
+        {% with size=object.user.username|cover_title_class:code %}
+            <h1 class="tl-cover__name {{ size|default:'tl-cover__name--profile' }}"
+                data-gameline="{{ code }}"
+                data-fit-title>{{ object.user.username }}</h1>
+        {% endwith %}
+    {% endwith %}
+{% endblock cover_title %}
+{% block cover_body %}
+    {% include "accounts/includes/settings.html" %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if user == object.user %}
+        <div class="tl-btnpair">
+            <a class="tl-btn" href="{% url 'accounts:profile_update' object.pk %}">Edit profile</a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="tl-btn tl-btn--ghost tl-btn--block" type="submit">Log out</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    <nav class="tl-nav tl-nav--tabs tl-nav--profile" aria-label="Profile">
+        <a href="?tab=needs"{% if tab == "needs" %} aria-current="page"{% endif %}>
+            Needs you{% if needs_count %}&nbsp;<span class="tl-nav__count">{{ needs_count }}</span>{% endif %}
+        </a>
+        <a href="?tab=characters"{% if tab == "characters" %} aria-current="page"{% endif %}>My characters</a>
+        {% if is_st %}
+            <a href="?tab=chronicles"{% if tab == "chronicles" %} aria-current="page"{% endif %}>Chronicles</a>
+        {% endif %}
+        <a href="?tab=experience"{% if tab == "experience" %} aria-current="page"{% endif %}>Experience</a>
+        {% if is_st %}
+            <a href="?tab=journals"{% if tab == "journals" %} aria-current="page"{% endif %}>Journals</a>
+        {% endif %}
+        <span class="tl-nav__end">
+            <a href="{% url 'characters:index' %}">All characters</a>
+            <a href="{% url 'game:chronicles' %}">All chronicles</a>
+        </span>
+    </nav>
+{% endblock nav %}
 {% block content %}
-    {% load field %}
-    <style>
-        .tg-card-header[data-toggle="collapse"] .fas {
-            transition: transform 0.3s ease;
-        }
-        .tg-card-header[aria-expanded="false"] .fas {
-            transform: rotate(-90deg);
-        }
-    </style>
-    <div class="container py-4">
-        <!-- Page Header -->
-        <div class="tg-card header-card mb-4">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title {{ object.preferred_heading }}">{{ object.user.username }}</h1>
-                {% if user == object.user %}
-                    <div class="tg-card-actions">
-                        <a href="{% url 'accounts:profile_update' object.pk %}" class="tg-btn btn-primary btn-sm">
-                            <i class="fas fa-edit"></i> Edit Profile
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Settings Card -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#settings-section" aria-expanded="true">
-                <h3 class="tg-card-title {{ object.preferred_heading }}">
-                    <i class="fas fa-chevron-down"></i> Profile Settings
-                </h3>
-            </div>
-            <div id="settings-section" class="collapse show">
-                <div class="tg-card-body" style="padding: 20px;">
-                    {% include "accounts/includes/settings.html" %}
-                </div>
-            </div>
-        </div>
-
-        {% include "accounts/includes/active_scenes.html" %}
-        
-        {% if object.is_st %}
-            {% include "accounts/includes/chronicles.html" %}
-            {% include "accounts/includes/attention.html" %}
-            {% include "accounts/includes/journals.html" %}
-            {% include "accounts/includes/xp_spend_requests.html" %}
-        {% endif %}
-        
-        {% include "accounts/includes/characters.html" %}
-        {% include "accounts/includes/locations.html" %}
-        {% include "accounts/includes/items.html" %}
-        {% comment %} {% include "accounts/includes/xp_story.html" %} {% endcomment %}
-        {% include "accounts/includes/xp_weekly.html" %}
-        
-        {% if object.is_st %}
-            {% if user == object.user %}
-                {% include "accounts/includes/xp_scene_st.html" %}
-                {% comment %} {% include "accounts/includes/xp_story_st.html" %} {% endcomment %}
-                {% include "accounts/includes/xp_weekly_st.html" %}
-                {% include "accounts/includes/freebies.html" %}
-                {% include "accounts/includes/character_approval.html" %}
-                {% include "accounts/includes/location_approval.html" %}
-                {% include "accounts/includes/item_approval.html" %}
-                {% include "accounts/includes/rote_approval.html" %}
-                {% include "accounts/includes/image_approval.html" %}
+    {% if tab == "needs" %}
+        {% include "accounts/includes/needs.html" %}
+    {% elif tab == "characters" %}
+        {% with characters=object.my_characters locations=object.my_locations items=object.my_items %}
+            {% if characters or locations or items %}
+                {% include "accounts/includes/characters.html" %}
+                {% include "accounts/includes/locations.html" %}
+                {% include "accounts/includes/items.html" %}
+            {% else %}
+                {% url 'characters:index' as characters_url %}
+                {% include "core/tl/empty.html" with text="You have no characters, locations or items yet." action_url=characters_url action_label="Begin a character" %}
             {% endif %}
+        {% endwith %}
+    {% elif tab == "chronicles" %}
+        {% include "accounts/includes/chronicles.html" %}
+    {% elif tab == "experience" %}
+        {% if weekly_xp_request_forms or st_queues and weekly_xp_request_forms_to_approve or st_queues and scenexp_forms %}
+            {% include "accounts/includes/xp_weekly.html" %}
+            {% if st_queues %}
+                {% include "accounts/includes/xp_weekly_st.html" %}
+                {% include "accounts/includes/xp_scene_st.html" %}
+            {% endif %}
+        {% else %}
+            {% include "core/tl/empty.html" with text="No experience waiting to be requested or awarded." %}
         {% endif %}
-    </div>
-
-    <script src="{% static 'accounts/js/detail.js' %}"></script>
+    {% elif tab == "journals" %}
+        {% include "accounts/includes/journals.html" %}
+    {% endif %}
 {% endblock content %}

@@ -1,32 +1,26 @@
-{% if object.xp_spend_requests %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-spend-requests-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> XP Spend Requests
-            </h3>
+{% load tl %}
+{% if xp_spend_requests %}
+    <section class="tl-section tl-queue tl-queue--sm"
+             id="xp-spend-requests-section"
+             aria-labelledby="xp-spend-requests-title">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="xp-spend-requests-title">XP spend requests</h2>
+            <span class="tl-queue__count">{{ xp_spend_requests|length }}</span>
         </div>
-        <div id="xp-spend-requests-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for char in object.xp_spend_requests %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-                                    </h5>
-                                    <div class="text-muted small mb-1">
-                                        {{ char.get_full_gameline }}
-                                    </div>
-                                    <div class="text-muted small">
-                                        {{ char.get_type }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+        <div class="tl-section__body">
+            {% for char in xp_spend_requests %}
+                <div class="tl-queuerow" data-gameline="{{ char|gameline_code }}">
+                    <div class="tl-approvalrow__id">
+                        <a class="tl-approvalrow__name tl-approvalrow__name--sm"
+                           href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                        {% for spend in char.pending_spendings %}
+                            <span class="tl-approvalrow__sub">{{ spend.trait_name }} → {{ spend.trait_value }} · {{ spend.cost }} XP</span>
+                        {% endfor %}
+                        <span class="tl-approvalrow__sub">{{ char.get_full_gameline }} · {{ char.get_type }}</span>
+                    </div>
+                    <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{{ char.get_absolute_url }}?tab=experience">Review</a>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}

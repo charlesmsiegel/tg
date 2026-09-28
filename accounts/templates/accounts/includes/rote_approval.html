@@ -1,45 +1,39 @@
-{% load field %}
-{% if object.rotes_to_approve %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#rote-approval-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> Rotes To Approve
-            </h3>
+{% load tl %}
+{% if rotes_to_approve %}
+    <section class="tl-section tl-queue tl-queue--sm"
+             id="rote-approval-section"
+             aria-labelledby="rote-approval-title">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="rote-approval-title">Rotes to approve</h2>
+            <span class="tl-queue__count">{{ rotes_to_approve|length }}</span>
         </div>
-        <div id="rote-approval-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for obj in object.rotes_to_approve %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-                                    </h5>
-                                    <div class="mb-3">
-                                        <span class="tg-badge badge-{{ obj.status|lower }}">{{ obj.get_status_display }}</span>
-                                    </div>
-                                    <div class="mb-3">
-                                        {% for c in object.rotes_to_approve|field:obj %}
-                                            <div class="text-muted small">
-                                                <a href="{{ c.get_absolute_url }}">{{ c }}</a>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    <form action="{% url 'accounts:object_approval' object_type='rote' pk=obj.pk %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" class="tg-btn btn-success btn-sm">
-                                            <i class="fas fa-check"></i> Approve
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col text-center text-muted">No Rotes.</div>
-                    {% endfor %}
+        <div class="tl-section__body">
+            {% for obj, mages in rotes_to_approve %}
+                <div class="tl-approvalrow" data-gameline="{{ obj|gameline_code }}">
+                    <div class="tl-approvalrow__id">
+                        <a class="tl-approvalrow__name" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                        <span class="tl-approvalrow__sub">{{ obj.chronicle|default:"No chronicle" }}</span>
+                    </div>
+                    <div class="tl-approvalrow__type">
+                        <span>Rote</span>
+                        <span class="tl-status">{{ obj.get_status_display }}</span>
+                    </div>
+                    <span class="tl-approvalrow__who">
+                        {% for c in mages %}
+                            <a href="{{ c.get_absolute_url }}">{{ c }}</a>{% if not forloop.last %},{% endif %}
+                        {% empty %}
+                            No mage
+                        {% endfor %}
+                    </span>
+                    <div class="tl-approvalrow__actions">
+                        <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{{ obj.get_absolute_url }}">Review</a>
+                        <form action="{% url 'accounts:object_approval' object_type='rote' pk=obj.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="tl-btn tl-btn--sm">Approve</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}
