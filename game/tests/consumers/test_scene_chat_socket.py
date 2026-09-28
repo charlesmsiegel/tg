@@ -433,19 +433,3 @@ class SceneEventTests(SocketTestBase):
             return await self.drain(owner)
 
         self.assertEqual(self.run_async(scenario), [])
-
-
-class LegacyProtocolTests(SocketTestBase):
-    """Tabs opened before the switch keep the JSON protocol until PR 4."""
-
-    def test_legacy_client_receives_html_posts_as_json(self):
-        async def scenario():
-            legacy = await self.open("st", query="")
-            owner = await self.open("owner")
-            await self.send(owner, action="post", message="Hello old tab")
-            return await legacy.receive_json_from(1)
-
-        message = self.run_async(scenario)
-        self.assertEqual(message["type"], "new_post")
-        self.assertEqual(message["post"]["message"], "Hello old tab")
-        self.assertFalse(message["post"]["is_st"])
