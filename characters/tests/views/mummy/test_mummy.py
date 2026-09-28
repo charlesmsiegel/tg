@@ -50,6 +50,44 @@ class TestMummyDetailView(TestCase):
         self.assertEqual(hekau["Necromancy"], 2)
         self.assertNotIn("Celestial", hekau)  # No celestial set
 
+    def test_detail_view_renders_spread_sheet(self):
+        """The sheet shows the Mummy cover facts, Hekau, Advantages and Virtues."""
+        self.mummy.web = "maat"
+        self.mummy.ancient_name = "Nefer-ankh-Sa"
+        self.mummy.save()
+        self.client.login(username="Player", password="password")
+        response = self.client.get(self.url)
+
+        self.assertContains(
+            response, '<span class="tl-cover__sub">Ancient name: Nefer-ankh-Sa</span>'
+        )
+        self.assertContains(response, '<span class="tl-facts__k">Web</span>')
+        self.assertContains(response, f'href="{self.dynasty.get_absolute_url()}"')
+        self.assertContains(response, '<span class="tl-facts__k">Incarnation</span>')
+        self.assertContains(response, "1st")
+        self.assertContains(response, 'id="hekau"')
+        self.assertContains(response, "tl-section--power")
+        self.assertContains(response, 'Vision (Ma\'at) <span class="tl-trait__spec">favored</span>')
+        self.assertContains(response, '<span class="tl-track__label">Sekhem</span>')
+        self.assertContains(response, '<span class="tl-track__label">Ba / Ka</span>')
+        self.assertContains(response, f"{self.mummy.ba} / {self.mummy.ka_rating}")
+        self.assertContains(response, 'id="virtues"')
+        self.assertContains(response, "Restraint")
+        self.assertNotContains(response, "tg-card")
+
+    def test_detail_view_history_and_past_lives(self):
+        """History & Past Lives shows the first death, memories and mentor."""
+        mentor = Mummy.objects.create(name="Old Scribe", owner=self.player)
+        self.mummy.death_in_first_life = "Drowned in the Nile."
+        self.mummy.mentor_mummy = mentor
+        self.mummy.save()
+        self.client.login(username="Player", password="password")
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "History &amp; Past Lives")
+        self.assertContains(response, "Drowned in the Nile.")
+        self.assertContains(response, f'href="{mentor.get_absolute_url()}"')
+
     def test_detail_view_dynasty_context(self):
         """Detail view includes dynasty in context."""
         self.client.login(username="Player", password="password")
