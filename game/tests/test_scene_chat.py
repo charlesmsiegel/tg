@@ -210,7 +210,9 @@ class PageWindowTests(SceneChatBase):
     def test_junk_cursor_is_ignored(self):
         self.post(self.character, "Only")
         self.client.force_login(self.users["owner"])
-        for junk in ("x", "-3", "0", ""):
+        # "²" and "٣" pass str.isdigit(); int("²") raises, and a cursor past
+        # a 64-bit id overflows the database parameter (regression: 500).
+        for junk in ("x", "-3", "0", "", "²", "1²", "9" * 19, "9" * 5000):
             with self.subTest(junk=junk):
                 response = self.client.get(self.scene.get_absolute_url(), {"before": junk})
                 self.assertContains(response, "Only")

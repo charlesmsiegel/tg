@@ -289,6 +289,16 @@ class PostTests(SocketTestBase):
         self.assertIn("Unknown action.", unknown)
         self.assertIn("Still here", ok)
 
+    def test_binary_frame_is_a_format_error_not_a_size_error(self):
+        async def scenario():
+            owner = await self.open("owner")
+            await owner.send_to(bytes_data=b"\x00\x01")
+            return self.text(await self.drain(owner))
+
+        text = self.run_async(scenario)
+        self.assertIn("Invalid message format.", text)
+        self.assertNotIn("too large", text)
+
     def test_oversized_frame_is_refused(self):
         async def scenario():
             owner = await self.open("owner")
@@ -347,7 +357,7 @@ class SyncTests(SocketTestBase):
         async def scenario():
             owner = await self.open("owner")
             replies = []
-            for after in ("5", -1, True, None):
+            for after in ("5", -1, True, None, 2**63, 1.5):
                 await self.send(owner, action="sync", after=after)
                 replies.append(self.text(await self.drain(owner)))
             return replies

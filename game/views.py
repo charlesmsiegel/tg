@@ -27,6 +27,7 @@ from core.mixins import (
 )
 from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
+from game import scene_chat
 from game.forms import (
     AddCharForm,
     ChronicleCharacterCreationForm,
@@ -169,8 +170,7 @@ class SceneDetailView(DetailView):
 
     def post_cursor(self):
         """``?before=<post id>`` pages back through a long scene; junk is ignored."""
-        value = self.request.GET.get("before", "")
-        return int(value) if value.isdigit() and int(value) > 0 else None
+        return scene_chat.post_cursor(self.request.GET.get("before", "")) or None
 
     straighten_quotes = staticmethod(straighten_quotes)
 

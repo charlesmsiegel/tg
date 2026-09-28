@@ -630,15 +630,12 @@ class PostManager(models.Manager):
     """Custom manager for Post with optimized queries."""
 
     def for_scene_optimized(self, scene):
-        """Posts for a scene, oldest first, with their character and its owner joined.
+        """Posts for a scene with their character and its owner joined.
 
-        ``game.selectors.scene_post_window`` adds ``author_is_st`` to a window of them.
+        Unordered beyond ``Meta.ordering``: the ``game.selectors`` windows order
+        by id and add ``author_is_st``.
         """
-        return (
-            self.filter(scene=scene)
-            .select_related("character", "character__owner")
-            .order_by("datetime_created")
-        )
+        return self.filter(scene=scene).select_related("character", "character__owner")
 
 
 class Post(models.Model):
