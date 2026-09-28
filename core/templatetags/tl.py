@@ -120,7 +120,7 @@ def qp_wheel(quintessence, paradox, label="Quintessence"):
     """20 boxes, index 0 at 189deg running clockwise over the top.
 
     Box i is Paradox when i >= 20 - paradox, else Quintessence when i < quintessence:
-    Paradox wins where the two overlap, as in characters/mage/mage/qp_wheel.html.
+    Paradox wins where the two overlap, as the old Mage sheet wheel drew it.
     The positions come from trigonometry, so each box carries an inline left/top:
     the one deliberate inline style in the Spread templates.
     """
