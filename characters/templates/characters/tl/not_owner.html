@@ -1,5 +1,5 @@
 {% load sanitize_text %}
-{% comment %}What a viewer without full access sees: the public card only.{% endcomment %}
+{% comment %}What a viewer without full access sees: the public card and the scenes they may see.{% endcomment %}
 <div class="tl-sheet">
     <section class="tl-section">
         <div class="tl-section__head">
@@ -20,4 +20,8 @@
     {% endif %}
     {% include "characters/tl/prose_block.html" with label="Description" text=object.description %}
     {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+    {% comment %}`scenes` is already filtered to what this viewer may see.{% endcomment %}
+    {% if scenes %}
+        {% include "characters/tl/scenes.html" %}
+    {% endif %}
 </div>

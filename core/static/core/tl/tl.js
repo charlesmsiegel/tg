@@ -162,8 +162,13 @@
     if (sub && sub.textContent.trim()) {
       var subSlot = document.querySelector('[data-legacy-sub]');
       if (subSlot) { subSlot.innerHTML = sub.innerHTML; subSlot.hidden = false; }
+      sub.remove();
     }
-    card.hidden = true;
+    // Only what moved goes: anything else in the card (an Edit link, a form, a
+    // note) stays visible. The card hides only when nothing is left in it.
+    title.remove();
+    var rest = card.textContent.trim() || card.querySelector('a, button, form, input, select, img');
+    if (!rest) card.hidden = true;
     fitTitles();
   }
 
