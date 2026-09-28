@@ -1,1 +1,26 @@
-{% include "core/includes/scene_list.html" with scenes=object.get_scenes %}
+{% comment %}
+"Scenes here" (Spread C9): scene rows, name in the display font, the date or ● LIVE on
+the right. Hidden when no scene has been set here.
+{% endcomment %}
+{% with scenes=object.get_scenes %}
+    {% if scenes %}
+        <section class="tl-section tl-span-5" id="scenes">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Scenes here</h2>
+            </div>
+            <div class="tl-section__body">
+                {% for scene in scenes %}
+                    <div class="tl-scenerow">
+                        <span class="tl-scenerow__name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></span>
+                        {% if not scene.finished %}
+                            <span class="tl-scenerow__when is-live">● LIVE</span>
+                        {% else %}
+                            <span class="tl-scenerow__when">{{ scene.date_of_scene|date:"j M Y" }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

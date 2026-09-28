@@ -1,87 +1,52 @@
 {% extends "locations/core/location/detail.html" %}
+{% load tl sanitize_text %}
+{% block type_facts %}
+    {% fact "Legal owner" object.legal_owner %}
+{% endblock type_facts %}
 {% block model_specific %}
-    {% load dots %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title htr_heading">Safehouse Details</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-3"><strong>Size:</strong></div>
-                        <div class="col-sm-3 dots">{{ object.size|dots }}</div>
-                        <div class="col-sm-3"><strong>Capacity:</strong></div>
-                        <div class="col-sm-3">{{ object.capacity }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3"><strong>Security:</strong></div>
-                        <div class="col-sm-3 dots">{{ object.security_level|dots }}</div>
-                        <div class="col-sm-3"><strong>Armory:</strong></div>
-                        <div class="col-sm-3 dots">{{ object.armory_level|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3"><strong>Surveillance:</strong></div>
-                        <div class="col-sm-3 dots">{{ object.surveillance_level|dots }}</div>
-                        <div class="col-sm-3"><strong>Medical:</strong></div>
-                        <div class="col-sm-3 dots">{{ object.medical_facilities|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3"><strong>Total Rating:</strong></div>
-                        <div class="col-sm-3">{{ object.total_rating }}</div>
-                        <div class="col-sm-3"><strong>Compromised:</strong></div>
-                        <div class="col-sm-3">{% if object.is_compromised %}Yes{% else %}No{% endif %}</div>
-                    </div>
+    <section class="tl-section tl-span-6" id="safehouse">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Safehouse</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div class="tl-stack">
+                {% trait "Size" object.size %}
+                {% trait "Security" object.security_level %}
+                {% trait "Armory" object.armory_level %}
+                {% trait "Surveillance" object.surveillance_level %}
+                {% trait "Medical" object.medical_facilities %}
+            </div>
+            <div class="tl-stack">
+                {% include "locations/tl/kv.html" with label="Capacity" value=object.capacity %}
+                {% include "locations/tl/kv.html" with label="Total rating" value=object.total_rating %}
+                <div class="tl-kv">
+                    <span>Compromised</span>
+                    <span class="tl-kv__v{% if object.is_compromised %} is-neg{% endif %}">{{ object.is_compromised|yesno:"Yes,No" }}</span>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title htr_heading">Features</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">{% if object.is_mobile %}✓{% else %}✗{% endif %} Mobile</div>
-                        <div class="col-sm-6">{% if object.has_panic_room %}✓{% else %}✗{% endif %} Panic Room</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-6">{% if object.has_escape_routes %}✓{% else %}✗{% endif %} Escape Routes</div>
-                        <div class="col-sm-6">{% if object.has_dead_drop %}✓{% else %}✗{% endif %} Dead Drop</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-6">{% if object.has_communications %}✓{% else %}✗{% endif %} Secure Communications</div>
-                        <div class="col-sm-6"></div>
-                    </div>
-                </div>
-            </div>
+    </section>
+    <section class="tl-section tl-span-6" id="features">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Features</h2>
         </div>
-    </div>
-    {% if object.cover_story or object.legal_owner %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title htr_heading">Cover</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        {% if object.legal_owner %}
-                            <div class="row mb-2">
-                                <div class="col-sm-3"><strong>Legal Owner:</strong></div>
-                                <div class="col-sm-9">{{ object.legal_owner }}</div>
-                            </div>
-                        {% endif %}
-                        {% if object.cover_story %}
-                            <div class="row mb-0">
-                                <div class="col-sm-3"><strong>Cover Story:</strong></div>
-                                <div class="col-sm-9">{{ object.cover_story }}</div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+        <div class="tl-section__body tl-stack">
+            {% include "locations/tl/kv.html" with label="Mobile" value=object.is_mobile|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Panic room" value=object.has_panic_room|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Escape routes" value=object.has_escape_routes|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Dead drop" value=object.has_dead_drop|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Secure communications" value=object.has_communications|yesno:"Yes,No" %}
         </div>
+    </section>
+    {% if object.cover_story %}
+        <section class="tl-section" id="cover-story">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Cover story</h2>
+            </div>
+            <div class="tl-section__body tl-prose">{{ object.cover_story|sanitize_html|linebreaks }}</div>
+        </section>
     {% endif %}
 {% endblock model_specific %}

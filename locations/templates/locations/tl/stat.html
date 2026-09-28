@@ -1,0 +1,11 @@
+{% comment %}
+Numeric stat (Spread C9): mono eyebrow over a Spectral 40px number, optional "/max" and an
+italic note. Put several in <div class="tl-stats">; inside .tl-section--power the number
+takes the gameline accent. text=True shrinks a word-valued stat to 24px.
+  {% include "locations/tl/stat.html" with label="Tass / week" value=object.tass_per_week note=object.tass_form %}
+{% endcomment %}
+<div class="tl-stat">
+    <span class="tl-stat__k">{{ label }}</span>
+    <span class="tl-stat__v{% if text %} tl-stat__v--text{% endif %}">{{ value }}{% if of %}<span class="tl-stat__of">/{{ of }}</span>{% endif %}</span>
+    {% if note %}<span class="tl-stat__note">{{ note }}</span>{% endif %}
+</div>

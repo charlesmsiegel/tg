@@ -1,26 +1,17 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header with Demon styling -->
-    <div class="tg-card header-card mb-4" data-gameline="dtf">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title dtf_heading">
-                {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
-    </div>
-{% endblock objectname %}
+{% load tl %}
+{% block type_facts %}
+    {% fact "Consecrated" object.consecration_date|default:"Not specified" %}
+{% endblock type_facts %}
 {% block model_specific %}
-    <div class="row mb-4">
-        {% include "locations/demon/bastion/display_includes/basics.html" %}
-    </div>
+    <section class="tl-section tl-section--power tl-span-7" id="bastion">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Bastion</h2>
+        </div>
+        <div class="tl-section__body tl-stats">
+            {% include "locations/tl/stat.html" with label="Ritual strength" value=object.ritual_strength %}
+            {% include "locations/tl/stat.html" with label="Warding level" value=object.warding_level %}
+        </div>
+    </section>
 {% endblock model_specific %}

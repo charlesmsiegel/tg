@@ -1,0 +1,5 @@
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No locations found." %}
+{% endblock empty %}

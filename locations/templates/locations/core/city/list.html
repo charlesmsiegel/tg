@@ -1,0 +1,11 @@
+{% extends "locations/core/tl_list.html" %}
+{% load humanize %}
+{% block list_head %}
+    <th class="tl-num">Population</th>
+{% endblock list_head %}
+{% block list_cells %}
+    <td class="tl-num">{{ obj.population|intcomma }}</td>
+{% endblock list_cells %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No cities found." %}
+{% endblock empty %}

@@ -1,25 +1,46 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header with Vampire styling -->
-    <div class="tg-card header-card mb-4" data-gameline="vtm">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title vtm_heading">
-                {{ object.name }}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
-    </div>
-{% endblock objectname %}
+{% load tl sanitize_text %}
+{% block type_facts %}
+    {% fact "Control" object.get_control_status %}
+    {% fact "Controlling faction" object.controlling_faction %}
+    {% fact "Barrens type" object.barrens_type %}
+{% endblock type_facts %}
 {% block model_specific %}
-    <div class="row mb-4">
-        {% include "locations/vampire/barrens/display_includes/basics.html" %}
-    </div>
+    <section class="tl-section tl-span-6" id="statistics">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Territory</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% trait "Size" object.size %}
+            {% trait "Danger" object.danger_level %}
+            {% trait "Population" object.population_density %}
+            {% trait "Feeding quality" object.feeding_quality %}
+            {% trait "Masquerade risk" object.masquerade_threat %}
+        </div>
+    </section>
+    <section class="tl-section tl-span-6" id="resources">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Resources &amp; threats</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% include "locations/tl/kv.html" with label="Feeding grounds" value=object.has_feeding_grounds|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Shelter" value=object.has_shelter|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Resources" value=object.has_resources|yesno:"Yes,No" %}
+            <span class="tl-subhead">Active threats</span>
+            {% include "locations/tl/kv.html" with label="Lupines" value=object.lupine_activity|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Hunters" value=object.hunter_activity|yesno:"Yes,No" %}
+            {% include "locations/tl/kv.html" with label="Gangs" value=object.mortal_gang_activity|yesno:"Yes,No" %}
+        </div>
+    </section>
+    {% if object.notable_locations %}
+        <section class="tl-section" id="notable">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Notable locations</h2>
+            </div>
+            <div class="tl-section__body tl-prose">{{ object.notable_locations|sanitize_html|linebreaks }}</div>
+        </section>
+    {% endif %}
 {% endblock model_specific %}

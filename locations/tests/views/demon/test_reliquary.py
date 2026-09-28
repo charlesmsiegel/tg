@@ -19,9 +19,9 @@ class TestReliquaryDetailDamageBar(TestCase):
         )
         response = self.client.get(reliquary.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "15/20")
-        self.assertContains(response, 'class="progress-bar bg-danger"')
-        self.assertContains(response, 'aria-valuenow="25.0"')
+        self.assertContains(response, '15<span class="tl-stat__of">/20</span>')
+        self.assertContains(response, 'class="tl-damage"')
+        self.assertContains(response, 'aria-label="15 of 20"')
         self.assertContains(response, "25% damaged")
 
     def test_undamaged_reliquary_has_no_damage_bar(self):
@@ -30,8 +30,8 @@ class TestReliquaryDetailDamageBar(TestCase):
         )
         response = self.client.get(reliquary.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "20/20")
-        self.assertNotContains(response, "progress-bar")
+        self.assertContains(response, '20<span class="tl-stat__of">/20</span>')
+        self.assertNotContains(response, 'class="tl-damage"')
         self.assertNotContains(response, "% damaged")
 
 

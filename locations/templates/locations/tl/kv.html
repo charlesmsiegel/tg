@@ -1,0 +1,9 @@
+{% comment %}
+Key / value row (Spread C9): Spectral label, mono value on the right. Used for features
+(value=flag|yesno:"Yes,No"), short facts and ratings written as numbers.
+  {% include "locations/tl/kv.html" with label="Guardian" value=object.has_guardian|yesno:"Yes,No" %}
+{% endcomment %}
+<div class="tl-kv">
+    <span>{{ label }}</span>
+    <span class="tl-kv__v">{{ value }}</span>
+</div>

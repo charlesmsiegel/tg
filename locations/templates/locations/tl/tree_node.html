@@ -1,0 +1,22 @@
+{% load tl sanitize_text %}
+{% comment %}
+One place in the locations index tree, then its children (recursive). A place with
+children is a <details open>, so clicking its row folds the subtree (▾); leaves show ·.
+Reads `node` = {location, children, depth, match, owner} from LocationIndexView.
+{% endcomment %}
+{% with loc=node.location line=node.location|gameline_code %}
+    {% if node.children %}
+        <details class="tl-loctree__node" open>
+            <summary class="tl-loctree__row{% if not node.match %} is-context{% endif %}" data-gameline="{{ line }}">
+                {% include "locations/tl/tree_row.html" with glyph="▾" %}
+            </summary>
+            {% for child in node.children %}
+                {% include "locations/tl/tree_node.html" with node=child %}
+            {% endfor %}
+        </details>
+    {% else %}
+        <div class="tl-loctree__row{% if not node.match %} is-context{% endif %}" data-gameline="{{ line }}">
+            {% include "locations/tl/tree_row.html" with glyph="·" %}
+        </div>
+    {% endif %}
+{% endwith %}

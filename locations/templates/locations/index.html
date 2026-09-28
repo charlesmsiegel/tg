@@ -1,303 +1,98 @@
-{% extends "core/base.html" %}
-{% load field %}
-{% load sanitize_text %}
-
-{% block title %}
-    {{ gameline }} Locations
-{% endblock title %}
-
-{% block styling %}
-{{ block.super }}
-<style>
-    /* Enhanced tab styling */
-    .tg-nav-tabs .tg-nav-link:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    /* Smooth collapse animation */
-    .collapse {
-        transition: height 0.3s ease;
-    }
-    
-    /* Rotate chevron when collapsed */
-    .collapsed .fa-chevron-down {
-        transform: rotate(-90deg);
-    }
-    
-    /* Enhanced table row hover */
-    .tg-table tbody tr:hover {
-        transform: translateX(4px);
-        box-shadow: -4px 0 0 var(--color-primary);
-    }
-    
-    /* Add more padding to table cells */
-    .tg-table tbody td {
-        padding: var(--spacing-3) var(--spacing-4);
-        white-space: nowrap;
-    }
-    
-    /* Allow badge columns to wrap if needed */
-    .tg-table tbody td:nth-child(3),
-    .tg-table tbody td:nth-child(4) {
-        white-space: normal;
-    }
-    
-    /* Link hover effects */
-    .tg-table a:hover {
-        opacity: 0.8;
-    }
-    
-    /* Form button hover */
-    .tg-btn.btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md) !important;
-    }
-    
-    /* Badge animations */
-    .tg-badge {
-        transition: var(--transition-fast);
-        display: inline-block;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .tg-badge:hover {
-        transform: scale(1.05);
-    }
-    
-    /* Ensure badges in table cells have proper sizing */
-    .tg-table .tg-badge {
-        font-size: var(--font-size-xs);
-        padding: 0.35em 0.75em;
-        white-space: nowrap;
-    }
-    
-    /* Gameline-specific badge colors for location types */
-    .tg-badge.badge-type-vtm {
-        background-color: var(--gameline-vtm);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-wta {
-        background-color: var(--gameline-wta);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-mta {
-        background-color: var(--gameline-mta);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-ctd {
-        background-color: #20b2aa;
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-wto {
-        background-color: var(--gameline-wto);
-        color: var(--color-white);
-    }
-    
-    /* Dark theme adjustments */
-    @media (prefers-color-scheme: dark) {
-        :root:not(.theme-light) .tg-badge.badge-type-vtm {
-            background-color: #dc143c;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-wta {
-            background-color: #32cd32;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-mta {
-            background-color: #9370db;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-ctd {
-            background-color: #48d1cc;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-wto {
-            background-color: #708090;
-        }
-    }
-    
-    .theme-dark .tg-badge.badge-type-vtm {
-        background-color: #dc143c;
-    }
-    
-    .theme-dark .tg-badge.badge-type-wta {
-        background-color: #32cd32;
-    }
-    
-    .theme-dark .tg-badge.badge-type-mta {
-        background-color: #9370db;
-    }
-    
-    .theme-dark .tg-badge.badge-type-ctd {
-        background-color: #48d1cc;
-    }
-    
-    .theme-dark .tg-badge.badge-type-wto {
-        background-color: #708090;
-    }
-    
-    /* Responsive improvements */
-    @media (max-width: 768px) {
-        .tg-table tbody tr:hover {
-            transform: none;
-            box-shadow: none;
-        }
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-    <div class="container py-4">
-        <!-- Page Header -->
-        <div class="tg-card header-card mb-4">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title {{ header }}">{{ gameline }} Locations</h1>
-            </div>
-        </div>
-
-        <!-- Location List -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs"
-                    id="locationTabs"
-                    role="tablist"
-                    style="border-bottom: none; margin-bottom: 0;">
-                    {% for chron in chrondict.keys %}
-                        <li class="nav-item">
-                            <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
-                               id="tab-{{ chron.id|default:'no-chronicle' }}"
-                               data-toggle="tab"
-                               href="#chron-{{ chron.id|default:'no-chronicle' }}"
-                               role="tab">
-                                {% if chron %}
-                                    {{ chron.name }}
-                                {% else %}
-                                    No Chronicle
-                                {% endif %}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="tg-card-body">
-                <div class="tab-content" id="locationTabsContent">
-                    {% for chron in chrondict.keys %}
-                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
-                             id="chron-{{ chron.id|default:'no-chronicle' }}"
-                             role="tabpanel">
-                            
-                            {% if chrondict|field:chron %}
-                                <!-- Location Table -->
-                                <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
-                                    <table class="tg-table table-striped" style="margin-bottom: 0;">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 50%;">
-                                                    <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Location Name
-                                                </th>
-                                                <th style="width: 30%;">
-                                                    <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
-                                                </th>
-                                                <th style="width: 20%;">
-                                                    <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for loc in chrondict|field:chron %}
-                                                {% include "locations/location_table_row.html" with location=loc level=0 %}
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+{% extends "core/tl_base.html" %}
+{% comment %}
+Staff locations index (Spread M2). Ink cover: chronicle switch, gameline filter and the
+create form; the pages hold the containment tree (PLACE / TYPE / OWNER / LINE / RANK).
+?chronicle=<pk|none> and ?line=<code> come from LocationIndexView.
+{% endcomment %}
+{% load tl %}
+{% block title %}Locations{% endblock title %}
+{% block cover_label %}Locations{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Places in</span>
+    <h1 class="tl-cover__name" data-fit-title>Locations</h1>
+    <div class="tl-locswitch">
+        {% if chronicle_switch %}
+            <details class="tl-pop">
+                <summary>
+                    {% if selected_chronicle %}
+                        {{ selected_chronicle.name }}
+                    {% else %}
+                        No chronicle
+                    {% endif %}
+                    ▾
+                </summary>
+                <nav class="tl-pop__panel" aria-label="Other chronicles">
+                    {% for entry in chronicle_switch %}
+                        <a href="?chronicle={{ entry.key }}{% if selected_line %}&amp;line={{ selected_line }}{% endif %}">
+                            {% if entry.chronicle %}
+                                {{ entry.chronicle.name }}
                             {% else %}
-                                <div class="text-center py-5" 
-                                     style="color: var(--theme-text-muted);
-                                            background: var(--theme-bg-secondary);
-                                            border: 2px dashed var(--theme-border-color);">
-                                    <i class="fas fa-map fa-3x mb-3" style="opacity: 0.3;"></i>
-                                    <p class="mb-0" style="font-size: var(--font-size-base);">No locations found for this chronicle.</p>
-                                </div>
+                                No chronicle
                             {% endif %}
-                        </div>
+                        </a>
                     {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Create Location -->
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="tg-card" style="box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary);">
-                    <div class="tg-card-body" style="padding: var(--spacing-5);">
-                        <!-- Icon - Left Aligned -->
-                        <div style="margin-bottom: var(--spacing-3);">
-                            <div style="width: 64px; 
-                                       height: 64px; 
-                                       background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
-                                       border-radius: 50%;
-                                       display: flex;
-                                       align-items: center;
-                                       justify-content: center;
-                                       box-shadow: var(--shadow-md);">
-                                <i class="fas fa-map-marked-alt" style="font-size: 28px; color: white;"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Title - Centered -->
-                        <h5 class="tg-card-title {{ header }}" style="text-align: center; margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
-                            Create Location
-                        </h5>
-                        
-                        <!-- Description - Left Aligned -->
-                        <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); text-align: left;">
-                            Add a new location to your chronicle
-                        </p>
-                        
-                        <!-- Form -->
-                        <form id="locForm" method="get" action="{% url 'core:object_type_redirect' 'location' 'create' %}" novalidate>
-
-                            <!-- Game Line -->
-                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
-                                <label class="tg-form-label">
-                                    <i class="fas fa-book mr-2" style="color: var(--color-primary);"></i>Game Line
-                                </label>
-                                <select name="gameline" id="id_loc_gameline" class="tg-form-control tg-form-select" required>
-                                    {% for value, label in form.gameline.field.choices %}
-                                        <option value="{{ value }}">{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Location Type -->
-                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
-                                <label class="tg-form-label">
-                                    <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary);"></i>Location Type
-                                </label>
-                                {{ form.loc_type }}
-                            </div>
-
-                            <!-- Button - Full Width, Centered Text -->
-                            <button type="submit"
-                                    class="tg-btn btn-primary btn-lg"
-                                    style="width: 100%;
-                                           box-shadow: var(--shadow-sm);
-                                           transition: var(--transition-fast);
-                                           font-weight: 600;
-                                           text-align: center;">
-                                <i class="fas fa-plus-circle mr-2"></i>Create Location
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+                </nav>
+            </details>
+        {% else %}
+            <span>
+                {% if selected_chronicle %}
+                    {{ selected_chronicle.name }}
+                {% else %}
+                    No chronicle
+                {% endif %}
+            </span>
+        {% endif %}
+        <span>{{ place_count }} place{{ place_count|pluralize }}</span>
     </div>
+{% endblock cover_title %}
+{% block cover_body %}
+    <nav class="tl-statuslist tl-statuslist--sm" aria-label="Game line">
+        {% for entry in line_filter %}
+            <a href="?chronicle={{ chronicle_key }}{% if entry.key %}&amp;line={{ entry.key }}{% endif %}"
+               {% if entry.key == selected_line %}aria-current="page"{% endif %}>
+                <span>{{ entry.label }}</span><span class="tl-statuslist__count">{{ entry.count }}</span>
+            </a>
+        {% endfor %}
+    </nav>
+{% endblock cover_body %}
+{% block cover_actions %}
+    <form id="locForm"
+          class="tl-block tl-block--tight"
+          method="get"
+          action="{% url 'core:object_type_redirect' 'location' 'create' %}"
+          novalidate>
+        <span class="tl-field__label">New location</span>
+        <div class="tl-fieldrow">
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ form.gameline.id_for_label }}">Game line</label>
+                {{ form.gameline }}
+            </div>
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ form.loc_type.id_for_label }}">Location type</label>
+                {{ form.loc_type }}
+            </div>
+        </div>
+        <button type="submit" class="tl-btn tl-btn--block">Create location</button>
+    </form>
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="locations" %}
+{% endblock nav %}
+{% block content %}
+    {% if location_tree %}
+        <div class="tl-loctree">
+            <div class="tl-loctree__row tl-loctree__row--head">
+                <span>Place</span>
+                <span class="tl-loctree__type">Type</span>
+                <span class="tl-loctree__owner">Owner</span>
+                <span class="tl-loctree__line">Line</span>
+                <span class="tl-loctree__rank">Rank</span>
+            </div>
+            {% for node in location_tree %}
+                {% include "locations/tl/tree_node.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No locations found for this chronicle." %}
+    {% endif %}
 {% endblock content %}

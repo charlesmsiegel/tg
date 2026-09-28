@@ -1,40 +1,19 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <div class="tg-card header-card mb-4" data-gameline="mtr">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title mtr_heading">
-                {{ object.name }}
-                {% if object.concealment_rating %}<small><span class="dots colored-dots">{{ object.concealment_rating|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
-    </div>
-{% endblock objectname %}
+{% load tl %}
+{% block cover_rank %}
+    {% if object.concealment_rating %}<span class="tl-cover__rank">{% dots object.concealment_rating %}</span>{% endif %}
+{% endblock cover_rank %}
+{% block type_facts %}
+    {% fact "Sanctuary type" object.get_sanctuary_type_display %}
+{% endblock type_facts %}
 {% block model_specific %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
-                            {{ object.get_sanctuary_type_display }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Concealment:</span>
-                            <span class="dots">{{ object.concealment_rating|dots }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="tl-section tl-span-6" id="sanctuary">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Sanctuary</h2>
         </div>
-    </div>
+        <div class="tl-section__body tl-stack">
+            {% trait "Concealment" object.concealment_rating %}
+        </div>
+    </section>
 {% endblock model_specific %}

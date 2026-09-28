@@ -1,0 +1,1 @@
+{% for container in obj.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}

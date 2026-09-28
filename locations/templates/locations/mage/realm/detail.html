@@ -1,26 +1,8 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header with Mage styling -->
-    <div class="tg-card header-card mb-4" data-gameline="mta">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title mta_heading">
-                {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
-    </div>
-{% endblock objectname %}
-{% block model_specific %}
-{% endblock model_specific %}
+{% load tl %}
+{% block cover_rank %}
+    {% if object.rank %}<span class="tl-cover__rank">{% dots object.rank 10 %}</span>{% endif %}
+{% endblock cover_rank %}
 {% block reality_zone %}
-    {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with object=object.reality_zone %}
+    {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with zone=object.reality_zone span="tl-span-6" %}
 {% endblock reality_zone %}

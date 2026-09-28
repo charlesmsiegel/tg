@@ -50,6 +50,23 @@ class LocationModel(RegistryURLMixin, Model):
     def get_scenes(self):
         return Scene.objects.filter(location=self)
 
+    def containment_chains(self, max_depth=10):
+        """Where this place sits: one chain per direct container, innermost first.
+
+        Each chain climbs through the first container of every step ("Newberry Library ›
+        Near North Side") and stops at a top-level place, at ``max_depth``, or when the
+        containment graph loops back on itself.
+        """
+        chains = []
+        for container in self.contained_within.all():
+            chain, seen, current = [], {self.pk}, container
+            while current is not None and current.pk not in seen and len(chain) < max_depth:
+                chain.append(current)
+                seen.add(current.pk)
+                current = current.contained_within.first()
+            chains.append(chain)
+        return chains
+
     def owned_by_list(self):
         if self.owned_by:
             return [self.owned_by]

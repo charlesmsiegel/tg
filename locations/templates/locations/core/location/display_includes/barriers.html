@@ -1,0 +1,24 @@
+{% comment %}
+Barriers (Spread C9, every location): three ruled columns, mono eyebrow left and the
+value right-aligned in Spectral 44px. Replaces the old boundaries.html boxes.
+{% endcomment %}
+<section class="tl-section tl-section--cols" id="barriers">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Barriers</h2>
+    </div>
+    <div class="tl-section__body tl-barriers">
+        <div class="tl-barrier">
+            <span class="tl-barrier__k">Gauntlet</span>
+            <span class="tl-barrier__v">{{ object.gauntlet }}</span>
+        </div>
+        <div class="tl-barrier">
+            <span class="tl-barrier__k">Shroud</span>
+            <span class="tl-barrier__v">{{ object.shroud }}</span>
+        </div>
+        <div class="tl-barrier">
+            <span class="tl-barrier__k">Dimension barrier</span>
+            <span class="tl-barrier__v">{{ object.dimension_barrier }}</span>
+        </div>
+    </div>
+</section>

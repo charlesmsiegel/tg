@@ -1,45 +1,24 @@
-{% extends "core/base.html" %}
-{% load dots %}
-{% block content %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h1 class="tg-card-title vtm_heading">Domains</h1>
-    </div>
-    <div class="tg-card-body">
-        <a href="{% url 'locations:vampire:create:domain' %}" class="btn btn-primary mb-3">Create New Domain</a>
-
-        {% if object_list %}
-        <div class="tg-table-responsive">
-            <table class="tg-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Location</th>
-                        <th>Size</th>
-                        <th>Population</th>
-                        <th>Control</th>
-                        <th>Total Rating</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for domain in object_list %}
-                    <tr>
-                        <td><a href="{{ domain.get_absolute_url }}">{{ domain.name }}</a></td>
-                        <td>{% if domain.contained_within.exists %}{% for container in domain.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                        <td>{{ domain.size|dots }}</td>
-                        <td>{{ domain.population|dots }}</td>
-                        <td>{{ domain.control|dots }}</td>
-                        <td>{{ domain.total_rating|dots:10 }}</td>
-                        <td>{{ domain.domain_type|default:"-" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p>No domains found.</p>
-        {% endif %}
-    </div>
-</div>
-{% endblock content %}
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block create %}
+    <a class="tl-btn tl-btn--block" href="{% url 'locations:vampire:create:domain' %}">Create New Domain</a>
+{% endblock create %}
+{% block list_head %}
+    <th>Location</th>
+    <th>Size</th>
+    <th>Population</th>
+    <th>Control</th>
+    <th>Total rating</th>
+    <th>Type</th>
+{% endblock list_head %}
+{% block list_cells %}
+    <td>{% include "locations/tl/containers_cell.html" %}</td>
+    <td>{% dots obj.size %}</td>
+    <td>{% dots obj.population %}</td>
+    <td>{% dots obj.control %}</td>
+    <td>{% dots obj.total_rating 10 %}</td>
+    <td>{{ obj.domain_type|default:'—' }}</td>
+{% endblock list_cells %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No domains found." %}
+{% endblock empty %}

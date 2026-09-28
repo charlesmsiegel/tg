@@ -1,0 +1,23 @@
+{% comment %}
+Cover fact row for a Mage faction chain (grandparent → parent → faction), as the old
+characters/mage/faction/faction_include.html showed it. Reads object.faction.
+  {% include "locations/tl/faction_fact.html" with label="Affiliation" %}
+{% endcomment %}
+<div class="tl-facts__row">
+    <span class="tl-facts__k">{{ label|default:"Faction" }}</span>
+    <span class="tl-facts__v">
+        {% with faction=object.faction %}
+            {% if faction %}
+                {% if faction.parent %}
+                    {% if faction.parent.parent %}
+                        <a href="{{ faction.parent.parent.get_absolute_url }}">{{ faction.parent.parent }}</a> →
+                    {% endif %}
+                    <a href="{{ faction.parent.get_absolute_url }}">{{ faction.parent }}</a> →
+                {% endif %}
+                <a href="{{ faction.get_absolute_url }}">{{ faction }}</a>
+            {% else %}
+                None
+            {% endif %}
+        {% endwith %}
+    </span>
+</div>

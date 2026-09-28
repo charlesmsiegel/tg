@@ -1,0 +1,61 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Per-type location list (Spread, table variant of C7/M12). Line cover with the plural
+title from the registry (list_title / list_heading), then a table of object_list.
+
+  create      cover actions (the "Create New …" button)
+  list_head   <th> cells after Name
+  list_cells  <td> cells after the name cell, per `obj`
+  name_note   optional lines under the name (tone, aspect, a short description)
+  empty       the empty state (core/tl/empty.html with the type's sentence)
+{% endcomment %}
+{% load tl %}
+{% block title %}{{ list_title }}{% endblock title %}
+{% block gameline %}{{ list_heading|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ list_title }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'locations:index' %}">← Locations</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        Locations{% with line=list_heading|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name tl-cover__name--index {{ list_title|cover_title_class:list_heading }}"
+        data-fit-title>{{ list_title }}</h1>
+    <span class="tl-switch"><span>{{ object_list|length }} shown</span></span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% block create %}{% endblock create %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="locations" %}
+{% endblock nav %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-loclist">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    {% block list_head %}{% endblock list_head %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in object_list %}
+                    <tr>
+                        <td>
+                            <a class="tl-loclist__name" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                            {% block name_note %}{% endblock name_note %}
+                        </td>
+                        {% block list_cells %}{% endblock list_cells %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% block empty %}
+            {% include "core/tl/empty.html" with text="Nothing to show yet." %}
+        {% endblock empty %}
+    {% endif %}
+{% endblock content %}
