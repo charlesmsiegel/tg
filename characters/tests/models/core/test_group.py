@@ -51,6 +51,13 @@ class TestGroupRoster(TestCase):
         self.group.save()
         self.assertEqual(self.group.roster, [self.theo, self.alma])
 
+    def test_members_come_back_as_their_concrete_types(self):
+        from characters.models.vampire.vtmhuman import VtMHuman
+
+        ghoul_kin = VtMHuman.objects.create(name="Bea", owner=self.player)
+        self.group.members.add(ghoul_kin, self.alma)
+        self.assertEqual([type(m) for m in self.group.roster], [Human, VtMHuman])
+
     def test_detail_page_tags_the_leader_first(self):
         self.player.is_staff = True
         self.player.save(update_fields=["is_staff"])

@@ -1,8 +1,6 @@
 Django>=5.2.9
 django-polymorphic==4.1.0
 django-tinymce4-lite==1.8.0
-django-crispy-forms==2.5
-crispy-bootstrap4==2025.6
 django-debug-toolbar==6.1.0
 # Security: Pin requests to fix CVE-2026-25645
 requests>=2.33.0
