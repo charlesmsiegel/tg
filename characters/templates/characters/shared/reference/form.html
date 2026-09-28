@@ -1,15 +1,18 @@
 {% extends "core/form.html" %}
-{% load model_meta %}
-{% block creation_title %}
-    Create {{ form.instance|verbose_name|title }}
-{% endblock creation_title %}
+{% load model_meta tl_forms %}
+{% comment %}
+Create / edit a plain reference entry (archetype, derangement, instrument, Fomori
+power): name and description, then any other field the view's form carries.
+{% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create {{ form.instance|verbose_name|title }}{% endblock creation_title %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    {% for field in form|fields_only:"name description" %}
+        {% include "core/tl/field.html" with help=field.help_text %}
+    {% endfor %}
+    {% include "core/misc/field_sections.html" with fields=form|fields_except:"name description" %}
 {% endblock contents %}

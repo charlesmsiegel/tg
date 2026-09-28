@@ -57,6 +57,30 @@ class TestErrorViews(TestCase):
 
         self.assertEqual(response.status_code, 500)
 
+    def test_error_500_does_not_use_the_request_context(self):
+        """The 500 page runs no context processor: nothing it shows needs the database."""
+        from core.views.errors import error_500
+
+        request = self.factory.get("/fake-url/")
+        request.user = self.anon_user
+
+        with self.assertNumQueries(0):
+            response = error_500(request)
+
+        html = response.content.decode()
+        self.assertIn('class="tl-cover__code">500<', html)
+        self.assertIn("core/tl/tl.css", html)
+        self.assertNotIn("tl-nav", html)
+
+    def test_error_templates_render_without_a_request(self):
+        from django.template.loader import render_to_string
+
+        for code in ("401", "403", "404", "500"):
+            with self.subTest(code=code):
+                html = render_to_string(f"core/errors/{code}.html")
+                self.assertIn(f'class="tl-cover__code">{code}<', html)
+                self.assertNotIn('style="', html)
+
 
 class TestAuthenticationErrors(TestCase):
     """Test that authentication and authorization errors return proper status codes."""

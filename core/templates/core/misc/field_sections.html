@@ -1,0 +1,49 @@
+{% load tl_forms %}
+{% comment %}
+A list of bound fields as Spread sections: number inputs first as compact rows in three
+ruled columns ("Traits"), then every other field in a form grid ("Details") where
+textareas and multi-selects take a full row and checkboxes sit on one line.
+Renders nothing for an empty list.
+  {% include "core/misc/field_sections.html" with fields=form|fields_except:"name owner" %}
+  numbers_title="…" / others_title="…" rename the two sections.
+{% endcomment %}
+{% with numbers=fields|numeric_fields others=fields|other_fields %}
+    {% if numbers %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">{{ numbers_title|default:"Traits" }}</h2>
+            </div>
+            <div class="tl-section__body tl-numgrid">
+                {% for field in numbers %}
+                    <div class="tl-alloc__row{% if field.errors %} is-invalid{% endif %}">
+                        <label class="tl-alloc__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="tl-field__error" id="{{ field.auto_id }}_error">
+                                {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    {% if others %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">{{ others_title|default:"Details" }}</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid tl-formgrid--auto">
+                {% for field in others %}
+                    {% if field.widget_type == "checkbox" %}
+                        {% include "core/misc/check.html" with label="" help="" %}
+                    {% else %}
+                        {% include "core/tl/field.html" with label="" help=field.help_text %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

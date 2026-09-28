@@ -1,6 +1,8 @@
 """Custom error views for handling HTTP errors with proper status codes."""
 
+from django.http import HttpResponseServerError
 from django.shortcuts import render
+from django.template import loader
 
 
 def error_403(request, exception=None):
@@ -26,6 +28,9 @@ def error_500(request):
     """
     Handle 500 Internal Server Error.
 
-    This view is called when an unhandled exception occurs.
+    This view is called when an unhandled exception occurs. Like Django's own
+    ``server_error`` it renders without the request: context processors query the
+    database (navigation, notifications) and may be what failed, so the page must
+    not depend on them.
     """
-    return render(request, "core/errors/500.html", status=500)
+    return HttpResponseServerError(loader.render_to_string("core/errors/500.html"))

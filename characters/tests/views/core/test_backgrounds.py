@@ -1,5 +1,7 @@
 """Tests for backgrounds view module."""
 
+from unittest import mock
+
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 
@@ -345,7 +347,14 @@ class TestHumanBackgroundsViewMultiplier(TestCase):
             property_name="expensive",
             multiplier=2,
         )
-        self.human.allowed_backgrounds.append("expensive")
+        # The view reloads the Human, so allow "expensive" on the class, and only
+        # for this test: appending to the shared class list leaked it into every
+        # later test in the process (TestHuman.test_get_backgrounds, ...).
+        patcher = mock.patch.object(
+            Human, "allowed_backgrounds", [*Human.allowed_backgrounds, "expensive"]
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.contacts = Background.objects.get(property_name="contacts")
 
     def test_multiplier_affects_total_calculation(self):

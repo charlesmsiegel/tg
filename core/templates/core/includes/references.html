@@ -1,7 +1,0 @@
-{% for reference in object.sources.all %}
-    <div class="tg-card mb-2">
-        <div class="tg-card-body p-2">
-            <a class="text-muted" href="{{ reference.book.get_absolute_url }}"><i>{{ reference.book }}</i> p. {{ reference.page }}</a>
-        </div>
-    </div>
-{% endfor %}

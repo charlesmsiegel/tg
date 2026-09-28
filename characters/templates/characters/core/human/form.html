@@ -1,96 +1,69 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Human
-{% endblock creation_title %}
+{% load tl_forms %}
+{% comment %}
+Create / edit a human (and, through the gameline children that only change
+creation_title, every gameline human). The views hand this template different forms:
+the create form, a Storyteller's full edit form (abilities, backgrounds, gameline
+traits) and an owner's limited form (notes, description, image). Identity and the
+nine Attributes get their own sections when the form has them; every other field is
+rendered by core/misc/field_sections.html, so no field the form requires is dropped.
+{% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
+{% block creation_title %}Create Human{% endblock creation_title %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Player</div>
-        <div class="col-sm">{{ form.owner }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <div class="col-sm">{{ form.nature }}</div>
-        <div class="col-sm">Demeanor</div>
-        <div class="col-sm">{{ form.demeanor }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ form.get_heading }}">Attributes</h2>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ form.get_heading }}">Physical</h3>
-        <h3 class="col-sm {{ form.get_heading }}">Social</h3>
-        <h3 class="col-sm {{ form.get_heading }}">Mental</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Strength</div>
-        <div class="col-sm dots">{{ form.strength }}</div>
-        <div class="col-sm">Charisma</div>
-        <div class="col-sm dots">{{ form.charisma }}</div>
-        <div class="col-sm">Perception</div>
-        <div class="col-sm dots">{{ form.perception }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Dexterity</div>
-        <div class="col-sm dots">{{ form.dexterity }}</div>
-        <div class="col-sm">Manipulation</div>
-        <div class="col-sm dots">{{ form.manipulation }}</div>
-        <div class="col-sm">Intelligence</div>
-        <div class="col-sm dots">{{ form.intelligence }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Stamina</div>
-        <div class="col-sm dots">{{ form.stamina }}</div>
-        <div class="col-sm">Appearance</div>
-        <div class="col-sm dots">{{ form.appearance }}</div>
-        <div class="col-sm">Wits</div>
-        <div class="col-sm dots">{{ form.wits }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Specialties</div>
-        <div class="col-sm dots">{{ form.specialties }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Willpower</div>
-        <div class="col-sm dots">{{ form.willpower }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Derangements</div>
-        <div class="col-sm dots">{{ form.derangements }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Merits and Flaws</div>
-        <div class="col-sm dots">{{ form.merits_and_flaws }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Date of Birth</div>
-        <div class="col-sm">{{ form.date_of_birth }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Apparent Age</div>
-        <div class="col-sm">{{ form.apparent_age }}</div>
-        <div class="col-sm">Age</div>
-        <div class="col-sm">{{ form.age }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">History</div>
-        <div class="col-sm">{{ form.history }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goals</div>
-        <div class="col-sm">{{ form.goals }}</div>
-        <div class="col-sm">Notes</div>
-        <div class="col-sm">{{ form.notes }}</div>
-    </div>
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    {% with identity=form|fields_only:"name owner concept nature demeanor" %}
+        {% if identity %}
+            <section class="tl-section">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Identity</h2>
+                </div>
+                <div class="tl-section__body tl-formgrid">
+                    {% for field in identity %}
+                        {% include "core/tl/field.html" with label="" help=field.help_text %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% if form.strength %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Attributes</h2>
+            </div>
+            <div class="tl-alloc">
+                <div class="tl-alloc__col">
+                    <div class="tl-alloc__head">
+                        <h3 class="tl-alloc__name">Physical</h3>
+                    </div>
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.strength label="Strength" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.dexterity label="Dexterity" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.stamina label="Stamina" %}
+                </div>
+                <div class="tl-alloc__col">
+                    <div class="tl-alloc__head">
+                        <h3 class="tl-alloc__name">Social</h3>
+                    </div>
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.charisma label="Charisma" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.manipulation label="Manipulation" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.appearance label="Appearance" %}
+                </div>
+                <div class="tl-alloc__col">
+                    <div class="tl-alloc__head">
+                        <h3 class="tl-alloc__name">Mental</h3>
+                    </div>
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.perception label="Perception" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.intelligence label="Intelligence" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.wits label="Wits" %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    {% include "core/misc/field_sections.html" with fields=form|fields_except:"name owner concept nature demeanor strength dexterity stamina charisma manipulation appearance perception intelligence wits" %}
 {% endblock contents %}

@@ -1,24 +1,20 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Human
-{% endblock creation_title %}
+{% load tl_forms %}
+{% comment %}
+First chargen step for a plain human: name, concept, Nature and Demeanor (plus the
+player when a view's form offers it). Any other field the form carries follows.
+{% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Human{% endblock creation_title %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% for field in form|fields_only:"name owner concept nature demeanor" %}
+            {% include "core/tl/field.html" with label="" help=field.help_text %}
+        {% endfor %}
     </div>
-    <div class="row">
-        <div class="col-sm">Player</div>
-        <div class="col-sm">{{ form.owner }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <div class="col-sm">{{ form.nature }}</div>
-        <div class="col-sm">Demeanor</div>
-        <div class="col-sm">{{ form.demeanor }}</div>
-    </div>
+    {% include "core/misc/field_sections.html" with fields=form|fields_except:"name owner concept nature demeanor" %}
 {% endblock contents %}
