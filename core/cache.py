@@ -15,6 +15,8 @@ from typing import Any
 
 from django.core.cache import cache
 from django.db.models import Model
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 
 class CacheKeyGenerator:
@@ -246,3 +248,15 @@ def get_cached_reference_list(
     cache.set(cache_key, result, timeout)
 
     return result
+
+
+def cache_page_per_visitor(timeout: int) -> list[Callable]:
+    """``cache_page`` that keys on the visitor's cookies, for ``method_decorator``.
+
+    Every page renders per-user markup (nav username, Edit and staff links,
+    messages). SessionMiddleware only adds ``Vary: Cookie`` after the view
+    returns, too late for ``cache_page``'s key, so a plain ``cache_page`` serves
+    the first visitor's page to everyone. ``vary_on_cookie`` inside it fixes the
+    key. Use as ``@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")``.
+    """
+    return [cache_page(timeout), vary_on_cookie]
