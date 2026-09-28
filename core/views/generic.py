@@ -2,15 +2,14 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView, ListView
 
 from core.access_policy import authorize_route
-from core.cache import CACHE_TIMEOUT_LONG
+from core.cache import CACHE_TIMEOUT_LONG, cache_page_per_visitor
 from core.permissions import Permission, PermissionManager
 
 
-@method_decorator(cache_page(CACHE_TIMEOUT_LONG), name="dispatch")
+@method_decorator(cache_page_per_visitor(CACHE_TIMEOUT_LONG), name="dispatch")
 class CachedDetailView(DetailView):
     """DetailView with 15-minute caching for reference data.
 
@@ -26,7 +25,7 @@ class CachedDetailView(DetailView):
     pass
 
 
-@method_decorator(cache_page(CACHE_TIMEOUT_LONG), name="dispatch")
+@method_decorator(cache_page_per_visitor(CACHE_TIMEOUT_LONG), name="dispatch")
 class CachedListView(ListView):
     """ListView with 15-minute caching for reference data.
 

@@ -1,9 +1,8 @@
 from django.db.models import Count, F, Max, Q
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView
 
+from core.cache import cache_page_per_visitor
 from core.models import NewsItem
 from game.models import Scene
 from game.security import filter_scenes, staffed_chronicles
@@ -27,11 +26,7 @@ def continue_scenes(user):
     )
 
 
-# vary_on_cookie must sit inside cache_page: SessionMiddleware only adds
-# "Vary: Cookie" after the view returns, too late for the cache key, so without
-# it one visitor's page (nav, scene tiles) would be served to everyone.
-@method_decorator(cache_page(60 * 5), name="dispatch")  # Cache for 5 minutes
-@method_decorator(vary_on_cookie, name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 5), name="dispatch")  # Cache for 5 minutes
 class HomeListView(ListView):
     model = NewsItem
     template_name = "core/index.html"

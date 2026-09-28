@@ -1,13 +1,13 @@
 from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.wraith.arcanos import Arcanos
+from core.cache import cache_page_per_visitor
 from core.mixins import MessageMixin
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class ArcanosDetailView(DetailView):
     model = Arcanos
     template_name = "characters/wraith/arcanos/detail.html"
@@ -61,7 +61,7 @@ class ArcanosUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Arcanos."
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class ArcanosListView(ListView):
     model = Arcanos
     ordering = ["arcanos_type", "name", "level"]

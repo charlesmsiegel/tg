@@ -1,12 +1,12 @@
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.wraith.faction import WraithFaction
+from core.cache import cache_page_per_visitor
 from core.mixins import MessageMixin
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class WraithFactionDetailView(DetailView):
     model = WraithFaction
     template_name = "characters/wraith/faction/detail.html"
@@ -31,7 +31,7 @@ class WraithFactionUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Wraith Faction."
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class WraithFactionListView(ListView):
     model = WraithFaction
     ordering = ["faction_type", "name"]

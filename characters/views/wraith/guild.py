@@ -1,12 +1,12 @@
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.wraith.guild import Guild
+from core.cache import cache_page_per_visitor
 from core.mixins import MessageMixin
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class GuildDetailView(DetailView):
     model = Guild
     template_name = "characters/wraith/guild/detail.html"
@@ -28,7 +28,7 @@ class GuildUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Guild."
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
 class GuildListView(ListView):
     model = Guild
     ordering = ["guild_type", "name"]
