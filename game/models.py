@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Max, OuterRef, Subquery, Value
+from django.db.models import Exists, Max, OuterRef, Subquery, Value
 from django.db.models.functions import Coalesce, Greatest
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -637,7 +637,10 @@ class UserSceneReadStatusManager(models.Manager):
         """``user_id`` has read ``scene`` through ``post`` (by default its latest post).
 
         Updates existing rows only, in one query; the marker never moves back
-        to an older post. Returns the number of rows updated.
+        to an older post. ``read`` becomes true only if no post is newer than the
+        new marker, checked in the same UPDATE: a post that lands after the page
+        was rendered (and was never shown) keeps the scene unread. Returns the
+        number of rows updated.
         """
         if post is None:
             post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
@@ -645,7 +648,11 @@ class UserSceneReadStatusManager(models.Manager):
         if post is None:
             return rows.update(read=True)
         marker = Greatest(Coalesce("last_read_post", Value(post.pk)), Value(post.pk))
-        return rows.update(read=True, last_read_post=marker)
+        newer = Post.objects.filter(
+            scene=scene,
+            pk__gt=Greatest(Coalesce(OuterRef("last_read_post"), Value(post.pk)), Value(post.pk)),
+        )
+        return rows.update(read=~Exists(newer), last_read_post=marker)
 
 
 class UserSceneReadStatus(models.Model):
@@ -848,8 +855,14 @@ def process_message(character, message):
     Returns ``(message, roll)``: the text to store, with the roll written out in
     it as before, and the roll as data (``roll_record``) for the roll strip, or
     ``None`` when the message has no dice command. Raises ``ValueError`` when a
-    dice command is malformed.
+    dice command is malformed; the point spends saved before the command was
+    parsed are then rolled back, so a refused message costs nothing.
     """
+    with transaction.atomic():
+        return _process_message(character, message)
+
+
+def _process_message(character, message):
     temporary_point_regex = re.compile(r"#WP(-?\d+)|#WP|#Q(-?\d+)|#P(-?\d+)|#(-?\d+)(B|L|A)")
     wp_spend = False
     expenditures = []

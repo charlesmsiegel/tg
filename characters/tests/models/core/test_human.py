@@ -872,7 +872,8 @@ class TestHumanCreateView(TestCase):
 class TestHumanUpdateView(TestCase):
     def setUp(self):
         self.st = User.objects.create_user(username="ST", password="password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        # The chronicle's head storyteller: a scoped editor, who gets the full form.
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st)
         self.chronicle.storytellers.add(self.st)
         self.human = Human.objects.create(
             name="Test Human",
@@ -1021,3 +1022,21 @@ class TestHumanCharacterCreationView(TestCase):
         self.human.save()
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/detail.html")
+
+
+class TestHumanUpdateViewOwnerForm(TestCase):
+    """A draft's owner reaches the edit page, but only with the limited form (Codex)."""
+
+    def test_owner_cannot_set_traits_through_the_full_form(self):
+        owner = User.objects.create_user(username="draft-owner", password="password")
+        human = Human.objects.create(name="Draft", owner=owner, status="Un")
+        self.client.login(username="draft-owner", password="password")
+        response = self.client.get(human.get_full_update_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("alertness", response.context["form"].fields)
+        self.assertNotIn("strength", response.context["form"].fields)
+        self.client.post(
+            human.get_full_update_url(), {"name": "Draft", "alertness": 10, "strength": 10}
+        )
+        human.refresh_from_db()
+        self.assertEqual((human.alertness, human.strength), (0, 1))

@@ -57,6 +57,7 @@ from game.models import (
     Chronicle,
     FreebieSpendingRecord,
     Journal,
+    Post,
     Scene,
     SettingElement,
     Story,
@@ -270,7 +271,11 @@ class SceneDetailView(DetailView):
         context["earlier_cursor"] = context["posts"][0].pk if has_earlier else None
         context["showing_earlier"] = before is not None
         context["viewer_id"] = user.pk if user.is_authenticated else None
+        # Earlier-posts windows loaded from the live page carry reading=1 down the chain.
+        context["reading_back"] = before is None or self.request.GET.get("reading") == "1"
         if self.is_posts_fragment():
+            if user.is_authenticated and self.request.GET.get("reading") == "1":
+                self.read_back_to(user, context["posts"])
             return context
 
         # An older window is history: it has no live updates to append to it.
@@ -299,6 +304,11 @@ class SceneDetailView(DetailView):
         tracked, read, marker = scene_read_marker(scene, user)
         divider = unread_divider(scene, posts, read=read, marker=marker, has_earlier=has_earlier)
         latest = posts[-1] if posts else None
+        if divider and divider["count"] > sum(1 for p in posts if p.pk >= divider["post_id"]):
+            # Unread posts run back past this window: they have not been shown, so the
+            # marker stays put (and the scene unread) until the reader loads back to
+            # them ("Show earlier posts": see read_back_to).
+            return divider
         if tracked:
             if not read or (latest is not None and marker != latest.pk):
                 UserSceneReadStatus.objects.mark_read(scene, user.pk, latest)
@@ -307,6 +317,21 @@ class SceneDetailView(DetailView):
                 scene=scene, user=user, read=True, last_read_post=latest
             )
         return divider
+
+    def read_back_to(self, user, posts):
+        """An earlier-posts window loaded from the live page (reading=1): once the chain
+        reaches the reader's first unread post, every unread post has been shown, so
+        the scene is read through its latest."""
+        scene = self.object
+        tracked, read, marker = scene_read_marker(scene, user)
+        if not tracked or not posts or (read and marker is not None):
+            return
+        first_unread = Post.objects.filter(scene=scene)
+        if marker is not None:
+            first_unread = first_unread.filter(pk__gt=marker)
+        first_unread = first_unread.order_by("pk").values_list("pk", flat=True).first()
+        if first_unread is not None and posts[0].pk <= first_unread:
+            UserSceneReadStatus.objects.mark_read(scene, user.pk)
 
     def post_cursor(self):
         """``?before=<post id>`` pages back through a long scene; junk is ignored."""

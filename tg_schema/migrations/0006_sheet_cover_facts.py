@@ -28,6 +28,12 @@ def add_sheet_cover_facts(apps, schema_editor):
                 schema_editor.add_field(model, field)
 
 
+# The live model describes each column (legacy databases have no migration state for
+# its app), so these fields must keep the definition they shipped with: a later
+# change to one of them needs its own migration here, not an edit to this one.
+# Reversing this migration leaves the columns in place (RunPython.noop).
+
+
 class Migration(migrations.Migration):
     dependencies = [("tg_schema", "0005_story_chronicle")]
     operations = [migrations.RunPython(add_sheet_cover_facts, migrations.RunPython.noop)]

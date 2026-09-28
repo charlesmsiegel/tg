@@ -125,6 +125,13 @@ class RollParsingTests(SceneChatBase):
         with self.assertRaises(ValueError):
             process_message(self.character, "Leap /extended nonsense")
 
+    def test_refused_command_spends_nothing(self):
+        self.character.temporary_willpower = 3
+        self.character.save()
+        self.assertIsNone(self.scene.add_post(self.character, "", "#WP Leap /extended nonsense"))
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.temporary_willpower, 3)
+
     def test_add_post_stores_the_roll(self):
         with dice_sequence(9, 9):
             post = self.scene.add_post(self.character, "", "/roll 2")
