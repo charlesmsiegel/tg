@@ -48,7 +48,8 @@ class FormValues(HTMLParser):
                 return
             if kind in {"checkbox", "radio"} and "checked" not in attrs:
                 return
-            self.data.setdefault(name, []).append(attrs.get("value", "on"))
+            default = "on" if kind in {"checkbox", "radio"} else ""
+            self.data.setdefault(name, []).append(attrs.get("value") or default)
         elif tag == "select" and name:
             self._select = name
             self._select_multiple = "multiple" in attrs

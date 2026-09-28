@@ -1,29 +1,17 @@
-{% load formset_tags %}
-<div class="row">
-    <h2 class="col-sm mta_heading">Create Sanctum</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Describe your character's Sanctum and define its Reality Zone. The Reality Zone should have a total positive Practice rating equal to {{ current_sanctum.rating }} and an equal total negative rating.
+{% comment %}
+SanctumForm fields and its reality zone. Shared by the sanctum create / edit form, the
+chantry generator's Sanctum step and the Sanctum step of the Mage-family character
+wizards (where current_background is the Sanctum background being detailed).
+{% endcomment %}
+<div class="tl-locform">
+    <p class="tl-lede">
+        Describe the Sanctum and define its Reality Zone: positive Practice ratings totalling the Sanctum's rank{% if current_background %} ({{ current_background.rating }}){% endif %}, and an equal total of negative ratings.
+    </p>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "locations/tl/field.html" with field=form.name %}
+        {% include "locations/tl/field.html" with field=form.rank %}
+        {% include "locations/tl/field.html" with field=form.contained_within %}
     </div>
+    {% include "locations/tl/field.html" with field=form.description %}
+    {% include "locations/mage/tl/zone_formset.html" with formset=form.reality_zone_formset %}
 </div>
-<div class="row">
-    <div class="col-sm">Name</div>
-    <div class="col-sm">{{ form.name }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Contained Within</div>
-    <div class="col-sm">{{ form.contained_within }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Rank</div>
-    <div class="col-sm">{{ form.rank }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Description</div>
-    <div class="col-sm">{{ form.description }}</div>
-</div>
-{% formset form.reality_zone_formset prefix="reality_zone" add_label="Add Reality Zone Rating" wrapper_class="row" show_remove=False %}
-    <div class="col-sm">{{ subform.practice }}</div>
-    <div class="col-sm">{{ subform.rating }}</div>
-{% endformset %}

@@ -1,0 +1,26 @@
+{% load formset_tags %}
+{% comment %}
+"Reality zone" group: the practice ratings of RealityZonePracticeRatingFormSet (prefix
+"reality_zone") as ruled rows of practice + rating; saved rows get a Delete check and the
+formset manager adds rows. Renders nothing when the form has no such formset (the plain
+demesne edit form). Used by the node, sanctum and demesne forms.
+  {% include "locations/mage/tl/zone_formset.html" with formset=form.reality_zone_formset %}
+{% endcomment %}
+{% if formset.management_form %}
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Reality zone</h2>
+        {% if formset.non_form_errors %}
+            <ul class="tl-field__error">
+                {% for error in formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+        {% formset formset prefix="reality_zone" add_label="Add practice" add_class="tl-btn tl-btn--ghost tl-btn--sm" wrapper_class="tl-locrow" show_remove=False %}
+            {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+            {% include "core/tl/field.html" with field=subform.practice label="Practice" %}
+            {% include "core/tl/field.html" with field=subform.rating label="Rating" %}
+            {% if subform.instance.pk %}
+                {% include "core/misc/check.html" with field=subform.DELETE label="Delete" %}
+            {% endif %}
+        {% endformset %}
+    </section>
+{% endif %}

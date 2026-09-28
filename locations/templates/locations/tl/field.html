@@ -1,0 +1,20 @@
+{% comment %}
+One location form field, or nothing when the form lacks it:
+  {% include "locations/tl/field.html" with field=form.rank %}
+Checkboxes render as a check row (core/misc/check.html); textareas and multiple selects
+take a full row of the surrounding .tl-formgrid (full=True forces that). label= and
+help= pass through; help defaults to the field's help_text.
+{% endcomment %}
+{% if field.name %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% elif field.widget_type == "checkbox" %}
+        {% include "core/misc/check.html" %}
+    {% elif full or field.widget_type == "textarea" or "multiple" in field.widget_type %}
+        <div class="tl-field--full">
+            {% include "core/tl/field.html" with help=help|default:field.help_text %}
+        </div>
+    {% else %}
+        {% include "core/tl/field.html" with help=help|default:field.help_text %}
+    {% endif %}
+{% endif %}

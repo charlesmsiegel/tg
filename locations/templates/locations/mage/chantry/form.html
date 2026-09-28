@@ -5,32 +5,38 @@
     dimension_barrier and description; this template renders the rest.
     A field missing here is blanked on save.
 {% endcomment %}
-{% block creation_title %}
-    Create Chantry
-{% endblock creation_title %}
+{% block creation_title %}Create Chantry{% endblock creation_title %}
+{% block form_line %}mta{% endblock form_line %}
 {% block other %}
-    {% if form.chronicle %}
-        {% include "locations/mage/chantry/field_row.html" with field=form.chronicle %}
-    {% endif %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.faction %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.leadership_type %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.season %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.chantry_type %}
-    <h3 class="row {{ object.get_heading }}">
-        <div class="col-sm">Points</div>
-        <div class="col-sm">{{ form.total_points }}</div>
-    </h3>
-    {% if object %}
-        <p class="text-muted">{{ object.points }} unspent of {{ object.total_points }}</p>
-    {% endif %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.integrated_effects %}
-    <h3 class="{{ object.get_heading }}">Personnel</h3>
-    {% include "locations/mage/chantry/field_row.html" with field=form.leaders %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.members %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.cabals %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.ambassador %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.node_tender %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.investigator %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.guardian %}
-    {% include "locations/mage/chantry/field_row.html" with field=form.teacher %}
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Chantry</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.chronicle %}
+            {% include "locations/tl/field.html" with field=form.faction %}
+            {% include "locations/tl/field.html" with field=form.leadership_type %}
+            {% include "locations/tl/field.html" with field=form.season %}
+            {% include "locations/tl/field.html" with field=form.chantry_type %}
+        </div>
+    </section>
+    <section class="tl-locgroup tl-locgroup--power">
+        <h2 class="tl-subhead">Points</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.total_points %}
+        </div>
+        {% if object %}<p class="tl-note">{{ object.points }} unspent of {{ object.total_points }}</p>{% endif %}
+        {% include "locations/tl/field.html" with field=form.integrated_effects %}
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Personnel</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.leaders %}
+            {% include "locations/tl/field.html" with field=form.members %}
+            {% include "locations/tl/field.html" with field=form.cabals %}
+            {% include "locations/tl/field.html" with field=form.ambassador %}
+            {% include "locations/tl/field.html" with field=form.node_tender %}
+            {% include "locations/tl/field.html" with field=form.investigator %}
+            {% include "locations/tl/field.html" with field=form.guardian %}
+            {% include "locations/tl/field.html" with field=form.teacher %}
+        </div>
+    </section>
 {% endblock other %}

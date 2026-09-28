@@ -1,73 +1,25 @@
-{% extends "core/base.html" %}
+{% extends "locations/core/tl_form.html" %}
+{% comment %}
+All-fields freehold form (the direct create / edit routes). freehold-form.js shows the
+Academy / Hearth ability and Dual Nature fields only when they apply.
+{% endcomment %}
 {% load static %}
-{% load crispy_forms_tags %}
-
-{% block content %}
-    <div class="container mt-4">
-        <div class="tg-card header-card mb-4" data-gameline="ctd">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title ctd_heading">
-                    {% if object %}Edit{% else %}Create{% endif %} Freehold
-                </h1>
+{% block creation_title %}Create Freehold{% endblock creation_title %}
+{% block form_line %}ctd{% endblock form_line %}
+{% block formdetails %}method="post" id="freeholdForm"{% endblock formdetails %}
+{% block contents %}
+    <div class="tl-locform">
+        {% include "locations/tl/fields.html" with fields_form=form %}
+        {% if feature_points %}
+            <div class="tl-chargen__status" role="status">
+                <div class="tl-chargen__line">
+                    <span class="tl-chargen__tag">Feature points</span>
+                    <span>{{ feature_points }} points · {{ holdings_required }} Holdings dots required</span>
+                    <span class="tl-chargen__totals">Each Holdings dot buys 3 feature points.</span>
+                </div>
             </div>
-        </div>
-
-        <div class="tg-card">
-            <div class="tg-card-body" style="padding: 24px;">
-                <form method="post" id="freeholdForm">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-
-                    {% if feature_points %}
-                        <div class="alert alert-info mt-3">
-                            <strong>Feature Points:</strong> {{ feature_points }} points
-                            ({{ holdings_required }} Holdings dots required)
-                        </div>
-                    {% endif %}
-
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            {% if object %}Update{% else %}Create{% endif %} Freehold
-                        </button>
-                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'locations:changeling:list:freehold' %}{% endif %}" class="btn btn-secondary">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Help Section -->
-        <div class="tg-card mt-4">
-            <div class="tg-card-body" style="padding: 20px;">
-                <h6 class="ctd_heading mb-3">Freehold Creation Guide</h6>
-
-                <p><strong>Feature Points:</strong> Each Holdings dot = 3 feature points</p>
-
-                <p><strong>Archetypes:</strong></p>
-                <ul>
-                    <li><strong>Academy:</strong> -2 difficulty on chosen Ability</li>
-                    <li><strong>Hearth:</strong> -2 difficulty on Leadership or Socialize</li>
-                    <li><strong>Homestead:</strong> -2 difficulty on Survival or Animal Ken, produces chimerical goods</li>
-                    <li><strong>Manor:</strong> -2 difficulty on Etiquette</li>
-                    <li><strong>Market:</strong> -2 difficulty on Persuasion or Subterfuge</li>
-                    <li><strong>Repository:</strong> -2 difficulty on Lore</li>
-                    <li><strong>Stronghold:</strong> -2 difficulty on Firearms or Melee</li>
-                    <li><strong>Thorpe:</strong> -2 difficulty on Empathy (multiple balefires)</li>
-                    <li><strong>Workshop:</strong> -2 difficulty on Craft, creates chimerical items</li>
-                </ul>
-
-                <p><strong>Powers:</strong></p>
-                <ul>
-                    <li><strong>Warning Call (•):</strong> Alerts freeholders to intruders</li>
-                    <li><strong>Glamour to Dross (••):</strong> Converts unused Glamour to dross nightly</li>
-                    <li><strong>Resonant Dreams (••):</strong> +2 dice on checks matching freehold's Aspect</li>
-                    <li><strong>Call Forth the Flame (•••):</strong> Produces Covenant Embers</li>
-                    <li><strong>Dual Nature (•••):</strong> Gains benefits from two Archetypes</li>
-                </ul>
-            </div>
-        </div>
+        {% endif %}
+        {% include "locations/changeling/freehold/tl/guide.html" with archetypes=True powers=True %}
     </div>
-
     <script src="{% static 'locations/js/freehold-form.js' %}"></script>
-{% endblock content %}
+{% endblock contents %}

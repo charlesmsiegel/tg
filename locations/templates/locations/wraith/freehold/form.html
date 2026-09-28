@@ -1,32 +1,27 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Wraith Freehold
-{% endblock creation_title %}
+{% block creation_title %}Create Wraith Freehold{% endblock creation_title %}
+{% block form_line %}wto{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">{{ form.population }}</div>
-        <div class="col-sm">{{ form.government_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.leader }}</div>
-        <div class="col-sm">{{ form.hierarchy_relation }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.defense_rating }}</div>
-        <div class="col-sm">{{ form.resource_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.allied_factions }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.founding_principle }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.has_soulforges }}</div>
-        <div class="col-sm">{{ form.has_library }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.has_safe_passage }}</div>
-        <div class="col-sm">{{ form.hidden }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Government</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.population %}
+            {% include "locations/tl/field.html" with field=form.government_type %}
+            {% include "locations/tl/field.html" with field=form.leader %}
+            {% include "locations/tl/field.html" with field=form.hierarchy_relation %}
+            {% include "locations/tl/field.html" with field=form.allied_factions %}
+            {% include "locations/tl/field.html" with field=form.founding_principle %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Resources</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.defense_rating %}
+            {% include "locations/tl/field.html" with field=form.resource_level %}
+            {% include "locations/tl/field.html" with field=form.has_soulforges %}
+            {% include "locations/tl/field.html" with field=form.has_library %}
+            {% include "locations/tl/field.html" with field=form.has_safe_passage %}
+            {% include "locations/tl/field.html" with field=form.hidden %}
+        </div>
+    </section>
 {% endblock other %}

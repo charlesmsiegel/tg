@@ -1,16 +1,17 @@
+// Show the Dual Nature fields (Spread .tl-field wrappers) only when that power is chosen.
 document.addEventListener('DOMContentLoaded', function() {
     const powersCheckboxes = document.querySelectorAll('[name="powers"]');
-    const dualNatureFields = document.querySelector('[name="dual_nature_archetype"]').closest('.form-group');
-    const dualNatureAbility = document.querySelector('[name="dual_nature_ability"]').closest('.form-group');
+    const wrapper = function(name) {
+        const input = document.querySelector('[name="' + name + '"]');
+        return input ? input.closest('.tl-field') : null;
+    };
+    const dualNatureFields = [wrapper('dual_nature_archetype'), wrapper('dual_nature_ability')].filter(Boolean);
 
     function updateDualNatureVisibility() {
-        const selectedPowers = Array.from(powersCheckboxes)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
-
-        const hasDualNature = selectedPowers.includes('dual_nature');
-        dualNatureFields.style.display = hasDualNature ? 'block' : 'none';
-        dualNatureAbility.style.display = hasDualNature ? 'block' : 'none';
+        const hasDualNature = Array.from(powersCheckboxes).some(cb => cb.checked && cb.value === 'dual_nature');
+        dualNatureFields.forEach(element => {
+            element.style.display = hasDualNature ? '' : 'none';
+        });
     }
 
     powersCheckboxes.forEach(cb => {

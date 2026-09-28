@@ -1,12 +1,12 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Caern
-{% endblock creation_title %}
+{% block creation_title %}Create Caern{% endblock creation_title %}
+{% block form_line %}wta{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ form.rank }}</div>
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ form.caern_type }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Caern</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.rank %}
+            {% include "locations/tl/field.html" with field=form.caern_type label="Type" %}
+        </div>
+    </section>
 {% endblock other %}

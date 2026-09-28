@@ -1,33 +1,35 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Chantry
-{% endblock creation_title %}
+{% comment %}
+Chantry generator, first page: name the chantry and choose its total points (ChantryCreateForm).
+Storytellers get a link to the all-fields form.
+{% endcomment %}
+{% block creation_title %}Create Chantry{% endblock creation_title %}
+{% block form_line %}mta{% endblock form_line %}
+{% block cover_body %}
+    {% include "locations/mage/chantry/tl/steps.html" with step=0 %}
+{% endblock cover_body %}
 {% block progress %}
     {% if can_create_directly %}
-        <p class="text-right">
+        <p class="tl-note">
             <a href="{% url 'locations:mage:create:chantry_direct' %}">Storytellers: create directly</a>
         </p>
     {% endif %}
 {% endblock progress %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Faction</div>
-        <div class="col-sm">{{ form.faction }}</div>
-        <div class="col-sm">Season</div>
-        <div class="col-sm">{{ form.season }}</div>
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ form.chantry_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <div class="col-sm">{{ form.chronicle }}</div>
-        <div class="col-sm">Leadership Type</div>
-        <div class="col-sm">{{ form.leadership_type }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-    </div>
-    <h3 class="row {{ object.get_heading }}">
-        <div class="col-sm">Points</div>
-        <div class="col-sm">{{ form.total_points }}</div>
-    </h3>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Chantry</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.faction %}
+            {% include "locations/tl/field.html" with field=form.season %}
+            {% include "locations/tl/field.html" with field=form.chantry_type label="Type" %}
+            {% include "locations/tl/field.html" with field=form.chronicle %}
+            {% include "locations/tl/field.html" with field=form.leadership_type label="Leadership type" %}
+        </div>
+    </section>
+    <section class="tl-locgroup tl-locgroup--power">
+        <h2 class="tl-subhead">Points</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.total_points label="Total points" help="Spent on backgrounds and Integrated Effects in the next steps." %}
+        </div>
+    </section>
 {% endblock other %}

@@ -1,23 +1,30 @@
 {% load static %}
-{% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
-<div class="row">
-    <div class="col-sm">Create New Effect: {{ form.select_or_create }}</div>
-</div>
-<div id="effect selection">
-    <div class="row">
-        <div class="col-sm">{{ form.select }}</div>
+{% comment %}
+Chantry generator, Integrated Effects step (ChantryEffectsForm): the effects bought so far,
+then pick an existing effect or create one. chantry-effects.js swaps "effect selection" and
+"effect creation" (keep those ids) when #id_select_or_create changes.
+{% endcomment %}
+{% include "locations/mage/chantry/tl/effect_rows.html" %}
+<section class="tl-locgroup tl-locgroup--power">
+    <h2 class="tl-subhead">Add an effect</h2>
+    {% include "core/misc/check.html" with field=form.select_or_create label="Create a new effect" %}
+    <div id="effect selection">
+        {% include "core/tl/field.html" with field=form.select label="Existing effect" %}
     </div>
-</div>
-<div id="effect creation" class="d-none">
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
+    <div id="effect creation" class="d-none tl-stack tl-stack--lg">
+        {% include "core/tl/field.html" with field=form.name label="Name" %}
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.correspondence %}
+            {% include "core/tl/field.html" with field=form.life %}
+            {% include "core/tl/field.html" with field=form.prime %}
+            {% include "core/tl/field.html" with field=form.entropy %}
+            {% include "core/tl/field.html" with field=form.matter %}
+            {% include "core/tl/field.html" with field=form.spirit %}
+            {% include "core/tl/field.html" with field=form.forces %}
+            {% include "core/tl/field.html" with field=form.mind %}
+            {% include "core/tl/field.html" with field=form.time %}
+        </div>
+        {% include "core/tl/field.html" with field=form.description label="Systems" %}
     </div>
-    {% include "characters/mage/spheres/form.html" %}
-    <div class="row">
-        <div class="col-sm">Systems</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</section>
 <script src="{% static 'locations/js/chantry-effects.js' %}"></script>

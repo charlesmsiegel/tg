@@ -1,15 +1,12 @@
 {% comment %}
-Integrated effects on the Spread chantry page: effect name and its spheres. The chantry
-generator lists them with tl/effect_rows.html.
+The chantry's Integrated Effects as rows (name, spheres) for the chantry generator; renders
+nothing when it has none. The detail page uses tl/integrated_effects.html.
 {% endcomment %}
 {% with effects=object.integrated_effects.all %}
     {% if effects %}
-        <section class="tl-section tl-section--power tl-span-5" id="integrated-effects">
-            <div class="tl-section__head">
-                <span class="tl-section__num"></span>
-                <h2 class="tl-section__title">Integrated effects</h2>
-            </div>
-            <div class="tl-section__body">
+        <section class="tl-locgroup tl-locgroup--power" id="integrated-effects">
+            <h2 class="tl-subhead">Integrated effects</h2>
+            <div>
                 {% for effect in effects %}
                     <div class="tl-scenerow">
                         <span class="tl-scenerow__name"><a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a></span>

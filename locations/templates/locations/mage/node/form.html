@@ -1,7 +1,6 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Node
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Node{% endblock creation_title %}
+{% block form_line %}mta{% endblock form_line %}
 {% block contents %}
     {% include "locations/mage/node/form_include.html" %}
 {% endblock contents %}

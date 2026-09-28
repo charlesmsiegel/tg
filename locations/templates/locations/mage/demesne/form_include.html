@@ -1,42 +1,15 @@
-<div class="row">
-    <div class="col-sm">
-        <h2 class="mta_heading">Basic Information</h2>
+{% comment %}
+Demesne fields and its reality zone (rank and the reality zone are only on the create
+form, DemesneForm; the edit form is the registry's plain model form).
+{% endcomment %}
+<div class="tl-locform">
+    <div class="tl-formgrid">
+        {% include "locations/tl/field.html" with field=form.name %}
+        {% include "locations/tl/field.html" with field=form.rank %}
+        {% include "locations/tl/field.html" with field=form.size %}
+        {% include "locations/tl/field.html" with field=form.accessibility %}
+        {% include "locations/tl/field.html" with field=form.contained_within %}
     </div>
+    {% include "locations/tl/field.html" with field=form.description %}
+    {% include "locations/mage/tl/zone_formset.html" with formset=form.reality_zone_formset %}
 </div>
-<div class="row">
-    <div class="col-sm">Name</div>
-    <div class="col-sm">{{ form.name }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Description</div>
-    <div class="col-sm">{{ form.description }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Contained Within</div>
-    <div class="col-sm">{{ form.contained_within }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Rank</div>
-    <div class="col-sm">{{ form.rank }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Size</div>
-    <div class="col-sm">{{ form.size }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Accessibility</div>
-    <div class="col-sm">{{ form.accessibility }}</div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-sm">
-        <h2 class="mta_heading">Reality Zone</h2>
-    </div>
-</div>
-{{ form.reality_zone_formset.management_form }}
-{% for form_item in form.reality_zone_formset %}
-    <div class="row">
-        <div class="col-sm">{{ form_item.practice }}</div>
-        <div class="col-sm">{{ form_item.rating }}</div>
-    </div>
-{% endfor %}

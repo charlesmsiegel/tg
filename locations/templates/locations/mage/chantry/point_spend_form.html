@@ -1,31 +1,45 @@
-<div class="row centertext">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-3 border">Allies, Arcane, Backup, Cult, Elders, Integrated Effects, Library, Retainers, Spies</div>
-    <div class="col-sm-3 border">2</div>
-    <div class="col-sm-3"></div>
-</div>
-<div class="row centertext">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-3 border">Node, Resources</div>
-    <div class="col-sm-3 border">3</div>
-    <div class="col-sm-3"></div>
-</div>
-<div class="row centertext">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-3 border">Enhancement, Requisitions</div>
-    <div class="col-sm-3 border">4</div>
-    <div class="col-sm-3"></div>
-</div>
-<div class="row centertext">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-3 border">Sanctum</div>
-    <div class="col-sm-3 border">5</div>
-    <div class="col-sm-3"></div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.category }}</div>
-    <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
-    <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
-    <div class="col-sm d-none" id="display_alt_name_wrap">Alternate Name? {{ form.display_alt_name }}</div>
-</div>
+{% comment %}
+Chantry generator, Backgrounds step (ChantryPointForm): the point cost of each background,
+then category → background (chained), note and alternate-name check. The conditional
+fields script shows example_wrap / note_wrap / display_alt_name_wrap (keep those ids and
+the initial d-none) for the chosen category.
+{% endcomment %}
+<section class="tl-locgroup">
+    <h2 class="tl-subhead">Costs per dot</h2>
+    <table class="tl-table tl-table--compact tl-loccosts">
+        <thead>
+            <tr>
+                <th scope="col">Background</th>
+                <th scope="col" class="tl-num">Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Allies, Arcane, Backup, Cult, Elders, Integrated Effects, Library, Retainers, Spies</td>
+                <td class="tl-num">2</td>
+            </tr>
+            <tr>
+                <td>Node, Resources</td>
+                <td class="tl-num">3</td>
+            </tr>
+            <tr>
+                <td>Enhancement, Requisitions</td>
+                <td class="tl-num">4</td>
+            </tr>
+            <tr>
+                <td>Sanctum</td>
+                <td class="tl-num">5</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<section class="tl-locgroup tl-locgroup--power">
+    <h2 class="tl-subhead">Spend points</h2>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.category label="Buy" %}
+        <div class="d-none" id="example_wrap">{% include "core/tl/field.html" with field=form.example label="Background" %}</div>
+        <div class="d-none" id="note_wrap">{% include "core/tl/field.html" with field=form.note label="Note" %}</div>
+        <div class="d-none" id="display_alt_name_wrap">{% include "core/misc/check.html" with field=form.display_alt_name label="Use the alternate name" %}</div>
+    </div>
+</section>
 {{ form.conditional_fields_script }}

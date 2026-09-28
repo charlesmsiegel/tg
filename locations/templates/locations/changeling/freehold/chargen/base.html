@@ -1,0 +1,39 @@
+{% extends "locations/core/tl_form.html" %}
+{% comment %}
+Freehold generator step (Spread C5 look): the draft's name and the four steps on the cover;
+"STEP 0N OF 04" and the step label over the form; Save & continue first (Enter submits it),
+then Cancel back to the freehold list. Steps set step_at (0 basics … 3 details),
+step_label, submit_label and contents.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{% if object %}{{ object.name|sanitize_html }}{% else %}Create Freehold{% endif %} · {% block step_title %}{% endblock step_title %}{% endblock title %}
+{% block form_line %}ctd{% endblock form_line %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">New freehold · Draft</span>
+    <h1 class="tl-cover__name tl-cover__name--form {% if object %}{{ object.name|cover_title_class:object }}{% endif %}" data-fit-title>
+        {% if object %}{{ object.name|sanitize_html }}{% else %}Create Freehold{% endif %}
+    </h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <ol class="tl-steps" aria-label="Freehold creation steps">
+        {% with step=object.creation_status|default:0 %}
+            {% include "locations/tl/step_row.html" with at=0 label="Basics" %}
+            {% include "locations/tl/step_row.html" with at=1 label="Features" %}
+            {% include "locations/tl/step_row.html" with at=2 label="Powers" %}
+            {% include "locations/tl/step_row.html" with at=3 label="Details" %}
+        {% endwith %}
+    </ol>
+{% endblock cover_body %}
+{% block cover_actions %}{% endblock cover_actions %}
+{% block heading %}
+    <header class="tl-chargen__head">
+        <p class="tl-chargen__count">Step {% block step_num %}01{% endblock step_num %} of 04</p>
+        <h2 class="tl-h1">{% block step_label %}{% endblock step_label %}</h2>
+    </header>
+{% endblock heading %}
+{% block buttons %}
+    <div class="tl-actions tl-formactions">
+        <button type="submit" class="tl-btn">{% block submit_label %}Save &amp; continue{% endblock submit_label %}</button>
+        <a href="{% url 'locations:changeling:list:freehold' %}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
+    </div>
+{% endblock buttons %}

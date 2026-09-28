@@ -1,35 +1,30 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Nihil
-{% endblock creation_title %}
+{% block creation_title %}Create Nihil{% endblock creation_title %}
+{% block form_line %}wto{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">{{ form.void_type }}</div>
-        <div class="col-sm">{{ form.stability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.hazard_level }}</div>
-        <div class="col-sm">{{ form.oblivion_proximity }}</div>
-        <div class="col-sm">{{ form.entropy_rating }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.estimated_size }}</div>
-        <div class="col-sm">{{ form.spectral_activity }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.corpus_drain }}</div>
-        <div class="col-sm">{{ form.pathos_drain }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.memory_loss }}</div>
-        <div class="col-sm">{{ form.shadow_attraction }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.avoidable }}</div>
-        <div class="col-sm">{{ form.marked }}</div>
-        <div class="col-sm">{{ form.contains_relics }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.origin_story }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Void</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.void_type %}
+            {% include "locations/tl/field.html" with field=form.stability %}
+            {% include "locations/tl/field.html" with field=form.estimated_size %}
+            {% include "locations/tl/field.html" with field=form.hazard_level %}
+            {% include "locations/tl/field.html" with field=form.oblivion_proximity %}
+            {% include "locations/tl/field.html" with field=form.entropy_rating %}
+            {% include "locations/tl/field.html" with field=form.spectral_activity %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Effects</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.corpus_drain %}
+            {% include "locations/tl/field.html" with field=form.pathos_drain %}
+            {% include "locations/tl/field.html" with field=form.memory_loss %}
+            {% include "locations/tl/field.html" with field=form.shadow_attraction %}
+            {% include "locations/tl/field.html" with field=form.avoidable %}
+            {% include "locations/tl/field.html" with field=form.marked %}
+            {% include "locations/tl/field.html" with field=form.contains_relics %}
+        </div>
+        {% include "locations/tl/field.html" with field=form.origin_story %}
+    </section>
 {% endblock other %}

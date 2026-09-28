@@ -1,163 +1,64 @@
 {% load formset_tags %}
-<!-- Instructions Card -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Node Creation Guide</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <p class="mb-2">Nodes are created as per <strong>Sources of Magick</strong> rules. A node has <strong>3 points per rank</strong>.</p>
-        <p class="mb-2">
-            Points are divided between Merits and Flaws (at cost), Size and Ratio (from -2 to 2),
-            additional Resonance (1 each after {{ current_node.rating }} ranks of resonance) and
-            total tass/quintessence generated. Additionally, choose the thematic form of the Quintessence and Tass.
+{% comment %}
+NodeForm fields and its three formsets (merits and flaws, resonance, reality zone).
+Shared by the node create / edit form, the chantry generator's Node step and the Node
+step of the Mage-family character wizards (where current_background is the Node
+background being detailed). Formset rows carry their hidden id / parent inputs so an
+edit updates existing ratings instead of adding copies.
+{% endcomment %}
+<div class="tl-locform">
+    <div class="tl-stack">
+        <p class="tl-lede">
+            Nodes follow the <em>Sources of Magick</em> rules: a node has 3 points per rank{% if current_background %} (this one is rank {{ current_background.rating }}){% endif %}.
+            Spend them on Merits and Flaws (at cost), Size and Ratio (−2 to 2), Resonance beyond one dot per rank, and the Tass and Quintessence it generates, then choose the forms they take.
         </p>
-        <p class="mb-0">
-            Nodes contain reality zones equal to their rank. Choose {{ current_node.rating }} positive levels
-            of Practices and the same number of negative levels.
+        <p class="tl-lede">
+            A node holds a Reality Zone equal to its rank: as many positive levels of Practices as its rank, and the same number of negative levels.
         </p>
     </div>
-</div>
-
-<!-- Basic Information -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Basic Information</h2>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "locations/tl/field.html" with field=form.name %}
+        {% include "locations/tl/field.html" with field=form.contained_within %}
     </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-                {{ form.name }}
-            </div>
-            <div class="col-md-6">
-                <label for="{{ form.contained_within.id_for_label }}" class="form-label">Contained Within</label>
-                {{ form.contained_within }}
-            </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Node</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.rank %}
+            {% include "locations/tl/field.html" with field=form.size %}
+            {% include "locations/tl/field.html" with field=form.ratio %}
         </div>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="{{ form.rank.id_for_label }}" class="form-label">Rank</label>
-                {{ form.rank }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ form.size.id_for_label }}" class="form-label">Size</label>
-                {{ form.size }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ form.ratio.id_for_label }}" class="form-label">Ratio</label>
-                {{ form.ratio }}
-            </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Barriers</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.gauntlet %}
+            {% include "locations/tl/field.html" with field=form.shroud %}
+            {% include "locations/tl/field.html" with field=form.dimension_barrier %}
         </div>
-    </div>
-</div>
-
-<!-- Dimensional Barriers -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Dimensional Barriers</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="{{ form.gauntlet.id_for_label }}" class="form-label">Gauntlet</label>
-                {{ form.gauntlet }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ form.shroud.id_for_label }}" class="form-label">Shroud</label>
-                {{ form.shroud }}
-            </div>
-            <div class="col-md-4">
-                <label for="{{ form.dimension_barrier.id_for_label }}" class="form-label">Dimension Barrier</label>
-                {{ form.dimension_barrier }}
-            </div>
+    </section>
+    <section class="tl-locgroup tl-locgroup--power">
+        <h2 class="tl-subhead">Energy output</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.quintessence_form label="Quintessence form" %}
+            {% include "locations/tl/field.html" with field=form.tass_form label="Tass form" %}
         </div>
-    </div>
-</div>
-
-<!-- Energy Output -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Energy Output</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="{{ form.quintessence_form.id_for_label }}" class="form-label">Quintessence Form</label>
-                {{ form.quintessence_form }}
-            </div>
-            <div class="col-md-6">
-                <label for="{{ form.tass_form.id_for_label }}" class="form-label">Tass Form</label>
-                {{ form.tass_form }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Merits and Flaws -->
-{% if merits_and_flaws.count != 0 %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Merits and Flaws</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        {% formset form.merit_flaw_formset prefix="merit_flaw" add_label="Add Merit/Flaw" add_class="tg-btn btn-primary" wrapper_class="row mb-3 merit-flaw-row" %}
-            <div class="col-md-6">
-                <label class="form-label">Merit/Flaw</label>
-                {{ subform.mf }}
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Rating</label>
-                {{ subform.rating }}
-            </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Merits and flaws</h2>
+        {% formset form.merit_flaw_formset prefix="merit_flaw" add_label="Add merit / flaw" add_class="tl-btn tl-btn--ghost tl-btn--sm" remove_class="tl-btn tl-btn--quiet tl-btn--sm" wrapper_class="tl-locrow" %}
+            {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+            {% include "core/tl/field.html" with field=subform.mf label="Merit / flaw" %}
+            {% include "core/tl/field.html" with field=subform.rating label="Rating" %}
         {% endformset %}
-    </div>
-</div>
-{% endif %}
-
-<!-- Resonance -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Resonance</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        {% formset form.resonance_formset prefix="resonance" add_label="Add Resonance" add_class="tg-btn btn-primary" wrapper_class="row mb-3 resonance-row" %}
-            <div class="col-md-6">
-                <label class="form-label">Resonance Type</label>
-                {{ subform.resonance }}
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Rating</label>
-                {{ subform.rating }}
-            </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Resonance</h2>
+        {% formset form.resonance_formset prefix="resonance" add_label="Add resonance" add_class="tl-btn tl-btn--ghost tl-btn--sm" remove_class="tl-btn tl-btn--quiet tl-btn--sm" wrapper_class="tl-locrow" %}
+            {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+            {% include "core/tl/field.html" with field=subform.resonance label="Resonance" %}
+            {% include "core/tl/field.html" with field=subform.rating label="Rating" %}
         {% endformset %}
-    </div>
-</div>
-
-<!-- Reality Zone -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Reality Zone</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        {% formset form.reality_zone_formset prefix="reality_zone" add_label="Add Reality Zone Rating" add_class="tg-btn btn-primary" wrapper_class="row mb-3 reality-zone-row" %}
-            <div class="col-md-6">
-                <label class="form-label">Practice</label>
-                {{ subform.practice }}
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Rating</label>
-                {{ subform.rating }}
-            </div>
-        {% endformset %}
-    </div>
-</div>
-
-<!-- Description -->
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h2 class="tg-card-title mta_heading">Description</h2>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        {{ form.description }}
-    </div>
+    </section>
+    {% include "locations/mage/tl/zone_formset.html" with formset=form.reality_zone_formset %}
+    {% include "locations/tl/field.html" with field=form.description %}
 </div>

@@ -1,77 +1,103 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Chantry
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% comment %}
+Chantry generator steps 1–6 (ChantryCreationView, by creation_status): the cover carries
+the draft's facts and the step list; the pages hold the step heading, the points left,
+the backgrounds and effects bought so far, then the step's form (point spend, effects,
+or the Node / Library / Allies / Sanctum background forms).
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block creation_title %}Create Chantry{% endblock creation_title %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">New chantry · Draft</span>
+    <h1 class="tl-cover__name tl-cover__name--form {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name|sanitize_html }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% include "locations/tl/faction_fact.html" %}
+        {% fact "Season" object.get_season_display|default:"Not specified" %}
+        {% fact "Type" object.get_chantry_type_display|default:"Not specified" %}
+        {% fact "Leadership" object.get_leadership_type_display|default:"Not specified" %}
+    </div>
+    {% include "locations/mage/chantry/tl/steps.html" with step=object.creation_status %}
+{% endblock cover_body %}
+{% block cover_actions %}{% endblock cover_actions %}
+{% block heading %}
+    <header class="tl-chargen__head">
+        <p class="tl-chargen__count">Step {{ object.creation_status|add:1|stringformat:"02d" }} of 07</p>
+        <h2 class="tl-h1">
+            {% if object.creation_status == 1 %}
+                Backgrounds
+            {% elif object.creation_status == 2 %}
+                Integrated effects
+            {% elif object.creation_status == 3 %}
+                Node
+            {% elif object.creation_status == 4 %}
+                Library
+            {% elif object.creation_status == 5 %}
+                Allies
+            {% elif object.creation_status == 6 %}
+                Sanctum
+            {% endif %}
+        </h2>
+    </header>
+{% endblock heading %}
 {% block contents %}
-    {% block name %}
-        <div class="row">
-            <div class="col-sm {{ object.get_heading }}">
-                <h1>{{ object.name }}</h1>
-            </div>
-        </div>
-    {% endblock name %}
-    {% block basics %}
-        {% include "locations/mage/chantry/display_includes/basics.html" %}
-    {% endblock basics %}
-    {% block points %}
-        {% include "locations/mage/chantry/display_includes/resources_remaining.html" %}
-        {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-        {% if object.creation_status == 1 %}
-            {% if object_perms.can_chargen %}
+    <div class="tl-locform">
+        {% block points %}
+            <section class="tl-locgroup tl-locgroup--power">
+                <h2 class="tl-subhead">Resources</h2>
+                <div class="tl-stats">
+                    {% include "locations/tl/stat.html" with label="Available points" value=object.points of=object.total_points %}
+                    {% include "locations/tl/stat.html" with label="Integrated effects points" value=object.current_ie_points of=object.integrated_effects_number %}
+                </div>
+            </section>
+            <section class="tl-locgroup">
+                <h2 class="tl-subhead">Backgrounds</h2>
+                <div class="tl-stack">
+                    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds bare=True %}
+                    {% if not object.backgrounds.exists %}<p class="tl-muted">No backgrounds yet.</p>{% endif %}
+                </div>
+            </section>
+            {% if object.creation_status == 1 and object_perms.can_chargen %}
                 {% include "locations/mage/chantry/point_spend_form.html" %}
             {% endif %}
-        {% endif %}
-    {% endblock points %}
-    {% block effects %}
-        {% if object.creation_status == 2 %}
-            {% if object_perms.can_chargen %}
-                {% include "locations/mage/chantry/effects_form.html" %}
+        {% endblock points %}
+        {% block effects %}
+            {% if object.creation_status == 2 %}
+                {% if object_perms.can_chargen %}
+                    {% include "locations/mage/chantry/effects_form.html" %}
+                {% endif %}
+            {% elif object.creation_status > 2 %}
+                {% include "locations/mage/chantry/tl/effect_rows.html" %}
             {% endif %}
-        {% elif object.creation_status > 2 %}
-            {% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
-        {% endif %}
-    {% endblock effects %}
-    {% block node %}
-        {% if object_perms.can_chargen %}
+        {% endblock effects %}
+        {% if object_perms.can_chargen and object.creation_status > 2 and not form %}
+            {% include "core/tl/empty.html" with text="The chantry has nothing to detail at this step. Continue to the next one." %}
+        {% elif object_perms.can_chargen %}
             {% if object.creation_status == 3 %}
                 {% include "locations/mage/node/form_include.html" %}
-            {% endif %}
-        {% endif %}
-    {% endblock node %}
-    {% block library %}
-        {% if object_perms.can_chargen %}
-            {% if object.creation_status == 4 %}
+            {% elif object.creation_status == 4 %}
                 {% include "locations/mage/library/form_include.html" %}
-            {% endif %}
-        {% endif %}
-    {% endblock library %}
-    {% block allies %}
-        {% if object_perms.can_chargen %}
-            {% if object.creation_status == 5 %}
-                {% include "characters/core/ally/form_include.html" %}
-            {% endif %}
-        {% endif %}
-    {% endblock allies %}
-    {% block sanctum %}
-        {% if object_perms.can_chargen %}
-            {% if object.creation_status == 6 %}
+            {% elif object.creation_status == 5 %}
+                <section class="tl-locgroup">
+                    <h2 class="tl-subhead">Ally</h2>
+                    <p class="tl-lede">A Storyteller details the ally later: name them, give a concept, and note their relationship with the chantry.</p>
+                    {% include "locations/tl/fields.html" with fields_form=form %}
+                </section>
+            {% elif object.creation_status == 6 %}
                 {% include "locations/mage/sanctum/form_include.html" %}
             {% endif %}
         {% endif %}
-    {% endblock sanctum %}
-    {% block personnel %}
-        {% if object.creation_status == 7 %}
-            {% if object_perms.can_chargen %}
-                {% include "locations/mage/chantry/personnel_form.html" %}
-            {% endif %}
-        {% elif object.creation_status > 7 %}
-            {% include "locations/mage/chantry/display_includes/members.html" %}
-        {% endif %}
-    {% endblock personnel %}
+    </div>
 {% endblock contents %}
 {% block buttons %}
-    {% if not object_perms.can_chargen %}
-    {% else %}
-        {{ block.super }}
+    {% if object_perms.can_chargen %}
+        {% if form %}
+            {{ block.super }}
+        {% else %}
+            <div class="tl-actions tl-formactions">
+                <button type="submit" class="tl-btn">Continue</button>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock buttons %}

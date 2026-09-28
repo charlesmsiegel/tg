@@ -1,26 +1,27 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Byway
-{% endblock creation_title %}
+{% block creation_title %}Create Byway{% endblock creation_title %}
+{% block form_line %}wto{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">{{ form.danger_level }}</div>
-        <div class="col-sm">{{ form.stability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.origin }}</div>
-        <div class="col-sm">{{ form.destination }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.travel_time }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.maelstrom_proximity }}</div>
-        <div class="col-sm">{{ form.spectral_activity }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.has_waystation }}</div>
-        <div class="col-sm">{{ form.patrolled }}</div>
-        <div class="col-sm">{{ form.haunted }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Route</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.origin %}
+            {% include "locations/tl/field.html" with field=form.destination %}
+            {% include "locations/tl/field.html" with field=form.travel_time %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Hazards</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.danger_level %}
+            {% include "locations/tl/field.html" with field=form.stability %}
+            {% include "locations/tl/field.html" with field=form.maelstrom_proximity %}
+            {% include "locations/tl/field.html" with field=form.spectral_activity %}
+        </div>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.has_waystation %}
+            {% include "locations/tl/field.html" with field=form.patrolled %}
+            {% include "locations/tl/field.html" with field=form.haunted %}
+        </div>
+    </section>
 {% endblock other %}

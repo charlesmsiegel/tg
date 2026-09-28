@@ -1,34 +1,15 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Underground Sanctuary
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="sanctuaryForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Underground Sanctuary{% endblock creation_title %}
+{% block form_line %}mtr{% endblock form_line %}
+{% block formdetails %}method="post" id="sanctuaryForm" action="" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Contained Within</div>
-            <div class="col-sm">{{ form.contained_within }}</div>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
+            {% include "locations/tl/field.html" with field=form.sanctuary_type label="Type" %}
+            {% include "locations/tl/field.html" with field=form.concealment_rating label="Concealment rating" %}
         </div>
-        <div class="row">
-            <div class="col-sm">Type</div>
-            <div class="col-sm">{{ form.sanctuary_type }}</div>
-            <div class="col-sm">Concealment Rating</div>
-            <div class="col-sm">{{ form.concealment_rating }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
+        {% include "locations/tl/field.html" with field=form.description %}
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}
