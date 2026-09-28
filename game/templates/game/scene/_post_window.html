@@ -1,9 +1,10 @@
 {% comment %}A window of posts, oldest first, preceded by the link to the window before it.
 The page includes it; "Show earlier posts" swaps its fragment in place of the link.
-Inputs: posts, earlier_cursor, viewer_id, object (the scene).{% endcomment %}{% if earlier_cursor %}<a id="earlier-posts"
+Inputs: posts, earlier_cursor, viewer_id, object (the scene), and on the latest window
+unread ({post_id, count} or None): the "new" divider goes above the first unread post.{% endcomment %}{% if earlier_cursor %}<a id="earlier-posts"
    class="tl-chiplink"
    href="{{ object.get_absolute_url }}?before={{ earlier_cursor }}"
    hx-get="{{ object.get_absolute_url }}?before={{ earlier_cursor }}"
    hx-target="this"
    hx-swap="outerHTML">↑ Show earlier posts</a>{% endif %}
-{% for post in posts %}{% include "game/scene/_post.html" %}{% endfor %}
+{% for post in posts %}{% if unread and post.pk == unread.post_id %}<div class="tl-unread" id="unread-divider" data-unread-divider role="separator" aria-label="{{ unread.count }} new post{{ unread.count|pluralize }}">New · {{ unread.count }}</div>{% endif %}{% include "game/scene/_post.html" %}{% endfor %}

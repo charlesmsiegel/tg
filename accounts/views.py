@@ -256,9 +256,9 @@ class MarkSceneReadView(LoginRequiredMixin, View):
             scene = get_object_or_404(Scene, pk=scene_pk)
             if not can_view_scene(request.user, scene):
                 raise Http404("Scene not found")
-            status, _ = UserSceneReadStatus.objects.get_or_create(scene=scene, user=request.user)
-            status.read = True
-            status.save()
+            UserSceneReadStatus.objects.get_or_create(scene=scene, user=request.user)
+            # Read through the latest post, so the scene shows no unread divider.
+            UserSceneReadStatus.objects.mark_read(scene, request.user.pk)
         messages.success(request, f"Scene '{scene.name}' marked as read!")
         return redirect("accounts:profile", pk=request.user.profile.pk)
 

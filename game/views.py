@@ -59,6 +59,7 @@ from game.models import (
     STRelationship,
     Story,
     StoryXPRequest,
+    UserSceneReadStatus,
     Week,
     WeeklyXPRequest,
     XPSpendingRequest,
@@ -74,6 +75,8 @@ from game.selectors import (
     chronicle_overview,
     scene_cast,
     scene_post_window,
+    scene_read_marker,
+    unread_divider,
 )
 from game.spending_approval import (
     SpendingDecisionError,
@@ -264,12 +267,36 @@ class SceneDetailView(DetailView):
         context["live"] = not scene.finished and before is None
         context["cast"] = scene_cast(scene)
         context["component_scripts"] = ("game/js/scene-chat.js",)
+        if user.is_authenticated and before is None:
+            context["unread"] = self.read_latest(
+                user, context["posts"], has_earlier, context["cast"]
+            )
         if user.is_authenticated and not scene.finished:
             context["post_characters"] = list(PostForm(user=user, scene=scene).character_queryset)
             context["add_characters"] = list(
                 AddCharForm(user=user, scene=scene).fields["character_to_add"].queryset
             )
         return context
+
+    def read_latest(self, user, posts, has_earlier, cast):
+        """The unread divider for ``user``, who has now read up to the latest post.
+
+        A player of the scene (``cast``) without a status row gets one here, so
+        their divider works from their first visit on; other readers are not
+        tracked. Writes only when the status changes.
+        """
+        scene = self.object
+        tracked, read, marker = scene_read_marker(scene, user)
+        divider = unread_divider(scene, posts, read=read, marker=marker, has_earlier=has_earlier)
+        latest = posts[-1] if posts else None
+        if tracked:
+            if not read or (latest is not None and marker != latest.pk):
+                UserSceneReadStatus.objects.mark_read(scene, user.pk, latest)
+        elif any(character.owner_id == user.pk for character in cast):
+            UserSceneReadStatus.objects.create(
+                scene=scene, user=user, read=True, last_read_post=latest
+            )
+        return divider
 
     def post_cursor(self):
         """``?before=<post id>`` pages back through a long scene; junk is ignored."""

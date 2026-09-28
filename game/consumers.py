@@ -9,7 +9,8 @@ a tab from before the switch and is closed with 4400.
 Group events carry ids, never markup: each connection re-checks its viewer's
 access and renders the event for that viewer, so one viewer's rendering never
 reaches another connection. Posting goes through ``game.scene_chat``, the same
-path as the HTTP fallback.
+path as the HTTP fallback. Posts delivered to a signed-in viewer count as read:
+their scene read marker moves up to the newest one (``mark_read``).
 """
 
 import json
@@ -26,7 +27,7 @@ from characters.models.core import CharacterModel
 from core.actions import ActionFailed
 from game import scene_chat
 from game.forms import AddCharForm, PostForm
-from game.models import Scene
+from game.models import Scene, UserSceneReadStatus
 from game.security import can_view_scene
 from game.selectors import scene_cast, scene_post, scene_posts_after
 from game.text import straighten_quotes
@@ -153,7 +154,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
                 level="info",
                 reload_url=scene.get_absolute_url(),
             )
-        return self.render_posts(posts)
+        return self.render_posts(scene, posts)
 
     # Group events ----------------------------------------------------------
 
@@ -180,7 +181,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         if scene is None:
             return None
         post = scene_post(scene, post_id)
-        return self.render_posts([post]) if post is not None else ""
+        return self.render_posts(scene, [post]) if post is not None else ""
 
     @database_sync_to_async
     def characters_html(self, character_id):
@@ -270,9 +271,12 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     def add_characters(self, scene):
         return list(AddCharForm(user=self.user, scene=scene).fields["character_to_add"].queryset)
 
-    def render_posts(self, posts):
+    def render_posts(self, scene, posts):
+        """New posts for this viewer, who has now seen them (their read marker moves)."""
         if not posts:
             return ""
+        if self.viewer_id is not None:
+            UserSceneReadStatus.objects.mark_read(scene, self.viewer_id, posts[-1])
         return render_to_string(
             "game/scene/ws/_posts.html", {"posts": posts, "viewer_id": self.viewer_id}
         )

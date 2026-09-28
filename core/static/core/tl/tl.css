@@ -1436,3 +1436,23 @@ body.tl {
   .tl-locrow { grid-template-columns: 1fr 1fr; }
 }
 /* ---- end location forms ---- */
+/* ---- scene rolls and unread divider ---- */
+/* Roll strip (C4): label over pool, the dice as tiles, the result on the right;
+   /rolls and /extended list one row of dice per roll under the label. */
+.tl-roll__head { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tl-roll__label { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); }
+.tl-roll__pool { font: 400 16px var(--serif); }
+.tl-roll__spent { font: 400 12px var(--mono); color: var(--ink2); }
+.tl-roll__dice { display: flex; flex-wrap: wrap; gap: 5px; }
+.tl-roll__result { margin-left: auto; font: 500 13px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.tl-roll__rows { order: 1; flex-basis: 100%; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.tl-roll__row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+.tl-roll__n { min-width: 2ch; font: 400 12px var(--mono); color: var(--ink2); }
+.tl-roll__rowresult { margin-left: auto; font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.tl-roll__result.is-botch, .tl-roll__rowresult.is-botch { color: var(--rubric); }
+.tl-unread { text-transform: uppercase; scroll-margin-top: 16px; }
+@media (max-width: 720px) {
+  .tl-roll__head { flex-basis: 100%; }
+  .tl-unread { scroll-margin-top: 60px; }
+}
+/* ---- end scene rolls and unread divider ---- */

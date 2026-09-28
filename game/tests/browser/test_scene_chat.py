@@ -25,7 +25,7 @@ from django.test import Client, TransactionTestCase
 
 from characters.models.core.human import Human
 from characters.tests.browser.test_chargen_interactive import chromium_binary
-from game.models import Chronicle, Gameline, Post, Scene, STRelationship
+from game.models import Chronicle, Gameline, Post, Scene, STRelationship, UserSceneReadStatus
 from game.selectors import scene_post
 
 try:
@@ -360,4 +360,45 @@ class SceneChatBrowserTests(TransactionTestCase):
         self.assertEqual(alice.url, url)
         self.assertEqual(self.post_ids(alice), [post.pk for post in posts])
         self.assertEqual(alice.locator("#earlier-posts").count(), 0)
+        self.assertEqual(self.errors, [])
+
+    def test_a_live_roll_shows_the_roll_strip(self):
+        alice, bob = self.browser_for(self.alice), self.browser_for(self.bob)
+        self.open(alice)
+        self.open(bob)
+        self.say(alice, "Aim /roll 4 difficulty 7")
+        bob.wait_for_selector("#posts-container .tl-roll")
+        post = Post.objects.get(scene=self.scene)
+        strip = bob.locator(f"#post-{post.pk} .tl-roll")
+        self.assertEqual(strip.locator(".tl-die").count(), 4)
+        self.assertEqual(
+            strip.locator(".tl-die.is-hit").count(),
+            sum(value >= 7 for value in post.roll["rolls"][0]["dice"]),
+        )
+        self.assertIn("DIFF 7", strip.locator(".tl-roll__label").inner_text())
+        self.assertTrue(strip.locator(".tl-roll__result").inner_text())
+        self.assertIn("Aim", bob.inner_text(f"#post-{post.pk} .tl-turn__text"))
+        self.assertEqual(self.errors, [])
+
+    def test_the_scene_opens_on_the_unread_divider(self):
+        posts = [self.create_post(f"Narration {n}") for n in range(40)]
+        UserSceneReadStatus.objects.create(
+            user=self.alice, scene=self.scene, read=False, last_read_post=posts[9]
+        )
+        alice = self.browser_for(self.alice)
+        self.open(alice)
+        divider = alice.locator("#unread-divider")
+        self.assertEqual(divider.inner_text(), "NEW · 30")
+        # The transcript opens on the divider rather than at the bottom.
+        offset = alice.evaluate(
+            "() => document.getElementById('unread-divider').getBoundingClientRect().top -"
+            " document.querySelector('[data-scene-scroll]').getBoundingClientRect().top"
+        )
+        self.assertTrue(0 <= offset <= 40, offset)
+        # The divider starts a new turn even though the speaker is the same.
+        self.assertIn("is-cont", alice.get_attribute(f"#post-{posts[9].pk}", "class"))
+        self.assertNotIn("is-cont", alice.get_attribute(f"#post-{posts[10].pk}", "class"))
+        self.assertIn("is-cont", alice.get_attribute(f"#post-{posts[11].pk}", "class"))
+        status = UserSceneReadStatus.objects.get(user=self.alice, scene=self.scene)
+        self.assertEqual((status.read, status.last_read_post_id), (True, posts[-1].pk))
         self.assertEqual(self.errors, [])

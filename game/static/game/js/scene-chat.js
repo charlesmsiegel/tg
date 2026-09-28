@@ -168,20 +168,41 @@
     // Fold consecutive posts by the same speaker into one turn (Spread): a post
     // whose data-speaker matches the post before it gets is-cont. Runs on load and
     // after every swap, so live posts join the last turn when the speaker matches.
+    // The unread divider starts a new turn.
     function markTurns() {
         var previous = null;
         pagePosts().forEach(function (post) {
+            var before = post.previousElementSibling;
+            if (before && before.hasAttribute('data-unread-divider')) {
+                previous = null;
+            }
             var speaker = post.getAttribute('data-speaker');
             post.classList.toggle('is-cont', speaker !== null && speaker === previous);
             previous = speaker;
         });
     }
 
-    // Open on the newest posts: the transcript scrolls inside the page at desktop widths.
+    // Open on the newest posts, or on the unread divider when there is one: the
+    // transcript scrolls inside the page at desktop widths.
     function scrollToLatest() {
         var box = document.querySelector('[data-scene-scroll]');
-        if (box && !/[?&]before=/.test(window.location.search)) {
-            box.scrollTop = box.scrollHeight;
+        if (!box || /[?&]before=/.test(window.location.search)) {
+            return;
+        }
+        box.scrollTop = box.scrollHeight;
+        var divider = document.getElementById('unread-divider');
+        if (!divider) {
+            return;
+        }
+        // Only the transcript box scrolls (scrollIntoView would nudge the page
+        // too), or the page itself on narrow screens. The divider's
+        // scroll-margin keeps it clear of a sticky nav.
+        var margin = parseFloat(window.getComputedStyle(divider).scrollMarginTop) || 0;
+        var top = divider.getBoundingClientRect().top - margin;
+        if (window.getComputedStyle(box).overflowY === 'visible') {
+            window.scrollTo(0, Math.max(0, window.scrollY + top));
+        } else {
+            box.scrollTop = Math.max(0, box.scrollTop + top - box.getBoundingClientRect().top);
         }
     }
 

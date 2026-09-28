@@ -9,7 +9,7 @@ from django.db.models import Max, OuterRef, Q, Subquery
 
 from characters.models.core.character import Character
 from core.services import ChronicleDataService
-from game.models import Post, Scene, STRelationship
+from game.models import Post, Scene, STRelationship, UserSceneReadStatus
 from game.security import filter_scenes, staffed_chronicles
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
@@ -183,3 +183,43 @@ def scene_post(scene, post_id):
     """One post of ``scene`` ready for ``_post.html``, or ``None``."""
     posts = with_author_roles(scene, Post.objects.for_scene_optimized(scene).filter(pk=post_id))
     return posts[0] if posts else None
+
+
+# Read markers ---------------------------------------------------------------
+
+
+def scene_read_marker(scene, user):
+    """``(tracked, read, marker)``: ``user``'s read status for ``scene``, in one query.
+
+    ``tracked`` is false when the user has no status row (they have never had a
+    character in the scene); ``marker`` is the newest post id they have read.
+    """
+    rows = list(
+        UserSceneReadStatus.objects.filter(scene=scene, user=user).values_list(
+            "read", "last_read_post_id"
+        )
+    )
+    markers = [marker for _read, marker in rows if marker is not None]
+    return bool(rows), all(read for read, _marker in rows), max(markers, default=None)
+
+
+def unread_divider(scene, posts, *, read, marker, has_earlier):
+    """Where the "new" divider goes in a window of ``posts``: ``{"post_id", "count"}``.
+
+    Posts after ``marker`` are new. Without a marker every post is new, unless
+    the status says the scene is read (rows from before markers were kept).
+    ``None`` when nothing in the window is new. When the whole window is new and
+    older posts precede it, the count comes from the database (one query).
+    """
+    if marker is None and read:
+        return None
+    fresh = [post for post in posts if marker is None or post.pk > marker]
+    if not fresh:
+        return None
+    count = len(fresh)
+    if has_earlier and fresh[0] is posts[0]:
+        unread = Post.objects.filter(scene=scene)
+        if marker is not None:
+            unread = unread.filter(pk__gt=marker)
+        count = unread.count()
+    return {"post_id": fresh[0].pk, "count": count}
