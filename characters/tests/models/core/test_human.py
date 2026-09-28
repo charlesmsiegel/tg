@@ -973,7 +973,8 @@ class TestAttributeView(TestCase):
     def test_update_view_template(self):
         self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/human/attributes.html")
+        self.assertTemplateUsed(response, "characters/core/chargen.html")
+        self.assertTemplateUsed(response, "characters/core/attribute_block/form.html")
 
     def test_update_view_successful_post(self):
         self.client.login(username="Test", password="password")
@@ -1004,7 +1005,8 @@ class TestHumanCharacterCreationView(TestCase):
     def test_creation_status_selector(self):
         self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/core/human/attributes.html")
+        self.assertTemplateUsed(response, "characters/core/chargen.html")
+        self.assertTemplateUsed(response, "characters/core/attribute_block/form.html")
         self.human.creation_status = 10
         self.human.save()
         response = self.client.get(self.url)
