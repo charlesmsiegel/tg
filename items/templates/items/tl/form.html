@@ -10,7 +10,6 @@ edit form use the Spread include.
 {% load tl %}
 {% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}{{ view.registry_spec.gameline|gameline_code }}{% endif %}{% endblock gameline %}
 {% block cover_kind %}{% if object or view.registry_spec.gameline|gameline_code != "wod" %}line{% else %}ink{% endif %}{% endblock cover_kind %}
-{% block content_mod %}{% endblock content_mod %}
 {% block errors %}
     {% include "core/misc/form_errors.html" %}
 {% endblock errors %}

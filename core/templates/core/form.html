@@ -1,10 +1,10 @@
-{% extends "core/base.html" %}
+{% extends "core/tl_base.html" %}
 {% comment %}
 Create / edit shell (Spread). The cover names what is being made or edited; the pages
-hold one form: errors summary, the child's `contents` (still legacy row/col markup in
-most children, styled by tl-legacy.css), then Save (first, so Enter submits it), Back
-(chargen only) and Cancel. Block names are unchanged: creation_title, formdetails,
-progress, errors, image, contents, buttons, form_scripts.
+hold one form: errors summary, the child's `contents` (fields via core/tl/field.html),
+then Save (first, so Enter submits it), Back (chargen only) and Cancel. Block names:
+creation_title, formdetails, heading, progress, errors, image, contents, buttons,
+form_scripts; the approval actions render after the form.
 {% endcomment %}
 {% load static tl sanitize_text %}
 {% block title %}{% if object %}Edit {{ object.name|sanitize_html }}{% else %}Create{% endif %}{% endblock title %}
@@ -26,8 +26,19 @@ progress, errors, image, contents, buttons, form_scripts.
         <a class="tl-btn tl-btn--ghost" href="{{ object.get_absolute_url }}">← Back to {{ object.name }}</a>
     {% endif %}
 {% endblock cover_actions %}
+{% block nav %}
+    {% with ns=request.resolver_match.namespaces.0 %}
+        {% if ns == "game" %}
+            {% include "core/tl/nav.html" with nav_active="chronicles" %}
+        {% elif ns == "core" and "houserule" in request.resolver_match.url_name %}
+            {% include "core/tl/nav.html" with nav_active="houserules" %}
+        {% else %}
+            {% include "core/tl/nav.html" with nav_active=ns %}
+        {% endif %}
+    {% endwith %}
+{% endblock nav %}
 {% block content %}
-    <form {% block formdetails %}action="" method="post"{% endblock formdetails %} class="tl-form tl-legacyform">
+    <form {% block formdetails %}action="" method="post"{% endblock formdetails %} class="tl-form">
         {% csrf_token %}
         {% block heading %}{% endblock heading %}
         {% block progress %}{% endblock progress %}
@@ -84,3 +95,6 @@ progress, errors, image, contents, buttons, form_scripts.
         {% endblock form_scripts %}
     </form>
 {% endblock content %}
+{% block after_content %}
+    {% tl_object_actions %}
+{% endblock after_content %}

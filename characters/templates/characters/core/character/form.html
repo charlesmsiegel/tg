@@ -7,7 +7,6 @@ renders every other field the view's form carries (create, Storyteller edit and 
 owner's draft form all differ). A child that overrides `statistics` renders those
 fields itself; `flavor` is an empty slot after it.
 {% endcomment %}
-{% block content_mod %}{% endblock content_mod %}
 {% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
 {% block creation_title %}Create Character{% endblock creation_title %}
 {% block errors %}

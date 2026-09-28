@@ -450,27 +450,6 @@ class TestProfileObjectQueries(TestCase):
         self.assertIs(dashboard.profile, self.user.profile)
 
 
-class TestProfileThemeMethods(TestCase):
-    """Test Profile theme-related methods."""
-
-    def setUp(self):
-        self.user = User.objects.create_user("testuser", "test@test.com", "password")
-
-    def test_get_theme_css_path_light(self):
-        """Test theme CSS path for light theme."""
-        self.user.profile.theme = "light"
-        self.user.profile.save()
-        path = self.user.profile.get_theme_css_path()
-        self.assertEqual(path, "themes/light.css")
-
-    def test_get_theme_css_path_dark(self):
-        """Test theme CSS path for dark theme."""
-        self.user.profile.theme = "dark"
-        self.user.profile.save()
-        path = self.user.profile.get_theme_css_path()
-        self.assertEqual(path, "themes/dark.css")
-
-
 class TestUnfulfilledWeeklyXPRequests(TestCase):
     """Test the get_unfulfilled_weekly_xp_requests methods.
 

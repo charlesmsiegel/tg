@@ -1,9 +1,8 @@
-# Spread design system (migrated pages)
+# Spread design system
 
-The site is moving from Bootstrap 4 + `tg-card` to **Spread**: every page is a two-page
-spread, a fixed **cover** on the left (identity, key facts, primary actions) and the
-scrolling **pages** on the right. Templates migrate one at a time; old and new pages
-coexist. A migrated page loads no Bootstrap, jQuery, `style.css` or Font Awesome.
+Every page is a two-page **spread**: a fixed **cover** on the left (identity, key facts,
+primary actions) and the scrolling **pages** on the right. The site loads no Bootstrap,
+jQuery, `style.css` or Font Awesome; `tl.css` and `tl.js` are the whole front end.
 
 ## Files
 
@@ -14,15 +13,19 @@ coexist. A migrated page loads no Bootstrap, jQuery, `style.css` or Font Awesome
 | `core/templates/core/errors/error.html` | Shell for 401/403/404/500 |
 | `core/static/core/tl/tl.css` | Tokens + every component class |
 | `core/static/core/tl/tl.js` | Title fitting, popovers, message dismiss, `<details>` memory |
-| `core/templates/core/tl/*.html` | `nav`, `messages`, `section`, `field`, `empty`, `trait_row`, `create_form`, `object_actions` |
+| `core/templates/core/form.html` | Create/edit shell: cover, errors, `contents`, Save / Back / Cancel |
+| `core/templates/core/object.html` | Generic detail shell (cover facts, sources, description) |
+| `core/templates/core/tl/*.html` | `nav`, `messages`, `section`, `field`, `empty`, `trait_row`, `create_form`, `object_actions`, `source_facts` |
 | `core/templatetags/tl.py` | `{% dots %}`, `{% boxes %}`, `{% trait %}`, `{% track %}`, `{% qp_wheel %}`, `\|cover_title_class`, `\|gameline_code`, `{% tl_object_actions %}` |
 
-Migrated so far: home, login / sign up / password reset, error pages, character index
-(staff) and `core/public_object_list.html`.
+Area shells build on these: the character sheet (`characters/core/character/detail.html`
+plus the `characters/tl/*` partials), chargen (`characters/core/chargen.html`), reference
+pages (`characters/tl/reference_*.html`), item and location details and lists, and the
+game pages (`game/tl/*`).
 
-## Migrating a template
+## Writing a page
 
-1. `{% extends "core/tl_base.html" %}` instead of `core/base.html`.
+1. `{% extends "core/tl_base.html" %}` (or `core/form.html` / an area shell).
 2. Fill the blocks:
 
 | Block | Use |
@@ -37,7 +40,7 @@ Migrated so far: home, login / sign up / password reset, error pages, character 
 | `actionbar` | Mobile fixed action bar (`<div class="tl-actionbar">`) |
 | `extrascripts` | Page scripts; `{% page_media %}` still runs after it |
 
-3. Replace Bootstrap behaviour: collapse → `<details>`; tabs → links with `?tab=`
+3. Interactive patterns: collapse → `<details>`; tabs → links with `?tab=`
    or `?status=`; dropdowns → `<details class="tl-pop">` + `.tl-pop__panel`.
 4. Keep every `id` / `data-*` that JavaScript or htmx relies on; `#tg-messages` is
    in `core/tl/messages.html`.

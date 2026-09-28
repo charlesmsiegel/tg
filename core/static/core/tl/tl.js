@@ -66,12 +66,6 @@
     if (e.key !== 'Escape') return;
     var open = document.querySelector('details.tl-pop[open], details.tl-menu[open]');
     if (open) { open.open = false; open.querySelector('summary').focus(); }
-    // Legacy dropdowns (the shim below): close and return focus to their toggle.
-    document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
-      m.classList.remove('show');
-      var t = m.parentElement && m.parentElement.querySelector('[data-toggle="dropdown"], [data-bs-toggle="dropdown"]');
-      if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); }
-    });
   });
 
   // 4. Remember <details data-tl-remember="key"> open state.
@@ -97,94 +91,12 @@
     if (box) box.scrollTop = cur.offsetTop - box.clientHeight / 2;
   }
 
-  // 6. Bootstrap data-API shim for markup not yet rewritten (collapse, tab, pill,
-  //    dropdown, alert dismiss), so no page needs jQuery or bootstrap.js. Works on
-  //    any page, since legacy includes can sit inside a Spread page. Toggles the
-  //    same classes Bootstrap would (.show / .active).
-  function targetsFor(el) {
-    var sel = el.getAttribute('data-target') || el.getAttribute('data-bs-target') || el.getAttribute('href');
-    if (!sel || sel.charAt(0) !== '#' && sel.charAt(0) !== '.') return [];
-    try { return Array.prototype.slice.call(document.querySelectorAll(sel)); } catch (err) { return []; }
-  }
-  document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-toggle], [data-bs-toggle], [data-dismiss="alert"]');
-    if (!el) {
-      if (!e.target.closest('.dropdown-menu')) {
-        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
-      }
-      return;
-    }
-    // A real link inside a trigger (e.g. a cabal name in a collapsible row) navigates.
-    var link = e.target.closest('a[href]');
-    if (link && link !== el && el.contains(link) && link.getAttribute('href').charAt(0) !== '#') return;
-    var kind = el.getAttribute('data-toggle') || el.getAttribute('data-bs-toggle');
-    if (el.getAttribute('data-dismiss') === 'alert') {
-      var alert = el.closest('.alert, .tg-message');
-      if (alert) alert.remove();
-      return;
-    }
-    if (kind === 'collapse') {
-      e.preventDefault();
-      var open = null;
-      targetsFor(el).forEach(function (t) { t.classList.toggle('show'); open = t.classList.contains('show'); });
-      if (open !== null) el.setAttribute('aria-expanded', open ? 'true' : 'false');
-      el.classList.toggle('collapsed', open === false);
-    } else if (kind === 'tab' || kind === 'pill') {
-      e.preventDefault();
-      var nav = el.closest('.nav, [role="tablist"]');
-      if (nav) nav.querySelectorAll('[data-toggle="tab"], [data-toggle="pill"], [data-bs-toggle="tab"], [data-bs-toggle="pill"]').forEach(function (l) {
-        l.classList.remove('active'); l.setAttribute('aria-selected', 'false');
-      });
-      el.classList.add('active'); el.setAttribute('aria-selected', 'true');
-      targetsFor(el).forEach(function (pane) {
-        var box = pane.parentElement;
-        if (box) Array.prototype.forEach.call(box.children, function (c) { c.classList.remove('active', 'show'); });
-        pane.classList.add('active', 'show');
-      });
-    } else if (kind === 'dropdown') {
-      e.preventDefault();
-      var menu = el.parentElement && el.parentElement.querySelector('.dropdown-menu');
-      if (menu) {
-        var wasOpen = menu.classList.contains('show');
-        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
-        menu.classList.toggle('show', !wasOpen);
-        el.setAttribute('aria-expanded', wasOpen ? 'false' : 'true');
-      }
-    }
-  });
-
-  // 7. Legacy pages open with a "header card" holding the page title. Move that title
-  //    onto the ink cover so the page reads as a Spread page (the card is hidden).
-  function promoteLegacyTitle() {
-    var slot = document.querySelector('[data-legacy-title]');
-    var main = document.querySelector('main.tl-legacy');
-    if (!slot || !main) return;
-    var card = main.querySelector('.header-card');
-    var title = card && card.querySelector('h1, .tg-card-title');
-    if (!title || !title.textContent.trim()) return;
-    slot.textContent = title.textContent.trim();
-    // Only an explicit subtitle moves: a stray first <p> (a warning, a note) stays put.
-    var sub = card.querySelector('.tg-card-subtitle');
-    if (sub && sub.textContent.trim()) {
-      var subSlot = document.querySelector('[data-legacy-sub]');
-      if (subSlot) { subSlot.innerHTML = sub.innerHTML; subSlot.hidden = false; }
-      sub.remove();
-    }
-    // Only what moved goes: anything else in the card (an Edit link, a form, a
-    // note) stays visible. The card hides only when nothing is left in it.
-    title.remove();
-    var rest = card.textContent.trim() || card.querySelector('a, button, form, input, select, img');
-    if (!rest) card.hidden = true;
-    fitTitles();
-  }
-
   var t;
   window.addEventListener('resize', function () {
     clearTimeout(t);
     t = setTimeout(refitTitles, 120);
   });
   function init() {
-    promoteLegacyTitle();
     fitTitles();
     restoreDetails();
     showCurrentStep();

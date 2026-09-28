@@ -81,11 +81,6 @@ class Profile(ValidatedSaveMixin, models.Model):
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
 
-    def get_theme_css_path(self):
-        """Returns the appropriate CSS path based on theme selections."""
-        base = f"themes/{self.theme}.css"
-        return base
-
     def is_st(self):
         """Check if user is a storyteller for any chronicle."""
         return STRelationship.objects.filter(user=self.user).exists()

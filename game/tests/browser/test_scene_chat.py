@@ -163,11 +163,7 @@ class SceneChatBrowserTests(TransactionTestCase):
         )
         page = context.new_page()
         page.set_default_timeout(10000)
-        page.on(
-            "pageerror",
-            lambda error: "boot/js/bootstrap" not in (error.stack or "")
-            and self.errors.append(str(error)),
-        )
+        page.on("pageerror", lambda error: self.errors.append(str(error)))
         page.on(
             "console",
             lambda message: message.type == "error"

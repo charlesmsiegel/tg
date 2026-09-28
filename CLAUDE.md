@@ -147,8 +147,10 @@ character = get_object_or_404(Character, pk=pk)
 
 See **tg-frontend** skill for complete styling guide.
 
+The site uses the **Spread** design system (`.claude/skills/tg-standards/references/spread.md`).
+
 **Quick Reference:**
-- Use `tg-card`, `tg-table`, `tg-badge` (not Bootstrap defaults)
-- Use `{{ object.get_heading }}` for gameline-specific styling
-- Load `{% load sanitize_text dots %}` for template tags
-- Dots: `{{ rating|dots }}` → `●●●○○`
+- Extend `core/tl_base.html`, `core/form.html` or an area shell; no Bootstrap, jQuery or `tg-card` markup
+- Gameline theming: `{% block gameline %}{{ object|gameline_code }}{% endblock %}` sets the accent and display font
+- Load `{% load tl sanitize_text %}`; dots and tracks come from tags: `{% dots rating %}`, `{% boxes n %}`, `{% track "Willpower" perm temp %}`
+- Form fields: `{% include "core/tl/field.html" with field=form.x %}`; no inline `style=""` (the template policy test enforces it)

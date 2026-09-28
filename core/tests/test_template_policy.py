@@ -1,12 +1,12 @@
 """Ratchets for the template policy in the Step 8 design
 (docs/superpowers/specs/2026-09-25-template-consolidation-design.md).
 
-* Inline ``style="..."`` attributes may only go down: page CSS belongs in
-  ``source_static/pages/<page>.css`` and shared rules in ``source_static/themes/``.
-  Lower ``INLINE_STYLE_BUDGET`` when a cleanup removes some.
+* Inline ``style="..."`` attributes may only go down: styles belong in
+  ``core/static/core/tl/tl.css`` (Spread). Lower ``INLINE_STYLE_BUDGET`` when a
+  cleanup removes some.
 * ``<style>`` blocks may only live in the templates listed here.
 * No template sits more than ``MAX_EXTENDS_DEPTH`` ``{% extends %}`` hops below
-  its root (``core/base.html`` → object → character → human → gameline → splat).
+  its root (``core/tl_base.html`` → character → human → gameline → splat).
 """
 
 import re
@@ -16,10 +16,9 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
-INLINE_STYLE_BUDGET = 175
+INLINE_STYLE_BUDGET = 3
 STYLE_BLOCK_TEMPLATES = {
     "accounts/registration/password_reset_email.html",
-    "core/base.html",
 }
 MAX_EXTENDS_DEPTH = 5
 EXTENDS = re.compile(r'{%\s*extends\s+"([^"]+)"')

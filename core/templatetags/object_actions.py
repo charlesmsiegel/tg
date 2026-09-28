@@ -1,7 +1,6 @@
 """Render only the actions the current actor can take on a full object view (Spread markup).
 
-The legacy shell (core/base.html) renders it after the pages; Spread pages call
-``{% tl_object_actions %}`` (core.templatetags.tl), which reuses this logic.
+Pages call ``{% tl_object_actions %}`` (core.templatetags.tl), which reuses this logic.
 """
 
 from django import template
