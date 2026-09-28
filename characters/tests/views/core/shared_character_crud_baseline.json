@@ -46,12 +46,12 @@
     "limited_form": "OwnerUnapprovedCharacterEditForm"
   },
   "characters.views.core.human.HumanCreateView": {
-    "fields_sha256": "6ee33e673cf49d33fddfd21966a44156a887bb481feb0367b2b0caa8123967c1",
-    "field_count": 24
+    "fields_sha256": "073148c6032de43b526bcb60836b0de6ce9486b1e4d150caf3084ebdd3de7dc8",
+    "field_count": 43
   },
   "characters.views.core.human.HumanUpdateView": {
-    "fields_sha256": "6ee33e673cf49d33fddfd21966a44156a887bb481feb0367b2b0caa8123967c1",
-    "field_count": 24
+    "fields_sha256": "073148c6032de43b526bcb60836b0de6ce9486b1e4d150caf3084ebdd3de7dc8",
+    "field_count": 43
   },
   "characters.views.demon.demon.DemonUpdateView": {
     "fields_sha256": "b602ed48a0ef41615423957d4d53919e850df57effbc4ddb6e8d5b3c8384227c",
@@ -105,17 +105,17 @@
     "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.mage.mage.MageCreateView": {
-    "fields_sha256": "45abb2d9f192e8c516660e630bd1e1458f44764474a45ebf3c114ebb7c4ec69b",
-    "field_count": 130
+    "fields_sha256": "87473d24507d991befd7d0c9a2b0f554240c0b9a8653fbbeac952c347f091257",
+    "field_count": 150
   },
   "characters.views.mage.mage.MageUpdateView": {
-    "fields_sha256": "45abb2d9f192e8c516660e630bd1e1458f44764474a45ebf3c114ebb7c4ec69b",
-    "field_count": 130,
+    "fields_sha256": "87473d24507d991befd7d0c9a2b0f554240c0b9a8653fbbeac952c347f091257",
+    "field_count": 150,
     "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.mage.mtahuman.MtAHumanUpdateView": {
-    "fields_sha256": "f47470d29478621c060f3b205c375843733a22c5ad66ae7e451a82a38734d9e0",
-    "field_count": 105,
+    "fields_sha256": "8f5a69e6c45891a041d9b2e4f187d5b31c6168df76d06c2935e011961acdddea",
+    "field_count": 124,
     "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.mummy.mtr_human.MtRHumanUpdateView": {
