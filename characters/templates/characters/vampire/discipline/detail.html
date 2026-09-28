@@ -1,21 +1,25 @@
-{% extends "core/object.html" %}
-{% load sanitize_text %}
-{% block contents %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title vtm_heading">Discipline Details</h5>
-    </div>
-    <div class="tg-card-body">
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Property Name:</strong></div>
-            <div class="col-md-8">{{ object.property_name }}</div>
-        </div>
-        {% if object.description %}
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Description:</strong></div>
-            <div class="col-md-8">{{ object.description|sanitize_html|linebreaks }}</div>
-        </div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}vtm{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:vampire:list:discipline' %}">← Disciplines</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Discipline · Vampire{% endblock ref_eyebrow %}
+{% block ref_name_class %}{{ object.name|cover_title_class:"vtm" }}{% endblock ref_name_class %}
+{% block ref_facts %}
+    {% with clans=object.clans.all %}
+        {% if clans %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Clans</span>
+                <span class="tl-facts__v">
+                    {% for clan in clans %}<a href="{{ clan.get_absolute_url }}">{{ clan.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}
+                </span>
+            </div>
         {% endif %}
-    </div>
-</div>
-{% endblock contents %}
+    {% endwith %}
+    {% fact "Property name" object.property_name %}
+{% endblock ref_facts %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% if not object.description %}
+        {% include "core/tl/empty.html" with text="No description yet." %}
+    {% endif %}
+{% endblock ref_sections %}

@@ -1,0 +1,14 @@
+{% load sanitize_text %}{% comment %}
+One numbered prose section for a reference page (inside ref2_detail's .tl-sheet).
+Renders nothing when text is empty.
+  {% include "characters/tl/ref2_prose.html" with title="System" text=object.system power=True %}
+power=True uses the gameline accent (System); wide=True spans the full width.
+{% endcomment %}{% if text %}
+    <section class="tl-section{% if power %} tl-section--power{% endif %}{% if not wide %} tl-span-8{% endif %}">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">{{ title }}</h2>
+        </div>
+        <div class="tl-section__body tl-prose">{{ text|sanitize_html|linebreaks }}</div>
+    </section>
+{% endif %}

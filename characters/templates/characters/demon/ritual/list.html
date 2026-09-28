@@ -1,32 +1,33 @@
 {% extends "characters/tl/ref2_list.html" %}
 {% load tl %}
-{% block title %}Apocalyptic Form Traits{% endblock title %}
+{% block title %}Rituals{% endblock title %}
 {% block gameline %}dtf{% endblock gameline %}
 {% block ref_eyebrow %}Demon: the Fallen{% endblock ref_eyebrow %}
-{% block ref_title %}Apocalyptic Form Traits{% endblock ref_title %}
-{% block ref_title_class %}{{ "Apocalyptic Form Traits"|cover_title_class:"dtf" }}{% endblock ref_title_class %}
+{% block ref_title %}Rituals{% endblock ref_title %}
 {% block ref_list %}
     <table class="tl-table ref2-table">
         <thead>
             <tr>
                 <th scope="col">Name</th>
+                <th scope="col">Primary lore</th>
                 <th scope="col" class="tl-num">Cost</th>
                 <th scope="col" class="ref2-table__type">House</th>
-                <th scope="col">High torment only</th>
             </tr>
         </thead>
         <tbody>
             {% for obj in object_list %}
                 <tr data-filterable-item data-name="{{ obj.name|lower }}">
                     <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
-                    <td class="tl-num">{{ obj.cost }}</td>
+                    <td class="ref2-table__type">
+                        {% if obj.primary_lore %}{{ obj.primary_lore.name }} {% dots obj.primary_lore_rating 5 "acc" %}{% else %}—{% endif %}
+                    </td>
+                    <td class="tl-num">{{ obj.base_cost }} XP</td>
                     <td class="ref2-table__type">{% if obj.house %}{{ obj.house.name }}{% else %}—{% endif %}</td>
-                    <td class="tl-status">{% if obj.high_torment_only %}Yes{% else %}No{% endif %}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 {% endblock ref_list %}
 {% block ref_empty %}
-    {% include "core/tl/empty.html" with text="No apocalyptic form traits found." %}
+    {% include "core/tl/empty.html" with text="No rituals found." %}
 {% endblock ref_empty %}

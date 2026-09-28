@@ -1,0 +1,19 @@
+{% comment %}
+Previous / next links for a paginated list (page_obj from ListView.paginate_by).
+  {% include "characters/tl/ref2_pager.html" %}
+{% endcomment %}
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <nav class="ref2-pager" aria-label="Pages">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        <span class="tl-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </nav>
+{% endif %}

@@ -1,0 +1,74 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Reference list shell (Spread M12 table / C7 card grid) for the Vampire, Wraith, Demon,
+Hunter and Mummy reference lists.
+
+  gameline        line code ("vtm", "wto", "dtf", "htr", "mtr")
+  title           the page title
+  ref_title       the cover title ("Clans")
+  ref_eyebrow     the full gameline name ("Vampire: the Masquerade")
+  ref_title_class size step for a long title ('"Shadow Archetypes"|cover_title_class:"wto"')
+  ref_filters     extra filter controls on the cover, under the name search
+  ref_actions     cover buttons (+ New ...), right of CLEAR FILTERS
+  ref_list        the table or card grid; every row / card carries
+                  data-filterable-item and data-name="{{ obj.name|lower }}"
+  ref_empty       the empty state (core/tl/empty.html with the list's own sentence)
+
+The name search, CLEAR FILTERS, the count and the no-results line use the
+FilterableList widget (widgets/static/widgets/filterable.js) through its data-filter-*
+attributes. Set the block ref_search to nothing for a list that filters itself.
+{% endcomment %}
+{% load tl filterable_list %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_top %}
+    {{ block.super }}
+    <span>Reference</span>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">{% block ref_eyebrow %}{% endblock ref_eyebrow %}</span>
+    <h1 class="tl-cover__name {% block ref_title_class %}{% endblock ref_title_class %}" data-fit-title>
+        {% block ref_title %}{% endblock ref_title %}
+    </h1>
+    {% block ref_count %}
+        <span class="ref2-count" data-filter-count aria-live="polite">{{ object_list|length }} shown</span>
+    {% endblock ref_count %}
+{% endblock cover_title %}
+{% block cover_body %}
+    {% block ref_search %}
+        <div class="ref2-search">
+            <label class="tl-sr" for="ref2-name-filter">Search by name</label>
+            <input type="search"
+                   id="ref2-name-filter"
+                   class="ref2-search__input"
+                   data-filter-input="name"
+                   placeholder="Search by name…"
+                   autocomplete="off">
+        </div>
+    {% endblock ref_search %}
+    {% block ref_filters %}{% endblock ref_filters %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    <div class="ref2-coverfoot">
+        {% block ref_clear %}
+            <button type="button" class="tl-btn tl-btn--quiet" data-filter-clear>Clear filters</button>
+        {% endblock ref_clear %}
+        {% block ref_actions %}{% endblock ref_actions %}
+    </div>
+{% endblock cover_actions %}
+{% block content %}
+    {% if object_list %}
+        <div class="ref2-list" data-filterable-list="reference">
+            {% block ref_list %}{% endblock ref_list %}
+        </div>
+        {% block ref_noresults %}
+            <div class="ref2-noresults" data-filter-no-results>
+                {% include "core/tl/empty.html" with text="Nothing matches these filters." %}
+            </div>
+        {% endblock ref_noresults %}
+    {% else %}
+        {% block ref_empty %}{% include "core/tl/empty.html" with text="Nothing here yet." %}{% endblock ref_empty %}
+    {% endif %}
+{% endblock content %}
+{% block extrascripts %}
+    {% filterable_list_script %}
+{% endblock extrascripts %}

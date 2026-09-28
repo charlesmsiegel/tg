@@ -1,70 +1,51 @@
-{% extends "core/object.html" %}
-{% load sanitize_text %}
-
-{% block contents %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title wto_heading">Arcanos Details</h5>
-    </div>
-    <div class="tg-card-body">
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Type:</strong></div>
-            <div class="col-md-8">{{ object.get_arcanos_type_display }}</div>
-        </div>
-        {% if object.parent_arcanos %}
-            <div class="row mb-2">
-                <div class="col-md-4"><strong>Parent Arcanos:</strong></div>
-                <div class="col-md-8"><a href="{{ object.parent_arcanos.get_absolute_url }}">{{ object.parent_arcanos.name }}</a></div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}wto{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:wraith:list:arcanos' %}">← Arcanoi</a>{% endblock ref_back %}
+{% block ref_eyebrow %}{% if object.parent_arcanos %}Arcanos power{% else %}Arcanos{% endif %} · Wraith{% endblock ref_eyebrow %}
+{% block ref_after_name %}
+    {% if object.parent_arcanos %}<span class="tl-cover__rank">{% dots object.level %}</span>{% endif %}
+{% endblock ref_after_name %}
+{% block ref_facts %}
+    {% fact "Type" object.get_arcanos_type_display %}
+    {% if object.parent_arcanos %}{% fact "Parent Arcanos" object.parent_arcanos %}{% endif %}
+    {% fact "Level" object.level %}
+    {% fact "Pathos cost" object.pathos_cost %}
+    {% fact "Angst cost" object.angst_cost %}
+    {% fact "Difficulty" object.difficulty %}
+{% endblock ref_facts %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% if levels %}
+        <section class="tl-section tl-section--power">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Levels</h2>
             </div>
-        {% endif %}
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Level:</strong></div>
-            <div class="col-md-8">{{ object.level }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Pathos Cost:</strong></div>
-            <div class="col-md-8">{{ object.pathos_cost }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Angst Cost:</strong></div>
-            <div class="col-md-8">{{ object.angst_cost }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Difficulty:</strong></div>
-            <div class="col-md-8">{{ object.difficulty }}</div>
-        </div>
-    </div>
-</div>
-
-{% if levels %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title wto_heading">Levels</h5>
-    </div>
-    <div class="tg-card-body">
-        <table class="tg-table">
-            <thead>
-                <tr>
-                    <th>Level</th>
-                    <th>Name</th>
-                    <th>Pathos</th>
-                    <th>Angst</th>
-                    <th>Difficulty</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for level in levels %}
-                    <tr>
-                        <td>{{ level.level }}</td>
-                        <td><a href="{{ level.get_absolute_url }}">{{ level.name }}</a></td>
-                        <td>{{ level.pathos_cost }}</td>
-                        <td>{{ level.angst_cost }}</td>
-                        <td>{{ level.difficulty }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endif %}
-{% endblock contents %}
+            <div class="tl-section__body ref2-tablebody">
+                <table class="tl-table ref2-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Level</th>
+                            <th scope="col">Name</th>
+                            <th scope="col" class="tl-num">Pathos</th>
+                            <th scope="col" class="tl-num">Angst</th>
+                            <th scope="col" class="tl-num">Difficulty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for level in levels %}
+                            <tr>
+                                <td>{% dots level.level %}</td>
+                                <td class="ref2-table__name"><a href="{{ level.get_absolute_url }}">{{ level.name }}</a></td>
+                                <td class="tl-num">{{ level.pathos_cost }}</td>
+                                <td class="tl-num">{{ level.angst_cost }}</td>
+                                <td class="tl-num">{{ level.difficulty }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+{% endblock ref_sections %}

@@ -13,10 +13,7 @@ from django.test import TestCase
 from core.tests.template_fixtures import fixture_pages, seed
 from core.tests.test_routed_templates import KNOWN_MISSING
 
-EXPECTED_ERRORS = {
-    "characters_Ritual_edit": "characters/demon/ritual/form.html",
-    "list_characters_demon_list_ritual": "characters/demon/ritual/list.html",
-}
+EXPECTED_ERRORS = {}
 
 
 class TemplateRenderSmokeTest(TestCase):

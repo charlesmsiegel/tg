@@ -1,0 +1,51 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Reference detail shell (Spread M13) for the Vampire, Wraith, Demon, Hunter and Mummy
+reference pages (clans, disciplines, arcanoi, lores, edges, dynasties...).
+
+  gameline          line code ("vtm", "wto", "dtf", "htr", "mtr"); defaults to the object's
+  ref_back          cover-top link back to the list:  <a href="...">← Clans</a>
+  ref_eyebrow       "Clan · Vampire"
+  ref_name          the title text (defaults to object.name)
+  ref_name_class    size step for the title (pass the line code for plain models)
+  ref_after_name    under the title: italic sub line, rank dots...
+  ref_facts         cover fact rows ({% fact %} or .tl-facts__row markup)
+  ref_actions       cover buttons (Edit...)
+  ref_source        footnote at the bottom of the cover (book, page)
+  ref_sections      the numbered sections on the pages (.tl-section, auto-numbered)
+
+Sections go straight into the .tl-sheet grid; prose sections take .tl-span-8 so the
+rule stops at the text measure (68ch), as in the mock. Use
+characters/tl/ref2_prose.html for a titled prose section that hides when empty.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{% block ref_title %}{{ object.name|sanitize_html }}{% endblock ref_title %}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    {% block ref_back %}{% endblock ref_back %}
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">{% block ref_eyebrow %}{{ object|type_label }}{% endblock ref_eyebrow %}</span>
+    <h1 class="tl-cover__name {% block ref_name_class %}{{ object.name|cover_title_class:object }}{% endblock ref_name_class %}"
+        data-fit-title>
+        {% block ref_name %}{{ object.name|sanitize_html }}{% endblock ref_name %}
+    </h1>
+    {% block ref_after_name %}{% endblock ref_after_name %}
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts ref2-facts">
+        {% block ref_facts %}{% endblock ref_facts %}
+    </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% block ref_actions %}{% endblock ref_actions %}
+    {% block ref_source %}{% endblock ref_source %}
+{% endblock cover_actions %}
+{% block content %}
+    <div class="tl-sheet">
+        {% block ref_sections %}{% endblock ref_sections %}
+    </div>
+{% endblock content %}

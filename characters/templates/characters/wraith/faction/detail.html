@@ -1,32 +1,30 @@
-{% extends "core/object.html" %}
-{% load sanitize_text %}
-
-{% block contents %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title wto_heading">Faction Details</h5>
-    </div>
-    <div class="tg-card-body">
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Type:</strong></div>
-            <div class="col-md-8">{{ object.get_faction_type_display }}</div>
-        </div>
-        {% if object.parent %}
-            <div class="row mb-2">
-                <div class="col-md-4"><strong>Parent Faction:</strong></div>
-                <div class="col-md-8"><a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a></div>
-            </div>
-        {% endif %}
-        {% if object.subfactions.exists %}
-            <div class="row mb-2">
-                <div class="col-md-4"><strong>Subfactions:</strong></div>
-                <div class="col-md-8">
-                    {% for subfaction in object.subfactions.all %}
-                        <a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name }}</a>{% if not forloop.last %}, {% endif %}
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}wto{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:wraith:list:faction' %}">← Factions</a>{% endblock ref_back %}
+{% block ref_eyebrow %}{{ object.get_faction_type_display }} · Wraith{% endblock ref_eyebrow %}
+{% block ref_facts %}
+    {% fact "Type" object.get_faction_type_display %}
+    {% if object.parent %}{% fact "Parent faction" object.parent %}{% endif %}
+{% endblock ref_facts %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% with subfactions=object.subfactions.all %}
+        {% if subfactions %}
+            <section class="tl-section">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Subfactions</h2>
+                </div>
+                <div class="tl-section__body ref2-rows">
+                    {% for subfaction in subfactions %}
+                        <div class="tl-scenerow">
+                            <span class="tl-scenerow__name"><a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name }}</a></span>
+                            <span class="tl-scenerow__when">{{ subfaction.get_faction_type_display }}</span>
+                        </div>
                     {% endfor %}
                 </div>
-            </div>
+            </section>
         {% endif %}
-    </div>
-</div>
-{% endblock contents %}
+    {% endwith %}
+{% endblock ref_sections %}

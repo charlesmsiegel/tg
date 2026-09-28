@@ -1,46 +1,17 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Mummies
-{% endblock title %}
-{% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h3 class="tg-card-title mtr_heading">Mummies</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% for obj in object_list %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
-                                <div class="d-flex gap-3">
-                                    {% if obj.web %}
-                                        <span style="font-size: 0.9rem; color: var(--theme-text-secondary);">
-                                            {{ obj.get_web_display }}
-                                        </span>
-                                    {% endif %}
-                                    {% if obj.dynasty %}
-                                        <span class="tg-badge badge-pill badge-secondary">{{ obj.dynasty.name }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center" style="color: var(--theme-text-secondary);">No mummies found.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_chars.html" %}
+{% block title %}Mummies{% endblock title %}
+{% block gameline %}mtr{% endblock gameline %}
+{% block chars_eyebrow %}Mummy: the Resurrection{% endblock chars_eyebrow %}
+{% block chars_title %}Mummies{% endblock chars_title %}
+{% block chars_list %}
+    {% for obj in object_list %}
+        {% if obj.web %}
+            {% include "characters/tl/ref2_char_tile.html" with char=obj detail=obj.get_web_display detail2=obj.dynasty.name %}
+        {% else %}
+            {% include "characters/tl/ref2_char_tile.html" with char=obj detail=obj.dynasty.name %}
+        {% endif %}
+    {% endfor %}
+{% endblock chars_list %}
+{% block chars_empty %}
+    {% include "core/tl/empty.html" with text="No mummies found." %}
+{% endblock chars_empty %}

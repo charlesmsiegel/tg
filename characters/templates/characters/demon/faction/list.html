@@ -1,38 +1,25 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Demon Factions
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="dtf">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title dtf_heading">Demon Factions</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm">
-                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-                                    </div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No factions found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Demon Factions{% endblock title %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_eyebrow %}Demon: the Fallen{% endblock ref_eyebrow %}
+{% block ref_title %}Factions{% endblock ref_title %}
+{% block ref_list %}
+    <div class="tl-grid">
+        {% for obj in object_list %}
+            <article class="tl-tile" data-filterable-item data-name="{{ obj.name|lower }}">
+                <span class="tl-tile__meta"><span>Faction</span></span>
+                <h2 class="tl-tile__name">
+                    <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                </h2>
+                {% if obj.goal %}
+                    <p class="tl-tile__text">{{ obj.goal|striptags|truncatewords:28 }}</p>
+                {% elif obj.philosophy %}
+                    <p class="tl-tile__text">{{ obj.philosophy|striptags|truncatewords:28 }}</p>
+                {% endif %}
+            </article>
+        {% endfor %}
     </div>
-{% endblock content %}
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No factions found." %}
+{% endblock ref_empty %}

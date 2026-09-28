@@ -59,3 +59,7 @@ class RitualListView(ListView):
     model = Ritual
     ordering = ["name"]
     template_name = "characters/demon/ritual/list.html"
+
+    def get_queryset(self):
+        # The list shows each ritual's house and primary lore.
+        return super().get_queryset().select_related("house", "primary_lore")

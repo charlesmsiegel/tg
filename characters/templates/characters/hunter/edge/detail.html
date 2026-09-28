@@ -1,100 +1,27 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
-                            <div class="tg-card-subtitle">{{ object.get_virtue_display }} - Level {{ object.level }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.cost %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Cost</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.cost }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.duration %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Duration</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.duration }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.system %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">System</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.system }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.description %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Description</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.book %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Source</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.book.name }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:update:edge' object.pk %}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:hunter:list:edge' %}">← Edges</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Edge · Hunter{% endblock ref_eyebrow %}
+{% block ref_name_class %}{{ object.name|cover_title_class:"htr" }}{% endblock ref_name_class %}
+{% block ref_after_name %}
+    <span class="tl-cover__rank">{% dots object.level %}</span>
+{% endblock ref_after_name %}
+{% block ref_facts %}
+    {% fact "Virtue" object.get_virtue_display %}
+    {% fact "Level" object.level %}
+    {% fact "Cost" object.cost %}
+    {% fact "Duration" object.duration %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'characters:hunter:update:edge' object.pk %}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_source %}
+    {% if object.book %}<span class="ref2-source">{{ object.book.name }}</span>{% endif %}
+{% endblock ref_source %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% include "characters/tl/ref2_prose.html" with title="System" text=object.system power=True %}
+{% endblock ref_sections %}

@@ -1,40 +1,28 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Guilds
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wto">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title wto_heading">Guilds</h1>
-            </div>
-        </div>
-
-        <div class="tg-card">
-            <div class="tg-card-body">
-                <table class="tg-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Willpower</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for obj in object_list %}
-                            <tr>
-                                <td><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
-                                <td>{{ obj.get_guild_type_display }}</td>
-                                <td>{{ obj.willpower }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="3" class="text-center">No guilds found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Guilds{% endblock title %}
+{% block gameline %}wto{% endblock gameline %}
+{% block ref_eyebrow %}Wraith: the Oblivion{% endblock ref_eyebrow %}
+{% block ref_title %}Guilds{% endblock ref_title %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="tl-num">Willpower</th>
+                <th scope="col" class="ref2-table__type">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    <td class="tl-num">{{ obj.willpower }}</td>
+                    <td class="ref2-table__type">{{ obj.get_guild_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No guilds found." %}
+{% endblock ref_empty %}

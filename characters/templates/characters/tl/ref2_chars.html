@@ -1,0 +1,48 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Per-line character list shell (Hunters, Demons, Thralls, Mummies...): line cover with the
+count, a grid of character tiles (characters/tl/ref2_char_tile.html) and the pager.
+
+  gameline        line code ("htr", "dtf", "mtr")
+  title           the page title
+  chars_eyebrow   the full gameline name
+  chars_title     the cover title ("Hunters")
+  chars_actions   cover buttons (+ Create ...)
+  chars_list      the tiles, one include per character
+  chars_empty     the empty state
+{% endcomment %}
+{% load tl %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'characters:index' %}">← Index</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">{% block chars_eyebrow %}{% endblock chars_eyebrow %}</span>
+    <h1 class="tl-cover__name {% block chars_title_class %}{% endblock chars_title_class %}" data-fit-title>
+        {% block chars_title %}{% endblock chars_title %}
+    </h1>
+    <span class="ref2-count">
+        {% if page_obj %}
+            {{ page_obj.paginator.count }} character{{ page_obj.paginator.count|pluralize }}
+        {% else %}
+            {{ object_list|length }} character{{ object_list|length|pluralize }}
+        {% endif %}
+    </span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% block chars_actions %}{% endblock chars_actions %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
+{% block content %}
+    {% if object_list %}
+        <div class="tl-grid">
+            {% block chars_list %}{% endblock chars_list %}
+        </div>
+        {% include "characters/tl/ref2_pager.html" %}
+    {% else %}
+        {% block chars_empty %}{% include "core/tl/empty.html" with text="No characters to show." %}{% endblock chars_empty %}
+    {% endif %}
+{% endblock content %}

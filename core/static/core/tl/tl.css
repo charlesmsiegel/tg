@@ -1111,4 +1111,42 @@ body.tl {
 .tl-pager span { color: var(--ink2); }
 @media (max-width: 720px) {
   .tl-entry { grid-template-columns: 1fr; gap: 8px; }
+/* ---- reference pages: vampire, wraith, demon, hunter, mummy (characters/tl/ref2_*) ---- */
+.ref2-facts:not(:has(*)) { display: none; }
+.ref2-count { font: 400 13px var(--mono); opacity: .8; }
+.ref2-source { font: 400 13px var(--mono); opacity: .85; }
+.ref2-flavor { font-style: italic; }
+.ref2-search__input {
+  width: 100%; padding: 6px 0; border: 0; border-bottom: 1px solid currentColor; border-radius: 0;
+  background: transparent; color: inherit; font: italic 400 17px var(--serif);
+}
+.ref2-search__input::placeholder { color: inherit; opacity: .85; }
+.ref2-search__input:focus { outline: 0; border-bottom-width: 2px; padding-bottom: 5px; }
+.ref2-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ref2-coverfoot {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+}
+.ref2-coverfoot a { text-decoration: none; }
+/* Shown by filterable.js (it sets an inline display); hidden until the script runs. */
+.ref2-noresults:not([style]) { display: none; }
+.ref2-table td { padding: 12px 16px 12px 0; }
+.ref2-list > .ref2-table th:first-child { width: 45%; }
+.ref2-table th { padding-right: 16px; }
+.ref2-table__name { font-size: 19px; }
+.ref2-table__name a { text-decoration: none; }
+.ref2-table__type { font-size: 15px; color: var(--ink2); }
+.ref2-table .tl-dots { color: var(--acc); }
+.ref2-pager { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font: 400 13px var(--mono); }
+.ref2-pager a { text-decoration: none; }
+.ref2-rows .tl-scenerow__name { font-size: 19px; color: var(--acc); }
+.ref2-rows .tl-scenerow { padding: 10px 0; }
+.tl-section__body.ref2-rows { padding-top: 0; }
+/* A table carries its own 2px header rule, so its section body drops the rule above. */
+.tl-section__body.ref2-tablebody { border-top: 0; padding-top: 0; }
+.tl-section--power .ref2-tablebody .tl-table th { border-bottom-color: var(--acc); }
+@media (max-width: 720px) {
+  .ref2-filters { grid-template-columns: 1fr 1fr; }
+  .ref2-list > .ref2-table th:first-child { width: auto; }
+  .ref2-table td, .ref2-table th { padding-right: 10px; }
 }

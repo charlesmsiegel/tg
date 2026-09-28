@@ -1,96 +1,78 @@
-{% extends "core/base.html" %}
+{% extends "characters/tl/ref2_list.html" %}
 {% load static %}
-{% block title %}
-    Thorns
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wto">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title wto_heading">Thorns</h1>
-            </div>
+{% comment %}
+Filtered by characters/static/characters/js/thorn-list.js (ids nameFilter, typeFilter,
+costFilter, clearFilters, resultCount and the .thorn-item rows with data-name / data-type /
+data-cost), not by the FilterableList widget the other reference lists use.
+{% endcomment %}
+{% block title %}Thorns{% endblock title %}
+{% block gameline %}wto{% endblock gameline %}
+{% block ref_eyebrow %}Wraith: the Oblivion{% endblock ref_eyebrow %}
+{% block ref_title %}Thorns{% endblock ref_title %}
+{% block ref_count %}
+    <span class="ref2-count" id="resultCount" aria-live="polite">{{ object_list|length }} shown</span>
+{% endblock ref_count %}
+{% block ref_search %}
+    <div class="ref2-search">
+        <label class="tl-sr" for="nameFilter">Search by name</label>
+        <input type="search"
+               id="nameFilter"
+               class="ref2-search__input"
+               placeholder="Search by name…"
+               autocomplete="off">
+    </div>
+{% endblock ref_search %}
+{% block ref_filters %}
+    <div class="ref2-filters">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="typeFilter">Type</label>
+            <select id="typeFilter">
+                <option value="">All types</option>
+                <option value="individual">Individual Thorn</option>
+                <option value="collective">Collective Thorn</option>
+            </select>
         </div>
-
-        <!-- Filter Panel -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <button class="btn btn-link"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#filterPanel"
-                        aria-expanded="false"
-                        aria-controls="filterPanel">
-                    <i class="fas fa-filter"></i> Filter Thorns
-                </button>
-            </div>
-            <div class="collapse" id="filterPanel">
-                <div class="tg-card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="nameFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
-                            <input type="text" class="form-control" id="nameFilter" placeholder="Search by name...">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="typeFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Type</label>
-                            <select class="form-select" id="typeFilter">
-                                <option value="">All Types</option>
-                                <option value="individual">Individual Thorn</option>
-                                <option value="collective">Collective Thorn</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="costFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Point Cost</label>
-                            <select class="form-select" id="costFilter">
-                                <option value="">All Costs</option>
-                                {% for cost in point_costs %}
-                                    <option value="{{ cost }}">{{ cost }} point{{ cost|pluralize }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-secondary" id="clearFilters">Clear Filters</button>
-                            <span class="ms-3" id="resultCount" style="font-weight: 600; color: var(--theme-text-secondary);"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Thorns List -->
-        <div class="tg-card">
-            <div class="tg-card-body" style="padding: 0;">
-                <div id="thornsList">
-                    {% for obj in object_list %}
-                        <div class="thorn-item"
-                             data-name="{{ obj.name|lower }}"
-                             data-type="{{ obj.thorn_type }}"
-                             data-cost="{{ obj.point_cost }}"
-                             style="border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary); text-decoration: none;">
-                                    {{ obj.name }}
-                                </a>
-                                <div style="display: flex; gap: 12px; align-items: center;">
-                                    <span class="tg-badge badge-pill" style="background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
-                                        {{ obj.get_thorn_type_display }}
-                                    </span>
-                                    <span style="font-size: 0.85rem; color: var(--theme-text-secondary);">
-                                        {{ obj.point_cost }} point{{ obj.point_cost|pluralize }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div style="padding: 20px; text-align: center; color: var(--theme-text-secondary);">
-                            No thorns found.
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="costFilter">Point cost</label>
+            <select id="costFilter">
+                <option value="">All costs</option>
+                {% for cost in point_costs %}
+                    <option value="{{ cost }}">{{ cost }} point{{ cost|pluralize }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
-
-    <script src="{% static 'characters/js/thorn-list.js' %}"></script>
-{% endblock content %}
+{% endblock ref_filters %}
+{% block ref_clear %}
+    <button type="button" class="tl-btn tl-btn--quiet" id="clearFilters">Clear filters</button>
+{% endblock ref_clear %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="tl-num">Cost</th>
+                <th scope="col" class="ref2-table__type">Type</th>
+            </tr>
+        </thead>
+        <tbody id="thornsList">
+            {% for obj in object_list %}
+                <tr class="thorn-item"
+                    data-name="{{ obj.name|lower }}"
+                    data-type="{{ obj.thorn_type }}"
+                    data-cost="{{ obj.point_cost }}">
+                    <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    <td class="tl-num">{{ obj.point_cost }}</td>
+                    <td class="ref2-table__type">{{ obj.get_thorn_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_noresults %}{% endblock ref_noresults %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No thorns found." %}
+{% endblock ref_empty %}
+{% block extrascripts %}
+    {% if object_list %}<script src="{% static 'characters/js/thorn-list.js' %}"></script>{% endif %}
+{% endblock extrascripts %}
