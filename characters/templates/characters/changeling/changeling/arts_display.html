@@ -1,0 +1,17 @@
+{% load tl %}
+{% comment %}Arts (power section, accent dots): only the Arts the character has.{% endcomment %}
+{% with arts=object.art_rows %}
+    {% if arts %}
+        <section class="tl-section tl-section--power tl-span-7" id="arts">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Arts</h2>
+            </div>
+            <div class="tl-section__body tl-stack">
+                {% for label, rating, specialty in arts %}
+                    {% trait label rating specialty variant="acc" %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

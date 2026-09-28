@@ -1,0 +1,32 @@
+{% comment %}
+History: Fae Name, Date Ennobled and Date of Crysalis as a fact row, then History, Crysalis,
+Goals, Notes and Public information as prose. Hidden when all are empty.
+{% endcomment %}
+{% if object.history or object.crysalis or object.true_name or object.date_ennobled or object.date_of_crysalis or object.goals or object.notes or object.public_info %}
+    <section class="tl-section" id="history">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">History</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            {% if object.true_name or object.date_ennobled or object.date_of_crysalis %}
+                <div class="tl-factrow">
+                    {% if object.true_name %}
+                        <div><span class="tl-subhead">Fae Name</span><span>{{ object.true_name }}</span></div>
+                    {% endif %}
+                    {% if object.date_ennobled %}
+                        <div><span class="tl-subhead">Date Ennobled</span><span>{{ object.date_ennobled }}</span></div>
+                    {% endif %}
+                    {% if object.date_of_crysalis %}
+                        <div><span class="tl-subhead">Date of Crysalis</span><span>{{ object.date_of_crysalis }}</span></div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% include "characters/tl/prose_block.html" with label="History" text=object.history %}
+            {% include "characters/tl/prose_block.html" with label="Crysalis" text=object.crysalis %}
+            {% include "characters/tl/prose_block.html" with label="Goals" text=object.goals %}
+            {% include "characters/tl/prose_block.html" with label="Notes" text=object.notes %}
+            {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+        </div>
+    </section>
+{% endif %}

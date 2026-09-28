@@ -42,6 +42,21 @@ class TestInanimaeDetailView(TestCase):
         )
         self.assertTemplateUsed(response, "characters/changeling/inanimae/detail.html")
 
+    def test_detail_view_sheet(self):
+        """Kingdom / Seeming / Season are cover facts; Mana is an advantage track."""
+        self.inanimae.anchor_description = "An old oak"
+        self.inanimae.save()
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("characters:changeling:inanimae", kwargs={"pk": self.inanimae.pk})
+        )
+        self.assertContains(response, '<span class="tl-facts__k">Kingdom</span>', html=False)
+        self.assertContains(response, "Kubera")
+        self.assertContains(response, "Naturae")
+        self.assertContains(response, '<span class="tl-facts__k">Season</span>', html=False)
+        self.assertContains(response, '<span class="tl-track__label">Mana</span>', html=False)
+        self.assertContains(response, "An old oak")
+
 
 class TestInanimaeCreateView(TestCase):
     """Test Inanimae create view."""

@@ -1158,6 +1158,68 @@ class TestChangelingDetailViewContext(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("merits_and_flaws", response.context)
 
+    def test_detail_view_cover_facts(self):
+        """Kith, House (in place of Seeming), Court and both Legacies sit on the cover."""
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(self.url)
+        self.assertContains(response, '<span class="tl-facts__k">Kith</span>', html=False)
+        self.assertContains(response, self.kith.get_absolute_url())
+        self.assertContains(response, '<span class="tl-facts__k">House</span>', html=False)
+        self.assertNotContains(response, '<span class="tl-facts__k">Seeming</span>', html=False)
+        self.assertContains(response, '<span class="tl-facts__k">Court</span>', html=False)
+        self.assertContains(response, '<span class="tl-facts__k">Legacies</span>', html=False)
+        self.assertContains(response, self.seelie_legacy.get_absolute_url())
+        self.assertContains(response, self.unseelie_legacy.get_absolute_url())
+
+    def test_detail_view_seeming_without_house(self):
+        self.changeling.house = None
+        self.changeling.save()
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(self.url)
+        self.assertContains(response, '<span class="tl-facts__k">Seeming</span>', html=False)
+        self.assertContains(response, "Wilder")
+
+    def test_detail_view_arts_advantages_and_realms(self):
+        """Arts are the accent power section; Glamour/Banality/Willpower are tracks; Realms list all six."""
+        self.changeling.dragons_ire = 1
+        self.changeling.musing_threshold = "create_hope"
+        self.changeling.save()
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(self.url)
+        content = response.content.decode()
+        self.assertIn('class="tl-section tl-section--power tl-span-7" id="arts"', content)
+        self.assertIn("Wayfare", content)
+        self.assertIn("Dragon&#x27;s Ire", content)
+        self.assertNotIn("Chicanery", content)
+        for label in ("Glamour", "Banality", "Willpower"):
+            self.assertIn(f'<span class="tl-track__label">{label}</span>', content)
+        self.assertIn("Create Hope", content)
+        self.assertIn('id="realms"', content)
+        for realm in ("Actor", "Fae", "Nature", "Prop", "Scene", "Time"):
+            self.assertIn(f'<span class="tl-trait__label">{realm}</span>', content)
+
+    def test_detail_view_hides_empty_arts_and_realms(self):
+        self.changeling.wayfare = 0
+        self.changeling.actor = 0
+        self.changeling.save()
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(self.url)
+        self.assertNotContains(response, 'id="arts"')
+        self.assertNotContains(response, 'id="realms"')
+
+    def test_detail_view_changeling_history(self):
+        self.changeling.true_name = "Thistlewick"
+        self.changeling.crysalis = "Woke under the bridge."
+        self.changeling.fae_mien = "Moss-green hair"
+        self.changeling.save()
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(self.url)
+        self.assertContains(response, "Fae Name")
+        self.assertContains(response, "Thistlewick")
+        self.assertContains(response, "Woke under the bridge.")
+        self.assertContains(response, "Fae Mien")
+        self.assertContains(response, "Moss-green hair")
+
 
 class TestChangelingBasicsView(TestCase):
     """Tests for the ChangelingBasicsView."""

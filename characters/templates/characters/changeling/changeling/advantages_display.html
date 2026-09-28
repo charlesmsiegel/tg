@@ -1,0 +1,34 @@
+{% load tl %}
+{% comment %}Glamour, Banality and Willpower (dots = permanent, squares = temporary), then thresholds.{% endcomment %}
+<section class="tl-section tl-span-5" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
+    </div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div>
+            {% track "Glamour" perm=object.glamour temp=object.temporary_glamour|default:0 %}
+            {% track "Banality" perm=object.banality temp=object.temporary_banality|default:0 %}
+            {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+        </div>
+        {% if object.musing_threshold or object.ravaging_threshold or object.antithesis %}
+            <div class="tl-stack">
+                {% if object.musing_threshold %}
+                    <div class="tl-kv">
+                        <span class="tl-subhead">Musing Threshold</span><span>{{ object.get_musing_threshold_display }}</span>
+                    </div>
+                {% endif %}
+                {% if object.ravaging_threshold %}
+                    <div class="tl-kv">
+                        <span class="tl-subhead">Ravaging Threshold</span><span>{{ object.get_ravaging_threshold_display }}</span>
+                    </div>
+                {% endif %}
+                {% if object.antithesis %}
+                    <div class="tl-kv">
+                        <span class="tl-subhead">Antithesis</span><span>{{ object.antithesis }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
