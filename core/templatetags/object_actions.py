@@ -1,4 +1,8 @@
-"""Render only the actions the current actor can take on a full object view."""
+"""Render only the actions the current actor can take on a full object view (Spread markup).
+
+The legacy shell (core/base.html) renders it after the pages; Spread pages call
+``{% tl_object_actions %}`` (core.templatetags.tl), which reuses this logic.
+"""
 
 from django import template
 
@@ -15,7 +19,7 @@ from locations.models.core import LocationModel
 register = template.Library()
 
 
-@register.inclusion_tag("core/object_actions.html", takes_context=True)
+@register.inclusion_tag("core/tl/object_actions.html", takes_context=True)
 def object_actions(context):
     obj = context.get("object")
     user = context["request"].user

@@ -1,4 +1,3 @@
-{% load static %}
 {% comment %} Abilities step: Talents, Skills and Knowledges as ruled columns
    (ability_columns from ChargenStepMixin), then a status line checked by
    ability-validation.js (non-interactive) or tgPool + the server's verdict. {% endcomment %}
@@ -15,14 +14,4 @@
         </section>
     {% endfor %}
 </div>
-{% if chargen_interactive %}
-    {% include "characters/core/chargen/pool.html" %}
-{% elif primary and secondary and tertiary %}
-    <div class="tl-chargen__status">
-        <div class="tl-chargen__line">
-            <span class="tl-chargen__tag" data-allocation-tag>In progress</span>
-            <span id="abilities-validation-status" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}" role="status"></span>
-        </div>
-    </div>
-    <script src="{% static 'characters/js/ability-validation.js' %}"></script>
-{% endif %}
+{% include "characters/core/ability_block/status.html" %}

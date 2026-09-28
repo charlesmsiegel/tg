@@ -1,8 +1,0 @@
-{% if object.image and object.image_status == "app" %}
-    <img src="{{ object.image.url }}"
-         width="300"
-         height="{{ image.height }}"
-         alt="image of {{ object.name }}" />
-{% elif object.image %}
-    Image pending approval
-{% endif %}

@@ -1,129 +1,75 @@
-{% extends "core/base.html" %}
-{% load static %}
-{% load sanitize_text %}
-
-{% block heading %}Character Template Selection{% endblock %}
-
+{% extends "core/tl_base.html" %}
+{% load tl sanitize_text %}
+{% comment %}
+Optional entry point before a human's numbered chargen steps: pick a published
+starting template or build from scratch. Each choice is a tile around a visually
+hidden radio (name="template"); the checked tile takes the gameline accent in CSS,
+so no script is needed. "Build from scratch" (value "") is checked by default.
+{% endcomment %}
+{% block title %}Choose a template · {{ character.name|sanitize_html }}{% endblock title %}
+{% block gameline %}{{ character|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}Choose a template for {{ character.name }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">New · {{ character|type_label }}</span>
+    <h1 class="tl-cover__name tl-cover__name--form" data-fit-title>{{ character.name|sanitize_html }}</h1>
+    {% if character.concept %}<p class="tl-cover__sub">{{ character.concept }}</p>{% endif %}
+{% endblock cover_title %}
+{% block cover_body %}
+    <p class="tl-cover__lede">
+        Speed up character creation by starting from a pre-made concept from the sourcebooks.
+    </p>
+{% endblock cover_body %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
 {% block content %}
-<div class="tg-card mb-4" data-gameline="{{ character.get_gameline }}">
-    <div class="tg-card-header">
-        <h4 class="tg-card-title {{ character.get_heading }}">Choose a Starting Template (Optional)</h4>
-        <div style="font-size: 0.9rem; color: var(--theme-text-secondary); margin-top: 8px;">
-            Speed up character creation by starting with a pre-made template from the sourcebooks
-        </div>
-    </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <p style="margin-bottom: 24px; line-height: 1.6;">
-            You can select a pre-configured character concept to automatically populate your character's
-            attributes, abilities, backgrounds, and powers. After selection, you can still customize everything.
-            Or skip this step to build your character from scratch.
-        </p>
-
-        <form method="post">
-            {% csrf_token %}
-
-            <div class="row">
-                <!-- No Template Option -->
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <label class="template-option" style="display: block; cursor: pointer;">
-                        <input type="radio" name="template" value="" class="template-radio"
-                               style="position: absolute; opacity: 0;">
-                        <div class="tg-card h-100 template-card" style="border: 2px solid rgba(0,0,0,0.1); transition: all 0.2s;">
-                            <div class="tg-card-body" style="padding: 20px;">
-                                <h6 class="tg-card-title" style="margin-bottom: 12px; font-weight: 700;">
-                                    Build from Scratch
-                                </h6>
-                                <p style="font-size: 0.9rem; line-height: 1.6; color: var(--theme-text-secondary); margin: 0;">
-                                    Start with a blank slate and assign all points yourself through the standard character creation process.
-                                </p>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-
-                <!-- Template Options -->
-                {% for template in available_templates %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <label class="template-option" style="display: block; cursor: pointer;">
-                        <input type="radio" name="template" value="{{ template.id }}" class="template-radio"
-                               style="position: absolute; opacity: 0;">
-                        <div class="tg-card h-100 template-card" style="border: 2px solid rgba(0,0,0,0.1); transition: all 0.2s;">
-                            <div class="tg-card-header" style="padding: 16px 20px; background-color: rgba(0,0,0,0.02);">
-                                <h6 class="tg-card-title {{ character.get_heading }}" style="margin-bottom: 4px; font-weight: 700;">
-                                    {{ template.name }}
-                                </h6>
-                                {% if template.source_book %}
-                                <div style="font-size: 0.75rem; color: var(--theme-text-secondary); margin-top: 4px;">
-                                    {{ template.source_book }}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="tg-card-body" style="padding: 20px;">
-                                <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">
-                                    {{ template.description }}
-                                </p>
-
-                                <!-- Preview Key Stats -->
-                                <div style="padding: 12px; border-radius: 4px; background-color: rgba(0,0,0,0.03); margin-bottom: 12px;">
-                                    <div style="font-size: 0.85rem; line-height: 1.5;">
-                                        <div style="margin-bottom: 6px;">
-                                            <span style="font-weight: 600; color: var(--theme-text-secondary);">Concept:</span>
-                                            <span>{{ template.concept }}</span>
-                                        </div>
-                                        {% with attrs=template.get_top_attributes %}
-                                        {% if attrs %}
-                                        <div>
-                                            <span style="font-weight: 600; color: var(--theme-text-secondary);">Top Attributes:</span>
-                                            <span>{{ attrs|join:", " }}</span>
-                                        </div>
-                                        {% endif %}
-                                        {% endwith %}
-                                    </div>
-                                </div>
-
-                                <!-- Usage Badge -->
-                                <div style="margin-top: 12px;">
-                                    <span class="tg-badge badge-pill" style="font-size: 0.75rem; background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
-                                        Used {{ template.times_used }} time{{ template.times_used|pluralize }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        No templates available yet. Build your character from scratch!
-                    </div>
-                </div>
-                {% endfor %}
+    <form method="post" class="tl-form">
+        {% csrf_token %}
+        {% include "core/misc/form_errors.html" %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Choose a starting template</h2>
+                <span class="tl-section__aside tl-mono">Optional</span>
             </div>
-
-            <!-- Form Messages -->
-            {% if messages %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                <p class="tl-lede">
+                    A template fills in the character's Attributes, Abilities, Backgrounds and powers.
+                    You can still change everything afterwards, or skip this and build from scratch.
+                </p>
+                <div class="tl-grid" role="radiogroup" aria-label="Starting template">
+                    <label class="tl-tile tl-pick">
+                        <input class="tl-pick__input" type="radio" name="template" value="" checked>
+                        <span class="tl-tile__meta"><span>Blank</span></span>
+                        <span class="tl-tile__name">Build from scratch</span>
+                        <span class="tl-tile__text">
+                            Start with a blank slate and assign every point yourself through the standard creation steps.
+                        </span>
+                    </label>
+                    {% for template in available_templates %}
+                        <label class="tl-tile tl-pick">
+                            <input class="tl-pick__input" type="radio" name="template" value="{{ template.id }}">
+                            <span class="tl-tile__meta">
+                                <span>Template</span>
+                                <span>Used {{ template.times_used }} time{{ template.times_used|pluralize }}</span>
+                            </span>
+                            <span class="tl-tile__name">{{ template.name }}</span>
+                            {% if template.concept %}<span class="tl-tile__sub">{{ template.concept }}</span>{% endif %}
+                            {% if template.description %}
+                                <span class="tl-tile__text">{{ template.description|sanitize_html|truncatewords_html:40 }}</span>
+                            {% endif %}
+                        </label>
                     {% endfor %}
                 </div>
+                {% if not available_templates %}
+                    {% include "core/tl/empty.html" with text="No templates are available for this character type yet. Build your character from scratch." %}
+                {% endif %}
             </div>
-            {% endif %}
-
-            <!-- Buttons -->
-            <div class="mt-4" style="padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.1);">
-                <button type="submit" class="btn btn-primary" style="min-width: 160px;">
-                    Continue to Character Creation
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{% with script="characters/js/"|add:character.get_gameline|add:"human-template-select.js" %}
-<script src="{% static script %}"></script>
-{% endwith %}
-{% endblock %}
+        </section>
+        <div class="tl-actions tl-formactions">
+            <button type="submit" class="tl-btn">Continue to character creation</button>
+            <a href="{{ character.get_absolute_url }}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
+        </div>
+    </form>
+{% endblock content %}

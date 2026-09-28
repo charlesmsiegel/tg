@@ -1,34 +1,48 @@
-{% load static %}
-{% load formset_tags %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Backgrounds</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Distribute {{ object.background_points }} background dots. Keep in mind that Enhancements, Sanctum, and Totem cost 2 points per dot. Pooled backgrounds must have the exact same note field to be pooled properly, and should only be used for shared backgrounds across a group.
+{% load static formset_tags %}
+{% comment %} Backgrounds step: one ruled row per BackgroundRating (background, rating,
+   note, alternate name, pooled for group members) in the dynamic formset, then the
+   points counter (background-validation.js) on non-interactive workflows. Each row
+   carries its hidden fields (the rating's id), so saving a step that already has
+   ratings updates them instead of adding copies. {% endcomment %}
+<p class="tl-lede">
+    Distribute {{ object.background_points }} background points. Enhancements, Sanctum and Totem cost
+    2 points per dot. Pooled backgrounds must have exactly the same note to pool, and are only for
+    backgrounds shared across a group.
+</p>
+{% if form.non_form_errors %}
+    <div class="tl-errors" role="alert">
+        <ul>
+            {% for error in form.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
     </div>
-</div>
-{% formset form prefix="backgrounds" add_label="Add Background" wrapper_class="row form-row" %}
-    <div class="col-sm">{{ subform.bg }}</div>
-    <div class="col-sm">{{ subform.rating }}</div>
-    <div class="col-sm">{{ subform.note }}</div>
-    <div class="col-sm">Alternate Name? {{ subform.display_alt_name }}</div>
-    {% if object.is_group_member %}<div class="col-sm">Pooled? {{ subform.pooled }}</div>{% endif %}
-{% endformset %}
+{% endif %}
 {% for f in form %}
     {% if f.non_field_errors and forloop.first %}
-        {% for error in f.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
+        <div class="tl-errors" role="alert">
+            <ul>
+                {% for error in f.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        </div>
     {% endif %}
 {% endfor %}
-{% comment %} Guard mirrors the abilities include: only render the counter where the
-   character actually has a background budget in context. {% endcomment %}
+{% formset form prefix="backgrounds" add_label="+ Add background" add_class="tl-btn tl-btn--ghost tl-btn--sm tl-bgadd" remove_label="Remove" remove_class="tl-btn tl-btn--quiet tl-bgrow__remove" wrapper_class="tl-bgrow" %}
+    {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+    {% include "core/tl/field.html" with field=subform.bg label="Background" help="" %}
+    {% include "core/tl/field.html" with field=subform.rating label="Rating" help="" %}
+    {% include "core/tl/field.html" with field=subform.note label="Note" help="" %}
+    {% include "core/misc/check.html" with field=subform.display_alt_name label="Alternate name" help="" %}
+    {% if object.is_group_member %}
+        {% include "core/misc/check.html" with field=subform.pooled label="Pooled" help="" %}
+    {% endif %}
+{% endformset %}
 {% comment %} Interactive pages get server-computed totals from the live validator. {% endcomment %}
 {% if object.background_points and not chargen_interactive %}
-<div class="row">
-    <div class="col-sm">
-        <div id="backgrounds-validation-status" data-budget="{{ object.background_points }}" role="status" style="font-weight: 600; margin-top: 8px;"></div>
+    <div class="tl-chargen__status">
+        <div class="tl-chargen__line">
+            <span class="tl-chargen__tag">Points</span>
+            <span id="backgrounds-validation-status" data-budget="{{ object.background_points }}" role="status"></span>
+        </div>
     </div>
-</div>
-{{ background_multipliers_json|default:"{}"|json_script:"background-multipliers" }}
-<script src="{% static 'characters/js/background-validation.js' %}"></script>
+    {{ background_multipliers_json|default:"{}"|json_script:"background-multipliers" }}
+    <script src="{% static 'characters/js/background-validation.js' %}"></script>
 {% endif %}

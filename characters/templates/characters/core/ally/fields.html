@@ -1,0 +1,24 @@
+{% comment %}
+"Create an ally" fields (Spread): ally type, name, rank, concept and a note on the
+relationship. Native replacement for characters/core/ally/form_include.html, which
+the (legacy) chantry creation page still includes.
+  {% include "characters/core/ally/fields.html" %}          uses `form`
+{% endcomment %}
+<section class="tl-section">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Create ally</h2>
+    </div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <p class="tl-lede">
+            A Storyteller will detail your Ally. Name them, give their concept, and note their relationship with the character.
+        </p>
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.ally_type label="Ally type" %}
+            {% include "core/tl/field.html" with field=form.name %}
+            {% include "core/tl/field.html" with field=form.rank %}
+            {% include "core/tl/field.html" with field=form.concept %}
+        </div>
+        {% include "core/tl/field.html" with field=form.note %}
+    </div>
+</section>

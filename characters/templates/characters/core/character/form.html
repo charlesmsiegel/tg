@@ -1,21 +1,27 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Character
-{% endblock creation_title %}
+{% load tl_forms %}
+{% comment %}
+Create / edit a character of any kind without its own form (and the base of the
+Drone and Spirit forms). Name, player and concept come first; `statistics` then
+renders every other field the view's form carries (create, Storyteller edit and the
+owner's draft form all differ). A child that overrides `statistics` renders those
+fields itself; `flavor` is an empty slot after it.
+{% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
+{% block creation_title %}Create Character{% endblock creation_title %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
 {% block contents %}
-    <div class="row">
-        <h1 class="col-sm">{{ form.name }}</h1>
-    </div>
-    <div class="row">
-        <div class="col-sm">Player</div>
-        <div class="col-sm">{{ form.owner }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    <div class="tl-formgrid">
+        {% for field in form|fields_only:"name owner concept" %}
+            {% include "core/tl/field.html" with label="" help=field.help_text %}
+        {% endfor %}
     </div>
     {% block statistics %}
+        {% include "core/misc/field_sections.html" with fields=form|fields_except:"name owner concept" %}
     {% endblock statistics %}
-    {% block flavor %}
-    {% endblock flavor %}
+    {% block flavor %}{% endblock flavor %}
 {% endblock contents %}

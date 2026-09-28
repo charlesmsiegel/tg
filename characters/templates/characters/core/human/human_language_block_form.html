@@ -1,16 +1,6 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Choose Languages</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Choose languages other than English that {{ object.name }} speaks.</div>
-</div>
-<div class="row">
-    <div class="col-sm">Language 0</div>
-    <div class="col-sm">English</div>
-</div>
-{% for field in form %}
-    <div class="row">
-        <div class="col-sm">{{ field.label }}</div>
-        <div class="col-sm">{{ field }}</div>
-    </div>
-{% endfor %}
+{% comment %} Languages step: English is known already; one suggestion-backed text field
+   (HumanLanguageForm's language_1, language_2, ...) per extra language. {% endcomment %}
+<p class="tl-lede">
+    {{ object.name }} speaks English. Choose the other languages {{ object.name }} speaks.
+</p>
+{% include "characters/core/chargen/fields.html" with fields_form=form %}

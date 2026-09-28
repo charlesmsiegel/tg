@@ -1,11 +1,45 @@
-{% extends "core/errors/error.html" %}
-{% block title %}Server error · 500{% endblock title %}
-{% block error_code %}500{% endblock error_code %}
-{% block error_headline %}Something broke on our end.{% endblock error_headline %}
-{% block error_text %}
-    The error has been logged. Please try again in a moment, and report it if it keeps happening.
-{% endblock error_text %}
-{% block error_actions %}
-    <a class="tl-btn" href="{% url 'core:home' %}">Go home</a>
-    <a class="tl-btn tl-btn--ghost" href="https://github.com/charlesmsiegel/tg/issues">Report a problem</a>
-{% endblock error_actions %}
+{% load static %}<!DOCTYPE html>
+{% comment %}
+Server error (M11), self-contained: core.views.errors.error_500 renders it without the
+request, so it runs no context processor, database query or URL lookup and still
+renders when those are what broke. Same layout as core/errors/error.html (the code
+large on the ink cover, headline, one sentence, two actions) without the nav.
+{% endcomment %}
+<html lang="en" data-theme="system" data-gameline="wod">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <title>Server error · 500</title>
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'core/tl/tl.css' %}">
+    </head>
+    <body class="tl">
+        <div class="tl-spread tl-spread--wide">
+            <aside class="tl-cover tl-cover--ink tl-cover--low" aria-label="Error">
+                <div class="tl-cover__inner">
+                    <header class="tl-cover__top">
+                        <a class="tl-wordmark" href="/">Tellurium<span>·</span>Games</a>
+                    </header>
+                    <div class="tl-cover__title">
+                        <span class="tl-cover__code-tag">Error</span>
+                        <p class="tl-cover__code">500</p>
+                    </div>
+                </div>
+            </aside>
+            <div class="tl-pages">
+                <main class="tl-content tl-content--center" id="main">
+                    <div class="tl-errorpage">
+                        <h1 class="tl-h1">Something broke on our end.</h1>
+                        <p class="tl-errorpage__text">
+                            The error has been logged. Please try again in a moment, and report it if it keeps happening.
+                        </p>
+                        <div class="tl-actions">
+                            <a class="tl-btn" href="/">Go home</a>
+                            <a class="tl-btn tl-btn--ghost" href="https://github.com/charlesmsiegel/tg/issues">Report a problem</a>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
