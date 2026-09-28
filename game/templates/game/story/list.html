@@ -1,5 +1,8 @@
 {% extends "game/tl/base.html" %}
-{% comment %}Every story, as ruled rows with its state (current until its XP is given).{% endcomment %}
+{% comment %}
+Every story, as ruled rows with its chronicle (when the viewer can open it) and its
+state (current until its XP is given).
+{% endcomment %}
 {% block title %}Stories{% endblock title %}
 {% block cover_label %}Stories{% endblock cover_label %}
 {% block cover_title %}
@@ -12,7 +15,10 @@
         <div>
             {% for obj in object_list %}
                 <div class="tl-row">
-                    <a class="tl-row__title" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                    <div class="tl-row__main">
+                        <a class="tl-row__title" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                        {% if obj.visible_chronicle %}<span class="tl-row__sub">{{ obj.visible_chronicle.name }}</span>{% endif %}
+                    </div>
                     {% if obj.xp_given %}
                         <span class="tl-row__meta tl-row__meta--word">Finished</span>
                     {% else %}

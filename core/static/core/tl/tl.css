@@ -1453,3 +1453,14 @@ body.tl {
   .tl-unread { scroll-margin-top: 60px; }
 }
 /* ---- end scene rolls and unread divider ---- */
+/* ---- spend xp ---- */
+/* Spend XP (M8): trait type → trait → preview of the dots (new ones in --acc) and cost. */
+.tl-xpspend { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.tl-xpspend__preview { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.tl-dot.is-new { color: var(--acc); }
+.tl-xpspend__change { font: 400 16px var(--serif); }
+.tl-xpspend__cost { margin-left: auto; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); }
+.tl-xpspend__cost b { font: 400 28px/1 var(--serif); letter-spacing: 0; color: var(--ink); padding-left: 4px; vertical-align: -3px; }
+.tl-xpspend__rule { margin: 0; font: 400 14px/1.5 var(--serif); color: var(--ink2); }
+.tl-xpspend__rule.tl-rubric { color: var(--rubric); }
+/* ---- end spend xp ---- */

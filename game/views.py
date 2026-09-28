@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Q, Sum
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -13,6 +13,7 @@ from django.views import View
 from django.views.generic import (
     CreateView,
     DetailView,
+    FormView,
     ListView,
     TemplateView,
     UpdateView,
@@ -31,7 +32,7 @@ from core.mixins import (
 )
 from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
-from game import scene_chat
+from game import scene_chat, xp_spend
 from game.forms import (
     AddCharForm,
     ChronicleCharacterCreationForm,
@@ -43,12 +44,14 @@ from game.forms import (
     PostForm,
     SceneCreationForm,
     SceneForm,
+    StoryEditForm,
     StoryForm,
     StoryXPRequestForm,
     STResponseForm,
     WeeklyXPRequestForm,
     XPSpendingRequestApprovalForm,
     XPSpendingRequestForm,
+    xp_spend_form_class,
 )
 from game.models import (
     Chronicle,
@@ -219,7 +222,14 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "items": context["items"].count(),
             },
             "live_scenes": context["active_scenes"].select_related("location"),
-            "stories": Story.objects.order_by("xp_given", "name"),
+            "stories": chronicle.stories.order_by("xp_given", "name"),
+            # Stories from before stories had a chronicle: the chronicle's managers
+            # (the audience of "New story") still see them here; staff can assign them.
+            "unassigned_stories": (
+                Story.objects.filter(chronicle__isnull=True).order_by("xp_given", "name")
+                if context["can_manage_chronicle"]
+                else Story.objects.none()
+            ),
             "current_week": current_week(),
             "house_rule_count": HouseRule.objects.filter(chronicle=chronicle).count(),
         }
@@ -380,9 +390,31 @@ class JournalListView(LoginRequiredMixin, ListView):
         return context
 
 
+def readable_chronicle_ids(user, chronicles):
+    """The ids among ``chronicles`` that ``user`` may open (one query)."""
+    ids = {chronicle.pk for chronicle in chronicles if chronicle is not None}
+    if not ids:
+        return set()
+    return set(readable_chronicles(user).filter(pk__in=ids).values_list("pk", flat=True))
+
+
 class StoryDetailView(LoginRequiredMixin, DetailView):
     model = Story
     template_name = "game/story/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("chronicle")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # The chronicle is named only to viewers who can open it.
+        chronicle = self.object.chronicle
+        context["story_chronicle"] = (
+            chronicle
+            if chronicle and readable_chronicle_ids(self.request.user, [chronicle])
+            else None
+        )
+        return context
 
 
 class StoryListView(LoginRequiredMixin, ListView):
@@ -390,27 +422,57 @@ class StoryListView(LoginRequiredMixin, ListView):
     ordering = ["name"]
     template_name = "game/story/list.html"
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("chronicle")
 
-class StoryCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        stories = list(context["object_list"])
+        readable = readable_chronicle_ids(self.request.user, [s.chronicle for s in stories])
+        for story in stories:
+            story.visible_chronicle = story.chronicle if story.chronicle_id in readable else None
+        context["object_list"] = stories
+        return context
+
+
+class StoryStaffRequiredMixin:
+    """Stories are created and edited outside a chronicle page by staff only.
+
+    StorytellerRequiredMixin would read the story's new ``chronicle`` and admit that
+    chronicle's STs; this keeps the rule stories have always had. Chronicle managers
+    create their stories from the chronicle page (game.actions.ChronicleStoryCreateView).
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            raise PermissionDenied("Login required")
+        if not (request.user.is_staff or request.user.is_superuser):
+            raise PermissionDenied("Staff required")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("game:story:detail", kwargs={"pk": self.object.pk})
+
+
+class StoryCreateView(StoryStaffRequiredMixin, MessageMixin, CreateView):
     model = Story
-    fields = ["name"]
+    form_class = StoryEditForm
     template_name = "game/story/form.html"
     success_message = "Story '{name}' created successfully!"
     error_message = "Failed to create story. Please correct the errors below."
 
-    def get_success_url(self):
-        return reverse("game:story:detail", kwargs={"pk": self.object.pk})
 
-
-class StoryUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
+class StoryUpdateView(StoryStaffRequiredMixin, MessageMixin, UpdateView):
     model = Story
-    fields = ["name"]
+    form_class = StoryEditForm
     template_name = "game/story/form.html"
     success_message = "Story '{name}' updated successfully!"
     error_message = "Failed to update story. Please correct the errors below."
-
-    def get_success_url(self):
-        return reverse("game:story:detail", kwargs={"pk": self.object.pk})
 
 
 # Week Views
@@ -777,12 +839,18 @@ class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, CharacterContextMixin
         return context
 
 
-class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageMixin, CreateView):
-    model = XPSpendingRequest
-    form_class = XPSpendingRequestForm
+class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, FormView):
+    """Spend XP (Spread M8): trait type → trait → preview, then the spend request.
+
+    The selects re-ask this URL by GET (htmx, ``xp-spend`` fragment) for the next
+    select's options and the preview; without JavaScript the "Preview" button posts
+    the selection back. A spend goes through the character's XP service, as the sheet's
+    own XP form does: the XP is deducted now and refunded if the Storyteller denies it.
+    """
+
     template_name = "game/xp_spending_request/form.html"
-    success_message = "XP spending request submitted successfully!"
-    error_message = "Failed to submit XP spending request. Please correct the errors below."
+    fragment_template_name = "game/xp_spending_request/_spend_fields.html"
+    SELECTION = ("category", "example", "value", "note")
 
     # URL-based character ownership check
     owner_check_model = CharacterModel
@@ -798,17 +866,75 @@ class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, Messag
             raise PermissionDenied("XP spending is unavailable for this character")
         return super().dispatch(request, *args, **kwargs)
 
+    def get_form_class(self):
+        return xp_spend_form_class(self.character)  # Set by OwnerRequiredMixin
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.character  # Set by OwnerRequiredMixin
+        kwargs.pop("files", None)
+        kwargs["character"] = self.character
+        if self.request.method == "GET" and any(key in self.request.GET for key in self.SELECTION):
+            kwargs["data"] = self.request.GET
         return kwargs
 
-    def get_success_url(self):
-        return reverse("game:xp_spending_request:list")
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.enable_htmx(self.request.path)
+        return form
+
+    def get(self, request, *args, **kwargs):
+        return self.show_preview(self.get_form())
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if request.POST.get("preview"):
+            return self.show_preview(form)
+        if not form.is_valid():
+            return self.form_invalid(form)
+        result = xp_spend.spend(self.character, form.cleaned_data)
+        if not result.success:
+            form.add_error(None, result.error)
+            return self.form_invalid(form)
+        messages.success(
+            request, f"Requested {result.trait} for {result.cost} XP. A Storyteller will review it."
+        )
+        return redirect(request.path)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Failed to submit XP spending request.")
+        return self.render_page(form, preview=None)
+
+    def show_preview(self, form):
+        """The selection's preview; an unfinished selection shows no errors yet."""
+        preview = None
+        if form.is_bound:
+            if form.is_valid():
+                preview = xp_spend.preview(self.character, form.cleaned_data)
+            form.quiet()
+        return self.render_page(form, preview)
+
+    def render_page(self, form, preview):
+        context = self.get_context_data(form=form, preview=preview)
+        if is_fragment_request(self.request):
+            response = self.response_class(
+                request=self.request, template=[self.fragment_template_name], context=context
+            )
+            return vary_on_htmx(mark_fragment(response, "xp-spend"))
+        return vary_on_htmx(self.render_to_response(context))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character"] = self.character  # Set by OwnerRequiredMixin
+        character = self.character
+        totals = character.xp_spendings.aggregate(
+            spent=Sum("cost", filter=Q(approved="Approved")),
+            pending=Sum("cost", filter=Q(approved="Pending")),
+        )
+        context.update(
+            character=character,
+            spent_xp=totals["spent"] or 0,
+            pending_xp=totals["pending"] or 0,
+            component_scripts=("game/js/xp-spend.js",),
+        )
         return context
 
 

@@ -752,20 +752,28 @@ class TestXPSpendingRequestViews(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_view_creates_request(self):
-        """Test that create view creates a new XP spending request."""
+        """The spend page posts a trait type and trait; the XP service prices it."""
+        self.client.login(username="testuser", password="password")
+        initial_count = XPSpendingRequest.objects.count()
+        strength = Attribute.objects.get(name="Strength")
+        response = self.client.post(
+            reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk}),
+            {"category": "Attribute", "example": strength.pk},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(XPSpendingRequest.objects.count(), initial_count + 1)
+
+    def test_create_view_rejects_the_old_free_text_contract(self):
+        """Trait name, type, value and cost are no longer the player's to write."""
         self.client.login(username="testuser", password="password")
         initial_count = XPSpendingRequest.objects.count()
         response = self.client.post(
             reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk}),
-            {
-                "trait_name": "Dexterity",
-                "trait_type": "Attribute",
-                "trait_value": 3,
-                "cost": 12,
-            },
+            {"trait_name": "Dexterity", "trait_type": "Attribute", "trait_value": 3, "cost": 0},
         )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(XPSpendingRequest.objects.count(), initial_count + 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors["category"])
+        self.assertEqual(XPSpendingRequest.objects.count(), initial_count)
 
     def test_update_view_accessible_to_owner(self):
         """Test that update view is accessible to character owner."""

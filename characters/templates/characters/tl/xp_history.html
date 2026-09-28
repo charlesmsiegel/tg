@@ -48,5 +48,11 @@ for Storytellers. Lines with their own XP form include this above the form.
                 <p class="tl-muted">No experience spent yet.</p>
             {% endif %}
         {% endwith %}
+        {% comment %} The Spend XP page (game XPSpendingRequestCreateView) is the owner's, or staff's. {% endcomment %}
+        {% if object_perms.can_spend_xp and object.owner_id == request.user.pk or object_perms.can_spend_xp and request.user.is_staff or object_perms.can_spend_xp and request.user.is_superuser %}
+            <div class="tl-actions">
+                <a class="tl-btn tl-btn--ghost" href="{% url 'game:xp_spending_request:create' object.pk %}">Spend XP →</a>
+            </div>
+        {% endif %}
     </div>
 </section>

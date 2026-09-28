@@ -308,6 +308,15 @@ class STRelationship(ValidatedSaveMixin, models.Model):
 class Story(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     xp_given = models.BooleanField(default=False)
+    # Stories created before they belonged to a chronicle have none; the chronicle
+    # page lists only its own stories and shows the unassigned ones to its managers.
+    chronicle = models.ForeignKey(
+        "game.Chronicle",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="stories",
+    )
 
     def __str__(self):
         return self.name

@@ -1,48 +1,73 @@
 {% comment %}
-Chronicle STORIES tab: every story (current first) and, for chronicle managers, the
-"New story" form behind a ghost button.
+Chronicle STORIES tab: this chronicle's stories (current first) and, for chronicle
+managers, the "New story" form behind a ghost button and the unassigned stories left
+from before stories had a chronicle (staff can assign them from the story's edit form).
 {% endcomment %}
-<section class="tl-section">
-    <div class="tl-section__head">
-        <h2 class="tl-section__title">Stories</h2>
-    </div>
-    <div class="tl-section__body tl-block">
-        {% if stories %}
-            <div>
-                {% for story in stories %}
+<div class="tl-block tl-block--loose">
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Stories</h2>
+        </div>
+        <div class="tl-section__body tl-block">
+            {% if stories %}
+                <div>
+                    {% for story in stories %}
+                        <div class="tl-row">
+                            <a class="tl-row__title" href="{{ story.get_absolute_url }}">{{ story.name }}</a>
+                            {% if story.xp_given %}
+                                <span class="tl-row__meta tl-row__meta--word">Finished</span>
+                            {% else %}
+                                <span class="tl-row__meta tl-row__meta--word is-current">Current</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "core/tl/empty.html" with text="No stories yet." %}
+            {% endif %}
+            {% if can_manage_chronicle %}
+                <details class="tl-reveal" id="new-story"{% if open_form == "story" %} open{% endif %}>
+                    <summary class="tl-btn tl-btn--ghost">+ New story</summary>
+                    <form class="tl-reveal__body tl-block"
+                          method="post"
+                          action="{% url 'game:chronicle_create_story' object.pk %}">
+                        {% csrf_token %}
+                        {% if story_form.non_field_errors %}
+                            <div class="tl-errors" role="alert">
+                                <ul>
+                                    {% for error in story_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        {% include "core/tl/field.html" with field=story_form.name label="Story name" %}
+                        <div class="tl-actions">
+                            <button type="submit" class="tl-btn">Create story</button>
+                        </div>
+                    </form>
+                </details>
+            {% endif %}
+        </div>
+    </section>
+    {% if unassigned_stories %}
+        <section class="tl-section" id="unassigned-stories">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Unassigned stories</h2>
+                <span class="tl-section__aside tl-mono tl-muted">No chronicle yet</span>
+            </div>
+            <div class="tl-section__body tl-section__body--rows">
+                {% for story in unassigned_stories %}
                     <div class="tl-row">
                         <a class="tl-row__title" href="{{ story.get_absolute_url }}">{{ story.name }}</a>
-                        {% if story.xp_given %}
+                        {% if user.is_staff or user.is_superuser %}
+                            <a class="tl-row__meta tl-row__meta--word" href="{% url 'game:story:update' story.pk %}">Assign →</a>
+                        {% elif story.xp_given %}
                             <span class="tl-row__meta tl-row__meta--word">Finished</span>
                         {% else %}
-                            <span class="tl-row__meta tl-row__meta--word is-current">Current</span>
+                            <span class="tl-row__meta tl-row__meta--word">Current</span>
                         {% endif %}
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
-            {% include "core/tl/empty.html" with text="No stories yet." %}
-        {% endif %}
-        {% if can_manage_chronicle %}
-            <details class="tl-reveal" id="new-story"{% if open_form == "story" %} open{% endif %}>
-                <summary class="tl-btn tl-btn--ghost">+ New story</summary>
-                <form class="tl-reveal__body tl-block"
-                      method="post"
-                      action="{% url 'game:chronicle_create_story' object.pk %}">
-                    {% csrf_token %}
-                    {% if story_form.non_field_errors %}
-                        <div class="tl-errors" role="alert">
-                            <ul>
-                                {% for error in story_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                    {% include "core/tl/field.html" with field=story_form.name label="Story name" %}
-                    <div class="tl-actions">
-                        <button type="submit" class="tl-btn">Create story</button>
-                    </div>
-                </form>
-            </details>
-        {% endif %}
-    </div>
-</section>
+        </section>
+    {% endif %}
+</div>

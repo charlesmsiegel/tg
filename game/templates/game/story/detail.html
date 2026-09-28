@@ -1,5 +1,8 @@
 {% extends "game/tl/base.html" %}
-{% comment %}A story: its name and whether its XP has been given.{% endcomment %}
+{% comment %}
+A story: its name, its chronicle (named only to viewers who can open it) and whether
+its XP has been given.
+{% endcomment %}
 {% load tl %}
 {% block title %}{{ object.name }}{% endblock title %}
 {% block cover_label %}{{ object.name }}{% endblock cover_label %}
@@ -13,6 +16,7 @@
 {% endblock cover_title %}
 {% block cover_body %}
     <div class="tl-facts">
+        {% fact "Chronicle" story_chronicle %}
         {% if object.xp_given %}{% fact "Status" "Finished · XP given" %}{% else %}{% fact "Status" "Current" %}{% endif %}
     </div>
 {% endblock cover_body %}
@@ -30,6 +34,16 @@
             <div>
                 <span class="tl-subhead">Name</span>
                 <span>{{ object.name }}</span>
+            </div>
+            <div>
+                <span class="tl-subhead">Chronicle</span>
+                {% if story_chronicle %}
+                    <a href="{{ story_chronicle.get_absolute_url }}">{{ story_chronicle.name }}</a>
+                {% elif object.chronicle_id %}
+                    <span class="tl-muted">Another chronicle</span>
+                {% else %}
+                    <span class="tl-muted">Unassigned</span>
+                {% endif %}
             </div>
             <div>
                 <span class="tl-subhead">Experience</span>
