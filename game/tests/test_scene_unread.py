@@ -119,6 +119,17 @@ class MarkReadTests(ReadMarkerBase):
         self.assertEqual(self.status().last_read_post, live)
         self.assertTrue(self.status().read)
 
+    def test_an_empty_window_leaves_a_first_post_unread(self):
+        # The page showed no posts; the first post landed before mark_read ran (Codex).
+        self.set_status(read=False)
+        self.post(self.st_character, "First")
+        UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, None)
+        self.assertFalse(self.status().read)
+        self.assertIsNone(self.status().last_read_post)
+        Post.objects.all().delete()
+        UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, None)
+        self.assertTrue(self.status().read)
+
     def test_only_updates_existing_rows(self):
         self.post(self.character, "One")
         self.assertEqual(
