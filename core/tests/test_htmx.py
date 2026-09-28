@@ -60,15 +60,19 @@ class HtmxHelperTests(SimpleTestCase):
 class VendoredLibraryTests(SimpleTestCase):
     """The include's SRI hashes, VENDOR.md and the files on disk must agree."""
 
-    def scripts(self):
-        html = render_to_string("core/includes/interactive_scripts.html")
+    def scripts(self, **flags):
+        html = render_to_string("core/includes/interactive_scripts.html", flags or {"ws": True})
         return re.findall(r'src="/static/(vendor/[^"]+)" integrity="([^"]+)"', html)
 
     def test_every_vendored_script_has_matching_sri(self):
         scripts = self.scripts()
         self.assertEqual(
             [path for path, _ in scripts],
-            ["vendor/htmx/2.0.11/htmx.min.js", "vendor/alpinejs-csp/3.17.4/cdn.min.js"],
+            [
+                "vendor/htmx/2.0.11/htmx.min.js",
+                "vendor/htmx-ext-ws/2.0.4/ws.min.js",
+                "vendor/alpinejs-csp/3.17.4/cdn.min.js",
+            ],
         )
         manifest = (VENDOR / "VENDOR.md").read_text()
         for path, integrity in scripts:
@@ -79,6 +83,19 @@ class VendoredLibraryTests(SimpleTestCase):
             # Manifest storage rewrites sourceMappingURL comments, which would
             # change the bytes and break SRI on hashed URLs.
             self.assertNotIn(b"sourceMappingURL", data)
+
+    def test_flags_choose_the_libraries(self):
+        def paths(**flags):
+            return [path for path, _ in self.scripts(**flags)]
+
+        self.assertEqual(
+            paths(chargen=True),
+            ["vendor/htmx/2.0.11/htmx.min.js", "vendor/alpinejs-csp/3.17.4/cdn.min.js"],
+        )
+        self.assertEqual(
+            paths(ws=True, alpine=False),
+            ["vendor/htmx/2.0.11/htmx.min.js", "vendor/htmx-ext-ws/2.0.4/ws.min.js"],
+        )
 
     def test_each_vendored_library_ships_its_license(self):
         for path, _ in self.scripts():

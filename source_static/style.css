@@ -264,8 +264,13 @@ p.post {
     font-weight: 600;
 }
 
-#posts-container:has(.post-item) #no-posts-message {
+#posts-container:has(.post-item) #no-posts-message,
+#add-char-form:not(:has(option:not([value=""]))) {
     display: none;
+}
+
+#post-form[aria-busy="true"] #post-submit-btn {
+    opacity: 0.65;
 }
 
 /* 
