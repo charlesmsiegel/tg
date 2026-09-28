@@ -198,7 +198,9 @@ class PageWindowTests(SceneChatBase):
         response = self.client.get(self.scene.get_absolute_url())
         self.assertNotContains(response, f'id="post-{posts[4].pk}"')
         self.assertContains(response, f'id="post-{posts[5].pk}"')
-        self.assertContains(response, f'href="?before={posts[5].pk}"')
+        self.assertContains(
+            response, f'href="{self.scene.get_absolute_url()}?before={posts[5].pk}"'
+        )
         response = self.client.get(self.scene.get_absolute_url(), {"before": posts[5].pk})
         self.assertContains(response, f'id="post-{posts[0].pk}"')
         self.assertNotContains(response, f'id="post-{posts[5].pk}"')
@@ -329,3 +331,98 @@ class HttpActionBroadcastTests(SceneChatBase):
                 reverse("game:scene_post", kwargs={"pk": self.scene.pk}), {"message": "Hi"}
             )
         self.assertEqual(self.listener.events(), [])
+
+
+class LivePageTests(SceneChatBase):
+    def get(self, who="owner", **params):
+        if self.users.get(who):
+            self.client.force_login(self.users[who])
+        return self.client.get(self.scene.get_absolute_url(), params)
+
+    def test_open_scene_connects_with_the_html_protocol(self):
+        response = self.get()
+        self.assertContains(response, f'ws-connect="/ws/scene/{self.scene.pk}/?v=2"')
+        self.assertContains(response, 'hx-ext="ws"')
+        self.assertContains(response, "ws-send")
+        self.assertNotContains(response, "hx-params")  # breaks ws-send in htmx 2.0.11
+        self.assertContains(response, "game/js/scene-chat")
+        self.assertContains(response, "vendor/htmx-ext-ws/2.0.4/ws.min.js")
+        self.assertNotContains(response, "alpinejs-csp")
+        # Every region the socket replaces is on the page.
+        for region in (
+            "scene-chat-notice",
+            "posts-container",
+            "scene-actions",
+            "post-character-field",
+            "post-message-fields",
+            "add-char-field",
+        ):
+            self.assertContains(response, f'id="{region}"')
+
+    def test_finished_scene_and_history_pages_are_not_live(self):
+        self.post(self.character, "Old")
+        response = self.get(before=10**6)
+        self.assertNotContains(response, "ws-connect")
+        self.scene.finished = True
+        self.scene.save()
+        response = self.get()
+        self.assertNotContains(response, "ws-connect")
+        self.assertNotContains(response, "ws.min.js")
+        self.assertNotContains(response, 'id="post-form"')
+        self.assertContains(response, 'id="scene-actions"')
+
+    def test_anonymous_reader_of_a_public_scene_is_live_without_forms(self):
+        self.scene.visibility = Scene.Visibility.PUBLIC
+        self.scene.save()
+        response = self.get("anonymous")
+        self.assertContains(response, "ws-connect")
+        self.assertNotContains(response, 'id="post-form"')
+
+    def test_single_character_posts_without_a_choice(self):
+        response = self.get()
+        self.assertContains(
+            response,
+            f'<input type="hidden" id="character-select" name="character" '
+            f'value="{self.character.pk}">',
+            html=True,
+        )
+
+
+class EarlierPostsFragmentTests(SceneChatBase):
+    def setUp(self):
+        super().setUp()
+        self.posts = [self.post(self.character, f"Post number {n}") for n in range(105)]
+        self.client.force_login(self.users["owner"])
+
+    def fetch(self, before, **headers):
+        return self.client.get(self.scene.get_absolute_url(), {"before": before}, headers=headers)
+
+    def test_fragment_holds_the_previous_window_only(self):
+        response = self.fetch(self.posts[5].pk, HX_Request="true")
+        self.assertEqual(response["TG-Fragment"], "scene-posts")
+        self.assertIn("HX-Request", response["Vary"])
+        self.assertTemplateUsed(response, "game/scene/_post_window.html")
+        self.assertTemplateNotUsed(response, "game/scene/detail.html")
+        html = response.content.decode()
+        self.assertNotIn("<html", html)
+        for post in self.posts[:5]:
+            self.assertIn(f'id="post-{post.pk}"', html)
+        self.assertNotIn(f'id="post-{self.posts[5].pk}"', html)
+        self.assertNotIn('id="earlier-posts"', html)
+
+    def test_fragment_carries_the_next_link_when_more_remain(self):
+        many = [self.post(self.character, f"More {n}") for n in range(100)]
+        response = self.fetch(many[0].pk, HX_Request="true")
+        self.assertContains(response, 'id="earlier-posts"')
+        self.assertContains(response, 'hx-swap="outerHTML"')
+
+    def test_history_restore_gets_a_full_page(self):
+        response = self.fetch(
+            self.posts[5].pk, HX_Request="true", HX_History_Restore_Request="true"
+        )
+        self.assertTemplateUsed(response, "game/scene/detail.html")
+        self.assertNotIn("TG-Fragment", response)
+
+    def test_hidden_scene_fragment_is_404(self):
+        self.client.force_login(self.users["other_chronicle_st"])
+        self.assertEqual(self.fetch(self.posts[5].pk, HX_Request="true").status_code, 404)

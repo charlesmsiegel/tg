@@ -154,8 +154,9 @@ class ManifestCollectionTests(SimpleTestCase):
 
 
 class InlineScriptInventoryTests(SimpleTestCase):
-    def test_no_executable_inline_scripts_outside_scene_chat(self):
-        allowlist = {"game/templates/game/scene/detail.html"}
+    def test_no_executable_inline_scripts(self):
+        # Scene chat was the last exception; Step 11 moved it to scene-chat.js.
+        allowlist = set()
         found = set()
         for app in ("accounts", "characters", "core", "game", "items", "locations", "widgets"):
             for path in (Path(settings.BASE_DIR) / app / "templates").rglob("*.html"):

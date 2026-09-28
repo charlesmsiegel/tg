@@ -16,6 +16,7 @@ from django.views.generic import (
 )
 
 from characters.models.core import CharacterModel
+from core.htmx import is_fragment_request, mark_fragment, vary_on_htmx
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
@@ -119,13 +120,29 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
 
 class SceneDetailView(DetailView):
-    """View for displaying scene details. Requires authentication."""
+    """A scene's posts and, for an open scene, the live chat (Step 11).
+
+    ``?before=<post id>`` shows the window of posts before that one: as a full
+    page without JavaScript, and as the ``scene-posts`` fragment for htmx's
+    "Show earlier posts".
+    """
 
     model = Scene
     template_name = "game/scene/detail.html"
+    fragment_template_name = "game/scene/_post_window.html"
 
     def get_queryset(self):
         return super().get_queryset().select_related("location", "chronicle")
+
+    def is_posts_fragment(self):
+        return is_fragment_request(self.request) and self.post_cursor() is not None
+
+    def render_to_response(self, context, **response_kwargs):
+        response = vary_on_htmx(super().render_to_response(context, **response_kwargs))
+        if self.is_posts_fragment():
+            response.template_name = self.fragment_template_name  # rendered lazily
+            mark_fragment(response, "scene-posts")
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -137,19 +154,17 @@ class SceneDetailView(DetailView):
         context["earlier_cursor"] = context["posts"][0].pk if has_earlier else None
         context["showing_earlier"] = before is not None
         context["viewer_id"] = user.pk if user.is_authenticated else None
+        if self.is_posts_fragment():
+            return context
 
-        if user.is_authenticated:
-            add_char_form = AddCharForm(user=user, scene=scene)
-            context.update(
-                {
-                    "add_char_form": add_char_form,
-                    "num_chars": add_char_form.fields["character_to_add"].queryset.count(),
-                    "num_logged_in_chars": scene.characters.owned_by(user).count(),
-                    "first_char": scene.characters.owned_by(user).first(),
-                    "post_form": PostForm(user=user, scene=scene),
-                }
+        # An older window is history: it has no live updates to append to it.
+        context["live"] = not scene.finished and before is None
+        context["component_scripts"] = ("game/js/scene-chat.js",)
+        if user.is_authenticated and not scene.finished:
+            context["post_characters"] = list(PostForm(user=user, scene=scene).character_queryset)
+            context["add_characters"] = list(
+                AddCharForm(user=user, scene=scene).fields["character_to_add"].queryset
             )
-
         return context
 
     def post_cursor(self):

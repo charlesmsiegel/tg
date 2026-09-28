@@ -2,8 +2,10 @@
 {% comment %} htmx + Alpine (CSP build) for interactive pages. Versions, sources and
    SRI hashes are recorded in source_static/vendor/VENDOR.md and checked by
    core.tests.test_htmx. Page components must load before Alpine (all are defer,
-   so they execute in document order). {% endcomment %}
+   so they execute in document order). Flags: ws=True adds the WebSocket
+   extension after htmx; alpine=False leaves Alpine out. {% endcomment %}
 <meta name="htmx-config" content='{"allowEval": false, "includeIndicatorStyles": false, "selfRequestsOnly": true, "historyCacheSize": 0}'>
 <script defer src="{% static 'vendor/htmx/2.0.11/htmx.min.js' %}" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
-{% for script in component_scripts %}<script defer src="{% static script %}"></script>
-{% endfor %}<script defer src="{% static 'vendor/alpinejs-csp/3.17.4/cdn.min.js' %}" integrity="sha384-DQd2BgbtOQrdt/JbxcM+wSb8poOHwsG5W2jbbXskj85r7SWPwqpBFgGGR1devM/D" crossorigin="anonymous"></script>
+{% if ws %}<script defer src="{% static 'vendor/htmx-ext-ws/2.0.4/ws.min.js' %}" integrity="sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G" crossorigin="anonymous"></script>
+{% endif %}{% for script in component_scripts %}<script defer src="{% static script %}"></script>
+{% endfor %}{% if alpine is not False %}<script defer src="{% static 'vendor/alpinejs-csp/3.17.4/cdn.min.js' %}" integrity="sha384-DQd2BgbtOQrdt/JbxcM+wSb8poOHwsG5W2jbbXskj85r7SWPwqpBFgGGR1devM/D" crossorigin="anonymous"></script>{% endif %}
