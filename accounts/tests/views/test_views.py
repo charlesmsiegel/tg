@@ -90,6 +90,16 @@ class TestProfileView(TestCase):
         self.assertContains(response, "Test Character 2")
         self.assertContains(response, "Characters to approve")
 
+    def test_staff_viewing_a_storytellers_profile_sees_no_st_queues(self):
+        User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
+        self.client.login(username="Staff", password="testpass")
+        response = self.client.get(self.storyteller.profile.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["st_queues"])
+        self.assertEqual(response.context["freebie_forms"], [])
+        self.assertEqual(response.context["weekly_xp_request_forms_to_approve"], [])
+        self.assertNotContains(response, "Characters to approve")
+
     def test_storyteller_queues_cost_the_same_with_more_rows(self):
         """The NEEDS YOU queues load per queue, not per row."""
         from django.db import connection
