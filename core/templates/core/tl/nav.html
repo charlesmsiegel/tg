@@ -1,0 +1,95 @@
+{% comment %}
+Global nav. Mark the current section with nav_active:
+  {% block nav %}{% include "core/tl/nav.html" with nav_active="characters" %}{% endblock %}
+Values: chronicles, characters, locations, items, houserules, profile.
+Desktop shows the links inline; at ≤ 720px they collapse into the MENU sheet.
+{% endcomment %}
+<nav class="tl-nav" aria-label="Main">
+    <div class="tl-nav__links">
+        <details class="tl-pop"{% if nav_active == 'chronicles' %} data-current{% endif %}>
+            <summary>Chronicles</summary>
+            <div class="tl-pop__panel">
+                {% for entry in navigation_chronicles %}
+                    <a href="{{ entry.chronicle.get_absolute_url }}">{{ entry.chronicle }}</a>
+                    {% for scene in entry.scenes %}
+                        <a class="tl-pop__sub" href="{{ scene.get_absolute_url }}">{{ scene }}</a>
+                    {% endfor %}
+                {% empty %}
+                    <p class="tl-pop__head">No chronicles yet</p>
+                {% endfor %}
+                <hr>
+                <a href="{% url 'game:chronicles' %}">All chronicles →</a>
+            </div>
+        </details>
+        <a href="{% url 'characters:index' %}"{% if nav_active == 'characters' %} aria-current="page"{% endif %}>Characters</a>
+        <a href="{% url 'locations:index' %}"{% if nav_active == 'locations' %} aria-current="page"{% endif %}>Locations</a>
+        <a href="{% url 'items:index' %}"{% if nav_active == 'items' %} aria-current="page"{% endif %}>Items</a>
+        <a href="{% url 'core:houserules' %}"{% if nav_active == 'houserules' %} aria-current="page"{% endif %}>House Rules</a>
+    </div>
+    <div class="tl-nav__end">
+        {% if user.is_authenticated %}
+            <details class="tl-pop"{% if nav_active == 'profile' %} data-current{% endif %}>
+                <summary aria-label="{{ user.username }}{% if notification_count %}, {{ notification_count }} notification{{ notification_count|pluralize }}{% endif %}">
+                    {{ user.username }}{% if notification_count %}&nbsp;<span class="tl-nav__count">{{ notification_count }}</span>{% endif %}
+                </summary>
+                <div class="tl-pop__panel tl-pop__panel--end">
+                    {% if notification_count %}
+                        <p class="tl-pop__head">Needs you · {{ notification_count }}</p>
+                        {% for category, count in notification_breakdown.items %}
+                            <div class="tl-pop__row">
+                                <span>{{ category }}</span><b>{{ count }}</b>
+                            </div>
+                        {% endfor %}
+                        <hr>
+                    {% endif %}
+                    <a href="{{ user.profile.get_absolute_url }}">My profile</a>
+                    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+                    <hr>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="tl-pop__item" type="submit">Log out</button>
+                    </form>
+                </div>
+            </details>
+        {% else %}
+            <a href="{% url 'login' %}">Log in</a>
+            <a href="{% url 'accounts:signup' %}">Sign up</a>
+        {% endif %}
+    </div>
+    <details class="tl-menu tl-nav__menu">
+        <summary>Menu{% if notification_count %}&nbsp;<span class="tl-nav__count">{{ notification_count }}</span>{% endif %}</summary>
+        <div class="tl-menu__sheet" role="dialog" aria-label="Menu">
+            <div class="tl-menu__top">
+                <a class="tl-wordmark" href="{% url 'core:home' %}">Tellurium<span>·</span>Games</a>
+                <button class="tl-menu__close" type="button" data-tl-close>Close ×</button>
+            </div>
+            <a class="tl-menu__item" href="{% url 'game:chronicles' %}">Chronicles</a>
+            <a class="tl-menu__item" href="{% url 'characters:index' %}">Characters</a>
+            <a class="tl-menu__item" href="{% url 'locations:index' %}">Locations</a>
+            <a class="tl-menu__item" href="{% url 'items:index' %}">Items</a>
+            <a class="tl-menu__item" href="{% url 'core:houserules' %}">House Rules</a>
+            {% for entry in navigation_chronicles %}
+                {% if entry.scenes %}
+                    <p class="tl-menu__label">Live in {{ entry.chronicle }}</p>
+                    {% for scene in entry.scenes %}
+                        <a class="tl-menu__sub" href="{{ scene.get_absolute_url }}">{{ scene }}</a>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            {% if user.is_authenticated %}
+                <p class="tl-menu__label">
+                    {{ user.username }}{% if notification_count %} · {{ notification_count }} waiting{% endif %}
+                </p>
+                <a class="tl-menu__item" href="{{ user.profile.get_absolute_url }}">My profile</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="tl-btn tl-btn--ghost tl-btn--block" type="submit">Log out</button>
+                </form>
+            {% else %}
+                <p class="tl-menu__label">Account</p>
+                <a class="tl-menu__item" href="{% url 'login' %}">Log in</a>
+                <a class="tl-menu__item" href="{% url 'accounts:signup' %}">Sign up</a>
+            {% endif %}
+        </div>
+    </details>
+</nav>

@@ -1,0 +1,24 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Login shell (C8): wide ink cover with the wordmark title at the bottom, one centered
+420px column on the pages side. Used by login, sign up, password reset and logged out.
+Children fill auth_title, auth_note and auth_body.
+{% endcomment %}
+{% block spread_mod %}tl-spread--wide{% endblock spread_mod %}
+{% block cover_mod %}tl-cover--low{% endblock cover_mod %}
+{% block cover_label %}Tellurium Games{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">World of Darkness · Chronicle tools</span>
+    <p class="tl-cover__name tl-cover__name--hero" data-fit-title>Tellurium<br>Games</p>
+{% endblock cover_title %}
+{% block nav %}{% endblock nav %}
+{% block content_mod %}tl-content--center{% endblock content_mod %}
+{% block content %}
+    <div class="tl-auth">
+        <div class="tl-auth__head">
+            <h1 class="tl-h1">{% block auth_title %}{% endblock auth_title %}</h1>
+            {% block auth_note %}{% endblock auth_note %}
+        </div>
+        {% block auth_body %}{% endblock auth_body %}
+    </div>
+{% endblock content %}

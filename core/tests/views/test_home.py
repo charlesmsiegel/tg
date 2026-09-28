@@ -7,6 +7,7 @@ from unittest.mock import Mock
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.test import LiveServerTestCase, TestCase
 from django.utils.timezone import now
@@ -58,6 +59,10 @@ class FunctionalTest(LiveServerTestCase):
 class TestHomeListView(TestCase):
     """Manages Tests for the HomeListView and Template"""
 
+    def setUp(self):
+        # The home page is cached; start each test from a fresh render.
+        cache.clear()
+
     def test_home_status_code(self):
         """Tests that the page exists"""
         response = self.client.get("/")
@@ -68,7 +73,8 @@ class TestHomeListView(TestCase):
         response = self.client.get("/")
         # Check for key content elements instead of template name
         self.assertContains(response, "Tellurium Games")
-        self.assertContains(response, "Welcome")
+        self.assertContains(response, "World of Darkness games")
+        self.assertTemplateUsed(response, "core/tl_base.html")
 
     def test_includes_patreon(self):
         """Tests site contains link to Patreon"""
@@ -91,10 +97,13 @@ class TestHomeListView(TestCase):
     def test_content_anonymous_user(self):
         """Tests what anonymous users see on front page."""
         response = self.client.get("/")
-        self.assertContains(response, "Tellurium Games")
-        self.assertContains(response, "navbar")
+        self.assertContains(response, "Tellurium")
+        self.assertContains(response, 'aria-label="Main"')
         # Anonymous users should see login options in the nav
-        self.assertContains(response, "Account")
+        self.assertContains(response, "Log in")
+        self.assertContains(response, "Sign up")
+        # ...and a prompt instead of scene tiles
+        self.assertContains(response, "Log in to see your scenes.")
 
 
 class NewUserTest(FunctionalTest):
@@ -102,17 +111,12 @@ class NewUserTest(FunctionalTest):
 
     def test_homepage_has_login(self):
         self.browser.get(self.live_server_url)
-        # Click the Account dropdown to expand it
-        account_dropdown = self.browser.find_element("id", "userDropdown")
-        account_dropdown.click()
-        # Wait briefly for dropdown to expand
-        time.sleep(0.2)
-        # Now get links
+        # Log in and Sign up sit directly in the nav for anonymous users
         links = self.browser.find_elements("tag name", "a")
         links = [(self.clean_url(link.get_attribute("href")), link.text.strip()) for link in links]
 
-        self.assertIn(("accounts/login/", "Log In"), links)
-        self.assertIn(("accounts/signup/", "Sign Up"), links)
+        self.assertIn(("accounts/login/", "Log in"), links)
+        self.assertIn(("accounts/signup/", "Sign up"), links)
 
     def credential_creation_fail(self):
         self.browser.get(self.live_server_url + "/accounts/signup/")

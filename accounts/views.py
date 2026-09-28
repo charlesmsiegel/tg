@@ -38,6 +38,9 @@ class SignUp(MessageMixin, CreateView):
 
 
 class CustomPasswordResetView(PasswordResetView):
+    # Not "registration/...": django.contrib.admin ships templates with those
+    # names and sits earlier in INSTALLED_APPS, so they would win.
+    template_name = "accounts/auth/password_reset_form.html"
     email_template_name = "accounts/registration/password_reset_email.txt"
     html_email_template_name = "accounts/registration/password_reset_email.html"
 

@@ -24,6 +24,7 @@ Django patterns and conventions for the World of Darkness application.
 | Creating/editing views | [references/views.md](references/views.md) |
 | Creating/editing forms | [references/forms.md](references/forms.md) |
 | Creating/editing templates | [references/templates.md](references/templates.md) |
+| Spread redesign (new base template) | [references/spread.md](references/spread.md) |
 | Setting up URLs | [references/urls.md](references/urls.md) |
 | Permission checks | [references/permissions.md](references/permissions.md) |
 | Data validation, transactions | [references/validation.md](references/validation.md) |
@@ -67,7 +68,10 @@ class MyCreateView(LoginRequiredMixin, MessageMixin, CreateView): pass
 ```
 
 ### Template Classes
-Use `tg-card`, `tg-table`, `tg-badge`, `tg-btn` (not Bootstrap defaults).
+Pages migrated to the **Spread** design extend `core/tl_base.html` and use `tl-*` classes
+and `{% load tl %}` tags; see [references/spread.md](references/spread.md). Migrate a page
+there when you rework it. Pages still on `core/base.html` use `tg-card`, `tg-table`,
+`tg-badge`, `tg-btn` (not Bootstrap defaults).
 
 ### Gameline Headings
 | Gameline | Class | Data Attr |

@@ -1,0 +1,45 @@
+{% comment %}
+Cover footer for the character index: "Begin a new character" with the chained
+Game line / Type selects, and the group form behind "or form a group".
+  {% include "characters/tl/create_forms.html" with character_form=form group_form=group_form %}
+{% endcomment %}
+{% if character_form %}
+    <form id="charForm"
+          class="tl-block tl-block--tight"
+          method="get"
+          action="{% url 'core:object_type_redirect' 'character' 'create' %}"
+          novalidate>
+        <span class="tl-field__label">Begin a new character</span>
+        <div class="tl-fieldrow">
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ character_form.gameline.id_for_label }}">Game line</label>
+                {{ character_form.gameline }}
+            </div>
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ character_form.char_type.id_for_label }}">Character type</label>
+                {{ character_form.char_type }}
+            </div>
+        </div>
+        <button type="submit" class="tl-btn tl-btn--block">Create character</button>
+    </form>
+{% endif %}
+{% if group_form %}
+    <details class="tl-block tl-block--tight" data-tl-remember="index-group-form">
+        <summary class="tl-btn tl-btn--quiet">Or form a group →</summary>
+        <form id="groupForm"
+              class="tl-block tl-block--tight"
+              method="get"
+              action="{% url 'core:object_type_redirect' 'group' 'create' %}"
+              novalidate>
+            <div class="tl-field tl-field--select">
+                <label class="tl-field__label" for="id_group_type">Group type</label>
+                <select name="group_type" id="id_group_type" required>
+                    {% for value, label in group_form.group_type.field.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="tl-btn tl-btn--ghost tl-btn--block">Create group</button>
+        </form>
+    </details>
+{% endif %}

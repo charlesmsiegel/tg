@@ -1,0 +1,25 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+One shell for 401/403/404/500 (M11): the code large on the ink cover, a headline,
+one sentence and two actions on the pages. Children fill the error_* blocks.
+{% endcomment %}
+{% block spread_mod %}tl-spread--wide{% endblock spread_mod %}
+{% block cover_mod %}tl-cover--low{% endblock cover_mod %}
+{% block cover_label %}Error{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__code-tag">Error</span>
+    <p class="tl-cover__code">{% block error_code %}{% endblock error_code %}</p>
+{% endblock cover_title %}
+{% block content_mod %}tl-content--center{% endblock content_mod %}
+{% block content %}
+    <div class="tl-errorpage">
+        <h1 class="tl-h1">{% block error_headline %}{% endblock error_headline %}</h1>
+        <p class="tl-errorpage__text">{% block error_text %}{% endblock error_text %}</p>
+        <div class="tl-actions">
+            {% block error_actions %}
+                <a class="tl-btn" href="{% url 'core:home' %}">Go home</a>
+                <a class="tl-btn tl-btn--ghost" href="https://github.com/charlesmsiegel/tg/issues">Report a broken link</a>
+            {% endblock error_actions %}
+        </div>
+    </div>
+{% endblock content %}

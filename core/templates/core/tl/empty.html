@@ -1,0 +1,8 @@
+{% comment %}
+Empty state: italic sentence, one quiet action link. No icons.
+  {% include "core/tl/empty.html" with text="No characters yet." action_url=url action_label="Create one" %}
+{% endcomment %}
+<div class="tl-empty">
+    <p>{{ text }}</p>
+    {% if action_url %}<a href="{{ action_url }}">{{ action_label }} →</a>{% endif %}
+</div>

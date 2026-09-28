@@ -1,0 +1,13 @@
+{% load tl %}
+{% comment %}Character tile (C2): type + status, name in the character's display font, concept, player.{% endcomment %}
+<article class="tl-tile" data-gameline="{{ char|gameline_code }}">
+    <span class="tl-tile__meta">
+        <span>{{ char.get_type }}</span>
+        <span class="{% if char.status == 'Dec' %}tl-status--dec{% endif %}">{{ char.get_status_display }}</span>
+    </span>
+    <h3 class="tl-tile__name">
+        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+    </h3>
+    {% if char.concept %}<span class="tl-tile__sub">{{ char.concept }}</span>{% endif %}
+    <span class="tl-tile__who">{{ char.owner.username|default:"—" }}</span>
+</article>

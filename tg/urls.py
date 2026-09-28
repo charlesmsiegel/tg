@@ -18,6 +18,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 urlpatterns = [
@@ -31,6 +32,29 @@ urlpatterns = [
     path("items/", include(("items.urls", "items"), namespace="items")),
     path("game/", include(("game.urls", "game"), namespace="game")),
     path("accounts/", include(("accounts.urls", "accounts"), namespace="accounts")),
+    # Same paths and names as django.contrib.auth.urls, pointed at the site's own
+    # templates: the default "registration/..." names resolve to django.contrib.admin's.
+    path(
+        "accounts/password_reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="accounts/auth/password_reset_done.html"
+        ),
+        name="password_reset_done",
+    ),
+    path(
+        "accounts/reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="accounts/auth/password_reset_confirm.html"
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "accounts/reset/done/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="accounts/auth/password_reset_complete.html"
+        ),
+        name="password_reset_complete",
+    ),
     path("accounts/", include("django.contrib.auth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

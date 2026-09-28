@@ -423,7 +423,51 @@ class CharacterIndexView(ListView):
                 chron_dict[chron]["active"].append(char)
 
         context["chron_dict"] = chron_dict
+        context.update(self.index_selection(chron_dict))
         return context
+
+    STATUS_TABS = (
+        ("active", "Active"),
+        ("retired", "Retired"),
+        ("deceased", "Deceased"),
+        ("npc", "NPC"),
+    )
+
+    def index_selection(self, chron_dict):
+        """Chronicle and status picked by ``?chronicle=<pk|none>&status=<key>``.
+
+        These replace the old client-side tabs, so every view is a bookmarkable URL.
+        Without a choice, the first chronicle that has characters is shown.
+        """
+        params = self.request.GET
+        keys = {str(chron.pk) if chron else "none": chron for chron in chron_dict}
+        requested = params.get("chronicle")
+        if requested in keys:
+            selected = keys[requested]
+        else:
+            selected = next(
+                (chron for chron, lists in chron_dict.items() if any(lists.values())),
+                next(iter(chron_dict)),
+            )
+        status = params.get("status")
+        if status not in dict(self.STATUS_TABS):
+            status = "active"
+        chron_key = str(selected.pk) if selected else "none"
+        lists = chron_dict[selected]
+        return {
+            "selected_chronicle": selected,
+            "selected_status": status,
+            "selected_characters": lists[status],
+            "chronicle_switch": [
+                {"chronicle": chron, "key": str(chron.pk) if chron else "none"}
+                for chron in chron_dict
+                if chron != selected
+            ],
+            "status_tabs": [
+                {"key": key, "label": label, "count": len(lists[key]), "chronicle_key": chron_key}
+                for key, label in self.STATUS_TABS
+            ],
+        }
 
 
 class RetiredCharacterIndex(ListView):
