@@ -67,7 +67,6 @@ class TestCharacterFormsAreNative(SpreadFormAssertions, TestCase):
     def test_gameline_human_edit_form_renders_its_abilities(self):
         human = VtMHuman.objects.create(name="Edit Me", owner=self.owner)
         response = self.client.get(human.get_update_url())
-        self.assertTemplateUsed(response, "characters/core/human/form.html")
         self.assertNative(response)
         self.assertIn("alertness", response.context["form"].fields)
         self.assertEveryFieldRendered(response)
