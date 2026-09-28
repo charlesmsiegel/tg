@@ -1,248 +1,133 @@
 {% load static %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#xpSection"
-        aria-expanded="true"
-        aria-controls="xpSection">Experience</h2>
-</div>
-<div id="xpSection" class="collapse show multi-collapse">
-    <div class="row">
-        <div class="col-sm">XP Remaining</div>
-        <div class="col-sm">{{ object.xp }}</div>
+{% comment %}
+Mage Experience tab: history, then the spend form. mage-xp.js / mage-xp-rote.js toggle the
+*_wrap, "rote selection/creation" and "effect selection/creation" ids with d-none; keep them.
+{% endcomment %}
+{% include "characters/tl/xp_history.html" %}
+<section class="tl-section" id="spend-xp">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Spend experience</h2>
     </div>
-    <div class="row">
-        <div class="col-sm">Spend Freebie points. The costs are as follows:</div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">
-            <b>Trait</b>
-        </div>
-        <div class="col-sm-3 border">
-            <b>Cost</b>
-        </div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Attribute</div>
-        <div class="col-sm-3 border">4 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">New Ability</div>
-        <div class="col-sm-3 border">3</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Ability</div>
-        <div class="col-sm-3 border">2 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Background (new)</div>
-        <div class="col-sm-3 border">5</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Background (existing)</div>
-        <div class="col-sm-3 border">3 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Willpower</div>
-        <div class="col-sm-3 border">Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Merits</div>
-        <div class="col-sm-3 border">3 x (New Rating - Current Rating)</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">New Sphere</div>
-        <div class="col-sm-3 border">10</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Affinity Sphere</div>
-        <div class="col-sm-3 border">7 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Sphere</div>
-        <div class="col-sm-3 border">8 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Three Rote Points</div>
-        <div class="col-sm-3 border">1</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">New Resonance</div>
-        <div class="col-sm-3 border">5</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Resonance</div>
-        <div class="col-sm-3 border">3 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Tenet</div>
-        <div class="col-sm-3 border">0</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Remove Tenet</div>
-        <div class="col-sm-3 border">Number of Tenets</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">New Practice</div>
-        <div class="col-sm-3 border">3</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Practice</div>
-        <div class="col-sm-3 border">Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Arete</div>
-        <div class="col-sm-3 border">8 x Current Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    {% for request in object.get_xp_spending_history %}
-        <div class="row">
-            <div class="col-sm">
-                {{ request.trait_name }}
-                {% if request.trait_value %}({{ request.trait_value }}){% endif %}
-            </div>
-            <div class="col-sm">{{ request.cost }} XP</div>
-            <div class="col-sm">{{ request.approved }}</div>
-            {% if object_perms.can_approve_spending %}
-                {% if request.approved == "Pending" %}
-                    <div class="col-sm d-flex">
-                        <form method="post" action="{% url 'characters:xp_request_approve' object.pk request.pk %}" class="mr-1">
-                            {% csrf_token %}
-                            <input type="submit" value="Approve" />
-                        </form>
-                        <form method="post" action="{% url 'characters:xp_request_reject' object.pk request.pk %}">
-                            {% csrf_token %}
-                            <input type="submit" value="Reject" />
-                        </form>
-                    </div>
-                {% else %}
-                    <div class="col-sm"></div>
-                {% endif %}
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <form action="{% url 'characters:mage:spend_xp' object.pk %}"
+              enctype="multipart/form-data"
+              method="post"
+              class="tl-form">
+            {% csrf_token %}
+            {% if form.non_field_errors or rote_form.non_field_errors %}
+                <div class="tl-errors" role="alert">
+                    <ul>
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                        {% for error in rote_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                </div>
             {% endif %}
-        </div>
-    {% endfor %}
-    <form action="{% url 'characters:mage:spend_xp' object.pk %}" enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm">{{ form.category }}</div>
-            <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
-            <div class="col-sm d-none" id="resonance_wrap">{{ form.resonance }}</div>
-            <div class="col-sm d-none" id="value_wrap">{{ form.value }}</div>
-            <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
-            <div class="col-sm d-none" id="pooled_wrap">Pooled? {{ form.pooled }}</div>
-            <div class="col-sm d-none" id="image_field_wrap">{{ form.image_field }}</div>
-        </div>
-        <div class="d-none" id="rote_wrap">
-            <div class="row">
-                <div class="col-sm">Create New Rote: {{ rote_form.select_or_create_rote }}</div>
-            </div>
-            <div id="rote selection">
-                <div class="row">
-                    <div class="col-sm">{{ rote_form.rote_options }}</div>
+            <div class="tl-formgrid">
+                <div class="tl-field tl-field--select">
+                    <label class="tl-field__label" for="{{ form.category.id_for_label }}">Trait type</label>
+                    {{ form.category }}
+                </div>
+                <div class="tl-field tl-field--select d-none" id="example_wrap">
+                    <label class="tl-field__label" for="{{ form.example.id_for_label }}">Trait</label>
+                    {{ form.example }}
+                </div>
+                <div class="tl-field tl-field--select d-none" id="resonance_wrap">
+                    <label class="tl-field__label" for="{{ form.resonance.id_for_label }}">Resonance</label>
+                    {{ form.resonance }}
+                </div>
+                <div class="tl-field d-none" id="value_wrap">
+                    <label class="tl-field__label" for="{{ form.value.id_for_label }}">Rating</label>
+                    {{ form.value }}
+                </div>
+                <div class="tl-field d-none" id="note_wrap">
+                    <label class="tl-field__label" for="{{ form.note.id_for_label }}">Note</label>
+                    {{ form.note }}
+                </div>
+                <label class="tl-check d-none" id="pooled_wrap">{{ form.pooled }} Pooled with the group</label>
+                <div class="tl-field d-none" id="image_field_wrap">
+                    <label class="tl-field__label" for="{{ form.image_field.id_for_label }}">Image</label>
+                    {{ form.image_field }}
                 </div>
             </div>
-            <div id="rote creation" class="d-none">
-                <div class="row">
-                    <div class="col-sm">Name</div>
-                    <div class="col-sm">{{ rote_form.name }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Practice</div>
-                    <div class="col-sm">{{ rote_form.practice }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Dicepool</div>
-                    <div class="col-sm">{{ rote_form.attribute }} + {{ rote_form.ability }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Description</div>
-                    <div class="col-sm">{{ rote_form.description }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Create New Effect: {{ rote_form.select_or_create_effect }}</div>
-                </div>
-                <div id="effect selection">
-                    <div class="row">
-                        <div class="col-sm">{{ rote_form.effect_options }}</div>
+            <div class="tl-stack tl-stack--lg d-none" id="rote_wrap">
+                <label class="tl-check">{{ rote_form.select_or_create_rote }} Create a new rote</label>
+                <div id="rote selection" class="tl-formgrid">
+                    <div class="tl-field tl-field--select">
+                        <label class="tl-field__label" for="{{ rote_form.rote_options.id_for_label }}">Rote</label>
+                        {{ rote_form.rote_options }}
                     </div>
                 </div>
-                <div id="effect creation" class="d-none">
-                    <div class="row">
-                        <div class="col-sm-2">Correspondence</div>
-                        <div class="col-sm-2 dots">{{ rote_form.correspondence }}</div>
-                        <div class="col-sm-2">Life</div>
-                        <div class="col-sm-2 dots">{{ rote_form.life }}</div>
-                        <div class="col-sm-2">Prime</div>
-                        <div class="col-sm-2 dots">{{ rote_form.prime }}</div>
+                <div id="rote creation" class="tl-stack tl-stack--lg d-none">
+                    <div class="tl-formgrid">
+                        {% include "core/tl/field.html" with field=rote_form.name label="Name" %}
+                        {% include "core/tl/field.html" with field=rote_form.practice label="Practice" %}
+                        <div class="tl-field">
+                            <span class="tl-field__label">Dice pool</span>
+                            <div class="tl-fieldrow">{{ rote_form.attribute }} {{ rote_form.ability }}</div>
+                        </div>
+                        <div class="tl-field tl-field--full">
+                            <label class="tl-field__label" for="{{ rote_form.description.id_for_label }}">Description</label>
+                            {{ rote_form.description }}
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-2">Entropy</div>
-                        <div class="col-sm-2 dots">{{ rote_form.entropy }}</div>
-                        <div class="col-sm-2">Matter</div>
-                        <div class="col-sm-2 dots">{{ rote_form.matter }}</div>
-                        <div class="col-sm-2">Spirit</div>
-                        <div class="col-sm-2 dots">{{ rote_form.spirit }}</div>
+                    <label class="tl-check">{{ rote_form.select_or_create_effect }} Create a new effect</label>
+                    <div id="effect selection" class="tl-formgrid">
+                        <div class="tl-field tl-field--select">
+                            <label class="tl-field__label" for="{{ rote_form.effect_options.id_for_label }}">Effect</label>
+                            {{ rote_form.effect_options }}
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-2">Forces</div>
-                        <div class="col-sm-2 dots">{{ rote_form.forces }}</div>
-                        <div class="col-sm-2">Mind</div>
-                        <div class="col-sm-2 dots">{{ rote_form.mind }}</div>
-                        <div class="col-sm-2">Time</div>
-                        <div class="col-sm-2 dots">{{ rote_form.time }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm">Systems</div>
-                        <div class="col-sm">{{ rote_form.systems }}</div>
+                    <div id="effect creation" class="tl-stack tl-stack--lg d-none">
+                        <div class="tl-formgrid">
+                            {% include "core/tl/field.html" with field=rote_form.correspondence label="Correspondence" %}
+                            {% include "core/tl/field.html" with field=rote_form.life label="Life" %}
+                            {% include "core/tl/field.html" with field=rote_form.prime label="Prime" %}
+                            {% include "core/tl/field.html" with field=rote_form.entropy label="Entropy" %}
+                            {% include "core/tl/field.html" with field=rote_form.matter label="Matter" %}
+                            {% include "core/tl/field.html" with field=rote_form.spirit label="Spirit" %}
+                            {% include "core/tl/field.html" with field=rote_form.forces label="Forces" %}
+                            {% include "core/tl/field.html" with field=rote_form.mind label="Mind" %}
+                            {% include "core/tl/field.html" with field=rote_form.time label="Time" %}
+                        </div>
+                        <div class="tl-field">
+                            <label class="tl-field__label" for="{{ rote_form.systems.id_for_label }}">Systems</label>
+                            {{ rote_form.systems }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <input type="submit" value="Spend XP/Rote Points" />
+            <div class="tl-actions">
+                <button type="submit" class="tl-btn">Request spend</button>
+                <span class="tl-muted">{{ object.xp }} XP · {{ object.rote_points }} rote points available</span>
             </div>
-        </div>
-        {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
-        {% for error in rote_form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
-    </form>
-</div>
+        </form>
+        <details data-tl-remember="mage-xp-costs">
+            <summary class="tl-btn tl-btn--quiet">XP costs</summary>
+            <table class="tl-table tl-table--compact">
+                <tbody>
+                    <tr><td>Attribute</td><td class="tl-num">4 × current</td></tr>
+                    <tr><td>New Ability</td><td class="tl-num">3</td></tr>
+                    <tr><td>Ability</td><td class="tl-num">2 × current</td></tr>
+                    <tr><td>New Background</td><td class="tl-num">5</td></tr>
+                    <tr><td>Background</td><td class="tl-num">3 × current</td></tr>
+                    <tr><td>Willpower</td><td class="tl-num">current</td></tr>
+                    <tr><td>Merits</td><td class="tl-num">3 × (new − current)</td></tr>
+                    <tr><td>New Sphere</td><td class="tl-num">10</td></tr>
+                    <tr><td>Affinity Sphere</td><td class="tl-num">7 × current</td></tr>
+                    <tr><td>Sphere</td><td class="tl-num">8 × current</td></tr>
+                    <tr><td>Three rote points</td><td class="tl-num">1</td></tr>
+                    <tr><td>New Resonance</td><td class="tl-num">5</td></tr>
+                    <tr><td>Resonance</td><td class="tl-num">3 × current</td></tr>
+                    <tr><td>Tenet</td><td class="tl-num">0</td></tr>
+                    <tr><td>Remove Tenet</td><td class="tl-num">number of tenets</td></tr>
+                    <tr><td>New Practice</td><td class="tl-num">3</td></tr>
+                    <tr><td>Practice</td><td class="tl-num">current</td></tr>
+                    <tr><td>Arete</td><td class="tl-num">8 × current</td></tr>
+                </tbody>
+            </table>
+        </details>
+    </div>
+</section>
 <script src="{% static 'characters/js/mage-xp.js' %}" id="mage-xp-script" data-is-group-member="{{ object.is_group_member|yesno:'true,false' }}"></script>
 <script src="{% static 'characters/js/mage-xp-rote.js' %}"></script>

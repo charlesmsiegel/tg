@@ -1,0 +1,22 @@
+{% comment %}
+Merits & Flaws as key/value rows; hidden when there are none. Pass span="tl-span-6"
+to sit beside Health. Reads object.get_mf_and_rating_list.
+{% endcomment %}
+{% with mfs=object.get_mf_and_rating_list %}
+    {% if mfs %}
+        <section class="tl-section {{ span }}" id="merits">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Merits &amp; Flaws</h2>
+            </div>
+            <div class="tl-section__body tl-stack">
+                {% for mf, rating in mfs %}
+                    <div class="tl-kv">
+                        <a href="{{ mf.get_absolute_url }}">{{ mf.name }}</a>
+                        <span class="tl-kv__v{% if rating < 0 %} is-neg{% endif %}">{% if rating > 0 %}+{% endif %}{{ rating }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

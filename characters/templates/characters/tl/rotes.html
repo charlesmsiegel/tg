@@ -1,0 +1,19 @@
+{% comment %}Rotes section: a 3-column grid of rote cards. Pass rote_list (manager or queryset).{% endcomment %}
+{% with rotes=rote_list.all %}
+    {% if rotes %}
+        <section class="tl-section" id="rotes">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Rotes</h2>
+                {% if object.rote_points is not None %}
+                    <span class="tl-section__aside tl-mono tl-muted">{{ object.rote_points }} rote points</span>
+                {% endif %}
+            </div>
+            <div class="tl-section__body tl-grid" id="rote-list">
+                {% for rote in rotes %}
+                    {% include "characters/tl/rote_card.html" %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

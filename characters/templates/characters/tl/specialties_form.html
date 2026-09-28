@@ -1,0 +1,23 @@
+{% comment %}"Choose specialties" form for the Experience tab, shown when object.needs_specialties.{% endcomment %}
+{% if object.needs_specialties and spec_form %}
+    <section class="tl-section" id="specialties">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Choose specialties</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <p class="tl-lede">
+                We use the Well-Skilled Craftsman rules, so some Abilities need a specialty before the fourth dot.
+            </p>
+            <form class="tl-form" action="{% url 'characters:add_specialties' object.pk %}" method="post">
+                {% csrf_token %}
+                <div class="tl-formgrid">
+                    {% for field in spec_form %}
+                        {% include "core/tl/field.html" with field=field %}
+                    {% endfor %}
+                </div>
+                <div class="tl-actions"><button type="submit" class="tl-btn">Add specialties</button></div>
+            </form>
+        </div>
+    </section>
+{% endif %}

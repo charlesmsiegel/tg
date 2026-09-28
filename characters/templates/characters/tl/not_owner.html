@@ -1,0 +1,23 @@
+{% load sanitize_text %}
+{% comment %}What a viewer without full access sees: the public card only.{% endcomment %}
+<div class="tl-sheet">
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Public record</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% if object.chronicle %}
+                <div class="tl-kv"><span>Chronicle</span><a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a></div>
+            {% endif %}
+            {% if object.owner %}
+                <div class="tl-kv"><span>Player</span><a href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a></div>
+            {% endif %}
+        </div>
+    </section>
+    {% if object.image and object.image_status == "app" %}
+        <img class="tl-portrait" src="{{ object.image.url }}" alt="Portrait of {{ object.name }}">
+    {% endif %}
+    {% include "characters/tl/prose_block.html" with label="Description" text=object.description %}
+    {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+</div>

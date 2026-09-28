@@ -1,0 +1,36 @@
+{% comment %}
+Appearance: a fact row (date of birth, ages; pass extra_label/extra_value for one
+line-specific fact such as Age of Awakening), the approved portrait, then the description.
+{% endcomment %}
+{% if object.date_of_birth or object.apparent_age or object.age or extra_value or object.description or object.image %}
+    <section class="tl-section" id="appearance">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Appearance</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            {% if object.date_of_birth or object.apparent_age or object.age or extra_value %}
+                <div class="tl-factrow">
+                    {% if object.date_of_birth %}
+                        <div><span class="tl-subhead">Date of birth</span><span>{{ object.date_of_birth }}</span></div>
+                    {% endif %}
+                    {% if extra_value %}
+                        <div><span class="tl-subhead">{{ extra_label }}</span><span>{{ extra_value }}</span></div>
+                    {% endif %}
+                    {% if object.apparent_age %}
+                        <div><span class="tl-subhead">Apparent age</span><span>{{ object.apparent_age }}</span></div>
+                    {% endif %}
+                    {% if object.age %}
+                        <div><span class="tl-subhead">Age</span><span>{{ object.age }}</span></div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if object.image and object.image_status == "app" %}
+                <img class="tl-portrait" src="{{ object.image.url }}" alt="Portrait of {{ object.name }}">
+            {% elif object.image %}
+                <p class="tl-note">Portrait pending approval.</p>
+            {% endif %}
+            {% include "characters/tl/prose_block.html" with label="" text=object.description %}
+        </div>
+    </section>
+{% endif %}

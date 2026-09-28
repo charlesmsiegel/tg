@@ -1,53 +1,5 @@
-{% load sanitize_text %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    {% if object.date_of_birth %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Birth:</span>
-                            {{ object.date_of_birth }}
-                        </div>
-                    {% endif %}
-                    {% if object.age_of_awakening %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">
-                                Age of
-                                {% if object.affiliation.name == "Technocratic Union" %}
-                                    Empowerment:
-                                {% else %}
-                                    Awakening:
-                                {% endif %}
-                            </span>
-                            {{ object.age_of_awakening }}
-                        </div>
-                    {% endif %}
-                    {% if object.apparent_age %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Apparent Age:</span>
-                            {{ object.apparent_age }}
-                        </div>
-                    {% endif %}
-                    {% if object.age %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age:</span>
-                            {{ object.age }}
-                        </div>
-                    {% endif %}
-                </div>
-                {% if object.description %}
-                    <div class="mt-3 text-center">
-                        <div class="mb-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Description:</span>
-                        </div>
-                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.description|sanitize_html|linebreaks }}</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+{% if object.is_technocrat %}
+    {% include "characters/tl/appearance.html" with extra_label="Age of Empowerment" extra_value=object.age_of_awakening %}
+{% else %}
+    {% include "characters/tl/appearance.html" with extra_label="Age of Awakening" extra_value=object.age_of_awakening %}
+{% endif %}

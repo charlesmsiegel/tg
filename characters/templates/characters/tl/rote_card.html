@@ -1,0 +1,26 @@
+{% load tl %}
+{% comment %}Rote card (C7): practice, name, description, spheres above 0, dice pool. Pass rote=<Rote>.{% endcomment %}
+<article class="tl-tile tl-rote" data-gameline="mta">
+    <span class="tl-tile__meta">
+        <span data-practice-id="{{ rote.practice.id }}">{{ rote.practice }}</span>
+        <span>Cost {{ rote.effect.rote_cost }}</span>
+    </span>
+    <h3 class="tl-tile__name"><a href="{{ rote.get_absolute_url }}">{{ rote.name }}</a></h3>
+    {% if rote.description %}<p class="tl-tile__text">{{ rote.description|truncatewords:40 }}</p>{% endif %}
+    <div class="tl-rote__spheres">
+        {% with e=rote.effect %}
+            {% if e.correspondence %}{% trait "Correspondence" e.correspondence variant="acc" %}{% endif %}
+            {% if e.entropy %}{% trait "Entropy" e.entropy variant="acc" %}{% endif %}
+            {% if e.forces %}{% trait "Forces" e.forces variant="acc" %}{% endif %}
+            {% if e.life %}{% trait "Life" e.life variant="acc" %}{% endif %}
+            {% if e.matter %}{% trait "Matter" e.matter variant="acc" %}{% endif %}
+            {% if e.mind %}{% trait "Mind" e.mind variant="acc" %}{% endif %}
+            {% if e.prime %}{% trait "Prime" e.prime variant="acc" %}{% endif %}
+            {% if e.spirit %}{% trait "Spirit" e.spirit variant="acc" %}{% endif %}
+            {% if e.time %}{% trait "Time" e.time variant="acc" %}{% endif %}
+        {% endwith %}
+    </div>
+    <span class="tl-rote__roll" data-attribute-id="{{ rote.attribute.id }}" data-ability-id="{{ rote.ability.id }}">
+        {{ rote.attribute }} + {{ rote.ability }}
+    </span>
+</article>

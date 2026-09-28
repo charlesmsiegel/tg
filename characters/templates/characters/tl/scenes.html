@@ -1,0 +1,22 @@
+{% comment %}Scene rows (name in the display font, date or ● LIVE). Reads `scenes`.{% endcomment %}
+<section class="tl-section" id="scenes">
+    <div class="tl-section__head">
+        <span class="tl-section__num">{{ num }}</span>
+        <h2 class="tl-section__title">Scenes</h2>
+        <span class="tl-section__aside tl-mono tl-muted">{{ scenes|length }}</span>
+    </div>
+    <div class="tl-section__body">
+        {% for scene in scenes %}
+            <div class="tl-scenerow">
+                <span class="tl-scenerow__name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></span>
+                {% if not scene.finished %}
+                    <span class="tl-scenerow__when is-live">● Live</span>
+                {% else %}
+                    <span class="tl-scenerow__when">{{ scene.date_of_scene|date:"d M Y" }}</span>
+                {% endif %}
+            </div>
+        {% empty %}
+            {% include "core/tl/empty.html" with text="No scenes yet." %}
+        {% endfor %}
+    </div>
+</section>

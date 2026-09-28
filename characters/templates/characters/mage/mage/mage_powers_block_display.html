@@ -1,18 +1,10 @@
-{% load dots %}
 {% load get_specialty %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Spheres</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                {% include "characters/mage/spheres/display_with_names_and_specs.html" %}
-            </div>
-        </div>
+<section class="tl-section tl-section--power tl-span-7" id="spheres">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Spheres</h2>
     </div>
-</div>
-{% include "characters/mage/resonance/display_includes/resonance.html" %}
-{% block rotes %}
-    {% include "characters/mage/rote/display_includes/rote_list.html" with rote_list=object.rotes %}
-{% endblock rotes %}
+    <div class="tl-section__body">
+        {% include "characters/mage/spheres/tl_grid.html" %}
+    </div>
+</section>

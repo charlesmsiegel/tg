@@ -1,57 +1,109 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    <!-- Page Header with gameline-specific styling -->
-    <div class="tg-card header-card mb-2" data-gameline="{{ object.gameline|lower }}">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title {{ object.get_heading }}">
-                {{ object.name }}
-            </h1>
-            <p class="tg-card-subtitle mb-0 text-center">
-                {{ object.concept }}{% if object.chronicle %} | <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>{% endif %}
-            </p>
+{% extends "core/tl_base.html" %}
+{% comment %}
+Character sheet shell (Spread C3). Every character type extends this through
+characters/core/human/detail.html and overrides the same block names as before:
+
+  cover:   basics (cover facts), cover_sub (line under the name)
+  sheet:   statistics (attributes, abilities, powers, advantages, ...) and flavor
+           (appearance, history, journal); each include renders one numbered
+           .tl-section, optionally with a .tl-span-N class to sit side by side
+  tabs:    experience (freebies, xp) and scenes
+
+?tab=experience and ?tab=scenes pick the tab; everything else shows the sheet.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name|sanitize_html }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'characters:index' %}">← Index</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {{ object.get_type }}{% if object.chronicle %} · {{ object.chronicle }}{% endif %}
+        {% if object.npc %} · NPC{% endif %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>
+        {{ object.name|sanitize_html }}
+    </h1>
+    {% block cover_sub %}
+        {% if object.concept %}<span class="tl-cover__sub">{{ object.concept }}</span>{% endif %}
+    {% endblock cover_sub %}
+{% endblock cover_title %}
+{% block cover_body %}
+    {% if object_perms.can_view_full %}
+        <div class="tl-facts">
+            {% block basics %}
+                {% fact "Concept" object.concept %}
+            {% endblock basics %}
         </div>
+    {% endif %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    <div class="tl-cover__stat">
+        <span class="tl-mono">
+            {{ object.get_status_display }}{% if object.owner %} · {{ object.owner.username }}{% endif %}
+        </span>
+        {% if object_perms.can_view_full %}
+            <span class="tl-cover__xp">{{ object.xp }} <span class="tl-mono">XP</span></span>
+        {% endif %}
     </div>
     {% if object_perms.can_chargen and chargen_url %}
-        <div class="text-center mb-4">
-            <a class="tg-btn btn-primary" href="{{ chargen_url }}">Continue character creation</a>
-        </div>
+        <a class="tl-btn tl-btn--block" href="{{ chargen_url }}">Continue character creation</a>
     {% endif %}
-{% endblock objectname %}
-{% block contents %}
     {% if object_perms.can_view_full %}
-        {% block statistics %}
-            {% block basics %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <div class="row mb-0">
-                                    <div class="col-sm-4">
-                                        <strong>Concept:</strong>
-                                    </div>
-                                    <div class="col-sm-8">{{ object.concept }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endblock basics %}
-        {% endblock statistics %}
-        {% block flavor %}
-        {% endblock flavor %}
-{% block description %}
-    {# Override the core description block - description is handled in the appearance section #}
-{% endblock description %}
-    {% else %}
-        {% include "characters/core/character/not_owner.html" %}
+        {% if object_perms.can_spend_xp or edit_url and object_perms.can_edit or edit_url and object_perms.can_edit_limited %}
+            <div class="tl-btnpair">
+                {% if object_perms.can_spend_xp %}
+                    <a class="tl-btn" href="?tab=experience">Spend XP</a>
+                {% endif %}
+                {% if edit_url and object_perms.can_edit or edit_url and object_perms.can_edit_limited %}
+                    <a class="tl-btn tl-btn--ghost" href="{{ edit_url }}">Edit</a>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
-{% endblock contents %}
-{% block post_content %}
-    {% include "characters/core/character/char_scene_display.html" %}
-{% endblock post_content %}
-{% block buttons %}
-    {% include "characters/core/character/display_includes/buttons.html" %}
-{% endblock buttons %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% if object_perms.can_view_full %}
+        {% with tab=request.GET.tab %}
+            <nav class="tl-nav tl-nav--tabs" aria-label="{{ object.name }}">
+                <a href="?tab=sheet"{% if tab != 'experience' and tab != 'scenes' %} aria-current="page"{% endif %}>Sheet</a>
+                <a href="?tab=experience"{% if tab == 'experience' %} aria-current="page"{% endif %}>Experience</a>
+                <a href="?tab=scenes"{% if tab == 'scenes' %} aria-current="page"{% endif %}>Scenes{% if scenes %} · {{ scenes|length }}{% endif %}</a>
+                {% if object.journal %}<a href="{{ object.journal.get_absolute_url }}">Journal</a>{% endif %}
+            </nav>
+        {% endwith %}
+    {% else %}
+        {% include "core/tl/nav.html" with nav_active="characters" %}
+    {% endif %}
+{% endblock nav %}
+{% block content %}
+    {% if object_perms.can_view_full %}
+        {% with tab=request.GET.tab %}
+            {% if tab == "experience" %}
+                <div class="tl-sheet">
+                    {% block experience %}
+                        {% block freebies %}{% endblock freebies %}
+                        {% block xp %}
+                            {% include "characters/tl/xp_history.html" %}
+                        {% endblock xp %}
+                    {% endblock experience %}
+                </div>
+            {% elif tab == "scenes" %}
+                {% include "characters/tl/scenes.html" %}
+            {% else %}
+                <div class="tl-sheet">
+                    {% block statistics %}{% endblock statistics %}
+                    {% block flavor %}{% endblock flavor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% tl_object_actions %}
+        {% include "characters/core/character/display_includes/buttons.html" %}
+    {% else %}
+        {% include "characters/tl/not_owner.html" %}
+    {% endif %}
+{% endblock content %}

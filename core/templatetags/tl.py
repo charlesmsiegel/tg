@@ -4,7 +4,8 @@
     {% dots 3 %}                      filled/empty circles, ink or gameline accent
     {% boxes 4 10 %}                  squares (current Willpower, pools)
     {% trait "Strength" 3 "Wiry" %}   label + specialty + dots on one row
-    {% track "Willpower" perm=6 temp=4 %}
+    {% track "Willpower" perm=6 temp=4 %}   label + permanent dots over current boxes
+    {% fact "Nature" object.nature %}       cover fact row, linked when the value has a URL
     {% qp_wheel 4 2 %}                Mage Quintessence / Paradox wheel
     {{ name|cover_title_class }}      size step for large cover titles
     {{ object|gameline_code }}        "mta", "vtm", ... or "wod"
@@ -31,46 +32,57 @@ def _int(value):
 
 
 @register.simple_tag
-def dots(value, max=5, variant="ink", size=""):
-    """<span class="tl-dots"> with ``max`` circles. variant: ink|acc, size: ''|lg."""
-    value, max = _int(value), _int(max)
+def dots(value, total=5, variant="ink", size=""):
+    """<span class="tl-dots"> with ``total`` circles. variant: ink|acc, size: ''|lg."""
+    value, total = _int(value), _int(total)
     cls = "tl-dots"
     if variant == "acc":
         cls += " tl-dots--acc"
     if size == "lg":
         cls += " tl-dots--lg"
     inner = format_html_join(
-        "", '<span class="tl-dot{}"></span>', ((" is-on" if i < value else "",) for i in range(max))
+        "",
+        '<span class="tl-dot{}"></span>',
+        ((" is-on" if i < value else "",) for i in range(total)),
     )
     return format_html(
-        '<span class="{}" role="img" aria-label="{} of {}">{}</span>', cls, value, max, inner
+        '<span class="{}" role="img" aria-label="{} of {}">{}</span>', cls, value, total, inner
     )
 
 
 @register.simple_tag
-def boxes(value, max=10):
-    value, max = _int(value), _int(max)
+def boxes(value, total=10):
+    value, total = _int(value), _int(total)
     inner = format_html_join(
-        "", '<span class="tl-box{}"></span>', ((" is-on" if i < value else "",) for i in range(max))
+        "",
+        '<span class="tl-box{}"></span>',
+        ((" is-on" if i < value else "",) for i in range(total)),
     )
     return format_html(
-        '<span class="tl-boxes" role="img" aria-label="{} of {}">{}</span>', value, max, inner
+        '<span class="tl-boxes" role="img" aria-label="{} of {}">{}</span>', value, total, inner
     )
 
 
 @register.inclusion_tag("core/tl/trait_row.html")
-def trait(label, value, specialty="", max=5, variant="ink"):
-    return {"label": label, "value": value, "specialty": specialty, "max": max, "variant": variant}
+def trait(label, value, specialty="", total=5, variant="ink", url=""):
+    return {
+        "label": label,
+        "value": value,
+        "specialty": specialty,
+        "total": total,
+        "variant": variant,
+        "url": url,
+    }
 
 
 @register.simple_tag
-def track(label, perm=None, temp=None, max=10):
+def track(label, perm=None, temp=None, total=10, variant="ink"):
     """Label on the left; permanent dots and/or temporary squares on the right."""
     rows = []
     if perm is not None:
-        rows.append(dots(perm, max))
+        rows.append(dots(perm, total, variant))
     if temp is not None:
-        rows.append(boxes(temp, max))
+        rows.append(boxes(temp, total))
     return format_html(
         '<div class="tl-track"><span class="tl-track__label">{}</span>'
         '<div class="tl-track__rows">{}</div></div>',
@@ -80,18 +92,42 @@ def track(label, perm=None, temp=None, max=10):
 
 
 @register.simple_tag
+def fact(label, value, url=None):
+    """One cover fact row (mono key, value on the right); nothing when value is empty.
+
+    The value links to ``url``, or to its own ``get_absolute_url()`` when it has one.
+    """
+    if value is None or value == "":
+        return ""
+    if url is None and hasattr(value, "get_absolute_url"):
+        try:
+            url = value.get_absolute_url()
+        except Exception:  # noqa: BLE001 - unrouted models simply render as text
+            url = None
+    inner = format_html('<a href="{}">{}</a>', url, value) if url else format_html("{}", value)
+    return format_html(
+        '<div class="tl-facts__row"><span class="tl-facts__k">{}</span>'
+        '<span class="tl-facts__v">{}</span></div>',
+        label,
+        inner,
+    )
+
+
+@register.simple_tag
 def qp_wheel(quintessence, paradox, label="Quintessence"):
     """20 boxes, index 0 at 189deg running clockwise over the top.
 
-    Box i is Quintessence when i < quintessence and Paradox when i >= 20 - paradox,
-    matching characters/mage/mage/qp_wheel.html.
+    Box i is Paradox when i >= 20 - paradox, else Quintessence when i < quintessence:
+    Paradox wins where the two overlap, as in characters/mage/mage/qp_wheel.html.
+    The positions come from trigonometry, so each box carries an inline left/top:
+    the one deliberate inline style in the Spread templates.
     """
     q, p = _int(quintessence), _int(paradox)
     parts = []
     for i in range(20):
         a = math.radians(189 + 18 * i)
         left, top = 82 + 72 * math.cos(a) - 7.5, 82 + 72 * math.sin(a) - 7.5
-        state = " is-q" if i < q else (" is-p" if i >= 20 - p else "")
+        state = " is-p" if i >= 20 - p else (" is-q" if i < q else "")
         parts.append(
             format_html(
                 '<span class="tl-qp__box{}" style="left:{}px;top:{}px"></span>',

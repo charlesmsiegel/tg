@@ -1,1 +1,1 @@
-{% load tl %}<div class="tl-trait"><span class="tl-trait__label">{{ label }}{% if specialty %} <span class="tl-trait__spec">{{ specialty }}</span>{% endif %}</span>{% dots value max variant %}</div>
+{% load tl %}<div class="tl-trait"><span class="tl-trait__label">{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}{{ label }}{% endif %}{% if specialty %} <span class="tl-trait__spec">{{ specialty }}</span>{% endif %}</span>{% dots value total variant %}</div>

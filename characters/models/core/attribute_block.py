@@ -147,6 +147,34 @@ class AttributeBlock(models.Model):
             "appearance": self.appearance,
         }
 
+    ATTRIBUTE_GROUPS = (
+        ("Physical", ("strength", "dexterity", "stamina")),
+        ("Social", ("charisma", "manipulation", "appearance")),
+        ("Mental", ("perception", "intelligence", "wits")),
+    )
+
+    def attribute_sections(self):
+        """Attributes for the character sheet, in sheet order within each group.
+
+        Returns ``[(heading, [(label, rating, specialty), ...]), ...]`` like
+        ``ability_sections``; used by ``characters/core/attribute_block/detail.html``.
+        """
+        get_specialty = getattr(self, "get_specialty", None)
+        return [
+            (
+                heading,
+                [
+                    (
+                        stat.title(),
+                        getattr(self, stat),
+                        get_specialty(stat) if get_specialty else None,
+                    )
+                    for stat in stats
+                ],
+            )
+            for heading, stats in self.ATTRIBUTE_GROUPS
+        ]
+
     def get_physical_attributes(self, attribute_dict=None):
         if attribute_dict is None:
             attribute_dict = self.get_attributes()

@@ -1,0 +1,25 @@
+{% load tl %}
+{% comment %}
+Backgrounds as trait rows (Spread). Pass backgrounds=<queryset of BackgroundRating>;
+span="tl-span-6" to sit beside another section; bare=True for rows only (no section),
+e.g. inside the Mage Advantages column.
+{% endcomment %}
+{% if bare %}
+    {% for background in backgrounds.all %}
+        {% include "characters/tl/background_row.html" %}
+    {% endfor %}
+{% else %}
+    <section class="tl-section {{ span }}" id="backgrounds">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Backgrounds</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% for background in backgrounds.all %}
+                {% include "characters/tl/background_row.html" %}
+            {% empty %}
+                <p class="tl-muted">No backgrounds.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

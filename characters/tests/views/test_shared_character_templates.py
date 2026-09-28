@@ -53,4 +53,6 @@ class WraithSheetAbilitiesTest(TestCase):
         self.client.force_login(user)
         response = self.client.get(character.get_absolute_url(), follow=True)
         self.assertTemplateUsed(response, "characters/shared/human/ability_block_display.html")
-        self.assertContains(response, "Alertness (Keen Ears)")
+        self.assertContains(
+            response, 'Alertness <span class="tl-trait__spec">Keen Ears</span>', html=False
+        )

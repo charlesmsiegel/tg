@@ -1,0 +1,13 @@
+{% load tl %}
+<div>
+    {% if background.display_alt_name %}
+        {% trait background.bg.alternate_name background.rating %}
+    {% else %}
+        {% trait background.bg.name background.rating %}
+    {% endif %}
+    {% if background.note %}
+        <div class="tl-note">
+            {% if background.url %}<a href="{{ background.url }}">{{ background.note }}</a>{% else %}{{ background.note }}{% endif %}
+        </div>
+    {% endif %}
+</div>
