@@ -1,10 +1,11 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.werewolf.rite import Rite
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class RiteDetailView(DetailView):
+class RiteDetailView(KnownByMixin, DetailView):
     model = Rite
     template_name = "characters/werewolf/rite/detail.html"
 

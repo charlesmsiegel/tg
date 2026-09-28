@@ -14,6 +14,9 @@ Children fill:
   sections        numbered sections before the description
   description     override to rename or drop the Description section
   after_description  numbered sections after it (System, lists...)
+
+Known by (characters/tl/known_by.html) closes the pages when the view supplies
+`known_by` (characters.views.core.known_by.KnownByMixin).
 {% endcomment %}
 {% load tl sanitize_text %}
 {% block title %}{{ object.name }}{% endblock title %}
@@ -87,6 +90,7 @@ Children fill:
             {% endif %}
         {% endblock description %}
         {% block after_description %}{% endblock after_description %}
+        {% include "characters/tl/known_by.html" %}
     </div>
     {% tl_object_actions %}
 {% endblock content %}

@@ -1,11 +1,12 @@
 from django.views.generic import CreateView, UpdateView
 
 from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 from core.views import CachedDetailView, CachedListView
 
 
-class GiftDetailView(CachedDetailView):
+class GiftDetailView(KnownByMixin, CachedDetailView):
     model = Gift
     template_name = "characters/werewolf/gift/detail.html"
 

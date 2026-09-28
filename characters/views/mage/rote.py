@@ -3,10 +3,11 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from characters.models.core import Ability, Attribute
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class RoteDetailView(DetailView):
+class RoteDetailView(KnownByMixin, DetailView):
     model = Rote
     template_name = "characters/mage/rote/detail.html"
 

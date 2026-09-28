@@ -1,15 +1,27 @@
 {% extends "characters/demon/dtfhuman/detail.html" %}
 {% comment %}
-Demon sheet (Spread C19): House / Faction / Visage / Celestial name on the cover; Lores
+Demon sheet (Spread C19). A Demon's name is its mortal host's; the cover is titled with the
+celestial name when there is one, with "Host: name, concept" under it and a Host fact
+(no separate host field: see test_host_name_field_removed). House / Faction / Visage /
+Host / Nature / Demeanor on the cover; Lores
 (accent) beside Faith, Torment and Willpower; Backgrounds beside Virtues; then the
 apocalyptic form, rituals and pacts.
 {% endcomment %}
-{% load tl %}
+{% load tl sanitize_text %}
+{% block cover_name_class %}{{ object.celestial_name|default:object.name|cover_title_class:object }}{% endblock cover_name_class %}
+{% block cover_name %}{{ object.celestial_name|default:object.name|sanitize_html }}{% endblock cover_name %}
+{% block cover_sub %}
+    {% if object.celestial_name %}
+        <span class="tl-cover__sub">Host: {{ object.name }}{% if object.concept %}, {{ object.concept }}{% endif %}</span>
+    {% elif object.concept %}
+        <span class="tl-cover__sub">{{ object.concept }}</span>
+    {% endif %}
+{% endblock cover_sub %}
 {% block basics %}
     {% fact "House" object.house %}
     {% fact "Faction" object.faction %}
     {% fact "Visage" object.visage %}
-    {% fact "Celestial name" object.celestial_name %}
+    {% if object.celestial_name %}{% fact "Host" object.name %}{% endif %}
     {% fact "Nature" object.nature %}
     {% fact "Demeanor" object.demeanor %}
 {% endblock basics %}

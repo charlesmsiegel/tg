@@ -1,11 +1,12 @@
 from django.views.generic import CreateView, UpdateView
 
 from characters.models.vampire.discipline import Discipline
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 from core.views import CachedDetailView, CachedListView
 
 
-class DisciplineDetailView(CachedDetailView):
+class DisciplineDetailView(KnownByMixin, CachedDetailView):
     """Detail view for Disciplines - public reference data, no login required."""
 
     model = Discipline

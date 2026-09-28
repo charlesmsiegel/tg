@@ -10,6 +10,7 @@ class WerewolfCreationForm(forms.ModelForm):
         model = Werewolf
         fields = [
             "name",
+            "deed_name",
             "concept",
             "chronicle",
             "breed",
