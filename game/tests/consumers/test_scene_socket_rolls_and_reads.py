@@ -56,6 +56,8 @@ class LiveReadMarkerTests(SocketTestBase):
 
     def test_a_post_seen_live_is_read(self):
         self.scene.add_post(self.character, "", "Warm up")  # both players get a row
+        # Both pages were opened, which read the scene through the warm-up post.
+        UserSceneReadStatus.objects.mark_read(self.scene, self.users["st"].pk)
 
         async def scenario():
             owner = await self.open("owner")
@@ -74,6 +76,10 @@ class LiveReadMarkerTests(SocketTestBase):
     def test_sync_reads_through_the_caught_up_posts(self):
         first = self.scene.add_post(self.st_character, "", "One")
         second = self.scene.add_post(self.st_character, "", "Two")
+        # The owner's page showed (and so read) through ``first``.
+        UserSceneReadStatus.objects.filter(scene=self.scene, user=self.users["owner"]).update(
+            last_read_post=first
+        )
         self.assertFalse(self.status("owner").read)
 
         async def scenario():
@@ -84,6 +90,25 @@ class LiveReadMarkerTests(SocketTestBase):
         self.run_async(scenario)
         self.assertTrue(self.status("owner").read)
         self.assertEqual(self.status("owner").last_read_post, second)
+
+    def test_a_live_post_does_not_skip_an_unloaded_backlog(self):
+        """Opened with more unread posts than the window, the page keeps the marker
+        behind them (read_latest); a post arriving live must not jump past them."""
+        read = self.scene.add_post(self.character, "", "Read")
+        unseen = self.scene.add_post(self.st_character, "", "Behind the window")
+
+        async def scenario():
+            owner = await self.open("owner")
+            st = await self.open("st")
+            await self.send(st, action="post", character="", display_name="", message="Live")
+            await self.drain(st)
+            await self.drain(owner)
+
+        self.run_async(scenario)
+        status = self.status("owner")
+        self.assertFalse(status.read)
+        self.assertEqual(status.last_read_post, read)
+        self.assertLess(status.last_read_post_id, unseen.pk)
 
     def test_readers_without_a_row_are_not_tracked(self):
         async def scenario():
