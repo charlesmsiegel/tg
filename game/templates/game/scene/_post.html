@@ -4,10 +4,15 @@ One scene post, for the page and for every live update (Step 11). Inputs: post
 It never reads request, so the page and the WebSocket consumer render the same markup.
 The link uses the type-dispatching character route: post.character is the base
 CharacterModel (a joined row, not the polymorphic subclass), which has no URL of its own.
-{% endcomment %}<div class="mb-3 post-item" id="post-{{ post.pk }}" data-post-id="{{ post.pk }}">
-    <p class="post mb-0">
-        <strong {% if post.author_is_st %}class="st"{% elif viewer_id and post.character.owner_id == viewer_id %}class="highlight"{% endif %}>
-            {% if post.character %}<a href="{% url 'characters:character' post.character_id %}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}
-        </strong>: {{ post.message|safe_post }}
-    </p>
-</div>
+Spread turn row: data-speaker lets scene-chat.js fold consecutive posts by the same
+speaker into one turn (is-cont), for posts on the page and for live ones alike.
+{% endcomment %}<article class="tl-turn post-item{% if post.author_is_st %} tl-turn--st{% elif viewer_id and post.character.owner_id == viewer_id %} tl-turn--mine{% endif %}"
+         id="post-{{ post.pk }}"
+         data-post-id="{{ post.pk }}"
+         data-speaker="{% if post.author_is_st %}st:{% endif %}{{ post.display_name }}">
+    <div class="tl-turn__head">
+        <span class="tl-turn__who">{% if post.author_is_st %}† {% endif %}{% if post.character %}<a href="{% url 'characters:character' post.character_id %}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}</span>
+        <time class="tl-turn__time" datetime="{{ post.datetime_created|date:'c' }}">{{ post.datetime_created|date:"H:i" }}{% if viewer_id and post.character.owner_id == viewer_id and not post.author_is_st %} · you{% endif %}</time>
+    </div>
+    <div class="tl-turn__body"><div class="tl-turn__text post">{{ post.message|safe_post }}</div></div>
+</article>

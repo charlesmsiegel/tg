@@ -1,6 +1,6 @@
-{% comment %}The characters this viewer may add (AddCharForm's choices). Inputs: add_characters, oob.{% endcomment %}<span id="add-char-field"{% if oob %} hx-swap-oob="true"{% endif %}>
-    <select id="character-to-add" name="character_to_add" class="form-control d-inline-block" style="width: auto;" aria-label="Add character">
-        <option value="">Add Character</option>
+{% comment %}The characters this viewer may add (AddCharForm's choices). Inputs: add_characters, oob.{% endcomment %}<span id="add-char-field"{% if oob %} hx-swap-oob="true"{% endif %} class="tl-field tl-field--select">
+    <select id="character-to-add" name="character_to_add" aria-label="Add character">
+        <option value="">Add a character</option>
         {% for char in add_characters %}<option value="{{ char.pk }}">{{ char.name }}</option>{% endfor %}
     </select>
 </span>

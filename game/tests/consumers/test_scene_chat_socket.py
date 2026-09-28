@@ -160,8 +160,8 @@ class PostTests(SocketTestBase):
         # Each connection gets the partial rendered for its own viewer.
         self.assertIn(self.expected_post_html(post, "owner"), owner_text)
         self.assertEqual(st_text, self.expected_post_html(post, "st"))
-        self.assertIn('class="highlight"', owner_text)
-        self.assertNotIn('class="highlight"', st_text)
+        self.assertIn("tl-turn--mine", owner_text)
+        self.assertNotIn("tl-turn--mine", st_text)
 
     def test_quotes_are_straightened_and_the_chosen_character_used(self):
         second = Human.objects.create(
@@ -223,7 +223,7 @@ class PostTests(SocketTestBase):
             with self.subTest(who=who, fields=fields):
                 sent, seen = async_to_sync(attempt)(who, fields)
                 text = self.text(sent)
-                self.assertIn('class="tg-message error"', text)
+                self.assertIn('class="tl-message tl-message--error"', text)
                 self.assertIn(error, text)
                 self.assertNotIn("post-message-fields", text)
                 self.assertEqual(seen, [])
@@ -391,7 +391,7 @@ class SceneEventTests(SocketTestBase):
             self.assertIn("Newcomer joined the scene.", text)
         # The owner can now post as Newcomer too, so their choice becomes a select.
         self.assertIn(
-            '<div id="post-character-field" class="mb-3" hx-swap-oob="true">', seen["owner"]
+            '<div id="post-character-field" hx-swap-oob="true" class="tl-composer__who">', seen["owner"]
         )
         self.assertIn(f'<option value="{newcomer.pk}">Newcomer</option>', seen["owner"])
         self.assertNotIn("post-character-field", seen["st"])
@@ -413,7 +413,7 @@ class SceneEventTests(SocketTestBase):
             return await self.drain(owner)
 
         frames = self.run_async(scenario)
-        self.assertIn('<div id="scene-actions" hx-swap-oob="true">', self.text(frames))
+        self.assertIn('<div id="scene-actions" hx-swap-oob="true"', self.text(frames))
         self.assertIn("This scene has been closed.", self.text(frames))
         self.assertEqual(self.close_code(frames), CLOSE_NORMAL)
 

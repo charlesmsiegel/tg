@@ -1,12 +1,15 @@
 {% comment %}The post form's character choice for one viewer (page render and live update).
-Inputs: post_characters (the viewer's characters in this scene), oob.{% endcomment %}<div id="post-character-field" class="mb-3"{% if oob %} hx-swap-oob="true"{% endif %}>
+Inputs: post_characters (the viewer's characters in this scene), oob.{% endcomment %}<div id="post-character-field"{% if oob %} hx-swap-oob="true"{% endif %} class="tl-composer__who">
+    <span class="tl-field__label">Posting as</span>
     {% if post_characters|length == 1 %}
         <input type="hidden" id="character-select" name="character" value="{{ post_characters.0.pk }}">
-        <span class="form-control-plaintext"><strong>{{ post_characters.0.name }}</strong></span>
+        <span class="tl-composer__name">{{ post_characters.0.name }}</span>
     {% else %}
-        <select id="character-select" name="character" class="form-control" aria-label="Character">
-            <option value="">Character Select</option>
-            {% for char in post_characters %}<option value="{{ char.pk }}">{{ char.name }}</option>{% endfor %}
-        </select>
+        <span class="tl-composer__select">
+            <select id="character-select" name="character" aria-label="Character">
+                <option value="">Choose a character</option>
+                {% for char in post_characters %}<option value="{{ char.pk }}">{{ char.name }}</option>{% endfor %}
+            </select>
+        </span>
     {% endif %}
 </div>

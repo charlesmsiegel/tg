@@ -165,6 +165,38 @@
         }
     });
 
+    // Fold consecutive posts by the same speaker into one turn (Spread): a post
+    // whose data-speaker matches the post before it gets is-cont. Runs on load and
+    // after every swap, so live posts join the last turn when the speaker matches.
+    function markTurns() {
+        var previous = null;
+        pagePosts().forEach(function (post) {
+            var speaker = post.getAttribute('data-speaker');
+            post.classList.toggle('is-cont', speaker !== null && speaker === previous);
+            previous = speaker;
+        });
+    }
+
+    // Open on the newest posts: the transcript scrolls inside the page at desktop widths.
+    function scrollToLatest() {
+        var box = document.querySelector('[data-scene-scroll]');
+        if (box && !/[?&]before=/.test(window.location.search)) {
+            box.scrollTop = box.scrollHeight;
+        }
+    }
+
+    document.addEventListener('htmx:oobAfterSwap', markTurns);
+    document.addEventListener('htmx:afterSwap', markTurns);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            markTurns();
+            scrollToLatest();
+        });
+    } else {
+        markTurns();
+        scrollToLatest();
+    }
+
     document.addEventListener('keydown', function (event) {
         var field = event.target;
         if (field.id !== 'message-input' || event.key !== 'Enter' || event.shiftKey ||

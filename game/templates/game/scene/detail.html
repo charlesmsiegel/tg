@@ -1,99 +1,144 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    {% load sanitize_text %}
-    <div class="container py-4">
-        <!-- Scene Header -->
-        <div class="tg-card header-card mb-4" data-gameline="{{ object.chronicle.gameline }}">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title {{ object.chronicle.headings }}">{{ object.name }}</h1>
-                <span class="tg-badge badge-pill" style="background-color: rgba(23, 162, 184, 0.15); color: #17a2b8; border-radius: 20px; font-size: 0.875rem; margin-top: 8px;">{{ object.date_of_scene }}</span>
-            </div>
-        </div>
-
-        <!-- Location Information -->
-        <div class="tg-card mb-2">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title {{ object.chronicle.headings }}">
-                    <a href="{{ object.location.get_absolute_url }}" class="text-decoration-none">{{ object.location.name }}</a>
-                </h3>
-            </div>
+{% extends "core/tl_base.html" %}
+{% comment %}
+Scene (Spread C4): sticky cover with the setting, cast and scene actions; the pages
+hold the transcript (grouped into turns by scene-chat.js) above a docked composer.
+Keep every id scene-chat.js and the ws extension use: #scene-live, #posts-container,
+#post-form, #post-submit-btn, #connection-status, #status-indicator,
+#scene-chat-notice, #no-posts-message, #scene-actions, data-post-id.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}{{ object.gameline|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block spread_mod %}tl-spread--scene{% endblock spread_mod %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    {% if live %}
+        <span class="tl-live" data-live-badge>● Live</span>
+    {% elif object.finished %}
+        <span class="tl-cover__top-aside">Closed</span>
+    {% endif %}
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {% if object.chronicle %}<a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a> · {% endif %}Scene
+    </span>
+    <h1 class="tl-cover__name tl-cover__name--scene {{ object.name|cover_title_class:object.gameline }}" data-fit-title>{{ object.name }}</h1>
+    {% if object.date_of_scene %}<span class="tl-meta">{{ object.date_of_scene|date:"d M Y" }}</span>{% endif %}
+{% endblock cover_title %}
+{% block cover_body %}
+    {% if object.location %}
+        <div class="tl-stack">
+            <span class="tl-cover__eyebrow">Setting</span>
+            <a class="tl-cover__place" href="{{ object.location.get_absolute_url }}">{{ object.location.name }}</a>
             {% if object.location.description %}
-                <div class="tg-card-body text-center" style="padding: 16px 20px;">
-                    <p class="mb-0" style="line-height: 1.6;">{{ object.location.description|sanitize_html|linebreaks }}</p>
-                </div>
+                <div class="tl-cover__desc">{{ object.location.description|sanitize_html|truncatewords_html:60|linebreaks }}</div>
             {% endif %}
         </div>
-
-        <div id="scene-live"
-             data-scene-live
-             {% if live %}hx-ext="ws" ws-connect="/ws/scene/{{ object.pk }}/?v=2" data-ws-state="connecting"{% endif %}>
-            {% if live %}
-                <!-- Connection status: text and state set by scene-chat.js -->
-                <div id="connection-status" class="mb-2" hidden>
-                    <span id="status-indicator" class="tg-badge badge-pill" role="status" aria-live="polite"></span>
-                </div>
-            {% endif %}
-            <!-- Server notices and errors (live region, filled over the socket) -->
-            <div id="scene-chat-notice" role="status" aria-live="polite"></div>
-
-            <!-- Posts Section -->
-            <div class="tg-card mb-4">
-                <div class="tg-card-body" id="posts-container" style="padding: 20px;">
-                    {% include "game/scene/_post_window.html" %}
-                    {% if not posts %}
-                        <div class="text-center py-4" id="no-posts-message">
-                            <p class="text-muted mb-0">No posts yet</p>
-                        </div>
-                    {% endif %}
-                </div>
+    {% endif %}
+    {% with cast=object.characters.all %}
+        <div class="tl-stack">
+            <span class="tl-cover__eyebrow">In scene · {{ cast|length }}</span>
+            <div class="tl-facts">
+                {% for character in cast %}
+                    <div class="tl-facts__row">
+                        <a class="tl-facts__v tl-cast__name" href="{% url 'characters:character' character.pk %}">{{ character.name }}</a>
+                        <span class="tl-facts__k">{{ character.owner.username|default:"NPC" }}</span>
+                    </div>
+                {% empty %}
+                    <p class="tl-cover__desc">No one yet.</p>
+                {% endfor %}
             </div>
-            {% if showing_earlier %}
-                <p class="text-center">
-                    <a class="btn btn-outline-secondary btn-sm" href="{{ object.get_absolute_url }}">Back to the latest posts</a>
-                </p>
+        </div>
+    {% endwith %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    <div id="scene-cover-actions" class="tl-stack">
+        {% if not object.finished and request.user.is_authenticated %}
+            {# Always rendered so live updates can fill #add-char-field; CSS hides it while empty. #}
+            <form method="post"
+                  action="{% url 'game:scene_add_character' object.pk %}"
+                  id="add-char-form"
+                  class="tl-fieldrow">
+                {% csrf_token %}
+                {% include "game/scene/_add_character_field.html" %}
+                <button type="submit" class="tl-btn tl-btn--ghost">+ Add</button>
+            </form>
+            <form method="post" action="{% url 'game:scene_close' object.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="tl-btn tl-btn--ghost tl-btn--block">Close scene</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock cover_actions %}
+{% block nav %}
+    <nav class="tl-nav tl-nav--tabs" aria-label="Scene">
+        <a href="{{ object.get_absolute_url }}" aria-current="page">Transcript</a>
+        {% if object.chronicle %}<a href="{{ object.chronicle.get_absolute_url }}">Scenes in chronicle</a>{% endif %}
+        <a href="{% url 'game:commands' %}">Commands</a>
+        <span class="tl-nav__end">{{ posts|length }}{% if earlier_cursor %}+{% endif %} posts</span>
+    </nav>
+{% endblock nav %}
+{% block content_mod %}tl-content--scene{% endblock content_mod %}
+{% block content %}
+    <div id="scene-live"
+         class="tl-scene{% if user.is_authenticated and user.profile.highlight_text %} tl-scene--highlight{% endif %}"
+         data-scene-live
+         {% if live %}hx-ext="ws" ws-connect="/ws/scene/{{ object.pk }}/?v=2" data-ws-state="connecting"{% endif %}>
+        <div class="tl-scene__scroll" data-scene-scroll>
+            {% if live %}
+                <div id="connection-status" class="tl-scene__status" hidden>
+                    <span id="status-indicator" role="status" aria-live="polite"></span>
+                </div>
             {% endif %}
-
-            <!-- Actions: replaced by "This scene is closed." when it closes -->
-            <div id="scene-actions">
-                {% if not object.finished and request.user.is_authenticated %}
-                    <div class="tg-card mb-4">
-                        <div class="tg-card-body">
-                            <form method="post"
-                                  action="{% url 'game:scene_post' object.pk %}"
-                                  id="post-form"
-                                  {% if live %}ws-send hx-vals='{"action": "post"}'{% endif %}>
-                                {% csrf_token %}
-                                {% include "game/scene/_post_character_field.html" %}
-                                {% include "game/scene/_post_message_fields.html" %}
-                                <input type="submit" value="Post" class="btn btn-primary" id="post-submit-btn" />
-                            </form>
-                        </div>
-                    </div>
-                    <!-- Add Character Form (hidden by CSS while it offers no character) -->
-                    <form method="post" action="{% url 'game:scene_add_character' object.pk %}" class="mb-3" id="add-char-form">
-                        {% csrf_token %}
-                        {% include "game/scene/_add_character_field.html" %}
-                        <input type="submit" value="Add" class="btn btn-secondary" />
-                    </form>
-                    <!-- Close Scene Form -->
-                    <form method="post" action="{% url 'game:scene_close' object.pk %}" class="mb-3">
-                        {% csrf_token %}
-                        <input type="submit" value="Close Scene" class="btn btn-danger" />
-                    </form>
-                    <!-- Commands Link -->
-                    <div class="text-center mt-3">
-                        <a href="{% url 'game:commands' %}" class="btn btn-outline-primary btn-sm px-4 py-2">List of Commands</a>
-                    </div>
+            <div id="scene-chat-notice" role="status" aria-live="polite"></div>
+            <div class="tl-transcript" id="posts-container">
+                {% include "game/scene/_post_window.html" %}
+                {% if not posts %}
+                    <div class="tl-empty" id="no-posts-message"><p>No posts yet.</p></div>
                 {% endif %}
             </div>
+            {% if showing_earlier %}
+                <p class="tl-scene__back">
+                    <a class="tl-chiplink" href="{{ object.get_absolute_url }}">Back to the latest posts ↓</a>
+                </p>
+            {% endif %}
+        </div>
+        {# Replaced by "This scene is closed." when it closes. #}
+        <div id="scene-actions" class="tl-composer">
+            {% if not object.finished and request.user.is_authenticated %}
+                <form method="post"
+                      action="{% url 'game:scene_post' object.pk %}"
+                      id="post-form"
+                      class="tl-composer__form"
+                      {% if live %}ws-send hx-vals='{"action": "post"}'{% endif %}>
+                    {% csrf_token %}
+                    {% include "game/scene/_post_character_field.html" %}
+                    <div class="tl-composer__main">
+                        {% include "game/scene/_post_message_fields.html" %}
+                        <div class="tl-composer__foot">
+                            <span class="tl-composer__hints">
+                                <b>/roll</b> · <b>/stat</b> · <b>/extended</b> · Shift+Enter for a new line ·
+                                <a href="{% url 'game:commands' %}">all commands</a>
+                            </span>
+                            <button type="submit" class="tl-btn" id="post-submit-btn">Post ⏎</button>
+                        </div>
+                    </div>
+                </form>
+            {% elif object.finished %}
+                <p class="tl-empty">This scene is closed.</p>
+            {% else %}
+                {% url 'login' as login_url %}
+                <p class="tl-empty">
+                    <span>Log in to post in this scene.</span>
+                    <a href="{{ login_url }}?next={{ request.path|urlencode }}">Log in →</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}
 {% block extrascripts %}
-    {{ block.super }}
     {# htmx loads "Show earlier posts" in place; the ws extension only on a live page. #}
     {% include "core/includes/interactive_scripts.html" with ws=live alpine=False %}
 {% endblock extrascripts %}
