@@ -91,12 +91,84 @@
     if (box) box.scrollTop = cur.offsetTop - box.clientHeight / 2;
   }
 
+  // 6. Bootstrap data-API shim for templates still on legacy markup (collapse, tab,
+  //    pill, dropdown, alert dismiss), so legacy pages need neither jQuery nor
+  //    bootstrap.js. Toggles the same classes Bootstrap would (.show / .active).
+  function targetsFor(el) {
+    var sel = el.getAttribute('data-target') || el.getAttribute('data-bs-target') || el.getAttribute('href');
+    if (!sel || sel.charAt(0) !== '#' && sel.charAt(0) !== '.') return [];
+    try { return Array.prototype.slice.call(document.querySelectorAll(sel)); } catch (err) { return []; }
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-toggle], [data-bs-toggle], [data-dismiss="alert"]');
+    if (!el || !el.closest('.tl-legacy, .tl-cover')) {
+      if (!e.target.closest('.dropdown-menu')) {
+        document.querySelectorAll('.tl-legacy .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+      }
+      return;
+    }
+    var kind = el.getAttribute('data-toggle') || el.getAttribute('data-bs-toggle');
+    if (el.getAttribute('data-dismiss') === 'alert') {
+      var alert = el.closest('.alert, .tg-message');
+      if (alert) alert.remove();
+      return;
+    }
+    if (kind === 'collapse') {
+      e.preventDefault();
+      var open = null;
+      targetsFor(el).forEach(function (t) { t.classList.toggle('show'); open = t.classList.contains('show'); });
+      if (open !== null) el.setAttribute('aria-expanded', open ? 'true' : 'false');
+      el.classList.toggle('collapsed', open === false);
+    } else if (kind === 'tab' || kind === 'pill') {
+      e.preventDefault();
+      var nav = el.closest('.nav, [role="tablist"]');
+      if (nav) nav.querySelectorAll('[data-toggle="tab"], [data-toggle="pill"], [data-bs-toggle="tab"], [data-bs-toggle="pill"]').forEach(function (l) {
+        l.classList.remove('active'); l.setAttribute('aria-selected', 'false');
+      });
+      el.classList.add('active'); el.setAttribute('aria-selected', 'true');
+      targetsFor(el).forEach(function (pane) {
+        var box = pane.parentElement;
+        if (box) Array.prototype.forEach.call(box.children, function (c) { c.classList.remove('active', 'show'); });
+        pane.classList.add('active', 'show');
+      });
+    } else if (kind === 'dropdown') {
+      e.preventDefault();
+      var menu = el.parentElement && el.parentElement.querySelector('.dropdown-menu');
+      if (menu) {
+        var wasOpen = menu.classList.contains('show');
+        document.querySelectorAll('.tl-legacy .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+        menu.classList.toggle('show', !wasOpen);
+        el.setAttribute('aria-expanded', wasOpen ? 'false' : 'true');
+      }
+    }
+  });
+
+  // 7. Legacy pages open with a "header card" holding the page title. Move that title
+  //    onto the ink cover so the page reads as a Spread page (the card is hidden).
+  function promoteLegacyTitle() {
+    var slot = document.querySelector('[data-legacy-title]');
+    var main = document.querySelector('main.tl-legacy');
+    if (!slot || !main) return;
+    var card = main.querySelector('.header-card');
+    var title = card && card.querySelector('h1, .tg-card-title');
+    if (!title || !title.textContent.trim()) return;
+    slot.textContent = title.textContent.trim();
+    var sub = card.querySelector('.tg-card-subtitle, p');
+    if (sub && sub.textContent.trim()) {
+      var subSlot = document.querySelector('[data-legacy-sub]');
+      if (subSlot) { subSlot.innerHTML = sub.innerHTML; subSlot.hidden = false; }
+    }
+    card.hidden = true;
+    fitTitles();
+  }
+
   var t;
   window.addEventListener('resize', function () {
     clearTimeout(t);
     t = setTimeout(refitTitles, 120);
   });
   function init() {
+    promoteLegacyTitle();
     fitTitles();
     restoreDetails();
     showCurrentStep();

@@ -1,39 +1,85 @@
 {% extends "core/base.html" %}
-{% load static %}
-{% block title %}
-    {% load sanitize_text %}
-    {{ object.name|sanitize_html }}
-{% endblock title %}
+{% comment %}
+Detail shell for items, locations and reference objects (Spread C9–C12, M13). The cover
+is built from the object — type and gameline eyebrow, name with rank dots, owner /
+owned by, status and sources — and the children's blocks (objectname, status_row,
+contents, model_specific, description, post_content, buttons) render on the pages.
+Children that have not been rewritten keep their Bootstrap / tg-card markup; the legacy
+layer styles it, and tl.js hides the old header card whose title the cover repeats.
+{% endcomment %}
+{% load static tl sanitize_text %}
+{% block title %}{{ object.name|sanitize_html }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {{ object|type_label }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-legacy-title data-fit-title>
+        {{ object.name|sanitize_html }}
+    </h1>
+    {% if object.rank %}<span class="tl-cover__rank">{% dots object.rank %}</span>{% endif %}
+    <p class="tl-cover__sub" data-legacy-sub hidden></p>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% block cover_facts %}
+            {% if object.owner %}
+                {% url 'accounts:profile' object.owner.id as owner_url %}
+                {% fact "Owner" object.owner.username owner_url %}
+            {% endif %}
+            {% if object.owned_by_list %}
+                <div class="tl-facts__row">
+                    <span class="tl-facts__k">Owned by</span>
+                    <span class="tl-facts__v">
+                        {% for owner in object.owned_by_list %}<a href="{{ owner.get_absolute_url }}">{{ owner }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </span>
+                </div>
+            {% endif %}
+            {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
+            {% if object.get_status_display %}{% fact "Status" object.get_status_display %}{% endif %}
+            {% for reference in object.sources.all %}
+                {% fact "Source" reference reference.book.get_absolute_url %}
+            {% endfor %}
+        {% endblock cover_facts %}
+    </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if object_perms.can_edit or object_perms.can_edit_limited %}
+        {% with edit_url=object|update_url %}
+            {% if edit_url %}<a class="tl-btn tl-btn--ghost" href="{{ edit_url }}">Edit</a>{% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock cover_actions %}
 {% block content %}
     {% csrf_token %}
-    <div class="centertext container">
-        <div class="container py-4">
-            {% block image %}
-                {% include "core/includes/image.html" %}
-            {% endblock image %}
-            {% block objectname %}
-                {% include "core/includes/title.html" %}
-            {% endblock objectname %}
-            {% block references %}
-                {% include "core/includes/references.html" %}
-            {% endblock references %}
-            {% block status %}
-                <div class="row mb-1">
-                    {% include "core/includes/status.html" %}
-                    {% block status_row %}
-                    {% endblock status_row %}
-                </div>
-            {% endblock status %}
-            {% block contents %}
-            {% endblock contents %}
-            {% block description %}
-                {% include "core/includes/description.html" %}
-            {% endblock description %}
-            {% block post_content %}
-            {% endblock post_content %}
-            {% block buttons %}
-                {% include "core/includes/buttons.html" %}
-            {% endblock buttons %}
+    {% block image %}
+        {% if object.image and object.image_status == "app" %}
+            <img class="tl-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
+        {% elif object.image %}
+            <p class="tl-note">Image pending approval.</p>
+        {% endif %}
+    {% endblock image %}
+    {% block objectname %}{% endblock objectname %}
+    {% block references %}{% endblock references %}
+    {% block status %}
+        <div class="row">
+            {% block status_row %}{% endblock status_row %}
         </div>
-    </div>
+    {% endblock status %}
+    {% block contents %}{% endblock contents %}
+    {% block description %}
+        {% if object.description %}
+            <section class="tl-section" id="description">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Description</h2>
+                </div>
+                <div class="tl-section__body tl-prose">{{ object.description|sanitize_html|linebreaks }}</div>
+            </section>
+        {% endif %}
+    {% endblock description %}
+    {% block post_content %}{% endblock post_content %}
+    {% block buttons %}{% endblock buttons %}
 {% endblock content %}
