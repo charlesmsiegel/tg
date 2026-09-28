@@ -3,7 +3,7 @@ A checkbox field on one line (label beside the box), with errors and help below.
   {% include "core/misc/check.html" with field=form.is_public %}
 {% endcomment %}
 <div class="tl-field{% if field.errors %} is-invalid{% endif %}">
-    <label class="tl-check" for="{{ field.id_for_label }}">{{ field }} {{ label|default:field.label }}</label>
+    <label class="tl-check" for="{{ field.id_for_label }}">{{ field }} {% if label %}{{ label }}{% else %}{{ field.label }}{% endif %}</label>
     {% if field.errors %}
         <ul class="tl-field__error" id="{{ field.auto_id }}_error">
             {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
