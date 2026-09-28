@@ -1,0 +1,63 @@
+{% load tl %}
+{% comment %}
+The Shadow: archetype (aside), Harrowings / Catharses, Thorns, Dark Passions and, for a
+Spectre, Dark Arcanoi. Hidden when there is nothing beyond the archetype on the cover.
+{% endcomment %}
+{% with thorns=object.get_thorn_ratings dark=object.get_dark_passions dark_arcanoi=object.get_dark_arcanoi_ratings %}
+    {% if object.harrowing_count or object.catharsis_count or thorns or dark or object.character_type == "spectre" and dark_arcanoi %}
+        <section class="tl-section" id="shadow">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Shadow</h2>
+                {% if object.shadow_archetype %}
+                    <a class="tl-section__aside tl-mono" href="{{ object.shadow_archetype.get_absolute_url }}">{{ object.shadow_archetype }}</a>
+                {% endif %}
+            </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% if object.harrowing_count or object.catharsis_count %}
+                    <div class="tl-factrow">
+                        {% if object.harrowing_count %}
+                            <div><span class="tl-subhead">Harrowings</span><span>{{ object.harrowing_count }}</span></div>
+                        {% endif %}
+                        {% if object.catharsis_count %}
+                            <div><span class="tl-subhead">Catharses</span><span>{{ object.catharsis_count }}</span></div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if thorns or dark %}
+                    <div class="tl-cols tl-cols--2">
+                        {% if thorns %}
+                            <div class="tl-stack" id="thorns">
+                                <span class="tl-subhead">Thorns</span>
+                                {% for tr in thorns %}
+                                    <div class="tl-kv">
+                                        <a href="{{ tr.thorn.get_absolute_url }}">{{ tr.thorn.name }}</a>
+                                        <span class="tl-kv__v">{{ tr.rating }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if dark %}
+                            <div class="tl-stack" id="dark-passions">
+                                <span class="tl-subhead">Dark Passions</span>
+                                {% for passion in dark %}
+                                    {% trait passion.description passion.rating passion.emotion %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if object.character_type == "spectre" and dark_arcanoi %}
+                    <div class="tl-stack" id="dark-arcanoi">
+                        <span class="tl-subhead">Dark Arcanoi</span>
+                        <div class="tl-powergrid">
+                            {% for name, value in dark_arcanoi %}
+                                {% include "characters/tl/power_cell.html" with name=name value=value %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

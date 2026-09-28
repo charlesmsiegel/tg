@@ -1,214 +1,23 @@
 {% extends "characters/wraith/wtohuman/detail.html" %}
-{% load dots %}
+{% comment %}
+Wraith sheet (Spread C18): cover basics, Arcanoi (--acc) beside Advantages (Pathos,
+Willpower, Corpus, Angst, then Backgrounds), then the line block: Passions & Fetters and
+the Shadow.
+{% endcomment %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Shadow Archetype:</span>
-                            {{ object.shadow_archetype|default:"-" }}
-                        </div>
-                        {% if object.legion %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Legion:</span>
-                                {{ object.legion }}
-                            </div>
-                        {% endif %}
-                        {% if object.faction %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Faction:</span>
-                                {{ object.faction }}
-                            </div>
-                        {% endif %}
-                        {% if object.guild %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Guild:</span>
-                                {{ object.guild }}
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/wraith/wraith/basics_display_include.html" %}
 {% endblock basics %}
 {% block powers %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Arcanoi</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row">
-                        {% for arcanos, value in arcanoi.items %}
-                            {% if value > 0 %}
-                                <div class="col-sm-4 mb-2">
-                                    <div class="row">
-                                        <div class="col-6">{{ arcanos|title }}</div>
-                                        <div class="col-6 dots">{{ value|dots }}</div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% if object.character_type == "spectre" %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Dark Arcanoi</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <div class="row">
-                            {% for arcanos, value in dark_arcanoi.items %}
-                                {% if value > 0 %}
-                                    <div class="col-sm-4 mb-2">
-                                        <div class="row">
-                                            <div class="col-6">{{ arcanos|title }}</div>
-                                            <div class="col-6 dots">{{ value|dots }}</div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    {% include "characters/wraith/wraith/arcanoi_display.html" %}
 {% endblock powers %}
-{% block passions %}
-    {% if passions %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Passions</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <div class="row">
-                            {% for passion in passions %}
-                                <div class="col-md-6 mb-2">
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <strong>{{ passion.emotion }}:</strong> {{ passion.description }}
-                                            {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
-                                        </div>
-                                        <div class="col-4 dots">{{ passion.rating|dots }}</div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-{% endblock passions %}
-{% block fetters %}
-    {% if fetters %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Fetters</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <div class="row">
-                            {% for fetter in fetters %}
-                                <div class="col-md-6 mb-2">
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }}
-                                        </div>
-                                        <div class="col-4 dots">{{ fetter.rating|dots }}</div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-{% endblock fetters %}
 {% block advantages %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
-                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Pathos:</div>
-                        <div class="col-3">{{ object.pathos_stat|linked_dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Corpus:</div>
-                        <div class="col-3 dots">{{ object.corpus|dots:10 }}</div>
-                    </div>
-                    <div class="row mb-0 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Angst:</div>
-                        <div class="col-3">{{ object.angst_stat|linked_dots:10 }}</div>
-                        <div class="col-6"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% if object.harrowing_count or object.catharsis_count %}
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Shadow History</h5>
-                    </div>
-                    <div class="tg-card-body" style="padding: 20px;">
-                        <div class="d-flex justify-content-center align-items-center flex-wrap">
-                            {% if object.harrowing_count %}
-                                <div class="px-3 py-2">
-                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Harrowings:</span>
-                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.harrowing_count }}</span>
-                                </div>
-                            {% endif %}
-                            {% if object.catharsis_count %}
-                                <div class="px-3 py-2">
-                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Catharses:</span>
-                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.catharsis_count }}</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    {% include "characters/wraith/wraith/advantages_display.html" %}
 {% endblock advantages %}
+{% block backgrounds %}{% endblock backgrounds %}
+{% block line %}
+    {% include "characters/wraith/wraith/passions_fetters_display.html" %}
+    {% include "characters/wraith/wraith/shadow_display.html" %}
+{% endblock line %}
+{% block history %}
+    {% include "characters/wraith/wraith/history_display.html" %}
+{% endblock history %}

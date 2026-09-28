@@ -1,0 +1,17 @@
+{% load tl %}
+{% comment %}Arcanoi (power section): one accent-dot row per Arcanos above 0.{% endcomment %}
+{% with ratings=object.get_arcanoi_ratings %}
+    {% if ratings %}
+        <section class="tl-section tl-section--power tl-span-7" id="arcanoi">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Arcanoi</h2>
+            </div>
+            <div class="tl-section__body tl-stack">
+                {% for name, value in ratings %}
+                    {% trait name value variant="acc" %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

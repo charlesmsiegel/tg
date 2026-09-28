@@ -1,0 +1,8 @@
+{% load tl %}
+{% fact "Guild" object.guild %}
+{% fact "Legion" object.legion %}
+{% fact "Faction" object.faction %}
+{% fact "Shadow" object.shadow_archetype %}
+{% if object.age_at_death %}{% fact "Age at death" object.age_at_death %}{% endif %}
+{% fact "Nature" object.nature %}
+{% fact "Demeanor" object.demeanor %}
