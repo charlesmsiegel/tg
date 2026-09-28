@@ -654,6 +654,7 @@ body.tl {
 .tl-btnpair > :only-child { grid-column: 1 / -1; }
 .tl-cover__actions form { margin: 0; }
 
+.tl-cover__rank .tl-dot { width: 12px; height: 12px; }
 .tl-portrait { display: block; max-width: 320px; width: 100%; border: 1px solid var(--rule); }
 
 /* Journal link row closing the sheet. */
@@ -693,6 +694,12 @@ body.tl {
 .tl-field input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--acc); }
 .tl-inlineforms { display: flex; gap: 8px; flex-wrap: wrap; }
 .tl-btn--sm { min-height: 32px; padding: 6px 12px; font-size: 11px; }
+
+/* Create / edit shell (core/form.html). */
+.tl-cover__name--form { font-size: 56px; line-height: .95; }
+.tl-formbody { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.tl-formactions { border-top: 2px solid var(--ink); padding-top: 16px; }
+.tl-formactions__cancel { margin-left: auto; }
 
 /* Legacy JS (the XP forms) toggles Bootstrap's d-none; keep it working. */
 .tl .d-none { display: none !important; }

@@ -207,6 +207,37 @@ def gameline_code(value):
     return code if code in settings.GAMELINES else "wod"
 
 
+@register.filter
+def gameline_name(value):
+    """Short gameline name for eyebrows: "Mage", "Vampire", ... ("" for the generic line)."""
+    code = gameline_code(value)
+    if code == "wod":
+        return ""
+    return settings.GAMELINES[code]["name"].split(":")[0]
+
+
+@register.filter
+def update_url(obj):
+    """obj.get_update_url(), or "" when the model has no update route."""
+    try:
+        return obj.get_update_url()
+    except Exception:  # noqa: BLE001 - NoReverseMatch, NotImplementedError, AttributeError
+        return ""
+
+
+@register.filter
+def type_label(obj):
+    """The object's display type: get_type() when it has one, else its verbose name."""
+    get_type = getattr(obj, "get_type", None)
+    if callable(get_type):
+        try:
+            return get_type()
+        except Exception:  # noqa: BLE001
+            pass
+    meta = getattr(obj, "_meta", None)
+    return str(meta.verbose_name).title() if meta else ""
+
+
 @register.inclusion_tag("core/tl/object_actions.html", takes_context=True)
 def tl_object_actions(context):
     """Same permission logic as {% object_actions %}, rendered in Spread markup."""

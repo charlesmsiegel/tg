@@ -1,126 +1,86 @@
 {% extends "core/base.html" %}
-{% block title %}
+{% comment %}
+Create / edit shell (Spread). The cover names what is being made or edited; the pages
+hold one form: errors summary, the child's `contents` (still legacy row/col markup in
+most children, styled by tl-legacy.css), then Save (first, so Enter submits it), Back
+(chargen only) and Cancel. Block names are unchanged: creation_title, formdetails,
+progress, errors, image, contents, buttons, form_scripts.
+{% endcomment %}
+{% load static tl sanitize_text %}
+{% block title %}{% if object %}Edit {{ object.name|sanitize_html }}{% else %}Create{% endif %}{% endblock title %}
+{% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}wod{% endif %}{% endblock gameline %}
+{% block cover_kind %}{% if object %}line{% else %}ink{% endif %}{% endblock cover_kind %}
+{% block cover_label %}{% if object %}Edit {{ object.name }}{% else %}Create{% endif %}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">{% if object %}Edit · {{ object|type_label }}{% else %}New{% endif %}</span>
+    <h1 class="tl-cover__name tl-cover__name--form" data-fit-title>
+        {% if object %}
+            {{ object.name|sanitize_html }}
+        {% else %}
+            {% block creation_title %}Create{% endblock creation_title %}
+        {% endif %}
+    </h1>
+{% endblock cover_title %}
+{% block cover_actions %}
     {% if object %}
-        Edit {{ object.name| safe }}
-    {% else %}
-        {% block creation_title %}
-            Create
-        {% endblock creation_title %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_absolute_url }}">← Back to {{ object.name }}</a>
     {% endif %}
-{% endblock title %}
+{% endblock cover_actions %}
 {% block content %}
-    <div class="container py-4">
-        <form {% block formdetails %}
-              action=""
-              method="post"
-              {% endblock formdetails %}>
-            {% csrf_token %}
-            
-            {% block heading %}
-                <!-- Page Header -->
-                <div class="tg-card header-card mb-4" {% if object and object.get_gameline %}data-gameline="{{ object.get_gameline }}"{% endif %}>
-                    <div class="tg-card-header">
-                        <h1 class="tg-card-title {% if object and object.get_heading %}{{ object.get_heading }}{% endif %}">
-                            {% if object %}
-                                Edit {{ object.name| safe }}
-                            {% else %}
-                                {% block creation_title_2 %}
-                                    Create
-                                {% endblock creation_title_2 %}
-                            {% endif %}
-                        </h1>
-                    </div>
+    <form {% block formdetails %}action="" method="post"{% endblock formdetails %} class="tl-form tl-legacyform">
+        {% csrf_token %}
+        {% block heading %}{% endblock heading %}
+        {% block progress %}{% endblock progress %}
+        {% block errors %}
+            {% if form.non_field_errors %}
+                <div class="tl-errors" role="alert">
+                    <ul>
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
                 </div>
-            {% endblock heading %}
-
-            {% block progress %}{% endblock progress %}
-
-            {% block errors %}
-                {% if form.non_field_errors %}
-                    <div class="tg-card mb-4">
-                        <div class="tg-card-body">
-                            {% for error in form.non_field_errors %}
-                                <div class="tg-error-message">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
+            {% endif %}
+        {% endblock errors %}
+        {% block image %}
+            {% if object.image and object.image_status == "app" %}
+                <img class="tl-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
+            {% elif object.image %}
+                <p class="tl-note">Image pending approval.</p>
+            {% endif %}
+        {% endblock image %}
+        <div class="tl-formbody">
+            {% block contents %}{% endblock contents %}
+        </div>
+        {% block buttons %}
+            <div class="tl-actions tl-formactions">
+                {% comment %} Save is rendered FIRST so it stays the form's implicit
+                   submitter (Enter in a single-line field): otherwise a leading Back
+                   button, which carries formnovalidate, would submit and silently
+                   discard the step's edits. {% endcomment %}
+                <button type="submit" class="tl-btn">Save</button>
+                {% comment %} chargen_back_url is only present on Character (not
+                   locations/items that also have creation_status) and is non-empty only
+                   mid-chargen; the owner check hides the button from STs/admins the
+                   endpoint would 403. {% endcomment %}
+                {% with back_url=object.chargen_back_url %}
+                    {% if back_url and object.owner_id == request.user.id %}
+                        {# formaction overrides the outer form's action for this button only #}
+                        <button type="submit"
+                                formaction="{{ back_url }}"
+                                formnovalidate
+                                title="Go back one step. Unsaved changes on this step are discarded."
+                                class="tl-btn tl-btn--ghost">← Back</button>
+                    {% endif %}
+                {% endwith %}
+                {% if object %}
+                    <a href="{{ object.get_absolute_url }}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
                 {% endif %}
-            {% endblock errors %}
-
-            {% block image %}
-                {% if object.image and object.image_status == "app" %}
-                    <div class="tg-card mb-4">
-                        <div class="tg-card-body text-center">
-                            <img src="{{ object.image.url }}"
-                                 width="300"
-                                 height="{{ image.height }}"
-                                 alt="image of {{ object.name }}"
-                                 class="img-fluid" />
-                        </div>
-                    </div>
-                {% elif object.image %}
-                    <div class="tg-card mb-4">
-                        <div class="tg-card-body">
-                            <div class="tg-info-message">
-                                <div class="tg-message-content">Image pending approval</div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endblock image %}
-
-            <!-- Form Content -->
-            <div class="tg-card mb-4">
-                <div class="tg-card-body">
-                    {% block contents %}
-                    {% endblock contents %}
-                </div>
             </div>
-
-            {% block buttons %}
-                <!-- Form Actions -->
-                <div class="tg-card">
-                    <div class="tg-card-body text-center">
-                        {% comment %} Save is rendered FIRST so it stays the form's implicit
-                           submitter (Enter in a single-line field): otherwise a
-                           leading Back button — which carries formnovalidate —
-                           would submit and silently discard the step's edits. {% endcomment %}
-                        <button type="submit" class="tg-btn btn-primary btn-lg">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                        {% comment %} chargen_back_url is only present on Character (not
-                           locations/items that also have creation_status) and
-                           is non-empty only mid-chargen; the owner check hides
-                           the button from STs/admins the endpoint would 403. {% endcomment %}
-                        {% with back_url=object.chargen_back_url %}
-                            {% if back_url and object.owner_id == request.user.id %}
-                                {# formaction overrides the outer form's action for this button only — no nested form needed #}
-                                <button type="submit"
-                                        formaction="{{ back_url }}"
-                                        formnovalidate
-                                        title="Go back one step. Unsaved changes on this step are discarded."
-                                        class="tg-btn btn-secondary btn-lg">
-                                    <i class="fas fa-arrow-left"></i> Back
-                                </button>
-                            {% endif %}
-                        {% endwith %}
-                        {% if object %}
-                            <a href="{{ object.get_absolute_url }}" class="tg-btn btn-secondary btn-lg">
-                                <i class="fas fa-times"></i> Cancel
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endblock buttons %}
-
-            {% block form_scripts %}
-                {% comment %} Must stay inside the form, after the content blocks: step
-                   scripts render earlier in the document and reference
-                   TG.validation from DOMContentLoaded handlers, which fire
-                   after this block has been parsed. {% endcomment %}
-                {% load static %}
-                <script src="{% static 'core/js/validation.js' %}"></script>
-            {% endblock form_scripts %}
-        </form>
-    </div>
+        {% endblock buttons %}
+        {% block form_scripts %}
+            {% comment %} Must stay inside the form, after the content blocks: step scripts
+               render earlier in the document and reference TG.validation from
+               DOMContentLoaded handlers, which fire after this block has been parsed. {% endcomment %}
+            <script src="{% static 'core/js/validation.js' %}"></script>
+        {% endblock form_scripts %}
+    </form>
 {% endblock content %}

@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const effect_selection = document.getElementById('effect selection');
 
     effect_creation_toggle.addEventListener('change', function() {
-        if ($(this).prop('checked')) {
+        if (this.checked) {
             effect_selection.classList.add("d-none");
             effect_creation.classList.remove("d-none");
         } else {
-            effect_selection.classList.add("d-none")
-            effect_creation.classList.remove("d-none")
+            effect_creation.classList.add("d-none");
+            effect_selection.classList.remove("d-none");
         }
     });
 });
