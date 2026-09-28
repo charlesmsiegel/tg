@@ -1,0 +1,35 @@
+{% load tl %}
+{% comment %}
+Pooled backgrounds as cover fact rows: background (and note) on the left, dots on
+the right. Pools can pass five dots, so the track grows to ten when they do.
+  {% include "characters/core/group/display_includes/pooled_backgrounds.html" with backgrounds=object.pooled_backgrounds.all %}
+{% endcomment %}
+{% if backgrounds %}
+    <div class="tl-stack">
+        <span class="tl-cover__eyebrow" id="pooled-backgrounds">Pooled backgrounds</span>
+        <div class="tl-facts tl-facts--pool" aria-labelledby="pooled-backgrounds">
+            {% for background in backgrounds %}
+                <div class="tl-facts__row">
+                    <span class="tl-facts__k">
+                        {% if background.display_alt_name %}{{ background.bg.alternate_name }}{% else %}{{ background.bg.name }}{% endif %}
+                        {% if background.note %}
+                            ·
+                            {% if background.url %}
+                                <a href="{{ background.url }}">{{ background.note }}</a>
+                            {% else %}
+                                {{ background.note }}
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                    <span class="tl-facts__v">
+                        {% if background.rating > 5 %}
+                            {% dots background.rating 10 %}
+                        {% else %}
+                            {% dots background.rating %}
+                        {% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

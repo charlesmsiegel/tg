@@ -1,0 +1,17 @@
+{% comment %}
+A checkbox field on one line (label beside the box), with errors and help below.
+  {% include "core/misc/check.html" with field=form.is_public %}
+{% endcomment %}
+<div class="tl-field{% if field.errors %} is-invalid{% endif %}">
+    <label class="tl-check" for="{{ field.id_for_label }}">{{ field }} {{ label|default:field.label }}</label>
+    {% if field.errors %}
+        <ul class="tl-field__error" id="{{ field.auto_id }}_error">
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% if help %}
+        <div class="tl-field__help">{{ help }}</div>
+    {% elif field.help_text %}
+        <div class="tl-field__help">{{ field.help_text }}</div>
+    {% endif %}
+</div>

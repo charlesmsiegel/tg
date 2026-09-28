@@ -1,30 +1,43 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Books
-{% endblock title %}
+{% extends "core/tl_base.html" %}
+{% comment %}Books (sources): ink cover, one table row per book.{% endcomment %}
+{% load tl %}
+{% block title %}Books{% endblock title %}
+{% block cover_label %}Books{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Sources</span>
+    <h1 class="tl-cover__name" data-fit-title>Books</h1>
+    <span class="tl-switch">{{ object_list|length }} book{{ object_list|length|pluralize }}</span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn tl-btn--block" href="{% url 'core:create_book' %}">+ New book</a>
+    {% endif %}
+{% endblock cover_actions %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Books</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <div class="row">
-                    {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No books found.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% if object_list %}
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Line</th>
+                    <th scope="col">Edition</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in object_list %}
+                    <tr data-gameline="{{ obj.gameline|gameline_code }}">
+                        <td>
+                            <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                        </td>
+                        <td class="tl-muted">{{ obj.get_gameline_display }}</td>
+                        <td class="tl-muted">
+                            {{ obj.get_edition_display }}{% if obj.storytellers_vault %} · Storyteller's Vault{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No books found." %}
+    {% endif %}
 {% endblock content %}

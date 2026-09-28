@@ -971,4 +971,54 @@ body.tl {
   .tl-indent-1 { padding-left: 12px; } .tl-indent-2 { padding-left: 24px; } .tl-indent-3 { padding-left: 36px; }
   .tl-indent-4 { padding-left: 48px; } .tl-indent-5 { padding-left: 60px; } .tl-indent-6 { padding-left: 72px; }
   .tl-indent-7 { padding-left: 84px; } .tl-indent-8 { padding-left: 96px; }
+/* ---- core miscellany and character groups ---- */
+/* Form error summary (M14): count in rubric mono, the messages beside it. */
+.tl-errsum { display: flex; gap: 12px; align-items: baseline; padding: 12px 0; border-top: 2px solid var(--rubric); border-bottom: 1px solid var(--rule); }
+.tl-errsum__count { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--rubric); flex: none; }
+.tl-errsum ul { list-style: none; padding: 0; font: 400 15px/1.5 var(--serif); }
+.tl-errsum a { text-decoration-color: var(--rubric); }
+/* A select's ▾ sits on the select, not the foot of the field, when help or errors follow it. */
+.tl-content .tl-field--select:has(> .tl-field__help, > .tl-field__error)::after { top: 31px; bottom: auto; }
+/* Image waiting for approval (M14). */
+.tl-pending { display: flex; align-items: center; justify-content: center; min-height: 170px; max-width: 420px; border: 1px dashed var(--ink2); background: var(--sheet); font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+/* Group members table (M4): leader first, tagged in the accent. */
+.tl-members thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.tl-members td { padding: 13px 16px 13px 0; }
+.tl-members__name { font: 400 23px/1.15 var(--display); color: var(--acc); }
+.tl-members__name a { text-decoration: none; }
+.tl-members__type { font: 400 15px var(--serif); color: var(--ink2); }
+.tl-members__who { font: 400 13px var(--mono); }
+.tl-members__role { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; text-align: right; white-space: nowrap; }
+.tl-members__role .tl-acc + span { margin-left: 8px; }
+.tl-facts--pool .tl-facts__k { flex: 1 1 auto; min-width: 0; }
+.tl-facts--pool .tl-facts__v { flex: none; }
+/* Short plain cover note under a title (M6). */
+.tl-cover__note { font: 400 15px/1.55 var(--serif); opacity: .85; max-width: 420px; }
+/* Rule groups (M6 house rules): mono head over a 2px rule, name / summary rows. */
+.tl-content--narrow > * { max-width: 900px; }
+.tl-rulegroup { display: flex; flex-direction: column; }
+.tl-rulegroup__head { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink2); padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.tl-rulerow { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.tl-rulerow__name { display: flex; flex-direction: column; gap: 4px; font: 600 18px/1.35 var(--serif); }
+.tl-rulerow__name a { text-decoration: none; }
+.tl-rulerow__meta { font: 400 12px/1.5 var(--mono); color: var(--ink2); }
+.tl-rulerow__text { font: 400 17px/1.55 var(--serif); color: var(--ink2); }
+.tl-rulerow__text > * + * { margin-top: 10px; }
+/* Names set in columns (languages, registry object lists). */
+.tl-namelist { list-style: none; padding: 0; columns: 3 220px; column-gap: 36px; border-top: 2px solid var(--ink); }
+.tl-namelist li { break-inside: avoid; padding: 9px 0; border-bottom: 1px solid var(--rule); font: 400 19px/1.3 var(--display); color: var(--acc); }
+.tl-namelist a { text-decoration: none; }
+/* A link inside a whole-tile link sits above the tile's click overlay. */
+.tl-tile__action { position: relative; z-index: 1; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; }
+/* Paging row under a list. */
+.tl-pager { display: flex; flex-wrap: wrap; gap: 20px; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--rule); font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.tl-pager a { text-decoration: none; }
+.tl-pager span { color: var(--ink2); }
+/* Raw template data (character templates). */
+.tl-code { margin: 0; padding: 14px 16px; background: var(--inset); font: 400 13px/1.55 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  .tl-rulerow { grid-template-columns: 1fr; gap: 6px; }
+  .tl-members td { display: block; padding: 2px 0; border: 0; }
+  .tl-members tr { display: block; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .tl-members__role { text-align: left; }
 }

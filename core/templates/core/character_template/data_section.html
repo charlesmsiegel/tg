@@ -1,0 +1,14 @@
+{% comment %}
+One stored data block of a character template, pretty-printed, as a half-width
+numbered section of the detail page's .tl-sheet.
+  {% include "core/character_template/data_section.html" with title="Attributes" data=template.attributes %}
+{% endcomment %}
+<section class="tl-section tl-span-6">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">{{ title }}</h2>
+    </div>
+    <div class="tl-section__body">
+        <pre class="tl-code">{{ data|pprint }}</pre>
+    </div>
+</section>

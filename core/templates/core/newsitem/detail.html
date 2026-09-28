@@ -1,17 +1,39 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    <div class="row">
-        <div class="col-sm">Title</div>
-        <div class="col-sm">{{ object.title }}</div>
+{% extends "core/tl_base.html" %}
+{% comment %}One news item: ink cover with the title and date, the content as prose.{% endcomment %}
+{% load tl %}
+{% block title %}{{ object.title }}{% endblock title %}
+{% block cover_label %}{{ object.title }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'core:index_newsitem' %}">← News</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">News</span>
+    <h1 class="tl-cover__name tl-cover__name--form" data-fit-title>{{ object.title }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% fact "Date" object.date|date:"d M Y" %}
     </div>
-    <div class="row">
-        <div class="col-sm">Date</div>
-        <div class="col-sm">{{ object.date }}</div>
-    </div>
-{% endblock objectname %}
-{% block description %}
-    <div class="row">
-        <div class="col-sm">Content</div>
-        <div class="col-sm">{{ object.content }}</div>
-    </div>
-{% endblock description %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_update_url }}">Edit</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block content_mod %}tl-content--narrow{% endblock content_mod %}
+{% block content %}
+    <section class="tl-section" id="content">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">Content</h2>
+        </div>
+        <div class="tl-section__body tl-prose">
+            {% if object.content %}
+                {{ object.content|linebreaks }}
+            {% else %}
+                <p class="tl-muted">No content.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock content %}

@@ -1,56 +1,50 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wod">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title wod_heading">{{ object.name }}</h1>
+{% extends "core/tl_base.html" %}
+{% comment %}One house rule: line cover when it belongs to a gameline, ink for all lines.{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}{% if object.gameline != "wod" %}line{% else %}ink{% endif %}{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'core:houserules' %}">← House rules</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">House rule</span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% fact "Gameline" object.get_gameline_display %}
+        {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
+        {% if object.display_sources %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Sources</span>
+                <span class="tl-facts__v">{{ object.display_sources|sanitize_html }}</span>
             </div>
-        </div>
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">House Rule Details</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Gameline:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_gameline_display }}</span>
-                        </div>
-                    </div>
-                    {% if object.chronicle %}
-                    <div class="col-md-6">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Chronicle:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.chronicle }}</span>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Description</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02); text-align: center;">
-                    <p class="mb-0" style="line-height: 1.6;">{{ object.description }}</p>
-                </div>
-            </div>
-        </div>
-        {% if object.sources.all %}
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Sources</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <p class="mb-0">{{ object.display_sources }}</p>
-            </div>
-        </div>
         {% endif %}
     </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'core:update_houserule' object.pk %}">Edit</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="houserules" %}
+{% endblock nav %}
+{% block content %}
+    <section class="tl-section" id="description">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">Description</h2>
+        </div>
+        <div class="tl-section__body tl-prose">
+            {% if object.description %}
+                {{ object.description|sanitize_html|linebreaks }}
+            {% else %}
+                <p class="tl-muted">No description.</p>
+            {% endif %}
+        </div>
+    </section>
 {% endblock content %}

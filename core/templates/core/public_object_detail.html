@@ -1,11 +1,33 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>{{ public_object.name }}</title></head>
-<body>
-<main>
-  <h1>{{ public_object.name }}</h1>
-  {% if public_object.image_url %}<img src="{{ public_object.image_url }}" alt="">{% endif %}
-  <div>{{ public_object.public_info|linebreaks }}</div>
-</main>
-</body>
-</html>
+{% extends "core/tl_base.html" %}
+{% comment %}
+Public card (Spread M14 "not your character"): what a viewer without full access sees.
+The context holds only the allowlisted `public_object` projection (name, public_info,
+image_url) from core.views.public_object; nothing else about the object is available
+here, and nothing else may be added.
+{% endcomment %}
+{% block title %}{{ public_object.name }}{% endblock title %}
+{% block cover_label %}{{ public_object.name }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Public record</span>
+    <h1 class="tl-cover__name tl-cover__name--form" data-fit-title>{{ public_object.name }}</h1>
+{% endblock cover_title %}
+{% block content_mod %}tl-content--narrow{% endblock content_mod %}
+{% block content %}
+    <section class="tl-section" id="public">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">What's public</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <p class="tl-lede">Only the owner and the Storyteller can see the full record.</p>
+            {% if public_object.image_url %}
+                <img class="tl-portrait" src="{{ public_object.image_url }}" alt="">
+            {% endif %}
+            {% if public_object.public_info %}
+                <div class="tl-prose">{{ public_object.public_info|linebreaks }}</div>
+            {% elif not public_object.image_url %}
+                {% include "core/tl/empty.html" with text="Nothing about this has been made public yet." %}
+            {% endif %}
+        </div>
+    </section>
+{% endblock content %}

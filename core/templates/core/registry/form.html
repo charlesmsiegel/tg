@@ -1,4 +1,16 @@
-{% extends "core/base.html" %}
-{% block content %}
-<form method="post" enctype="multipart/form-data" class="tg-card">{% csrf_token %}{{ form.as_p }}<button type="submit" class="tg-btn">Save</button></form>
-{% endblock %}
+{% extends "core/misc/form.html" %}
+{% comment %}Fallback create / edit form for registry items and locations: every field in order.{% endcomment %}
+{% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
+{% endblock nav %}
+{% block contents %}
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    {% for field in form.visible_fields %}
+        {% if field.widget_type == "checkbox" %}
+            {% include "core/misc/check.html" %}
+        {% else %}
+            {% include "core/tl/field.html" %}
+        {% endif %}
+    {% endfor %}
+{% endblock contents %}

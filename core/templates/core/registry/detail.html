@@ -1,4 +1,39 @@
-{% extends "core/base.html" %}
+{% extends "core/tl_base.html" %}
+{% comment %}Fallback detail for registry items and locations: line cover, image, description.{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {{ object|type_label }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if object_perms.can_edit or object_perms.can_edit_limited %}
+        {% with edit_url=object|update_url %}
+            {% if edit_url %}<a class="tl-btn tl-btn--ghost" href="{{ edit_url }}">Edit</a>{% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
+{% endblock nav %}
 {% block content %}
-<div class="tg-card"><h1>{{ object.name }}</h1>{{ object.description|linebreaks }}</div>
-{% endblock %}
+    {% include "core/misc/image.html" with obj=object %}
+    <section class="tl-section" id="description">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">Description</h2>
+        </div>
+        <div class="tl-section__body tl-prose">
+            {% if object.description %}
+                {{ object.description|sanitize_html|linebreaks }}
+            {% else %}
+                <p class="tl-muted">No description.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock content %}

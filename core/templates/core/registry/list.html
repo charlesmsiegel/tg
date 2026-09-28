@@ -1,30 +1,36 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ list_title }}
-{% endblock title %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Shared list for registry items and locations without their own list template: line
+cover in the entry's gameline (from list_heading), the names set in columns.
+{% endcomment %}
+{% load tl %}
+{% block title %}{{ list_title }}{% endblock title %}
+{% block gameline %}{{ list_heading|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ list_title }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {% with line=list_heading|gameline_name %}{% if line %}{{ line }} · {% endif %}{% endwith %}Reference
+    </span>
+    <h1 class="tl-cover__name tl-cover__name--index {{ list_title|cover_title_class:list_heading }}"
+        data-fit-title>{{ list_title }}</h1>
+    <span class="tl-switch">{{ object_list|length }} shown</span>
+{% endblock cover_title %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
+{% endblock nav %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title {{ list_heading }}">{{ list_title }}</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <div class="row">
-                    {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No {{ list_title|lower }} found.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% if object_list %}
+        <ul class="tl-namelist">
+            {% for obj in object_list %}
+                <li>
+                    <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {% with lowered=list_title|lower %}
+            {% include "core/tl/empty.html" with text="No "|add:lowered|add:" found." %}
+        {% endwith %}
+    {% endif %}
 {% endblock content %}

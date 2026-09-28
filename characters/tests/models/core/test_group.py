@@ -25,6 +25,45 @@ class TestGroupDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/core/group/detail.html")
 
 
+class TestGroupRoster(TestCase):
+    """Group.roster(): the members table order on the group page (Spread M4)."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="roster-player", password="12345")
+        self.group = Group.objects.create(name="The Cartographers")
+        self.alma = Human.objects.create(name="Alma", owner=self.player)
+        self.zed = Human.objects.create(name="Zed", owner=self.player)
+        self.theo = Human.objects.create(name="Theo", owner=self.player)
+
+    def test_members_by_name_without_leader(self):
+        self.group.members.add(self.zed, self.alma)
+        self.assertEqual(self.group.roster(), [self.alma, self.zed])
+
+    def test_leader_first_and_listed_once(self):
+        self.group.members.add(self.alma, self.zed, self.theo)
+        self.group.leader = self.zed
+        self.group.save()
+        self.assertEqual(self.group.roster(), [self.zed, self.alma, self.theo])
+
+    def test_leader_outside_members_is_still_listed(self):
+        self.group.members.add(self.alma)
+        self.group.leader = self.theo
+        self.group.save()
+        self.assertEqual(self.group.roster(), [self.theo, self.alma])
+
+    def test_detail_page_tags_the_leader_first(self):
+        self.player.is_staff = True
+        self.player.save(update_fields=["is_staff"])
+        self.group.members.add(self.alma, self.zed)
+        self.group.leader = self.zed
+        self.group.save()
+        self.client.force_login(self.player)
+        content = self.client.get(self.group.get_absolute_url()).content.decode()
+        self.assertIn('class="tl-table tl-members"', content)
+        self.assertLess(content.index(">Zed<"), content.index(">Alma<"))
+        self.assertIn('<span class="tl-acc">Leader</span>', content)
+
+
 class TestGroupCreateView(TestCase):
     def setUp(self):
         self.valid_data = {

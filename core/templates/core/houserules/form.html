@@ -1,18 +1,28 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create House Rule
-{% endblock creation_title %}
+{% extends "core/misc/form.html" %}
+{% block creation_title %}New house rule{% endblock creation_title %}
+{% block form_eyebrow %}{% if object %}Edit · House rule{% else %}New · House rule{% endif %}{% endblock form_eyebrow %}
+{% block cover_actions %}
+    {% if object %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'core:houserule' object.pk %}">← Back to {{ object }}</a>
+    {% else %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'core:houserules' %}">← House rules</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="houserules" %}
+{% endblock nav %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
+    {% include "core/tl/field.html" with field=form.name %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.gameline %}
+        {% include "core/tl/field.html" with field=form.chronicle %}
     </div>
-    <div class="row">
-        <div class="col-sm">{{ form.gameline }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.chronicle }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
+    {% include "core/tl/field.html" with field=form.description %}
 {% endblock contents %}
+{% block buttons %}
+    <div class="tl-actions tl-formactions">
+        <button type="submit" class="tl-btn">Save</button>
+        <a href="{% if object %}{% url 'core:houserule' object.pk %}{% else %}{% url 'core:houserules' %}{% endif %}"
+           class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
+    </div>
+{% endblock buttons %}

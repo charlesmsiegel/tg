@@ -1,6 +1,25 @@
-{% extends "core/base.html" %}
+{% extends "core/tl_base.html" %}
+{% comment %}Base-model registry list (every Item / every Location): plain names, str() of each.{% endcomment %}
+{% block title %}{{ list_title|default:"Objects" }}{% endblock title %}
+{% block cover_label %}{{ list_title|default:"Objects" }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">All</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>{{ list_title|default:"Objects" }}</h1>
+    <span class="tl-switch">{{ object_list|length }} shown</span>
+{% endblock cover_title %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
+{% endblock nav %}
 {% block content %}
-<div class="tg-card">
-{% for object in object_list %}<p><a href="{{ object.get_absolute_url }}">{{ object }}</a></p>{% empty %}<p>No objects found.</p>{% endfor %}
-</div>
-{% endblock %}
+    {% if object_list %}
+        <ul class="tl-namelist">
+            {% for object in object_list %}
+                <li>
+                    <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No objects found." %}
+    {% endif %}
+{% endblock content %}

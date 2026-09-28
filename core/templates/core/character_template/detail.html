@@ -1,181 +1,116 @@
-{% extends "core/base.html" %}
-{% load sanitize_text json_filters %}
-
-{% block heading %}{{ template.name }}{% endblock %}
-
-{% block content %}
-<div class="tg-card mb-4" data-gameline="{{ template.gameline }}">
-    <div class="tg-card-header">
-        <h4 class="tg-card-title {{ template.get_heading }}">{{ template.name }}</h4>
-        <p class="tg-card-subtitle">{{ template.concept }}</p>
+{% extends "core/tl_base.html" %}
+{% comment %}
+One character template: line cover in the template's gameline with its facts and
+actions (edit, delete, export, quick NPC); the pages hold the description and one
+numbered section per stored data block.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ template.name }}{% endblock title %}
+{% block gameline %}{{ template.gameline|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ template.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'core:character_template_list' %}">← Templates</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Character template{% with line=template.gameline|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}</span>
+    <h1 class="tl-cover__name {{ template.name|cover_title_class:template.gameline }}" data-fit-title>{{ template.name }}</h1>
+    {% if template.concept %}<span class="tl-cover__sub">{{ template.concept }}</span>{% endif %}
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% fact "Gameline" template.get_gameline_display %}
+        {% fact "Character type" template.character_type|title %}
+        {% fact "Faction" template.faction %}
+        {% if template.owner %}
+            {% fact "Created by" template.owner.username %}
+        {% else %}
+            {% fact "Created by" "System" %}
+        {% endif %}
+        {% fact "Times used" template.times_used|stringformat:"d" %}
+        {% if template.is_official %}
+            {% fact "Kind" "Official" %}
+        {% else %}
+            {% fact "Kind" "User-created" %}
+        {% endif %}
+        {% if template.is_public %}
+            {% fact "Visibility" "Public" %}
+        {% else %}
+            {% fact "Visibility" "Private" %}
+        {% endif %}
+        {% if template.chronicle %}{% fact "Chronicle" template.chronicle.name %}{% endif %}
     </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <!-- Action buttons -->
-        <div class="mb-4" style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <a href="{% url 'core:character_template_list' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to List
-            </a>
-            {% if object_perms.can_edit and not template.is_official or object_perms.can_manage_character %}
-                <a href="{% url 'core:character_template_update' template.pk %}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Edit Template
-                </a>
-                <a href="{% url 'core:character_template_delete' template.pk %}" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Delete
-                </a>
-            {% endif %}
-            <a href="{% url 'core:character_template_export' template.pk %}" class="btn btn-success">
-                <i class="fas fa-file-download"></i> Export JSON
-            </a>
-            {% if object_perms.can_manage_character and object_perms.can_edit %}
-            <form method="post" action="{% url 'core:character_template_create_npc' template.pk %}" style="display: inline;">
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if object_perms.can_edit and not template.is_official or object_perms.can_manage_character %}
+        <div class="tl-btnpair">
+            <a class="tl-btn" href="{% url 'core:character_template_update' template.pk %}">Edit template</a>
+            <a class="tl-btn tl-btn--ghost" href="{% url 'core:character_template_delete' template.pk %}">Delete</a>
+        </div>
+    {% endif %}
+    <div class="tl-btnpair">
+        <a class="tl-btn tl-btn--ghost" href="{% url 'core:character_template_export' template.pk %}">Export JSON</a>
+        {% if object_perms.can_manage_character and object_perms.can_edit %}
+            <form method="post" action="{% url 'core:character_template_create_npc' template.pk %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-info" onclick="return confirm('Create a quick NPC from this template?');">
-                    <i class="fas fa-user-plus"></i> Quick NPC
-                </button>
+                <button type="submit"
+                        class="tl-btn tl-btn--ghost tl-btn--block"
+                        onclick="return confirm('Create a quick NPC from this template?');">Quick NPC</button>
             </form>
-            {% endif %}
-        </div>
-
-        <!-- Basic Info -->
-        <div class="mb-4">
-            <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Basic Information</h6>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Gameline</div>
-                        <div style="font-weight: 500;">{{ template.get_gameline_display }}</div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Character Type</div>
-                        <div style="font-weight: 500;">{{ template.character_type|title }}</div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Created By</div>
-                        <div style="font-weight: 500;">{% if template.owner %}{{ template.owner.username }}{% else %}System{% endif %}</div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Times Used</div>
-                        <div style="font-weight: 500;">{{ template.times_used }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-3">
-                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">Description</div>
-                <div style="line-height: 1.6;">{{ template.description|sanitize_html }}</div>
-            </div>
-            <div style="display: flex; gap: 8px; margin-top: 12px;">
-                {% if template.is_official %}
-                    <span class="tg-badge badge-app">Official</span>
-                {% else %}
-                    <span class="tg-badge badge-sub">User-Created</span>
-                {% endif %}
-                {% if template.is_public %}
-                    <span class="tg-badge badge-pill" style="background-color: #28a745;">Public</span>
-                {% else %}
-                    <span class="tg-badge badge-pill" style="background-color: #fd7e14;">Private</span>
-                {% endif %}
-                {% if template.chronicle %}
-                    <span class="tg-badge badge-pill" style="background-color: #6c757d;">{{ template.chronicle.name }}</span>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Character Data -->
-        {% if template.basic_info %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Basic Character Info</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.basic_info|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.attributes %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Attributes</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.attributes|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.abilities %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Abilities</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.abilities|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.backgrounds %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Backgrounds</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.backgrounds|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.powers %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Powers</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.powers|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.merits_flaws %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Merits & Flaws</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.merits_flaws|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.specialties %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Specialties</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.specialties|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.languages %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Languages</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.languages|pprint }}</pre>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.equipment %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Equipment</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px;">
-                    {{ template.equipment|sanitize_html }}
-                </div>
-            </div>
-        {% endif %}
-
-        {% if template.suggested_freebie_spending %}
-            <div class="mb-4">
-                <h6 class="{{ template.get_heading }}" style="margin-bottom: 16px;">Suggested Freebie Spending</h6>
-                <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
-                    <pre style="margin: 0; white-space: pre-wrap;">{{ template.suggested_freebie_spending|pprint }}</pre>
-                </div>
-            </div>
         {% endif %}
     </div>
-</div>
-{% endblock %}
+{% endblock cover_actions %}
+{% block content %}
+    <div class="tl-sheet">
+        <section class="tl-section" id="description">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Description</h2>
+            </div>
+            <div class="tl-section__body tl-prose">
+                {% if template.description %}
+                    {{ template.description|sanitize_html }}
+                {% else %}
+                    <p class="tl-muted">No description.</p>
+                {% endif %}
+            </div>
+        </section>
+        {% if template.basic_info %}
+            {% include "core/character_template/data_section.html" with title="Basic character info" data=template.basic_info %}
+        {% endif %}
+        {% if template.attributes %}
+            {% include "core/character_template/data_section.html" with title="Attributes" data=template.attributes %}
+        {% endif %}
+        {% if template.abilities %}
+            {% include "core/character_template/data_section.html" with title="Abilities" data=template.abilities %}
+        {% endif %}
+        {% if template.backgrounds %}
+            {% include "core/character_template/data_section.html" with title="Backgrounds" data=template.backgrounds %}
+        {% endif %}
+        {% if template.powers %}
+            {% include "core/character_template/data_section.html" with title="Powers" data=template.powers %}
+        {% endif %}
+        {% if template.merits_flaws %}
+            {% include "core/character_template/data_section.html" with title="Merits & Flaws" data=template.merits_flaws %}
+        {% endif %}
+        {% if template.specialties %}
+            {% include "core/character_template/data_section.html" with title="Specialties" data=template.specialties %}
+        {% endif %}
+        {% if template.languages %}
+            {% include "core/character_template/data_section.html" with title="Languages" data=template.languages %}
+        {% endif %}
+        {% if template.equipment %}
+            <section class="tl-section tl-span-6" id="equipment">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Equipment</h2>
+                </div>
+                <div class="tl-section__body tl-prose">{{ template.equipment|sanitize_html }}</div>
+            </section>
+        {% endif %}
+        {% if template.suggested_freebie_spending %}
+            {% include "core/character_template/data_section.html" with title="Suggested freebie spending" data=template.suggested_freebie_spending %}
+        {% endif %}
+    </div>
+{% endblock content %}
