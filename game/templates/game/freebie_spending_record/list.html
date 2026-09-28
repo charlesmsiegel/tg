@@ -1,79 +1,47 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Freebie Spending Records
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Freebie spending records the viewer may read, newest first.{% endcomment %}
+{% block title %}Freebie Spending Records{% endblock title %}
+{% block cover_label %}Freebie spending records{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Freebie points</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Freebie spending records</h1>
+{% endblock cover_title %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Freebie Spending Records</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                {% if object_list %}
-                    <div class="tg-table-responsive">
-                        <table class="tg-table">
-                            <thead>
-                                <tr>
-                                    <th>Character</th>
-                                    {% if show_owner_column %}
-                                        <th>Player</th>
-                                    {% endif %}
-                                    <th>Trait</th>
-                                    <th>Type</th>
-                                    <th>Value</th>
-                                    <th>Cost</th>
-                                    <th>Created</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record in object_list %}
-                                    <tr>
-                                        <td><a href="{{ record.character.get_absolute_url }}">{{ record.character.name }}</a></td>
-                                        {% if show_owner_column %}
-                                            <td>{{ record.character.owner.username }}</td>
-                                        {% endif %}
-                                        <td>{{ record.trait_name }}</td>
-                                        <td>{{ record.trait_type }}</td>
-                                        <td>{{ record.trait_value }}</td>
-                                        <td>{{ record.cost }} freebies</td>
-                                        <td>{{ record.created_at|date:"M d, Y" }}</td>
-                                        <td><a href="{% url 'game:freebie_spending_record:detail' record.pk %}" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if is_paginated %}
-                        <nav aria-label="Page navigation" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1">First</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                    </li>
-                                {% endif %}
-                                <li class="page-item active">
-                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                                </li>
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% endif %}
-                {% else %}
-                    <p class="text-center text-muted">No freebie spending records found.</p>
-                {% endif %}
-            </div>
+    {% if object_list %}
+        <div class="tl-scroll">
+            <table class="tl-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Character</th>
+                        {% if show_owner_column %}<th scope="col">Player</th>{% endif %}
+                        <th scope="col">Trait</th>
+                        <th scope="col">Type</th>
+                        <th scope="col" class="tl-num">Value</th>
+                        <th scope="col" class="tl-num">Cost</th>
+                        <th scope="col">Created</th>
+                        <th scope="col"><span class="tl-sr">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in object_list %}
+                        <tr>
+                            <td><a class="tl-plain" href="{{ record.character.get_absolute_url }}">{{ record.character.name }}</a></td>
+                            {% if show_owner_column %}<td class="tl-meta">{{ record.character.owner.username }}</td>{% endif %}
+                            <td>{{ record.trait_name }}</td>
+                            <td class="tl-meta">{{ record.trait_type }}</td>
+                            <td class="tl-num">{{ record.trait_value }}</td>
+                            <td class="tl-num">{{ record.cost }} freebies</td>
+                            <td class="tl-meta">{{ record.created_at|date:"M d, Y" }}</td>
+                            <td class="tl-end">
+                                <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{% url 'game:freebie_spending_record:detail' record.pk %}">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
+        {% include "game/tl/pager.html" %}
+    {% else %}
+        {% include "core/tl/empty.html" with text="No freebie spending records found." %}
+    {% endif %}
 {% endblock content %}

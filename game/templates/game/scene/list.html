@@ -1,35 +1,44 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Scenes
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Every scene the viewer may read, newest first, as one table.{% endcomment %}
+{% load tl %}
+{% block title %}Scenes{% endblock title %}
+{% block cover_label %}Scenes{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Index</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Scenes</h1>
+    <span class="tl-switch">{{ object_list|length }} scene{{ object_list|length|pluralize }}</span>
+{% endblock cover_title %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Scenes</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <div class="row">
+    {% if object_list %}
+        <div class="tl-scroll">
+            <table class="tl-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Scene</th>
+                        <th scope="col">Chronicle</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
                     {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                    {% if obj.date_of_scene %}
-                                        <div style="font-size: 0.85rem; color: var(--theme-text-secondary); margin-top: 4px;">
-                                            {{ obj.date_of_scene|date:"M d, Y" }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No scenes found.</p>
-                        </div>
+                        <tr data-gameline="{{ obj.gameline|gameline_code }}">
+                            <td class="tl-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                            <td>{% if obj.chronicle %}<a href="{{ obj.chronicle.get_absolute_url }}">{{ obj.chronicle.name }}</a>{% else %}—{% endif %}</td>
+                            <td class="tl-meta">{% if obj.date_of_scene %}{{ obj.date_of_scene|date:"M d, Y" }}{% else %}—{% endif %}</td>
+                            <td>
+                                {% if obj.finished %}
+                                    <span class="tl-status">Completed</span>
+                                {% else %}
+                                    <span class="tl-status tl-rubric">● Active</span>
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
-    </div>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No scenes found." %}
+    {% endif %}
 {% endblock content %}

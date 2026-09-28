@@ -1480,18 +1480,24 @@ class TestChronicleDetailViewPost(TestCase):
         ObjectType.objects.create(name="wand", type="obj", gameline="mta")
         self.client.force_login(self.st_user)
 
-        response = self.client.get(self.chronicle.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        page = response.content.decode()
-        for category, child in (("char", "char_type"), ("loc", "loc_type"), ("obj", "item_type")):
+        # Each creation form lives in its own tab of the Spread chronicle page.
+        for category, tab in (("char", "characters"), ("loc", "locations"), ("obj", "items")):
             with self.subTest(category=category):
-                self.assertTrue(f'data-chain-tree="chronicle_{category}"' in page, "missing choice tree")
+                response = self.client.get(f"{self.chronicle.get_absolute_url()}?tab={tab}")
+                self.assertEqual(response.status_code, 200)
+                page = response.content.decode()
+                self.assertTrue(
+                    f'data-chain-tree="chronicle_{category}"' in page, "missing choice tree"
+                )
                 self.assertEqual(page.count(f'data-chain-name="chronicle_{category}"'), 2)
                 self.assertTrue('"gameline:vtm"' in page, "missing Vampire choices")
                 self.assertTrue('"gameline:mta"' in page, "missing Mage choices")
+                self.assertTrue("widgets/chained.js" in page, "missing chained select script")
         self.assertEqual(response.context["char_form"]["gameline"].value(), "vtm")
-        self.assertIn('<option value="vampire">Vampire</option>', str(response.context["char_form"]["char_type"]))
-        self.assertTrue('widgets/chained.js' in page, "missing chained select script")
+        self.assertIn(
+            '<option value="vampire">Vampire</option>',
+            str(response.context["char_form"]["char_type"]),
+        )
 
     def test_non_st_cannot_create_story(self):
         """Test that non-storytellers cannot create stories."""

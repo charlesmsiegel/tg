@@ -1,30 +1,27 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Stories
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Every story, as ruled rows with its state (current until its XP is given).{% endcomment %}
+{% block title %}Stories{% endblock title %}
+{% block cover_label %}Stories{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Index</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Stories</h1>
+    <span class="tl-switch">{{ object_list|length }} stor{{ object_list|length|pluralize:"y,ies" }}</span>
+{% endblock cover_title %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Stories</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <div class="row">
-                    {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No stories found.</p>
-                        </div>
-                    {% endfor %}
+    {% if object_list %}
+        <div>
+            {% for obj in object_list %}
+                <div class="tl-row">
+                    <a class="tl-row__title" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                    {% if obj.xp_given %}
+                        <span class="tl-row__meta tl-row__meta--word">Finished</span>
+                    {% else %}
+                        <span class="tl-row__meta tl-row__meta--word is-current">Current</span>
+                    {% endif %}
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No stories found." %}
+    {% endif %}
 {% endblock content %}

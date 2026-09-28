@@ -1,64 +1,36 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Weeks
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Weekly XP periods, newest first, with the finished scenes each one holds.{% endcomment %}
+{% block title %}Weeks{% endblock title %}
+{% block cover_label %}Weeks{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Weekly periods</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Weeks</h1>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if can_manage_global_records %}
+        <a class="tl-btn" href="{% url 'game:week:create' %}">Create new week</a>
+    {% endif %}
+{% endblock cover_actions %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Weekly Periods</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                {% if can_manage_global_records %}
-                    <div class="mb-4 text-center">
-                        <a href="{% url 'game:week:create' %}" class="btn btn-primary">Create New Week</a>
-                    </div>
-                {% endif %}
-                <div class="row">
-                    {% for week in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ week.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ week }}</a>
-                                    <div style="font-size: 0.75rem; color: var(--theme-text-secondary); margin-top: 8px;">
-                                        {{ week.cached_scene_count }} scene{{ week.cached_scene_count|pluralize }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No weeks found.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {% if is_paginated %}
-                    <nav aria-label="Page navigation" class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            {% if page_obj.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1">First</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                </li>
-                            {% endif %}
-                            <li class="page-item active">
-                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                            </li>
-                            {% if page_obj.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    {% if object_list %}
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th scope="col">Week</th>
+                    <th scope="col" class="tl-num">Finished scenes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in object_list %}
+                    <tr>
+                        <td><a href="{{ week.get_absolute_url }}">{{ week.start_date|date:"j M Y" }} – {{ week.end_date|date:"j M Y" }}</a></td>
+                        <td class="tl-num">{{ week.cached_scene_count }} scene{{ week.cached_scene_count|pluralize }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "game/tl/pager.html" %}
+    {% else %}
+        {% include "core/tl/empty.html" with text="No weeks found." %}
+    {% endif %}
 {% endblock content %}

@@ -1,24 +1,40 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wod">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title wod_heading">{{ object.name }}</h1>
-            </div>
-        </div>
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Story Details</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Name:</span>
-                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.name }}</span>
-                </div>
-            </div>
-        </div>
+{% extends "game/tl/base.html" %}
+{% comment %}A story: its name and whether its XP has been given.{% endcomment %}
+{% load tl %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'game:story:list' %}">← Stories</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Story</span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% if object.xp_given %}{% fact "Status" "Finished · XP given" %}{% else %}{% fact "Status" "Current" %}{% endif %}
     </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'game:story:update' object.pk %}">Edit</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block content %}
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Story details</h2>
+        </div>
+        <div class="tl-section__body tl-factrow">
+            <div>
+                <span class="tl-subhead">Name</span>
+                <span>{{ object.name }}</span>
+            </div>
+            <div>
+                <span class="tl-subhead">Experience</span>
+                <span>{% if object.xp_given %}Given{% else %}Not yet given{% endif %}</span>
+            </div>
+        </div>
+    </section>
 {% endblock content %}

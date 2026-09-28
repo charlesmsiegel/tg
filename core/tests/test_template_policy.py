@@ -16,14 +16,13 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
-INLINE_STYLE_BUDGET = 1138
+INLINE_STYLE_BUDGET = 762
 STYLE_BLOCK_TEMPLATES = {
     "accounts/registration/password_reset_email.html",
     "characters/core/chargen_progress.html",
     "characters/mage/mage/qp_wheel.html",
     "characters/mage/sorcerer/quintessence_wheel.html",
     "core/base.html",
-    "game/chronicle/detail.html",
 }
 MAX_EXTENDS_DEPTH = 5
 EXTENDS = re.compile(r'{%\s*extends\s+"([^"]+)"')

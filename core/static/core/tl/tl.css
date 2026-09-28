@@ -1021,4 +1021,94 @@ body.tl {
   .tl-members td { display: block; padding: 2px 0; border: 0; }
   .tl-members tr { display: block; padding: 10px 0; border-bottom: 1px solid var(--rule); }
   .tl-members__role { text-align: left; }
+/* ---- game pages (chronicle, journal, week, XP requests) ---- */
+/* Page tab bar whose tabs fill the bar, so the rubric underline sits on the rule. */
+.tl-nav--game { overflow-x: auto; overflow-y: hidden; }
+.tl-nav--game > a { align-self: stretch; display: flex; align-items: center; white-space: nowrap; text-decoration: none; }
+.tl-block--loose { gap: 34px; }
+.tl-section--serif .tl-section__title { font: 400 26px var(--serif); }
+/* Mono sub-tabs inside a tab (status, game line). */
+.tl-subtabs { display: flex; flex-wrap: wrap; gap: 6px 20px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.tl-subtabs a { color: var(--ink2); text-decoration: none; padding-bottom: 3px; }
+.tl-subtabs a[aria-current] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--rubric); }
+/* Ruled rows: name (+ italic line) on the left, mono meta on the right. */
+.tl-section__body--rows { padding-top: 0; }
+.tl-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+.tl-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tl-row__name { font: 400 21px/1.15 var(--display); overflow-wrap: anywhere; }
+.tl-row__name--acc { color: var(--acc); font-size: 19px; }
+.tl-row__title { font: 400 18px var(--serif); overflow-wrap: anywhere; }
+.tl-row a, a.tl-row__name, a.tl-row__title { text-decoration: none; }
+.tl-row__sub { font: italic 400 14px var(--serif); color: var(--ink2); }
+.tl-row__meta { font: 400 12px var(--mono); color: var(--ink2); flex: none; text-align: right; }
+.tl-row__meta.is-live { color: var(--rubric); }
+.tl-row__meta--word { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.tl-row__meta.is-current { color: var(--acc); font-weight: 500; }
+.tl-row--spend { display: grid; grid-template-columns: minmax(0, 1fr) 48px 40px 84px; }
+.tl-row--spend > :last-child { text-align: right; }
+/* A ghost button that opens its form in place (<details>). */
+.tl-reveal > summary { list-style: none; width: fit-content; }
+.tl-reveal > summary::-webkit-details-marker { display: none; }
+.tl-reveal[open] > summary { margin-bottom: 16px; }
+.tl-reveal__body { border: 1px solid var(--rule); background: var(--sheet); padding: 18px 20px; max-width: 640px; }
+/* Tables: centred marks, big totals, group header rows, location tree indent. */
+.tl-table .tl-c { text-align: center; }
+.tl-table td.tl-big { font: 400 22px/1 var(--serif); text-align: right; }
+.tl-table td.tl-name { font: 400 19px var(--display); }
+.tl-table td.tl-name a, .tl-table td a.tl-plain { text-decoration: none; }
+.tl-table td.tl-sub { font: italic 400 15px var(--serif); color: var(--ink2); }
+.tl-table td.tl-end { text-align: right; white-space: nowrap; }
+.tl-table tbody th {
+  font: 600 16px var(--serif); letter-spacing: 0; text-transform: none; color: var(--ink);
+  padding: 18px 12px 6px 0; border-bottom: 1px solid var(--rule); text-align: left;
+}
+.tl-table tbody th .tl-meta { color: var(--ink2); font-weight: 400; margin-left: 8px; }
+.tl-tree__glyph { display: inline-block; width: 18px; color: var(--ink2); }
+.tl-table td.tl-indent-1 { padding-left: 26px; } .tl-table td.tl-indent-2 { padding-left: 52px; }
+.tl-table td.tl-indent-3 { padding-left: 78px; } .tl-table td.tl-indent-4 { padding-left: 104px; }
+.tl-table td[class*="tl-indent-"]:not(.tl-indent-1):not(.tl-indent-2):not(.tl-indent-3):not(.tl-indent-4) { padding-left: 130px; }
+.tl-scroll { overflow-x: auto; position: relative; }
+/* Cover: week pager, big XP numbers. */
+.tl-links--split { justify-content: space-between; }
+.tl-bignums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 18px; border-top: 1px solid var(--cover-rule); }
+.tl-bignum { display: flex; flex-direction: column; gap: 4px; }
+.tl-bignum b { font: 400 32px/1 var(--serif); }
+/* Journal: compose box, entries on a 150px / 1fr grid, ST responses as rubric notes. */
+.tl-journal { display: flex; flex-direction: column; gap: 28px; max-width: 860px; }
+.tl-compose { display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--rule); background: var(--sheet); padding: 18px 20px; }
+.tl-compose__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+.tl-compose__head input {
+  font: 500 12px var(--mono); letter-spacing: .06em; color: var(--ink);
+  border: 0; border-bottom: 1px solid var(--rule); background: transparent; padding: 2px 0;
+}
+.tl-compose textarea {
+  width: 100%; min-height: 90px; resize: vertical; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0;
+  background: transparent; padding: 4px 0; font: 400 17px/1.6 var(--serif); color: var(--ink);
+}
+.tl-compose textarea::placeholder { font-style: italic; color: var(--ink2); opacity: 1; }
+.tl-compose textarea:focus, .tl-compose__head input:focus { outline: 0; border-bottom: 2px solid var(--acc); }
+.tl-compose__foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.tl-compose--note { background: transparent; padding: 12px 14px; }
+.tl-compose--note textarea { min-height: 56px; font-size: 16px; }
+.tl-entry { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 28px; padding-top: 16px; border-top: 2px solid var(--ink); }
+.tl-entry__when { display: flex; flex-direction: column; gap: 3px; }
+.tl-entry__date { font: 500 12px var(--mono); letter-spacing: .08em; }
+.tl-entry__body { display: flex; flex-direction: column; gap: 14px; max-width: 64ch; min-width: 0; }
+.tl-entry__text { font: 400 18px/1.65 var(--serif); }
+.tl-rubricnote { border-top: 1px solid var(--rubric); padding-top: 8px; color: var(--rubric); font: italic 400 16px/1.6 var(--serif); }
+.tl-rubricnote__tag { display: block; font: 500 11px var(--mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; }
+/* Command reference. */
+.tl-table code { font: 400 13px/1.5 var(--mono); overflow-wrap: anywhere; }
+.tl-table--commands td { vertical-align: top; }
+.tl-table td.tl-nowrap { white-space: nowrap; }
+.tl-table td.tl-explain { font-size: 15px; line-height: 1.5; min-width: 260px; }
+/* Game forms stay a readable width; the XP forms put the request history beside them. */
+.tl-form--narrow { max-width: 640px; min-width: 0; }
+.tl-form--narrow .tl-formgrid, .tl-reveal__body .tl-formgrid { align-items: start; }
+/* List pager. */
+.tl-pager { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.tl-pager a { text-decoration: none; }
+.tl-pager span { color: var(--ink2); }
+@media (max-width: 720px) {
+  .tl-entry { grid-template-columns: 1fr; gap: 8px; }
 }

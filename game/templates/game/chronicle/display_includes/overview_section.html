@@ -1,0 +1,92 @@
+{% load humanize %}
+{% comment %}
+Chronicle OVERVIEW tab: live scenes and stories on the left, player characters and common
+knowledge on the right. Empty blocks are hidden.
+{% endcomment %}
+{% if live_scenes or stories or character_list or setting_elements_by_gameline %}
+    <div class="tl-split">
+        <div class="tl-block tl-block--loose">
+            {% if live_scenes %}
+                <section class="tl-section">
+                    <div class="tl-section__head">
+                        <h2 class="tl-section__title">Live scenes</h2>
+                        <span class="tl-meta tl-rubric">{{ live_scenes|length }}</span>
+                    </div>
+                    <div class="tl-section__body tl-section__body--rows">
+                        {% for scene in live_scenes %}
+                            {% with last=scene.most_recent_post %}
+                                <div class="tl-row">
+                                    <div class="tl-row__main">
+                                        <a class="tl-row__name" href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
+                                        {% if scene.location %}<span class="tl-row__sub">{{ scene.location.name }}</span>{% endif %}
+                                    </div>
+                                    <span class="tl-row__meta is-live">
+                                        {% if last %}{{ last.datetime_created|naturaltime }}{% else %}● Live{% endif %}
+                                    </span>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+            {% if stories %}
+                <section class="tl-section">
+                    <div class="tl-section__head">
+                        <h2 class="tl-section__title">Stories</h2>
+                        <a class="tl-section__aside tl-mono tl-muted" href="?tab=stories">All →</a>
+                    </div>
+                    <div class="tl-section__body tl-section__body--rows">
+                        {% for story in stories|slice:":5" %}
+                            <div class="tl-row">
+                                <a class="tl-row__title" href="{{ story.get_absolute_url }}">{{ story.name }}</a>
+                                {% if story.xp_given %}
+                                    <span class="tl-row__meta tl-row__meta--word">Finished</span>
+                                {% else %}
+                                    <span class="tl-row__meta tl-row__meta--word is-current">Current</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+        <div class="tl-block tl-block--loose">
+            {% if character_list %}
+                <section class="tl-section">
+                    <div class="tl-section__head">
+                        <h2 class="tl-section__title">Player characters</h2>
+                        <a class="tl-section__aside tl-mono tl-muted" href="?tab=characters">All →</a>
+                    </div>
+                    <div class="tl-section__body tl-section__body--rows">
+                        {% for char in character_list %}
+                            {% if char.display %}
+                                <div class="tl-row">
+                                    <a class="tl-row__name tl-row__name--acc" href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                    <span class="tl-row__meta">{{ char.get_type }}{% if char.owner %} · {{ char.owner.username }}{% endif %}</span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+            {% with knowledge=setting_elements_by_gameline.wod %}
+                {% if knowledge %}
+                    <section class="tl-section">
+                        <div class="tl-section__head">
+                            <h2 class="tl-section__title">Common knowledge</h2>
+                        </div>
+                        <div class="tl-section__body tl-section__body--rows">
+                            {% for element in knowledge.items %}
+                                <div class="tl-row">
+                                    <a class="tl-row__title" href="{{ element.get_absolute_url }}">{{ element.name }}</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+{% else %}
+    {% include "core/tl/empty.html" with text="Nothing in this chronicle yet." %}
+{% endif %}

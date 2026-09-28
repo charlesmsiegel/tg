@@ -1,30 +1,30 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Chronicles
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Chronicles the viewer can read, as tiles in each chronicle's gameline.{% endcomment %}
+{% load tl %}
+{% block title %}Chronicles{% endblock title %}
+{% block cover_label %}Chronicles{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Index</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Chronicles</h1>
+    <span class="tl-switch">{{ object_list|length }} chronicle{{ object_list|length|pluralize }}</span>
+{% endblock cover_title %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Chronicles</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <div class="row">
-                    {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No chronicles found.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+    {% if object_list %}
+        <div class="tl-grid">
+            {% for obj in object_list %}
+                <article class="tl-tile" data-gameline="{{ obj|gameline_code }}">
+                    <span class="tl-tile__meta">
+                        <span>{{ obj|gameline_name|default:"World of Darkness" }}</span>
+                        <span>{{ obj.year }}</span>
+                    </span>
+                    <h2 class="tl-tile__name">
+                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                    </h2>
+                    {% if obj.theme %}<span class="tl-tile__sub">{{ obj.theme }}</span>{% endif %}
+                </article>
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No chronicles found." %}
+    {% endif %}
 {% endblock content %}

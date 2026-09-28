@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -6,6 +8,7 @@ from django.db.models import Count, Max
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views import View
 from django.views.generic import (
     CreateView,
@@ -17,6 +20,7 @@ from django.views.generic import (
 
 from characters.models.core import CharacterModel
 from core.htmx import is_fragment_request, mark_fragment, vary_on_htmx
+from core.models import HouseRule
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
@@ -52,6 +56,7 @@ from game.models import (
     Journal,
     Scene,
     SettingElement,
+    STRelationship,
     Story,
     StoryXPRequest,
     Week,
@@ -85,11 +90,60 @@ def _has_st_read_rows(request, rows):
     return any(get_object_permissions(request, row).is_chronicle_st for row in rows)
 
 
+def can_create_scene(user, chronicle, request=None):
+    """Chronicle managers and the chronicle's STs may open scenes from the chronicle page."""
+    return PermissionManager.can_manage_chronicle(user, chronicle, request) or (
+        STRelationship.objects.filter(user=user, chronicle=chronicle).exists()
+    )
+
+
+def current_week(today=None):
+    """The Week whose span (``start_date`` through ``end_date``, inclusive) holds today."""
+    today = today or timezone.localdate()
+    return (
+        Week.objects.filter(end_date__gte=today, end_date__lte=today + timedelta(days=7))
+        .order_by("end_date")
+        .first()
+    )
+
+
+def _line_key(groups, requested):
+    """The game-line sub-tab to show: the requested one when it has rows, else the first."""
+    if requested in groups:
+        return requested
+    return next(iter(groups), None)
+
+
+class CharacterContextMixin:
+    """Put the record's character, as its concrete class, in the context as ``character``.
+
+    Journals and XP / freebie records reach their character through a plain foreign key,
+    which yields the base CharacterModel; the concrete class carries the gameline the
+    page's Spread cover is drawn in.
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        character = getattr(self.object, "character", None)
+        context["character"] = character.get_real_instance() if character else None
+        return context
+
+
 class ChronicleDetailView(LoginRequiredMixin, DetailView):
-    """View for displaying chronicle details. Requires authentication."""
+    """View for displaying chronicle details. Requires authentication.
+
+    The page is tabbed by querystring (Spread M1): ``?tab=`` picks overview,
+    characters, scenes, locations, items, common-knowledge or stories; ``status=``
+    and ``line=`` pick the sub-tabs inside a tab, and ``new=scene|story`` opens that
+    creation form. A creation action that fails re-renders this page with its bound
+    form, and the form's tab opens with it.
+    """
 
     model = Chronicle
     template_name = "game/chronicle/detail.html"
+    TABS = ("overview", "characters", "scenes", "locations", "items", "common-knowledge", "stories")
+    CHARACTER_STATUSES = ("active", "retired", "deceased", "npc")
+    SCENE_STATUSES = ("all", "active", "completed")
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("storytellers", "allowed_objects")
@@ -97,28 +151,75 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chronicle = self.object
+        user = self.request.user
         context["can_manage_chronicle"] = PermissionManager.can_manage_chronicle(
-            self.request.user, chronicle, self.request
+            user, chronicle, self.request
         )
+        context["can_create_scene"] = can_create_scene(user, chronicle, self.request)
 
-        context.update(chronicle_overview(chronicle, self.request.user))
+        context.update(chronicle_overview(chronicle, user))
         # A creation action re-renders this page with its bound form (Step 5).
-        context.setdefault("form", SceneCreationForm(chronicle=chronicle, user=self.request.user))
+        context.setdefault("form", SceneCreationForm(chronicle=chronicle, user=user))
         context.setdefault("story_form", StoryForm())
         context.update(
             {
                 "header": chronicle.headings,
                 # Creation forms for Characters, Locations, Items
-                "char_form": ChronicleCharacterCreationForm(
-                    chronicle=chronicle, user=self.request.user
-                ),
-                "loc_form": ChronicleLocationCreationForm(
-                    chronicle=chronicle, user=self.request.user
-                ),
-                "item_form": ChronicleItemCreationForm(chronicle=chronicle, user=self.request.user),
+                "char_form": ChronicleCharacterCreationForm(chronicle=chronicle, user=user),
+                "loc_form": ChronicleLocationCreationForm(chronicle=chronicle, user=user),
+                "item_form": ChronicleItemCreationForm(chronicle=chronicle, user=user),
             }
         )
+        context.update(self.tab_context(context))
         return context
+
+    def tab_context(self, context):
+        """Which tab, sub-tabs and creation form the page shows, plus the cover facts."""
+        query = self.request.GET
+        chronicle = self.object
+        scene_form, story_form = context["form"], context["story_form"]
+
+        tab = query.get("tab")
+        open_form = query.get("new")
+        if scene_form.is_bound:
+            tab, open_form = "scenes", "scene"
+        elif story_form.is_bound:
+            tab, open_form = "stories", "story"
+        elif tab not in self.TABS:
+            tab = "overview"
+
+        status = query.get("status")
+        character_status = status if status in self.CHARACTER_STATUSES else "active"
+        scene_status = status if status in self.SCENE_STATUSES else "all"
+        character_groups = context[f"{character_status}_by_gameline"]
+        scene_groups = context[f"{scene_status}_scenes_by_gameline"]
+        line = query.get("line")
+
+        all_scenes = context["all_scenes_by_gameline"].get("wod")
+        locations = context["locations_by_gameline"].get("wod")
+        return {
+            "tab": tab,
+            "open_form": open_form,
+            "character_status": character_status,
+            "character_groups": character_groups,
+            "character_line": _line_key(character_groups, line),
+            "scene_status": scene_status,
+            "scene_groups": scene_groups,
+            "scene_line": _line_key(scene_groups, line),
+            "location_line": _line_key(context["locations_by_gameline"], line),
+            "item_line": _line_key(context["items_by_gameline"], line),
+            "setting_line": _line_key(context["setting_elements_by_gameline"], line),
+            "tab_counts": {
+                "characters": context["character_list"].count(),
+                "scenes": all_scenes["scenes"].count() if all_scenes else 0,
+                "locations": len(locations["locations"]) if locations else 0,
+                "items": context["items"].count(),
+            },
+            "live_scenes": context["active_scenes"].select_related("location"),
+            "stories": Story.objects.order_by("xp_given", "name"),
+            "current_week": current_week(),
+            "house_rule_count": HouseRule.objects.filter(chronicle=chronicle).count(),
+        }
 
 
 class SceneDetailView(DetailView):
@@ -181,7 +282,7 @@ class CommandsView(LoginRequiredMixin, TemplateView):
     template_name = "game/scene/commands.html"
 
 
-class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
+class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, CharacterContextMixin, DetailView):
     model = Journal
     template_name = "game/journal/detail.html"
 
@@ -328,6 +429,14 @@ class WeekDetailView(LoginRequiredMixin, DetailView):
         context["pending_requests"] = context["xp_requests"].filter(approved=False)
         context["approved_requests"] = context["xp_requests"].filter(approved=True)
 
+        # Week navigation on the cover
+        end_date = self.object.end_date
+        context["previous_week"] = (
+            Week.objects.filter(end_date__lt=end_date).order_by("-end_date").first()
+        )
+        context["next_week"] = (
+            Week.objects.filter(end_date__gt=end_date).order_by("end_date").first()
+        )
         return context
 
 
@@ -373,7 +482,7 @@ class WeeklyXPRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
+class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, CharacterContextMixin, DetailView):
     model = WeeklyXPRequest
     template_name = "game/weekly_xp_request/detail.html"
 
@@ -547,7 +656,7 @@ class StoryXPRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class StoryXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
+class StoryXPRequestDetailView(CharacterOwnerOrSTMixin, CharacterContextMixin, DetailView):
     model = StoryXPRequest
     template_name = "game/story_xp_request/detail.html"
 
@@ -622,7 +731,7 @@ class XPSpendingRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
+class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, CharacterContextMixin, DetailView):
     model = XPSpendingRequest
     template_name = "game/xp_spending_request/detail.html"
 
@@ -676,7 +785,9 @@ class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, Messag
         return context
 
 
-class XPSpendingRequestUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateView):
+class XPSpendingRequestUpdateView(
+    CharacterOwnerOrSTMixin, MessageMixin, CharacterContextMixin, UpdateView
+):
     model = XPSpendingRequest
     form_class = XPSpendingRequestForm
     template_name = "game/xp_spending_request/form.html"
@@ -741,7 +852,7 @@ class FreebieSpendingRecordListView(LoginRequiredMixin, ListView):
         return context
 
 
-class FreebieSpendingRecordDetailView(CharacterOwnerOrSTMixin, DetailView):
+class FreebieSpendingRecordDetailView(CharacterOwnerOrSTMixin, CharacterContextMixin, DetailView):
     model = FreebieSpendingRecord
     template_name = "game/freebie_spending_record/detail.html"
 
@@ -785,7 +896,9 @@ class FreebieSpendingRecordCreateView(LoginRequiredMixin, MessageMixin, CreateVi
         return context
 
 
-class FreebieSpendingRecordUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateView):
+class FreebieSpendingRecordUpdateView(
+    CharacterOwnerOrSTMixin, MessageMixin, CharacterContextMixin, UpdateView
+):
     model = FreebieSpendingRecord
     form_class = FreebieSpendingRecordForm
     template_name = "game/freebie_spending_record/form.html"
@@ -829,7 +942,9 @@ class StoryXPRequestCreateView(StorytellerRequiredMixin, MessageMixin, CreateVie
         return context
 
 
-class StoryXPRequestUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
+class StoryXPRequestUpdateView(
+    StorytellerRequiredMixin, MessageMixin, CharacterContextMixin, UpdateView
+):
     model = StoryXPRequest
     form_class = StoryXPRequestForm
     template_name = "game/story_xp_request/form.html"

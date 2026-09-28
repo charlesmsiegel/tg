@@ -1,126 +1,80 @@
-{% extends "core/base.html" %}
-{% block title %}
-    XP Spending Request - {{ object.character.name }}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wod">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title wod_heading">XP Spending Request</h1>
-                <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
-                    {{ object.character.name }} - {{ object.trait_name }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Request Details -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Request Details</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Character</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);"><a href="{{ object.character.get_absolute_url }}">{{ object.character.name }}</a></div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Player</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.character.owner.username }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-3">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Trait Name</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.trait_name }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Trait Type</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.trait_type }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">New Value</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.trait_value }}</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">XP Cost</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.cost }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Status</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">
-                                {% if object.approved == "Pending" %}
-                                    <span class="tg-badge badge-sub">Pending</span>
-                                {% elif object.approved == "Approved" %}
-                                    <span class="tg-badge badge-app">Approved</span>
-                                {% else %}
-                                    <span class="tg-badge badge-dec">Denied</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Created</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.created_at|date:"M d, Y H:i" }}</div>
-                        </div>
-                    </div>
-                    {% if object.approved_at %}
-                        <div class="col-md-4">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Processed</div>
-                                <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.approved_at|date:"M d, Y H:i" }} by {{ object.approved_by.username }}</div>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        {% if object_perms.can_approve_spending and object.approved == "Pending" %}
-            <!-- Approval Form -->
-            <div class="tg-card mb-4">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title wod_heading">Process Request</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <form method="post" action="{% url 'game:xp_spending_request:approve' object.pk %}">
-                        {% csrf_token %}
-                        <div class="row mb-3">
-                            <div class="col-md-4 offset-md-4">
-                                {{ approval_form.approved }}
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Submit Decision</button>
-                        </div>
-                    </form>
-                </div>
+{% extends "game/tl/base.html" %}
+{% comment %}
+One XP spending request: the character's line cover (player, dates, status), the trait
+and cost, the approver's decision form while it is pending, and Edit for the owner.
+{% endcomment %}
+{% load tl %}
+{% block title %}XP Spending Request - {{ object.character.name }}{% endblock title %}
+{% block gameline %}{{ character|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}XP spending request{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'game:xp_spending_request:list' %}">← Requests</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">XP spend · {{ object.character.name }}</span>
+    <h1 class="tl-cover__name {{ object.trait_name|cover_title_class:character }}" data-fit-title>{{ object.trait_name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% fact "Character" object.character %}
+        {% fact "Player" object.character.owner.username %}
+        {% fact "Status" object.approved %}
+        {% fact "Created" object.created_at|date:"M d, Y H:i" %}
+        {% if object.approved_at %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Processed</span>
+                <span class="tl-facts__v">{{ object.approved_at|date:"M d, Y H:i" }} by {{ object.approved_by.username }}</span>
             </div>
         {% endif %}
-
-        <div class="text-center mb-4">
-            {% if is_owner and object.approved == "Pending" %}
-                <a href="{% url 'game:xp_spending_request:update' object.pk %}" class="btn btn-secondary">Edit</a>
-            {% endif %}
-            <a href="{% url 'game:xp_spending_request:list' %}" class="btn btn-secondary">Back to List</a>
-        </div>
     </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    <div class="tl-btnpair">
+        {% if is_owner and object.approved == "Pending" %}
+            <a class="tl-btn" href="{% url 'game:xp_spending_request:update' object.pk %}">Edit</a>
+        {% endif %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'game:xp_spending_request:list' %}">Back to list</a>
+    </div>
+{% endblock cover_actions %}
+{% block content %}
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Request</h2>
+            <span class="tl-section__aside">{% include "game/xp_spending_request/_status.html" with status=object.approved %}</span>
+        </div>
+        <div class="tl-section__body tl-factrow">
+            <div>
+                <span class="tl-subhead">Trait name</span>
+                <span>{{ object.trait_name }}</span>
+            </div>
+            <div>
+                <span class="tl-subhead">Trait type</span>
+                <span>{{ object.trait_type }}</span>
+            </div>
+            <div>
+                <span class="tl-subhead">New value</span>
+                <span>{{ object.trait_value }}</span>
+            </div>
+            <div>
+                <span class="tl-subhead">XP cost</span>
+                <span>{{ object.cost }}</span>
+            </div>
+        </div>
+    </section>
+    {% if object_perms.can_approve_spending and object.approved == "Pending" %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Process request</h2>
+            </div>
+            <form class="tl-section__body tl-form tl-form--narrow" method="post" action="{% url 'game:xp_spending_request:approve' object.pk %}">
+                {% csrf_token %}
+                {% include "core/tl/field.html" with field=approval_form.approved label="Decision" %}
+                <div class="tl-actions tl-formactions">
+                    <button type="submit" class="tl-btn">Submit decision</button>
+                </div>
+            </form>
+        </section>
+    {% endif %}
 {% endblock content %}

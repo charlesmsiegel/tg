@@ -1,184 +1,102 @@
-{% extends "core/base.html" %}
-{% block title %}
-    XP Request - {{ object.character.name }}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wod">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title wod_heading">Weekly XP Request</h1>
-                <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
-                    {{ object.character.name }} - {{ object.week }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Request Details -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Request Details</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Character</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);"><a href="{{ object.character.get_absolute_url }}">{{ object.character.name }}</a></div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Player</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.character.owner.username }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Week</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);"><a href="{{ object.week.get_absolute_url }}">{{ object.week }}</a></div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Status</div>
-                            <div style="font-weight: 700; color: var(--theme-text-primary);">
-                                {% if object.approved %}
-                                    <span class="tg-badge badge-app">Approved</span>
-                                {% else %}
-                                    <span class="tg-badge badge-sub">Pending</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- XP Categories -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">XP Categories</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="tg-table-responsive">
-                    <table class="tg-table">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Claimed</th>
-                                <th>Scene</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Finishing a Scene</td>
-                                <td>{% if object.finishing %}✓{% else %}—{% endif %}</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td>Learning Something New</td>
-                                <td>{% if object.learning %}✓{% else %}—{% endif %}</td>
-                                <td>
-                                    {% if object.learning_scene %}
-                                        <a href="{{ object.learning_scene.get_absolute_url }}">{{ object.learning_scene.name }}</a>
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Roleplaying</td>
-                                <td>{% if object.rp %}✓{% else %}—{% endif %}</td>
-                                <td>
-                                    {% if object.rp_scene %}
-                                        <a href="{{ object.rp_scene.get_absolute_url }}">{{ object.rp_scene.name }}</a>
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Focus on Character Concept</td>
-                                <td>{% if object.focus %}✓{% else %}—{% endif %}</td>
-                                <td>
-                                    {% if object.focus_scene %}
-                                        <a href="{{ object.focus_scene.get_absolute_url }}">{{ object.focus_scene.name }}</a>
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Standing Out</td>
-                                <td>{% if object.standingout %}✓{% else %}—{% endif %}</td>
-                                <td>
-                                    {% if object.standingout_scene %}
-                                        <a href="{{ object.standingout_scene.get_absolute_url }}">{{ object.standingout_scene.name }}</a>
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr style="font-weight: 600;">
-                                <td>Total XP</td>
-                                <td>{{ object.total_xp }}</td>
-                                <td>—</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ST Approval Form -->
-        {% if object_perms.can_approve_spending and not object.approved %}
-            <div class="tg-card mb-4">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title wod_heading">Review Request</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="{% url 'game:weekly_xp_request:approve' object.pk %}">
-                        {% csrf_token %}
-                        <p class="mb-4" style="color: var(--theme-text-secondary);">
-                            Review the XP categories below and adjust as needed before approving the request.
-                        </p>
-                        {% for field in approval_form %}
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label" style="font-weight: 600; color: var(--theme-text-secondary);">{{ field.label }}</label>
-                                </div>
-                                <div class="col-md-8">
-                                    {{ field }}
-                                </div>
-                            </div>
-                            {% if field.errors %}
-                                <div class="row mb-3">
-                                    <div class="col-md-8 offset-md-4">
-                                        <div class="text-danger" style="font-size: 0.875rem;">{{ field.errors }}</div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        <div class="row">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-success">Approve Request</button>
-                                <a href="{{ object.week.get_absolute_url }}" class="btn btn-secondary">Back to Week</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if object.approved or not object_perms.can_approve_spending %}
-            <div class="text-center mb-4">
-                <a href="{{ object.week.get_absolute_url }}" class="btn btn-secondary">Back to Week</a>
-            </div>
-        {% endif %}
+{% extends "game/tl/base.html" %}
+{% comment %}
+One weekly XP request: the character's line cover with player, week and status; the
+five categories with their scenes; and, for an approver while it is pending, the review
+form that posts to weekly_xp_request:approve.
+{% endcomment %}
+{% load tl %}
+{% block title %}XP Request - {{ object.character.name }}{% endblock title %}
+{% block gameline %}{{ character|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}Weekly XP request{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    {% if object.week %}<a href="{{ object.week.get_absolute_url }}">← Week</a>{% endif %}
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Weekly XP request</span>
+    <h1 class="tl-cover__name {{ object.character.name|cover_title_class:character }}" data-fit-title>{{ object.character.name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% fact "Character" object.character %}
+        {% fact "Player" object.character.owner.username %}
+        {% if object.week %}{% fact "Week" object.week %}{% endif %}
+        {% if object.approved %}{% fact "Status" "Approved" %}{% else %}{% fact "Status" "Pending" %}{% endif %}
     </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    <div class="tl-cover__stat">
+        <span class="tl-mono">Total</span>
+        <span class="tl-cover__xp">{{ object.total_xp }} <span class="tl-mono">XP</span></span>
+    </div>
+    {% if object.week %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.week.get_absolute_url }}">Back to week</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block content %}
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">XP categories</h2>
+        </div>
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th scope="col">Category</th>
+                    <th scope="col" class="tl-c">Claimed</th>
+                    <th scope="col">Scene</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Finishing a Scene</td>
+                    <td class="tl-c tl-meta">{% if object.finishing %}✓{% else %}—{% endif %}</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td>Learning Something New</td>
+                    <td class="tl-c tl-meta">{% if object.learning %}✓{% else %}—{% endif %}</td>
+                    <td>{% if object.learning_scene %}<a href="{{ object.learning_scene.get_absolute_url }}">{{ object.learning_scene.name }}</a>{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Roleplaying</td>
+                    <td class="tl-c tl-meta">{% if object.rp %}✓{% else %}—{% endif %}</td>
+                    <td>{% if object.rp_scene %}<a href="{{ object.rp_scene.get_absolute_url }}">{{ object.rp_scene.name }}</a>{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Focus on Character Concept</td>
+                    <td class="tl-c tl-meta">{% if object.focus %}✓{% else %}—{% endif %}</td>
+                    <td>{% if object.focus_scene %}<a href="{{ object.focus_scene.get_absolute_url }}">{{ object.focus_scene.name }}</a>{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Standing Out</td>
+                    <td class="tl-c tl-meta">{% if object.standingout %}✓{% else %}—{% endif %}</td>
+                    <td>{% if object.standingout_scene %}<a href="{{ object.standingout_scene.get_absolute_url }}">{{ object.standingout_scene.name }}</a>{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Total XP</th>
+                    <td class="tl-big tl-c">{{ object.total_xp }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    {% if object_perms.can_approve_spending and not object.approved %}
+        <section class="tl-section">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Review request</h2>
+            </div>
+            <form class="tl-section__body tl-form tl-form--narrow" method="post" action="{% url 'game:weekly_xp_request:approve' object.pk %}">
+                {% csrf_token %}
+                <p class="tl-lede">Review the XP categories and adjust them as needed before approving the request.</p>
+                {% include "game/tl/fields.html" with form=approval_form %}
+                <div class="tl-actions tl-formactions">
+                    <button type="submit" class="tl-btn">Approve request</button>
+                    {% if object.week %}
+                        <a class="tl-btn tl-btn--quiet tl-formactions__cancel" href="{{ object.week.get_absolute_url }}">Back to week</a>
+                    {% endif %}
+                </div>
+            </form>
+        </section>
+    {% endif %}
 {% endblock content %}
