@@ -1,0 +1,51 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en"
+      data-theme="{% if user.is_authenticated %}{{ user.profile.theme|default:'system' }}{% else %}system{% endif %}"
+      data-gameline="{% block gameline %}wod{% endblock gameline %}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="description"
+              content="Welcome to the Tellurium Games site! Here you will find various projects related to RPGs including links to community content products, generators, and more.">
+        <meta name="keywords"
+              content="world of darkness, rpgs, role-playing games, community content">
+        <title>{% block title %}Tellurium Games{% endblock title %}</title>
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+        <link rel="stylesheet" href="{% static 'core/tl/tl.css' %}">
+        {% block styling %}{% endblock styling %}
+    </head>
+    <body class="tl">
+        <a class="tl-skip" href="#main">Skip to content</a>
+        <div class="tl-spread {% block spread_mod %}{% endblock spread_mod %}">
+            <aside class="tl-cover tl-cover--{% block cover_kind %}ink{% endblock cover_kind %} {% block cover_mod %}{% endblock cover_mod %}"
+                   aria-label="{% block cover_label %}Page summary{% endblock cover_label %}">
+                <div class="tl-cover__inner">
+                    <header class="tl-cover__top">
+                        {% block cover_top %}
+                            <a class="tl-wordmark" href="{% url 'core:home' %}">Tellurium<span>·</span>Games</a>
+                        {% endblock cover_top %}
+                    </header>
+                    <div class="tl-cover__title">{% block cover_title %}{% endblock cover_title %}</div>
+                    <div class="tl-cover__body">{% block cover_body %}{% endblock cover_body %}</div>
+                    <footer class="tl-cover__actions">{% block cover_actions %}{% endblock cover_actions %}</footer>
+                </div>
+            </aside>
+            <div class="tl-pages">
+                {% block nav %}{% include "core/tl/nav.html" %}{% endblock nav %}
+                {% include "core/tl/messages.html" %}
+                <main class="tl-content {% block content_mod %}{% endblock content_mod %}" id="main" tabindex="-1">
+                    {% block content %}{% endblock content %}
+                </main>
+            </div>
+        </div>
+        {% block actionbar %}{% endblock actionbar %}
+        <script src="{% static 'core/tl/tl.js' %}" defer></script>
+        {% block extrascripts %}{% endblock extrascripts %}
+        {% load widget_media %}
+        {% page_media %}
+    </body>
+</html>

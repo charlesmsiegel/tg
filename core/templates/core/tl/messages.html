@@ -1,0 +1,25 @@
+{% load sanitize_text %}
+{% comment %}
+Flash messages strip under the nav. Always rendered, keeps id="tg-messages" so htmx
+fragments can replace it out of band (hx-swap-oob) and screen readers hear new notices.
+{% endcomment %}
+<div id="tg-messages" class="tl-messages" aria-live="polite"{% if oob %} hx-swap-oob="true"{% endif %}>
+    {% for message in messages %}
+        <div class="tl-message tl-message--{{ message.level_tag|default:'info' }}"
+             role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">
+            <span class="tl-message__tag">
+                {% if message.level_tag == 'error' %}
+                    Error
+                {% elif message.level_tag == 'warning' %}
+                    † Warning
+                {% elif message.level_tag == 'success' %}
+                    Saved
+                {% else %}
+                    † Notice
+                {% endif %}
+            </span>
+            <span>{{ message|sanitize_html }}</span>
+            <button class="tl-message__close" type="button" data-tl-dismiss aria-label="Dismiss">×</button>
+        </div>
+    {% endfor %}
+</div>

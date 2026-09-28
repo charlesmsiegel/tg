@@ -91,6 +91,7 @@ def render_public_object_list(request, model_class, extra_context=None):
     context = {
         "public_objects": objects,
         "title": model_class._meta.verbose_name_plural.title(),
+        "nav_active": route.split(":")[0],
     }
     context.update(extra_context or {})
     return render(request, "core/public_object_list.html", context)

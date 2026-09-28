@@ -16,7 +16,7 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
-INLINE_STYLE_BUDGET = 2514
+INLINE_STYLE_BUDGET = 2485
 STYLE_BLOCK_TEMPLATES = {
     "accounts/detail.html",
     "accounts/registration/password_reset_email.html",

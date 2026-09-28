@@ -1,0 +1,16 @@
+{% comment %}
+Numbered section: heading row, then a body under a 2px rule.
+  {% include "core/tl/section.html" with num="01" title="Attributes" body_template="characters/core/attribute_block/tl.html" %}
+power=True colours the heading and rule with the gameline accent; aside puts a mono note on the right.
+Or copy the markup and put content directly inside .tl-section__body.
+{% endcomment %}
+<section class="tl-section{% if power %} tl-section--power{% endif %}"{% if anchor %} id="{{ anchor }}"{% endif %}>
+    <div class="tl-section__head">
+        <span class="tl-section__num">{{ num }}</span>
+        <h2 class="tl-section__title">{{ title }}</h2>
+        {% if aside %}<span class="tl-section__aside tl-mono tl-muted">{{ aside }}</span>{% endif %}
+    </div>
+    <div class="tl-section__body">
+        {% if body_template %}{% include body_template %}{% endif %}
+    </div>
+</section>

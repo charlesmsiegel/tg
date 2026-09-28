@@ -1,43 +1,39 @@
-{% extends "core/base.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% extends "core/tl_base.html" %}
+{% block title %}{{ title }}{% endblock title %}
+{% block cover_label %}{{ title }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Index</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>{{ title }}</h1>
+    <span class="tl-switch">{{ public_objects|length }} shown</span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if character_form or group_form %}
+        {% include "characters/tl/create_forms.html" %}
+    {% endif %}
+    {% if item_form %}
+        {% include "core/tl/create_form.html" with create_form=item_form kind="item" label="Create an item" %}
+    {% endif %}
+    {% if location_form %}
+        {% include "core/tl/create_form.html" with create_form=location_form kind="location" label="Create a location" %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" %}
+{% endblock nav %}
 {% block content %}
-<h1>{{ title }}</h1>
-{% for object in public_objects %}
-<article class="tg-card mb-3 p-3">
-  <h2><a href="{{ object.url }}">{{ object.name }}</a></h2>
-  {% if object.image_url %}<img src="{{ object.image_url }}" alt="" class="img-fluid">{% endif %}
-  {% if object.public_info %}<p>{{ object.public_info }}</p>{% endif %}
-</article>
-{% empty %}<p>No objects found.</p>{% endfor %}
-{% if character_form %}
-<h2>Create a character</h2>
-<form method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}">
-  {{ character_form.as_p }}
-  <button type="submit">Continue</button>
-</form>
-
-{% endif %}
-{% if group_form %}
-<h2>Create a group</h2>
-<form method="get" action="{% url 'core:object_type_redirect' 'group' 'create' %}">
-  {{ group_form.as_p }}
-  <button type="submit">Continue</button>
-</form>
-{% endif %}
-{% if item_form %}
-<h2>Create an item</h2>
-<form method="get" action="{% url 'core:object_type_redirect' 'item' 'create' %}">
-  {{ item_form.as_p }}
-  <button type="submit">Continue</button>
-</form>
-
-{% endif %}
-{% if location_form %}
-<h2>Create a location</h2>
-<form method="get" action="{% url 'core:object_type_redirect' 'location' 'create' %}">
-  {{ location_form.as_p }}
-  <button type="submit">Continue</button>
-</form>
-
-{% endif %}
-{% endblock %}
+    {% if public_objects %}
+        <div class="tl-grid">
+            {% for object in public_objects %}
+                <article class="tl-tile">
+                    {% if object.image_url %}<img class="tl-tile__img" src="{{ object.image_url }}" alt="">{% endif %}
+                    <h2 class="tl-tile__name">
+                        <a href="{{ object.url }}">{{ object.name }}</a>
+                    </h2>
+                    {% if object.public_info %}<p class="tl-tile__text">{{ object.public_info }}</p>{% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% include "core/tl/empty.html" with text="Nothing to show yet." %}
+    {% endif %}
+{% endblock content %}

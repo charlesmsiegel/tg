@@ -1,0 +1,20 @@
+{% comment %}
+One form field: mono label above, bottom-ruled input, errors and help below.
+  {% include "core/tl/field.html" with field=form.username %}
+  label="..." overrides the field label; help="..." replaces field.help_text;
+  help_template="..." renders an include as help.
+{% endcomment %}
+<div class="tl-field{% if field.errors %} is-invalid{% endif %}{% if 'select' in field.widget_type and 'multiple' not in field.widget_type %} tl-field--select{% endif %}">
+    <label class="tl-field__label" for="{{ field.id_for_label }}">{{ label|default:field.label }}</label>
+    {{ field }}
+    {% if field.errors %}
+        <ul class="tl-field__error" id="{{ field.auto_id }}_error">
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% if help_template %}
+        <div class="tl-field__help">{% include help_template %}</div>
+    {% elif help %}
+        <div class="tl-field__help">{{ help }}</div>
+    {% endif %}
+</div>

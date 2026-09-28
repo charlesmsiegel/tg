@@ -1,0 +1,16 @@
+{% comment %}
+Cover "create" form that redirects to the chosen type's create view.
+  {% include "core/tl/create_form.html" with create_form=item_form kind="item" label="Create an item" %}
+{% endcomment %}
+<form class="tl-block tl-block--tight"
+      method="get"
+      action="{% url 'core:object_type_redirect' kind 'create' %}">
+    <span class="tl-field__label">{{ label }}</span>
+    {% for field in create_form %}
+        <div class="tl-field{% if 'select' in field.widget_type %} tl-field--select{% endif %}">
+            <label class="tl-sr" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit" class="tl-btn tl-btn--block">Continue</button>
+</form>

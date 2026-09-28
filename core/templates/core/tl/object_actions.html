@@ -1,0 +1,28 @@
+{% if can_submit or can_review or submission_errors %}
+    <section class="tl-approval" aria-label="Approval actions">
+        {% if can_submit %}
+            <form method="post" action="{% url 'accounts:object_submission' object_type object_pk %}">
+                {% csrf_token %}
+                <button type="submit" class="tl-btn">Submit for approval</button>
+            </form>
+        {% endif %}
+        {% if submission_errors %}
+            <div class="tl-errors tl-approval__errors">
+                <p class="tl-mono">Finish creation first</p>
+                <ul>
+                    {% for error in submission_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% if can_review %}
+            <form method="post" action="{% url 'accounts:object_revision' object_type object_pk %}">
+                {% csrf_token %}
+                <button type="submit" class="tl-btn tl-btn--ghost">Return for revisions</button>
+            </form>
+            <form method="post" action="{% url 'accounts:object_approval' object_type object_pk %}">
+                {% csrf_token %}
+                <button type="submit" class="tl-btn">Approve</button>
+            </form>
+        {% endif %}
+    </section>
+{% endif %}

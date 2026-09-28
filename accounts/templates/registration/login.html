@@ -1,111 +1,31 @@
-{% extends "core/base.html" %}
-{% block title %}Login{% endblock title %}
-{% block content %}
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <form method="post" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    
-                    <!-- Page Header -->
-                    <div class="tg-card header-card mb-4">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title wod_heading">Login</h1>
-                        </div>
-                    </div>
-
-                    <!-- Error Messages -->
-                    {% if form.errors %}
-                        <div class="tg-card mb-4">
-                            <div class="tg-card-body">
-                                <div class="tg-error-message">
-                                    Your username and password didn't match. Please try again.
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                    
-                    {% if next %}
-                        <div class="tg-card mb-4">
-                            <div class="tg-card-body">
-                                {% if user.is_authenticated %}
-                                    <div class="tg-warning-message">
-                                        Your account doesn't have access to this page. To proceed,
-                                        please login with an account that has access.
-                                    </div>
-                                {% else %}
-                                    <div class="tg-info-message">
-                                        Please login to see this page.
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <!-- Login Form Card -->
-                    <div class="tg-card mb-4">
-                        <div class="tg-card-body">
-                            <div class="row mb-3">
-                                <div class="col-sm-4">
-                                    <label for="{{ form.username.id_for_label }}" class="tg-form-label required">
-                                        Username
-                                    </label>
-                                </div>
-                                <div class="col-sm-8">
-                                    {{ form.username }}
-                                    {% if form.username.errors %}
-                                        <div class="tg-form-feedback invalid-feedback d-block">
-                                            {{ form.username.errors }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-4">
-                                    <label for="{{ form.password.id_for_label }}" class="tg-form-label required">
-                                        Password
-                                    </label>
-                                </div>
-                                <div class="col-sm-8">
-                                    {{ form.password }}
-                                    {% if form.password.errors %}
-                                        <div class="tg-form-feedback invalid-feedback d-block">
-                                            {{ form.password.errors }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <input type="hidden" name="next" value="{{ next }}" />
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="tg-card mb-3">
-                        <div class="tg-card-body text-center">
-                            <button type="submit" id="login_button_id" class="tg-btn btn-primary btn-lg">
-                                <i class="fas fa-sign-in-alt"></i> Login
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Password Reset Link -->
-                <div class="text-center mb-3">
-                    <a href="{% url 'password_reset' %}" class="tg-btn btn-secondary">
-                        <i class="fas fa-key"></i> Forgot Password?
-                    </a>
-                </div>
-
-                <!-- Sign Up Button -->
-                <div class="text-center">
-                    <p class="text-muted mb-2">Don't have an account?</p>
-                    <a href="{% url 'accounts:signup' %}" class="tg-btn btn-outline-primary">
-                        <i class="fas fa-user-plus"></i> Sign Up
-                    </a>
-                </div>
-            </div>
-        </div>
+{% extends "core/tl_auth.html" %}
+{% block title %}Log in{% endblock title %}
+{% block auth_title %}Log in{% endblock auth_title %}
+{% block auth_note %}
+    {% if form.errors %}
+        <p class="tl-auth__note tl-auth__note--error" role="alert">
+            Your username and password didn't match. Please try again.
+        </p>
+    {% elif next %}
+        {% if user.is_authenticated %}
+            <p class="tl-auth__note">
+                Your account doesn't have access to this page. To proceed, please log in with an account that has access.
+            </p>
+        {% else %}
+            <p class="tl-auth__note">Please log in to see this page.</p>
+        {% endif %}
+    {% endif %}
+{% endblock auth_note %}
+{% block auth_body %}
+    <form class="tl-form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% include "core/tl/field.html" with field=form.username label="Username" %}
+        {% include "core/tl/field.html" with field=form.password label="Password" %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" id="login_button_id" class="tl-btn tl-btn--block">Log in</button>
+    </form>
+    <div class="tl-auth__foot">
+        <a href="{% url 'password_reset' %}">Forgot password?</a>
+        <span class="tl-muted">New here? <a href="{% url 'accounts:signup' %}">Sign up</a></span>
     </div>
-{% endblock content %}
+{% endblock auth_body %}

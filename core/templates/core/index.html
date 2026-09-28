@@ -1,140 +1,106 @@
-{% extends "core/base.html" %}
-{% load static %}
+{% extends "core/tl_base.html" %}
+{% load static tl %}
+{% block spread_mod %}tl-spread--wide{% endblock spread_mod %}
+{% block cover_mod %}tl-cover--low{% endblock cover_mod %}
+{% block cover_label %}Tellurium Games{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <span class="tl-cover__top-aside" title="Beta">β</span>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">World of Darkness · Chronicle tools</span>
+    <h1 class="tl-cover__name tl-cover__name--hero" data-fit-title>Tellurium<br>Games</h1>
+    <p class="tl-cover__lede">
+        World of Darkness games, starting with a Mage chronicle, and links to related projects.
+    </p>
+{% endblock cover_title %}
+{% block cover_actions %}
+    <div class="tl-footnotes">
+        <p class="tl-footnote">
+            <b>† Beta</b> — The site may change significantly; data loss is possible.
+        </p>
+        <p class="tl-footnote">
+            <b>‡ Content use</b> — Material here may appear in Storyteller's Vault products,
+            particularly locations, items, plots, and an eventual city book.
+        </p>
+        <div class="tl-links">
+            <a href="https://github.com/charlesmsiegel/tg">Codebase ↗</a>
+            <a href="https://github.com/charlesmsiegel/tg/issues">Report a bug ↗</a>
+        </div>
+    </div>
+{% endblock cover_actions %}
+{% block content_mod %}tl-content--home{% endblock content_mod %}
 {% block content %}
-    <div class="container py-4">
-        <!-- Page Header -->
-        <div class="tg-card header-card mb-4">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title">Welcome to Tellurium Games</h1>
-            </div>
-        </div>
-
-        <!-- Welcome Message Card -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-body">
-                <p>Welcome to the Tellurium Games site! Here you will find World of Darkness games, starting with a Mage Chronicle I'm running, as well as links to other World of Darkness related projects of mine.</p>
-            </div>
-        </div>
-
-        <!-- Warning Card -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-body">
-                <div class="tg-warning-message">
-                    <div class="tg-message-title">Beta Notice</div>
-                    <div class="tg-message-content">
-                        This site is currently in beta. It may change significantly. I will do everything I can to keep the database stable in the meantime, but data loss is possible.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Usage Notice Card -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-body">
-                <div class="tg-info-message">
-                    <div class="tg-message-title">Content Usage Notice</div>
-                    <div class="tg-message-content">
-                        I reserve the right to use all content here in Storyteller's Vault products. Particularly, locations, items, plots, and some aspects of characters may appear in Storyteller's Vault products, particularly an eventual city book.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="text-center mb-4">
-            <a href="https://github.com/charlesmsiegel/tg" class="btn btn-primary me-2">
-                <i class="fab fa-github"></i> View Codebase
-            </a>
-            <a href="https://github.com/charlesmsiegel/tg/issues" class="btn btn-primary">
-                <i class="fas fa-bug"></i> Report Bugs
-            </a>
-        </div>
-
-        <!-- Community Links -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <h2 class="tg-card-title">Community & Support</h2>
-            </div>
-            <div class="tg-card-body">
-                <div class="row">
-                    <!-- Patreon Card -->
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div class="text-center">
-                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <img src="{% static 'images/patreon.png' %}" alt="Patreon" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
-                            </div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Support on Patreon</h4>
-                            <a href="https://www.patreon.com/bePatron?u=62722820" class="btn btn-primary w-100">
-                                <i class="fab fa-patreon"></i> Become a Patron
-                            </a>
-                        </div>
-                    </div>
-                
-                    <!-- Storyteller's Vault Card -->
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div class="text-center">
-                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <img src="{% static 'images/stv.png' %}" alt="Storyteller's Vault" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
-                            </div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Storyteller's Vault</h4>
-                            <a href="https://www.storytellersvault.com/browse.php?author=Charles%20Siegel" class="btn btn-primary w-100">
-                                <i class="fas fa-book-open"></i> View Products
-                            </a>
-                        </div>
-                    </div>
-                
-                    <!-- Discord Card -->
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div class="text-center">
-                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <img src="{% static 'images/discord.png' %}" alt="Discord Server" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
-                            </div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Join Discord</h4>
-                            <a href="https://discord.gg/T2cmqf2yYY" class="btn btn-primary w-100">
-                                <i class="fab fa-discord"></i> Join Server
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Dark Pack Card -->
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div class="text-center">
-                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <img src="{% static 'images/dark_pack.png' %}" alt="Dark Pack" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
-                            </div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Dark Pack</h4>
-                            <a href="https://www.worldofdarkness.com/dark-pack" class="btn btn-primary w-100">
-                                <i class="fas fa-moon"></i> Learn More
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Updates Section -->
-        {% if news %}
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <h2 class="tg-card-title">Updates</h2>
-            </div>
-            <div class="tg-card-body">
-                {% for item in news %}
-                <div class="tg-card mb-3">
-                    <div class="tg-card-body">
-                        <h3 class="mb-2">
-                            <a href="#">{{ item.title }}</a>
+    <section class="tl-block" aria-labelledby="continue-heading">
+        <h2 class="tl-eyebrow" id="continue-heading">Continue where you left off</h2>
+        {% if continue_scenes %}
+            <div class="tl-grid tl-grid--scenes">
+                {% for scene in continue_scenes %}
+                    <article class="tl-tile tl-tile--strong tl-tile--scene"
+                             data-gameline="{{ scene.gameline|gameline_code }}">
+                        <span class="tl-tile__meta">
+                            <span>{{ scene.chronicle|default:"No chronicle" }}</span>
+                            {% if scene.waiting_for_st %}<span class="tl-rubric">Waiting on ST</span>{% endif %}
+                        </span>
+                        <h3 class="tl-tile__name">
+                            <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
                         </h3>
-                        <div class="text-muted mb-2">{{ item.date }}</div>
-                        <p class="mb-0">{{ item.content }}</p>
-                    </div>
-                </div>
+                        {% if scene.location %}<span class="tl-tile__sub">{{ scene.location.name }}</span>{% endif %}
+                        <div class="tl-tile__foot">
+                            <span>{{ scene.post_count }} post{{ scene.post_count|pluralize }}</span>
+                            {% if scene.last_post %}
+                                <span class="tl-rubric">{{ scene.last_post|timesince }} ago</span>
+                            {% else %}
+                                <span class="tl-muted">No posts yet</span>
+                            {% endif %}
+                        </div>
+                    </article>
                 {% endfor %}
             </div>
-        </div>
+        {% elif user.is_authenticated %}
+            {% url 'game:chronicles' as chronicles_url %}
+            {% include "core/tl/empty.html" with text="No live scenes right now." action_url=chronicles_url action_label="Browse chronicles" %}
+        {% else %}
+            {% url 'login' as login_url %}
+            {% include "core/tl/empty.html" with text="Log in to see your scenes." action_url=login_url action_label="Log in" %}
         {% endif %}
+    </section>
+    <div class="tl-split">
+        <section class="tl-block tl-block--tight" aria-labelledby="updates-heading">
+            <h2 class="tl-eyebrow" id="updates-heading">Updates</h2>
+            {% for item in news %}
+                <article class="tl-news">
+                    <span class="tl-news__date">{{ item.date|date:"d M Y" }}</span>
+                    <h3 class="tl-news__title">
+                        <a href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+                    </h3>
+                    <p class="tl-news__body">{{ item.content }}</p>
+                </article>
+            {% empty %}
+                <p class="tl-muted">No updates yet.</p>
+            {% endfor %}
+        </section>
+        <section class="tl-block tl-block--tight" aria-labelledby="community-heading">
+            <h2 class="tl-eyebrow" id="community-heading">Community</h2>
+            <div class="tl-grid tl-grid--2">
+                <a class="tl-chiptile" href="https://www.patreon.com/bePatron?u=62722820">
+                    <span class="tl-chip"><img src="{% static 'images/patreon.png' %}" alt=""></span>
+                    <span class="tl-chiptile__name">Patreon</span>
+                </a>
+                <a class="tl-chiptile"
+                   href="https://www.storytellersvault.com/browse.php?author=Charles%20Siegel">
+                    <span class="tl-chip"><img src="{% static 'images/stv.png' %}" alt=""></span>
+                    <span class="tl-chiptile__name">Storyteller's Vault</span>
+                </a>
+                <a class="tl-chiptile" href="https://discord.gg/T2cmqf2yYY">
+                    <span class="tl-chip"><img src="{% static 'images/discord.png' %}" alt=""></span>
+                    <span class="tl-chiptile__name">Discord</span>
+                </a>
+                <a class="tl-chiptile" href="https://www.worldofdarkness.com/dark-pack">
+                    <span class="tl-chip"><img src="{% static 'images/dark_pack.png' %}" alt=""></span>
+                    <span class="tl-chiptile__name">Dark Pack</span>
+                </a>
+            </div>
+        </section>
     </div>
 {% endblock content %}
-{% block extrascripts %}
-    <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
-{% endblock extrascripts %}
