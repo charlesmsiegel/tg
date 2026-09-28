@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var columns = form.querySelectorAll('[data-ability-group]');
     if (columns.length === 3) {
         Array.prototype.forEach.call(columns, function(column, i) {
-            groups[i] = Array.prototype.slice.call(column.querySelectorAll('input, select'));
+            groups[i] = Array.prototype.slice.call(
+                column.querySelectorAll('input:not([type="radio"]), select')
+            );
         });
     } else {
         Array.prototype.forEach.call(form.querySelectorAll('.row'), function(row) {
@@ -70,10 +72,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Each column's target from its PRI / SEC / TER choice (the radio's
+    // data-target), or null when there is no picker or its ranks are not three
+    // different ones: then any order of the targets will do, as on the server.
+    function chosenTargets() {
+        if (columns.length !== 3) return null;
+        var ranks = [];
+        var targets = Array.prototype.map.call(columns, function(column) {
+            var radio = column.querySelector('[data-priority-picker] input[type="radio"]:checked');
+            if (!radio) return null;
+            ranks.push(radio.value);
+            return Number(radio.dataset.target);
+        });
+        var unique = ranks.filter(function(rank, i) { return ranks.indexOf(rank) === i; });
+        return unique.length === 3 && targets.indexOf(null) === -1 ? targets : null;
+    }
+
     function validate() {
-        var totals = groups.map(groupTotal).sort(function(a, b) { return a - b; });
+        var columnTotals = groups.map(groupTotal);
+        var totals = columnTotals.slice().sort(function(a, b) { return a - b; });
         var outOfRange = anyOutOfRange();
-        var totalsMatch = totals.every(function(t, i) { return t === TARGETS[i]; });
+        var chosen = chosenTargets();
+        var totalsMatch = chosen
+            ? columnTotals.every(function(t, i) { return t === chosen[i]; })
+            : totals.every(function(t, i) { return t === TARGETS[i]; });
         var valid = !outOfRange && totalsMatch;
         var message;
         if (valid) {
@@ -82,10 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
             message = 'Each ability must be a whole number from 0 to ' + MAX_RATING;
         } else {
             message = 'Distribute ' + targetsLabel + ' dots across categories (currently ' + totals.slice().reverse().join('/') + ')';
+            if (chosen) {
+                message = 'Distribute ' + targetsLabel + ' dots as ranked (currently ' + columnTotals.join('/') + ')';
+            }
         }
         TG.validation.setStatus(statusEl, valid, message);
         if (tag) {
-            var over = !valid && totals.reduce(function(a, b) { return a + b; }, 0) > TARGET_SUM;
+            var over = !valid && (totals.reduce(function(a, b) { return a + b; }, 0) > TARGET_SUM ||
+                (chosen && columnTotals.some(function(t, i) { return t > chosen[i]; })));
             tag.textContent = valid ? 'Ready' : over ? 'Too many' : 'In progress';
             tag.classList.toggle('is-ready', valid);
             tag.classList.toggle('is-over', over);

@@ -1470,3 +1470,21 @@ body.tl {
 .tl-knownby__meta { display: flex; align-items: center; gap: 12px; }
 .tl-knownby__rating { flex: none; }
 /* ---- end known by ---- */
+/* ---- chargen priority picker ---- */
+/* PRI / SEC / TER per ranked column (chargen/priority_head.html): three segments in a
+   1px ink frame, the chosen one filled with ink. The radios are the form fields. */
+.tl-prio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; margin: 0; padding: 0; border: 1px solid var(--ink); }
+.tl-prio__seg { position: relative; display: flex; min-width: 0; cursor: pointer; }
+.tl-prio__text {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: .6em; min-height: 30px;
+  font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink);
+}
+.tl-prio__seg:hover .tl-prio__text { box-shadow: inset 0 -2px 0 var(--acc); }
+.tl-prio input:checked + .tl-prio__text { background: var(--ink); color: var(--paper); box-shadow: none; }
+.tl-prio input:focus-visible + .tl-prio__text { outline: 2px solid var(--acc); outline-offset: 2px; }
+/* Dots driven by widgets/dot_rating.js stay hidden until the script shows them. */
+.tg-dot-buttons[hidden] { display: none; }
+@media (max-width: 720px) {
+  .tl-prio__text { min-height: 44px; }
+}
+/* ---- end chargen priority picker ---- */

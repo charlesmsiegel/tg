@@ -1,37 +1,29 @@
 {% load static %}
 {% comment %} Attributes step: three ruled columns (Physical, Social, Mental), each with a
-   running "n left / done / n over" count, then a status line. The categories are
-   ranked by the dots themselves (any order of {{ primary }}/{{ secondary }}/{{ tertiary }}),
-   so there is no separate priority control. Interactive workflows show the tgPool
-   summary and the server's verdict (#chargen-feedback) instead of the script. {% endcomment %}
+   running "n left / done / n over" count and a PRI / SEC / TER picker
+   (chargen/priority_head.html; `priority` from AllocationStepMixin), then a status
+   line. The chosen ranks set each column's target; with no rank posted the server
+   infers them from the dots. Interactive workflows show the tgPool summary and the
+   server's verdict (#chargen-feedback) instead of attribute-validation.js. {% endcomment %}
 <p class="tl-lede">
     Rank Physical, Social and Mental as primary, secondary and tertiary, then add
     {{ primary }} / {{ secondary }} / {{ tertiary }} dots. Every Attribute starts at one dot.
 </p>
-<div class="tl-alloc">
-    <section class="tl-alloc__col" aria-labelledby="attr-physical">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="attr-physical">Physical</h2>
-            <span class="tl-alloc__left" id="physical-status"></span>
-        </div>
+<div class="tl-alloc"{% if priority %} data-priority="{{ priority.rule }}"{% endif %}>
+    <section class="tl-alloc__col" data-priority-group="physical" aria-labelledby="attr-physical">
+        {% include "characters/core/chargen/priority_head.html" with title="Physical" heading_id="attr-physical" status_id="physical-status" column=priority.physical %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.strength label="Strength" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.dexterity label="Dexterity" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.stamina label="Stamina" %}
     </section>
-    <section class="tl-alloc__col" aria-labelledby="attr-social">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="attr-social">Social</h2>
-            <span class="tl-alloc__left" id="social-status"></span>
-        </div>
+    <section class="tl-alloc__col" data-priority-group="social" aria-labelledby="attr-social">
+        {% include "characters/core/chargen/priority_head.html" with title="Social" heading_id="attr-social" status_id="social-status" column=priority.social %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.charisma label="Charisma" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.manipulation label="Manipulation" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.appearance label="Appearance" %}
     </section>
-    <section class="tl-alloc__col" aria-labelledby="attr-mental">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="attr-mental">Mental</h2>
-            <span class="tl-alloc__left" id="mental-status"></span>
-        </div>
+    <section class="tl-alloc__col" data-priority-group="mental" aria-labelledby="attr-mental">
+        {% include "characters/core/chargen/priority_head.html" with title="Mental" heading_id="attr-mental" status_id="mental-status" column=priority.mental %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.perception label="Perception" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.intelligence label="Intelligence" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.wits label="Wits" %}
@@ -47,4 +39,5 @@
         </div>
     </div>
     <script src="{% static 'characters/js/attribute-validation.js' %}" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}"></script>
+    {% if priority %}<script src="{% static 'characters/js/chargen-priority.js' %}" defer></script>{% endif %}
 {% endif %}

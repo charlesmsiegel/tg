@@ -2,16 +2,14 @@
 {% comment %}
 Abilities step for the Mage family (MtA Human, Mage, Companion, Sorcerer): Talents,
 Skills and Knowledges as ruled columns in alphabetical order (the Mage primaries include
-Art, Awareness, Cosmology...), then the status line checked by ability-validation.js,
-or tgPool + the server's verdict on interactive workflows. Same markup as
+Art, Awareness, Cosmology...), each with a running count and a PRI / SEC / TER picker,
+then the status line (ability_block/status.html). Same markup as
 characters/core/chargen/abilities.html.
 {% endcomment %}
-<p class="tl-lede">Prioritize Talents, Skills and Knowledges, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
-<div class="tl-alloc">
-    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-talents">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="abilities-talents">Talents</h2>
-        </div>
+<p class="tl-lede">Rank Talents, Skills and Knowledges as primary, secondary and tertiary, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
+<div class="tl-alloc"{% if priority %} data-priority="{{ priority.rule }}"{% endif %}>
+    <section class="tl-alloc__col" data-ability-group data-priority-group="talents" aria-labelledby="abilities-talents">
+        {% include "characters/core/chargen/priority_head.html" with title="Talents" heading_id="abilities-talents" status_id="talents-status" column=priority.talents %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.alertness label="Alertness" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.art label="Art" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.athletics label="Athletics" %}
@@ -24,10 +22,8 @@ characters/core/chargen/abilities.html.
         {% include "characters/core/chargen/alloc_row.html" with field=form.streetwise label="Streetwise" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.subterfuge label="Subterfuge" %}
     </section>
-    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-skills">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="abilities-skills">Skills</h2>
-        </div>
+    <section class="tl-alloc__col" data-ability-group data-priority-group="skills" aria-labelledby="abilities-skills">
+        {% include "characters/core/chargen/priority_head.html" with title="Skills" heading_id="abilities-skills" status_id="skills-status" column=priority.skills %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.crafts label="Crafts" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.drive label="Drive" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.etiquette label="Etiquette" %}
@@ -40,10 +36,8 @@ characters/core/chargen/abilities.html.
         {% include "characters/core/chargen/alloc_row.html" with field=form.survival label="Survival" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.technology label="Technology" %}
     </section>
-    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-knowledges">
-        <div class="tl-alloc__head">
-            <h2 class="tl-alloc__name" id="abilities-knowledges">Knowledges</h2>
-        </div>
+    <section class="tl-alloc__col" data-ability-group data-priority-group="knowledges" aria-labelledby="abilities-knowledges">
+        {% include "characters/core/chargen/priority_head.html" with title="Knowledges" heading_id="abilities-knowledges" status_id="knowledges-status" column=priority.knowledges %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.academics label="Academics" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.computer label="Computer" %}
         {% include "characters/core/chargen/alloc_row.html" with field=form.cosmology label="Cosmology" %}
@@ -57,14 +51,4 @@ characters/core/chargen/abilities.html.
         {% include "characters/core/chargen/alloc_row.html" with field=form.science label="Science" %}
     </section>
 </div>
-{% if chargen_interactive %}
-    {% include "characters/core/chargen/pool.html" %}
-{% elif primary and secondary and tertiary %}
-    <div class="tl-chargen__status">
-        <div class="tl-chargen__line">
-            <span class="tl-chargen__tag" data-allocation-tag>In progress</span>
-            <span id="abilities-validation-status" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}" role="status"></span>
-        </div>
-    </div>
-    <script src="{% static 'characters/js/ability-validation.js' %}"></script>
-{% endif %}
+{% include "characters/core/ability_block/status.html" %}

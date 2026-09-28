@@ -11,7 +11,12 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 from characters.chargen.transitions import advance
-from characters.forms.core.allocation import allocation_modelform, rating_values
+from characters.forms.core.allocation import (
+    allocation_modelform,
+    priority_columns,
+    rating_values,
+)
+from characters.rules.allocation import PriorityRule
 from characters.views.core.chargen_mixins import ChargenStepMixin
 from core.mixins import SpecialUserMixin, SpendFreebiesPermissionMixin
 
@@ -47,7 +52,12 @@ class AllocationStepMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["allocation_rules"] = [rule.client_data() for rule in self.get_allocation_rules()]
+        rules = self.get_allocation_rules()
+        context["allocation_rules"] = [rule.client_data() for rule in rules]
+        # The PRI / SEC / TER picker and per-column counts (Attributes, Abilities).
+        priority = next((rule for rule in rules if isinstance(rule, PriorityRule)), None)
+        if priority is not None and "form" in context:
+            context["priority"] = priority_columns(context["form"], priority)
         return context
 
     def validation_totals(self, form):

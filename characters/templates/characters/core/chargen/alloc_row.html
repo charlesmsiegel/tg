@@ -1,5 +1,7 @@
-{% comment %} One rated trait in an allocation column: label, then the control (clickable
-   dots on interactive workflows, a number input otherwise) and its errors.
+{% comment %} One rated trait in an allocation column: label, then the control and its
+   errors. On chargen steps with allocation rules the control is clickable dots over the
+   number input (widgets.widgets.dots: Alpine on interactive workflows, dot_rating.js
+   elsewhere); without JavaScript, or on other forms, it is the number input.
    {% include "characters/core/chargen/alloc_row.html" with field=form.strength label="Strength" %} {% endcomment %}
 {% if field %}
     <div class="tl-alloc__row{% if field.errors %} is-invalid{% endif %}">

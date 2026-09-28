@@ -71,6 +71,11 @@ class AttributeRuleTest(TestCase):
                 ],
                 "group_labels": {"physical": "Physical", "social": "Social", "mental": "Mental"},
                 "targets": [10, 8, 6],
+                "priority_fields": {
+                    "physical": "priority_physical",
+                    "social": "priority_social",
+                    "mental": "priority_mental",
+                },
             },
         )
 
@@ -83,6 +88,114 @@ class AttributeRuleTest(TestCase):
         self.assertEqual(status["targets"], [10, 8, 6])
         self.assertFalse(status["satisfied"])
         self.assertTrue(self.rule.status(ATTRIBUTES)["satisfied"])
+
+
+def ranked(physical, social, mental):
+    return {
+        "priority_physical": physical,
+        "priority_social": social,
+        "priority_mental": mental,
+    }
+
+
+class PriorityRanksTest(TestCase):
+    """The PRI / SEC / TER choice: chosen ranks set each group's target."""
+
+    rule = attribute_rule(7, 5, 3)
+
+    def test_chosen_ranks_matching_the_dots_are_valid(self):
+        values = {**ATTRIBUTES, **ranked("primary", "secondary", "tertiary")}
+        self.assertIsNone(first_violation([self.rule], values))
+        self.assertEqual(
+            self.rule.chosen_ranks(values),
+            {"physical": "primary", "social": "secondary", "mental": "tertiary"},
+        )
+
+    def test_swapped_ranks_reject_a_distribution_valid_in_another_order(self):
+        values = {**ATTRIBUTES, **ranked("secondary", "primary", "tertiary")}
+        self.assertEqual(
+            first_violation([self.rule], values).message,
+            "Attributes must be distributed 7/5/3 as ranked "
+            "(Physical secondary, Social primary, Mental tertiary)",
+        )
+        swapped = {
+            **ATTRIBUTES,
+            "strength": 2,
+            "stamina": 3,
+            "charisma": 3,
+            "manipulation": 4,
+            **ranked("secondary", "primary", "tertiary"),
+        }
+        self.assertEqual(
+            self.rule.group_totals(swapped), {"physical": 8, "social": 10, "mental": 6}
+        )
+        self.assertIsNone(first_violation([self.rule], swapped))
+
+    def test_missing_ranks_are_inferred_from_the_dots(self):
+        self.assertIsNone(self.rule.chosen_ranks(ATTRIBUTES))
+        self.assertEqual(
+            self.rule.ranks(ATTRIBUTES),
+            ({"physical": "primary", "social": "secondary", "mental": "tertiary"}, False),
+        )
+        # Blank choices (an unticked radio group) count as missing.
+        blank = {**ATTRIBUTES, **ranked("", "", "")}
+        self.assertIsNone(first_violation([self.rule], blank))
+        # Ties keep the groups' order.
+        self.assertEqual(
+            self.rule.inferred_ranks({}),
+            {"physical": "primary", "social": "secondary", "mental": "tertiary"},
+        )
+
+    def test_partial_or_repeated_ranks_are_an_error(self):
+        message = "Choose primary, secondary and tertiary once each for Physical, Social and Mental"
+        for choice in (ranked("primary", "primary", "tertiary"), {"priority_physical": "primary"}):
+            with self.subTest(choice=choice):
+                values = {**ATTRIBUTES, **choice}
+                self.assertEqual(first_violation([self.rule], values).message, message)
+        # The range check still comes first.
+        values = {**ATTRIBUTES, "strength": 0, **ranked("primary", "primary", "primary")}
+        self.assertEqual(
+            first_violation([self.rule], values).message, "Attributes must range from 1-5"
+        )
+
+    def test_columns_count_against_the_chosen_targets(self):
+        values = {**ATTRIBUTES, "strength": 2, **ranked("tertiary", "secondary", "primary")}
+        columns = self.rule.columns(values)
+        self.assertEqual(
+            [(c["name"], c["rank"], c["target"], c["current"], c["count"]) for c in columns],
+            [
+                ("physical", "tertiary", 6, 9, "3 over"),
+                ("social", "secondary", 8, 8, "done"),
+                ("mental", "primary", 10, 6, "4 left"),
+            ],
+        )
+        self.assertEqual([c["state"] for c in columns], ["over", "done", "progress"])
+
+    def test_columns_without_a_choice_use_the_inferred_ranking(self):
+        values = {**ATTRIBUTES, "wits": 1}
+        self.assertEqual(
+            [(c["rank"], c["count"]) for c in self.rule.columns(values)],
+            [("primary", "done"), ("secondary", "done"), ("tertiary", "1 left")],
+        )
+
+    def test_status_reports_each_group_against_its_chosen_target(self):
+        status = self.rule.status({**ATTRIBUTES, **ranked("tertiary", "secondary", "primary")})
+        self.assertTrue(status["ranked"])
+        self.assertFalse(status["satisfied"])
+        self.assertEqual(
+            [(g["name"], g["current"], g["target"], g["count"]) for g in status["groups"]],
+            [("physical", 10, 6, "4 over"), ("social", 8, 8, "done"), ("mental", 6, 10, "4 left")],
+        )
+        unranked = self.rule.status(ATTRIBUTES)
+        self.assertFalse(unranked["ranked"])
+        self.assertNotIn("target", unranked["groups"][0])
+
+    def test_group_sizes_set_the_ability_targets(self):
+        rule = ability_rule(AbilityRuleTest.model, AbilityRuleTest.fields, 6, 4, 2)
+        self.assertEqual(rule.target("talents", "primary"), 6)
+        self.assertEqual(
+            rule.priority_fields, ("priority_talents", "priority_skills", "priority_knowledges")
+        )
 
 
 class AbilityRuleTest(TestCase):
