@@ -1,54 +1,50 @@
-{% load dots static %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Attributes</h2>
+{% load static %}
+{% comment %} Attributes step: three ruled columns (Physical, Social, Mental), each with a
+   running "n left / done / n over" count, then a status line. The categories are
+   ranked by the dots themselves (any order of {{ primary }}/{{ secondary }}/{{ tertiary }}),
+   so there is no separate priority control. Interactive workflows show the tgPool
+   summary and the server's verdict (#chargen-feedback) instead of the script. {% endcomment %}
+<p class="tl-lede">
+    Rank Physical, Social and Mental as primary, secondary and tertiary, then add
+    {{ primary }} / {{ secondary }} / {{ tertiary }} dots. Every Attribute starts at one dot.
+</p>
+<div class="tl-alloc">
+    <section class="tl-alloc__col" aria-labelledby="attr-physical">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="attr-physical">Physical</h2>
+            <span class="tl-alloc__left" id="physical-status"></span>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.strength label="Strength" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.dexterity label="Dexterity" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.stamina label="Stamina" %}
+    </section>
+    <section class="tl-alloc__col" aria-labelledby="attr-social">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="attr-social">Social</h2>
+            <span class="tl-alloc__left" id="social-status"></span>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.charisma label="Charisma" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.manipulation label="Manipulation" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.appearance label="Appearance" %}
+    </section>
+    <section class="tl-alloc__col" aria-labelledby="attr-mental">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="attr-mental">Mental</h2>
+            <span class="tl-alloc__left" id="mental-status"></span>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.perception label="Perception" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.intelligence label="Intelligence" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.wits label="Wits" %}
+    </section>
 </div>
-<div class="row">
-    <div class="col-sm">
-        Prioritize primary, secondary, and tertiary Attribute categories and add {{ primary }}/{{ secondary }}/{{ tertiary }} dots
-        <div id="total-remaining" style="font-weight: 600; color: var(--theme-text-secondary); margin-top: 8px;"></div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm">
-        <h3 class="{{ object.get_heading }}">Physical</h3>
-        <div id="physical-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
-    </div>
-    <div class="col-sm">
-        <h3 class="{{ object.get_heading }}">Social</h3>
-        <div id="social-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
-    </div>
-    <div class="col-sm">
-        <h3 class="{{ object.get_heading }}">Mental</h3>
-        <div id="mental-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm">Strength</div>
-    <div class="col-sm dots">{{ form.strength }}</div>
-    <div class="col-sm">Charisma</div>
-    <div class="col-sm dots">{{ form.charisma }}</div>
-    <div class="col-sm">Perception</div>
-    <div class="col-sm dots">{{ form.perception }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Dexterity</div>
-    <div class="col-sm dots">{{ form.dexterity }}</div>
-    <div class="col-sm">Manipulation</div>
-    <div class="col-sm dots">{{ form.manipulation }}</div>
-    <div class="col-sm">Intelligence</div>
-    <div class="col-sm dots">{{ form.intelligence }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Stamina</div>
-    <div class="col-sm dots">{{ form.stamina }}</div>
-    <div class="col-sm">Appearance</div>
-    <div class="col-sm dots">{{ form.appearance }}</div>
-    <div class="col-sm">Wits</div>
-    <div class="col-sm dots">{{ form.wits }}</div>
-</div>
-
 {% if chargen_interactive %}
     {% include "characters/core/chargen/pool.html" %}
 {% else %}
+    <div class="tl-chargen__status" role="status" aria-live="polite">
+        <div class="tl-chargen__line">
+            <span class="tl-chargen__tag" data-allocation-tag>In progress</span>
+            <span id="total-remaining"></span>
+        </div>
+    </div>
     <script src="{% static 'characters/js/attribute-validation.js' %}" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}"></script>
 {% endif %}

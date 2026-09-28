@@ -117,3 +117,33 @@ class TestHumanChargenStepSync(TestCase):
         starts = [start for start, _ in HUMAN_CHARGEN_STEPS]
         self.assertEqual(starts, sorted(starts))
 
+
+
+class TotalsOverTests(TestCase):
+    def test_plain_totals(self):
+        from characters.views.core.chargen_mixins import totals_over
+
+        self.assertFalse(totals_over([{"current": 3, "target": 5}]))
+        self.assertFalse(totals_over([{"current": 5, "target": 5}]))
+        self.assertTrue(totals_over([{"current": 6, "target": 5}]))
+        self.assertFalse(totals_over([{"current": 9, "target": None}]))
+        self.assertFalse(totals_over([]))
+
+    def test_priority_totals_compare_the_sum_of_their_targets(self):
+        from characters.views.core.chargen_mixins import totals_over
+
+        def total(*currents):
+            return {"groups": [{"current": c} for c in currents], "targets": [10, 8, 6]}
+
+        self.assertFalse(totals_over([total(11, 7, 6)]))
+        self.assertFalse(totals_over([total(10, 8, 6)]))
+        self.assertTrue(totals_over([total(10, 8, 7)]))
+
+    def test_progress_mixin_supplies_rows(self):
+        view = FakeView()
+        view.object = FakeCharacter(2)
+        rows = view.get_context_data()["chargen_step_rows"]
+        self.assertEqual(
+            [(row["number"], row["status"]) for row in rows],
+            [(1, "completed"), (2, "current"), (3, "pending")],
+        )

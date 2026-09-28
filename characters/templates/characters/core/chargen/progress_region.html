@@ -1,3 +1,4 @@
+{# The step list on the cover; interactive fragments replace it out of band. #}
 <div id="chargen-progress"{% if oob %} hx-swap-oob="true"{% endif %}>
-    {% include "characters/core/chargen_progress.html" %}
+    {% include "characters/core/chargen/steps.html" %}
 </div>

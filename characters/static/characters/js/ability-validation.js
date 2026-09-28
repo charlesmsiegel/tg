@@ -14,14 +14,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // ability step, where the attribute block shows as a display (no
     // inputs) — input-bearing three-cell rows are the ability grid.
     var groups = [[], [], []];
-    Array.prototype.forEach.call(form.querySelectorAll('.row'), function(row) {
-        var cells = row.querySelectorAll(':scope > .dots');
-        if (cells.length !== 3) return;
-        for (var i = 0; i < 3; i++) {
-            var input = cells[i].querySelector('input, select');
-            if (input) groups[i].push(input);
-        }
-    });
+    // Spread steps mark each column ([data-ability-group], chargen/abilities.html).
+    var columns = form.querySelectorAll('[data-ability-group]');
+    if (columns.length === 3) {
+        Array.prototype.forEach.call(columns, function(column, i) {
+            groups[i] = Array.prototype.slice.call(column.querySelectorAll('input, select'));
+        });
+    } else {
+        Array.prototype.forEach.call(form.querySelectorAll('.row'), function(row) {
+            var cells = row.querySelectorAll(':scope > .dots');
+            if (cells.length !== 3) return;
+            for (var i = 0; i < 3; i++) {
+                var input = cells[i].querySelector('input, select');
+                if (input) groups[i].push(input);
+            }
+        });
+    }
+    // Optional status tag beside the message (Spread steps): IN PROGRESS / TOO MANY / READY.
+    var tag = form.querySelector('[data-allocation-tag]');
+    var TARGET_SUM = TARGETS.reduce(function(a, b) { return a + b; }, 0);
     if (!groups[0].length) return;
 
     // Each ability is capped at 3 dots in chargen (HumanAbilityView
@@ -73,6 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
             message = 'Distribute ' + targetsLabel + ' dots across categories (currently ' + totals.slice().reverse().join('/') + ')';
         }
         TG.validation.setStatus(statusEl, valid, message);
+        if (tag) {
+            var over = !valid && totals.reduce(function(a, b) { return a + b; }, 0) > TARGET_SUM;
+            tag.textContent = valid ? 'Ready' : over ? 'Too many' : 'In progress';
+            tag.classList.toggle('is-ready', valid);
+            tag.classList.toggle('is-over', over);
+        }
         // Abilities block submit until the distribution is valid; the
         // backgrounds/virtues counters are status-only by design.
         TG.validation.setSubmitEnabled(form, valid);

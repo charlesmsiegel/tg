@@ -3,10 +3,10 @@
    the form's conditional rules evaluated in Python (tgConditional only applies
    the server's answer). Without JavaScript the bound re-render does both. {% endcomment %}
 {% if object.freebies_approved %}
-    <p>Freebie points remaining: <strong>{{ object.freebies }}</strong></p>
+    <p class="tl-lede">Freebie points remaining: <strong>{{ object.freebies }}</strong></p>
     {% with rows=form.freebie_cost_rows %}
         {% if rows %}
-            <table class="tg-table mb-3">
+            <table class="tl-table tl-table--compact tl-chargen__costs">
                 <thead><tr><th scope="col">Trait</th><th scope="col">Freebie cost</th></tr></thead>
                 <tbody>
                     {% for label, cost in rows %}<tr><td>{{ label }}</td><td>{{ cost }}</td></tr>{% endfor %}
@@ -14,30 +14,23 @@
             </table>
         {% endif %}
     {% endwith %}
-    <div class="row" x-data="tgConditional" data-visibility="{{ form.visibility_json }}" x-on:tg-visibility.window="apply">
+    <div class="tl-chargen__form" x-data="tgConditional" data-visibility="{{ form.visibility_json }}" x-on:tg-visibility.window="apply">
         {% with shown=form.visibility %}
-            <div class="col-sm">
-                <label for="{{ form.category.auto_id }}">Category</label>
-                {{ form.category.errors }}{{ form.category }}
+            {% include "core/tl/field.html" with field=form.category label="Category" %}
+            <div class="tl-chargen__wrap" id="example_wrap" x-bind:hidden="!shown.example"{% if not shown.example %} hidden{% endif %}>
+                {% include "core/tl/field.html" with field=form.example label="Trait" %}
             </div>
-            <div class="col-sm" id="example_wrap" x-bind:hidden="!shown.example"{% if not shown.example %} hidden{% endif %}>
-                <label for="{{ form.example.auto_id }}">Trait</label>
-                {{ form.example.errors }}{{ form.example }}
+            <div class="tl-chargen__wrap" id="value_wrap" x-bind:hidden="!shown.value"{% if not shown.value %} hidden{% endif %}>
+                {% include "core/tl/field.html" with field=form.value label="Rating" %}
             </div>
-            <div class="col-sm" id="value_wrap" x-bind:hidden="!shown.value"{% if not shown.value %} hidden{% endif %}>
-                <label for="{{ form.value.auto_id }}">Rating</label>
-                {{ form.value.errors }}{{ form.value }}
+            <div class="tl-chargen__wrap" id="note_wrap" x-bind:hidden="!shown.note"{% if not shown.note %} hidden{% endif %}>
+                {% include "core/tl/field.html" with field=form.note label="Note" %}
             </div>
-            <div class="col-sm" id="note_wrap" x-bind:hidden="!shown.note"{% if not shown.note %} hidden{% endif %}>
-                <label for="{{ form.note.auto_id }}">Note</label>
-                {{ form.note.errors }}{{ form.note }}
-            </div>
-            <div class="col-sm" id="pooled_wrap" x-bind:hidden="!shown.pooled"{% if not shown.pooled %} hidden{% endif %}>
-                <label for="{{ form.pooled.auto_id }}">Pooled?</label>
-                {{ form.pooled.errors }}{{ form.pooled }}
+            <div class="tl-chargen__wrap" id="pooled_wrap" x-bind:hidden="!shown.pooled"{% if not shown.pooled %} hidden{% endif %}>
+                {% include "core/tl/field.html" with field=form.pooled label="Pooled?" %}
             </div>
         {% endwith %}
     </div>
 {% else %}
-    <p>Waiting on ST to Assign Freebie Total</p>
+    {% include "core/tl/empty.html" with text="Waiting on ST to assign your freebie total." %}
 {% endif %}

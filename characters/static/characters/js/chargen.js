@@ -70,6 +70,11 @@
             return;
         }
         if (kind !== 'chargen-step') return;
+        /* The step list on the cover was replaced out of band: keep the current
+         * step in view inside the sticky cover (scrollTop, never scrollIntoView). */
+        var current = document.querySelector('.tl-steps [aria-current="step"]');
+        var cover = current && current.closest('.tl-cover__inner');
+        if (cover) cover.scrollTop = current.offsetTop - cover.clientHeight / 2;
         var target = form.querySelector('#chargen-errors') ||
             document.getElementById('chargen-step-heading');
         if (target) target.focus();

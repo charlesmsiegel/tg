@@ -222,7 +222,8 @@ class PermissionContextTests(TestCase):
 
         from core.permission_context import get_object_permissions
 
-        source = Path("characters/templates/characters/core/chargen.html").read_text(
+        # The step body shared by the plain and the htmx chargen forms holds the gates.
+        source = Path("characters/templates/characters/core/chargen/step_body.html").read_text(
             encoding="utf-8"
         )
         engine = Engine(
@@ -230,12 +231,8 @@ class PermissionContextTests(TestCase):
                 (
                     "django.template.loaders.locmem.Loader",
                     {
-                        "core/form.html": (
-                            "{% block contents %}{% endblock %}"
-                            "{% block buttons %}SUBMIT_BUTTON{% endblock %}"
-                        ),
                         "step.html": "STEP_FIELDS",
-                        "characters/core/character/not_owner.html": "ACCESS_DENIED",
+                        "characters/tl/not_owner.html": "ACCESS_DENIED",
                     },
                 )
             ]
@@ -259,7 +256,7 @@ class PermissionContextTests(TestCase):
                     self.assertEqual("STEP_FIELDS" in html, allowed)
                     self.assertEqual("ACCESS_DENIED" in html, not allowed)
                     self.assertEqual(
-                        "SUBMIT_BUTTON" in html, allowed and (key != "freebies" or approved)
+                        'type="submit"' in html, allowed and (key != "freebies" or approved)
                     )
 
     def test_templates_retire_ambiguous_flag(self):

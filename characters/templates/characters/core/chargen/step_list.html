@@ -1,0 +1,25 @@
+{% comment %} Rows of the chargen step list: number, label, a quiet tag for steps that may
+   be skipped ("if any"; background-gated steps "if taken"), and ✓ done / ● current.
+   A row holding several steps lists their labels joined with a no-break space
+   before each " · ", so no line starts with a dot. {% endcomment %}
+<ol class="tl-steps" aria-label="Character creation steps">
+    {% for row in chargen_step_rows %}
+        <li class="tl-steps__row is-{{ row.status }}{% if row.steps|length > 1 %} tl-steps__row--group{% endif %}"{% if row.status == "current" %} aria-current="step"{% endif %}>
+            <span class="tl-steps__num">{{ row.number|stringformat:"02d" }}</span>
+            {% if row.steps|length > 1 %}
+                <span class="tl-steps__label">
+                    {% if row.group == "background" %}Background details{% else %}{{ row.label }}{% endif %}
+                    <span class="tl-steps__list">{% for step in row.steps %}<span{% if step.status == "current" %} class="is-current"{% endif %}>{{ step.label }}</span>{% if not forloop.last %}&nbsp;· {% endif %}{% endfor %}</span>
+                </span>
+            {% else %}
+                <span class="tl-steps__label">{{ row.label }}</span>
+            {% endif %}
+            {% if row.group %}
+                <span class="tl-steps__tag">if taken</span>
+            {% elif row.conditional %}
+                <span class="tl-steps__tag">if any</span>
+            {% endif %}
+            <span class="tl-steps__mark">{% if row.status == "completed" %}<span aria-hidden="true">✓</span><span class="tl-sr">done</span>{% elif row.status == "current" %}<span aria-hidden="true">●</span><span class="tl-sr">current</span>{% endif %}</span>
+        </li>
+    {% endfor %}
+</ol>

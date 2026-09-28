@@ -1,0 +1,11 @@
+{% comment %} The fields of one form (a step form or one form of a formset) as Spread
+   fields: hidden inputs first, then a grid in which textareas take a full row.
+   {% include "characters/core/chargen/fields.html" with fields_form=form %} {% endcomment %}
+{% for field in fields_form.hidden_fields %}{{ field }}{% endfor %}
+{% if fields_form.visible_fields %}
+    <div class="tl-chargen__form">
+        {% for field in fields_form.visible_fields %}
+            {% include "core/tl/field.html" with field=field label="" help=field.help_text %}
+        {% endfor %}
+    </div>
+{% endif %}

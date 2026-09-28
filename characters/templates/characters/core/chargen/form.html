@@ -1,5 +1,25 @@
-{{ form.as_p }}
+{% comment %} Default step body: the step form's fields, then any formsets the view
+   supplies (chargen_formsets). Non-field errors show in step_body's summary. {% endcomment %}
+{% if form %}
+    {% include "characters/core/chargen/fields.html" with fields_form=form %}
+{% endif %}
 {% for name, context in chargen_formsets.items %}
     {{ context.formset.management_form }}
-    {{ context.formset.as_p }}
+    {% if context.formset.non_form_errors %}
+        <div class="tl-errors" role="alert">
+            <ul>
+                {% for error in context.formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% for subform in context.formset %}
+        <fieldset class="tl-chargen__subform">
+            {% if subform.non_field_errors %}
+                <ul class="tl-field__error">
+                    {% for error in subform.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% include "characters/core/chargen/fields.html" with fields_form=subform %}
+        </fieldset>
+    {% endfor %}
 {% endfor %}

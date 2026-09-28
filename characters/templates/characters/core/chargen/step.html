@@ -1,5 +1,6 @@
 {% load widget_media %}
 <form id="chargen-step"
+      class="tl-chargen"
       method="post"
       action="{{ request.path }}"
       hx-post="{{ request.path }}"
@@ -10,73 +11,6 @@
       data-tg-expect="chargen-step"
       data-step="{{ step.key }}">
     {% csrf_token %}
-    {% if form.non_field_errors %}
-        <div class="tg-card mb-4" id="chargen-errors" tabindex="-1" role="alert">
-            <div class="tg-card-body">
-                {% for error in form.non_field_errors %}<div class="tg-error-message">{{ error }}</div>{% endfor %}
-            </div>
-        </div>
-    {% elif form.errors %}
-        <div class="tg-card mb-4" id="chargen-errors" tabindex="-1" role="alert">
-            <div class="tg-card-body"><div class="tg-error-message">Please correct the errors below.</div></div>
-        </div>
-    {% endif %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-body">
-            {% if object_perms.can_chargen %}
-                <h2 id="chargen-step-heading" tabindex="-1" class="{{ object.get_heading }}">{{ step.label }}</h2>
-                {% if skip_step %}
-                    {% include "characters/core/chargen/skip.html" %}
-                {% else %}
-                    {% include step.template %}
-                {% endif %}
-            {% else %}
-                {% include "characters/core/character/not_owner.html" %}
-            {% endif %}
-        </div>
-    </div>
-    {% if live_validation %}
-        {% comment %} Validate-only requests: the server runs this step's form checks
-           without saving and answers with feedback.html. {% endcomment %}
-        <div id="chargen-feedback" class="tg-card mb-4" role="status" aria-live="polite"></div>
-        <div id="chargen-validator"
-             hidden
-             hx-post="{{ request.path }}"
-             hx-vals='{"_validate": "1"}'
-             hx-include="#chargen-step"
-             hx-trigger="load, change from:#chargen-step delay:250ms, input from:#chargen-step delay:600ms, tg-options-swapped from:#chargen-step delay:250ms"
-             hx-target="#chargen-feedback"
-             hx-swap="innerHTML"
-             hx-sync="this:replace"
-             hx-disabled-elt="unset"
-             data-tg-expect="chargen-feedback"></div>
-    {% endif %}
-    {% if object_perms.can_chargen %}
-        {% if step.key != "freebies" or object.freebies_approved %}
-            <div class="tg-card">
-                <div class="tg-card-body text-center">
-                    {% comment %} Save stays first so it is the implicit submitter (Enter). {% endcomment %}
-                    <button type="submit" class="tg-btn btn-primary btn-lg">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    {% with back_url=object.chargen_back_url %}
-                        {% if back_url and object.owner_id == request.user.id %}
-                            <button type="submit"
-                                    formaction="{{ back_url }}"
-                                    formnovalidate
-                                    hx-post="{{ back_url }}"
-                                    title="Go back one step. Unsaved changes on this step are discarded."
-                                    class="tg-btn btn-secondary btn-lg">
-                                <i class="fas fa-arrow-left"></i> Back
-                            </button>
-                        {% endif %}
-                    {% endwith %}
-                    <a href="{{ object.get_absolute_url }}" class="tg-btn btn-secondary btn-lg">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
+    {% include "characters/core/chargen/step_body.html" %}
     {% if fragment %}{% page_media %}{% endif %}
 </form>

@@ -89,3 +89,81 @@ class RegistryTests(SimpleTestCase):
                 if cls.__module__ == module and issubclass(cls, ChargenStepMixin):
                     with self.subTest(view=name):
                         self.assertTrue(any(issubclass(view, cls) for view in views))
+
+
+class ProgressTests(SimpleTestCase):
+    """Workflow.progress() and progress_rows() feed the chargen step list."""
+
+    def test_progress_marks_conditional_and_grouped_steps(self):
+        steps = {step["key"]: step for step in get_workflow("mage").progress(1)}
+        self.assertEqual(
+            (steps["attributes"]["conditional"], steps["attributes"]["group"]), (False, None)
+        )
+        self.assertEqual(
+            (steps["languages"]["conditional"], steps["languages"]["group"]), (True, None)
+        )
+        self.assertEqual((steps["rote"]["conditional"], steps["rote"]["group"]), (True, None))
+        self.assertEqual(
+            (steps["node"]["conditional"], steps["node"]["group"]), (True, "background")
+        )
+        self.assertEqual(steps["attributes"]["status"], "current")
+
+    def test_every_background_gated_step_is_in_the_background_group(self):
+        from functools import partial
+
+        from characters.chargen.definitions import WORKFLOWS
+        from characters.chargen.predicates import no_background
+
+        for workflow in WORKFLOWS.values():
+            for step in workflow.steps:
+                gated = isinstance(step.skip_if, partial) and step.skip_if.func is no_background
+                with self.subTest(step=step.key):
+                    self.assertEqual(step.group == "background", gated)
+
+    def test_mage_background_details_collapse_into_one_row(self):
+        from characters.chargen.registry import progress_rows
+
+        rows = progress_rows(get_workflow("mage").progress(1))
+        self.assertEqual(len(rows), 11)
+        self.assertEqual([row["number"] for row in rows], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21])
+        details = rows[9]
+        self.assertEqual(details["group"], "background")
+        self.assertEqual(
+            [step["label"] for step in details["steps"]],
+            [
+                "Node",
+                "Library",
+                "Familiar",
+                "Wonder",
+                "Enhancement",
+                "Sanctum",
+                "Allies",
+                "Mentor",
+                "Contacts",
+                "Retainers",
+                "Chantry",
+            ],
+        )
+        self.assertEqual((rows[10]["label"], rows[10]["group"]), ("Specialties", None))
+        self.assertEqual([row["status"] for row in rows[:2]], ["current", "pending"])
+        self.assertTrue(rows[7]["conditional"])  # Languages
+
+    def test_group_row_status_follows_its_steps(self):
+        from characters.chargen.registry import progress_rows
+
+        workflow = get_workflow("mage")
+        library = [step.key for step in workflow.steps].index("library") + 1
+        self.assertEqual(progress_rows(workflow.progress(library))[9]["status"], "current")
+        last = progress_rows(workflow.progress(len(workflow.steps)))
+        self.assertEqual([last[9]["status"], last[10]["status"]], ["completed", "current"])
+
+    def test_rows_accept_progress_without_groups(self):
+        from characters.chargen.registry import progress_rows
+
+        rows = progress_rows(
+            [{"label": "Stats", "status": "completed"}, {"label": "Powers", "status": "current"}]
+        )
+        self.assertEqual(
+            [(row["number"], row["label"], row["group"], row["conditional"]) for row in rows],
+            [(1, "Stats", None, False), (2, "Powers", None, False)],
+        )

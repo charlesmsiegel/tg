@@ -121,22 +121,28 @@
         return isAttributeValueValid(attrName, currentValue + 1);
     }
 
-    // Find the maximum value this category can reach while maintaining validity
-    function getMaxCategoryValue(categoryName) {
+    // The target each category is heading for: the categories ranked by their
+    // current totals take primary, secondary and tertiary in that order (ties
+    // keep Physical, Social, Mental order), which is the assignment that
+    // overshoots least. Returns {category: target}.
+    function getRankedTargets() {
         const totals = getCurrentTotals();
-        const currentValue = totals[categoryName];
+        const ranked = Object.keys(CATEGORIES).sort((a, b) => totals[b] - totals[a]);
+        const descending = TARGETS.slice().reverse();
+        const assigned = {};
+        ranked.forEach((categoryName, index) => { assigned[categoryName] = descending[index]; });
+        return assigned;
+    }
 
-        // Try increasing until we hit the limit
-        for (let testValue = currentValue + 1; testValue <= TARGETS[TARGETS.length - 1]; testValue++) {
-            const testTotals = { ...totals };
-            testTotals[categoryName] = testValue;
+    // State classes instead of colours: the stylesheet maps them to tokens.
+    function setState(element, state) {
+        element.classList.toggle('is-over', state === 'over');
+        element.classList.toggle('is-ready', state === 'ready');
+        element.classList.toggle('is-done', state === 'done');
+    }
 
-            if (!isValidState(testTotals.physical, testTotals.social, testTotals.mental)) {
-                return testValue - 1;
-            }
-        }
-
-        return TARGETS[TARGETS.length - 1]; // Maximum possible
+    function plural(count) {
+        return count + ' point' + (count !== 1 ? 's' : '');
     }
 
     function updateDisplay() {
@@ -150,45 +156,56 @@
                                    sortedTotals.length === TARGETS.length &&
                                    sortedTotals.every((val, idx) => val === TARGETS[idx]);
 
-        // Update total remaining points
+        // Update total remaining points and the status tag beside it
         const totalElement = document.getElementById('total-remaining');
+        const tagElement = document.querySelector('[data-allocation-tag]');
+        let state = 'progress';
         if (totalElement) {
             if (pointsRemaining > 0) {
-                totalElement.textContent = `${pointsRemaining} point${pointsRemaining !== 1 ? 's' : ''} remaining to allocate`;
-                totalElement.style.color = 'var(--theme-text-secondary)';
+                totalElement.textContent = plural(pointsRemaining) + ' remaining to allocate';
             } else if (pointsRemaining === 0) {
                 // Check if it's a valid distribution
                 if (isValidState(totals.physical, totals.social, totals.mental)) {
                     if (isValidDistribution) {
                         totalElement.textContent = 'Complete! Valid distribution achieved.';
-                        totalElement.style.color = '#28a745';
+                        state = 'ready';
                     } else {
                         totalElement.textContent = 'All points allocated - verify distribution is correct';
-                        totalElement.style.color = '#ffc107';
                     }
                 } else {
                     totalElement.textContent = 'All points allocated - but distribution is invalid';
-                    totalElement.style.color = '#dc3545';
+                    state = 'over';
                 }
             } else {
-                totalElement.textContent = `${Math.abs(pointsRemaining)} point${Math.abs(pointsRemaining) !== 1 ? 's' : ''} over limit!`;
-                totalElement.style.color = '#dc3545';
+                totalElement.textContent = plural(Math.abs(pointsRemaining)) + ' over limit!';
+                state = 'over';
             }
+            setState(totalElement, state);
+        }
+        // A category above its ranked target is too many even while dots remain.
+        const ranked = getRankedTargets();
+        if (state === 'progress' && Object.keys(ranked).some(name => totals[name] > ranked[name])) {
+            state = 'over';
+        }
+        if (tagElement) {
+            tagElement.textContent = state === 'ready' ? 'Ready' : state === 'over' ? 'Too many' : 'In progress';
+            setState(tagElement, state);
         }
 
-        // Update per-category status
+        // Per-category count against its ranked target: "n left", "done" or "n over"
         for (const [categoryName, currentTotal] of Object.entries(totals)) {
-            const element = document.getElementById(`${categoryName}-status`);
+            const element = document.getElementById(categoryName + '-status');
             if (element) {
-                const maxValue = getMaxCategoryValue(categoryName);
-                const canAdd = maxValue - currentTotal;
-
-                if (canAdd > 0) {
-                    element.textContent = `Total: ${currentTotal} (can add ${canAdd} more)`;
-                    element.style.color = 'var(--theme-text-secondary)';
+                const difference = ranked[categoryName] - currentTotal;
+                if (difference < 0) {
+                    element.textContent = -difference + ' over';
+                    setState(element, 'over');
+                } else if (difference > 0) {
+                    element.textContent = difference + ' left';
+                    setState(element, 'progress');
                 } else {
-                    element.textContent = `Total: ${currentTotal} (at maximum for valid distribution)`;
-                    element.style.color = '#17a2b8';
+                    element.textContent = 'done';
+                    setState(element, 'done');
                 }
             }
         }

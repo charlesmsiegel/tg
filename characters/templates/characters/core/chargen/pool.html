@@ -3,7 +3,7 @@
    feedback and the submit are the verdict. {% endcomment %}
 {% if allocation_rules and chargen_interactive %}
     {{ allocation_rules|json_script:"chargen-pool-rules" }}
-    <div class="tg-chargen-pool" x-data="tgPool" data-rules="chargen-pool-rules" aria-live="polite">
+    <p class="tl-chargen__pool" x-data="tgPool" data-rules="chargen-pool-rules" aria-live="polite">
         <span x-text="summary"></span>
-    </div>
+    </p>
 {% endif %}

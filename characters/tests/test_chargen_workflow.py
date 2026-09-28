@@ -52,13 +52,24 @@ class WorkflowRenderingTests(TestCase):
         self.assertIsNone(rows[1][0])
         self.assertEqual(rows[1][1].name, "drive")
         self.assertIsNone(rows[1][2])
-        html = render_to_string("characters/core/chargen/abilities.html", {"ability_rows": rows})
+        columns = response.context["ability_columns"]
+        self.assertEqual([title for title, _ in columns], ["Talents", "Skills", "Knowledges"])
+        self.assertEqual(
+            [[f.name for f in fields] for _, fields in columns][1], ["crafts", "drive"]
+        )
+        html = render_to_string(
+            "characters/core/chargen/abilities.html", {"ability_columns": columns}
+        )
+        # Each group is its own column, so a short group simply has fewer rows.
+        drive = rows[1][1]
         self.assertInHTML(
-            '<div class="row"><div class="col-sm"></div><div class="col-sm dots"></div>'
-            f'<div class="col-sm">Drive</div><div class="col-sm dots">{rows[1][1]}</div>'
-            '<div class="col-sm"></div><div class="col-sm dots"></div></div>',
+            '<div class="tl-alloc__row">'
+            f'<label class="tl-alloc__label" for="{drive.id_for_label}">Drive</label>{drive}'
+            "</div>",
             html,
         )
+        self.assertEqual(html.count('class="tl-alloc__row"'), 4)
+        self.assertNotIn("None", html)
 
     def test_vampire_late_forms_match_their_views(self):
         from characters.models.core.background_block import Background, BackgroundRating
