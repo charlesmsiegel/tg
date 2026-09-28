@@ -1,0 +1,7 @@
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:charm' %}">← Charms</a>{% endblock back %}
+{% block facts %}
+    {% fact "Essence cost" object.essence_cost %}
+    {% fact "Point cost" object.point_cost %}
+{% endblock facts %}

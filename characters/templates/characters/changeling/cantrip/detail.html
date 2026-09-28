@@ -1,56 +1,27 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    <div class="tg-card">
-        <div class="tg-card-header ctd_heading">
-            <h4>{{ object.name }}</h4>
-        </div>
-        <div class="tg-card-body">
-            <div class="row">
-                <div class="col-4"><strong>Art:</strong></div>
-                <div class="col-8">{{ object.get_art_display|default:"-" }}</div>
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl sanitize_text %}
+{% block back %}<a href="{% url 'characters:changeling:list:cantrip' %}">← Cantrips</a>{% endblock back %}
+{% block rank %}
+    {% if object.level %}<span class="tl-cover__rank">{% dots object.level %}</span>{% endif %}
+{% endblock rank %}
+{% block facts %}
+    {% fact "Art" object.get_art_display|default:"—" %}
+    {% fact "Primary realm" object.get_primary_realm_display|default:"—" %}
+    {% fact "Level" object.level %}
+    {% fact "Difficulty" object.difficulty %}
+    {% fact "Glamour cost" object.glamour_cost %}
+    {% fact "Duration" object.duration %}
+    {% fact "Range" object.range %}
+    {% fact "Type" object.get_type_of_effect_display %}
+{% endblock facts %}
+{% block after_description %}
+    {% if object.effect %}
+        <section class="tl-section tl-section--power" id="system">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">System</h2>
             </div>
-            <div class="row">
-                <div class="col-4"><strong>Primary Realm:</strong></div>
-                <div class="col-8">{{ object.get_primary_realm_display|default:"-" }}</div>
-            </div>
-            <div class="row">
-                <div class="col-4"><strong>Level:</strong></div>
-                <div class="col-8">{{ object.level }}</div>
-            </div>
-            <div class="row">
-                <div class="col-4"><strong>Difficulty:</strong></div>
-                <div class="col-8">{{ object.difficulty }}</div>
-            </div>
-            {% if object.glamour_cost %}
-            <div class="row">
-                <div class="col-4"><strong>Glamour Cost:</strong></div>
-                <div class="col-8">{{ object.glamour_cost }}</div>
-            </div>
-            {% endif %}
-            {% if object.duration %}
-            <div class="row">
-                <div class="col-4"><strong>Duration:</strong></div>
-                <div class="col-8">{{ object.duration }}</div>
-            </div>
-            {% endif %}
-            {% if object.range %}
-            <div class="row">
-                <div class="col-4"><strong>Range:</strong></div>
-                <div class="col-8">{{ object.range }}</div>
-            </div>
-            {% endif %}
-            {% if object.type_of_effect %}
-            <div class="row">
-                <div class="col-4"><strong>Type:</strong></div>
-                <div class="col-8">{{ object.get_type_of_effect_display }}</div>
-            </div>
-            {% endif %}
-            {% if object.effect %}
-            <div class="row">
-                <div class="col-4"><strong>Effect:</strong></div>
-                <div class="col-8">{{ object.effect }}</div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-{% endblock contents %}
+            <div class="tl-section__body tl-prose">{{ object.effect|sanitize_html|linebreaks }}</div>
+        </section>
+    {% endif %}
+{% endblock after_description %}

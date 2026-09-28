@@ -1,7 +1,23 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/mage/linear_magic_path/display_includes/title.html" %}
-{% endblock objectname %}
-{% block contents %}
-    {% include "characters/mage/linear_magic_path/display_includes/rituals.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:path' %}">← Paths</a>{% endblock back %}
+{% block facts %}
+    {% fact "Type" object.get_numina_type_display %}
+{% endblock facts %}
+{% block after_description %}
+    {% with rituals=object.linearmagicritual_set.all %}
+        {% if rituals %}
+            <section class="tl-section tl-section--power" id="rituals">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Rituals</h2>
+                </div>
+                <div class="tl-section__body tl-rows">
+                    {% for ritual in rituals %}
+                        {% trait ritual.name ritual.level variant="acc" url=ritual.get_absolute_url %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock after_description %}

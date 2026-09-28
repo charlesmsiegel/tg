@@ -1150,3 +1150,56 @@ body.tl {
   .ref2-list > .ref2-table th:first-child { width: auto; }
   .ref2-table td, .ref2-table th { padding-right: 10px; }
 }
+/* ---- reference pages (C7, C15, M12, M13) ---- */
+/* List cover: "N of M shown", filters (search, boxed selects, maximum steppers), footer links. */
+.tl-ref-count { font: 400 13px var(--mono); opacity: .85; }
+.tl-ref-filters { display: flex; flex-direction: column; gap: 12px; }
+.tl-ref-filters__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tl-ref-filters__row--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tl-cover .tl-field.tl-field--search input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+  border: 0; border-bottom: 1px solid var(--paper); padding: 6px 0; font: italic 400 17px var(--serif);
+}
+.tl-cover .tl-field input::placeholder { color: inherit; opacity: .85; }
+.tl-field--search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.tl-ref-filters .tl-subhead { color: inherit; opacity: .8; padding-top: 6px; }
+.tl-ref-maxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 16px; }
+.tl-ref-max {
+  display: flex; flex-direction: column; gap: 2px; min-width: 0;
+  padding: 5px 0; border-bottom: 1px solid var(--cover-rule);
+  font: 400 14px var(--serif); overflow-wrap: anywhere;
+}
+.tl-ref-max__val { font: 500 12px var(--mono); white-space: nowrap; }
+.tl-ref-max input { width: 5ch; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+.tl-ref-max input::placeholder { color: inherit; opacity: 1; }
+.tl-ref-check { display: flex; gap: 8px; align-items: center; min-width: 0; font: 400 14px var(--serif); padding: 3px 0; hyphens: auto; overflow-wrap: anywhere; }
+.tl-ref-check input { width: 16px; height: 16px; accent-color: var(--paper); flex: none; }
+.tl-ref-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.tl-ref-foot > :last-child:not(:first-child), .tl-ref-foot > .tl-ref-new { margin-left: auto; }
+/* Card grid: the filterable wrapper stretches its tile; spheres + roll sit at the foot. */
+.tl-ref-item { display: flex; min-width: 0; }
+.tl-ref-item > .tl-tile { flex: 1; }
+.tl-ref-item .tl-rote__spheres { margin-top: auto; }
+.tl-ref-item .tl-rote__roll { margin-top: 0; }
+.tl-ref-tile { gap: 8px; }
+.tl-ref-tile .tl-tile__name { font-size: 25px; }
+.tl-ref-tile__foot { margin-top: auto; display: flex; flex-direction: column; gap: 5px; border-top: 1px solid var(--rule); padding-top: 10px; font: 400 14px var(--serif); }
+.tl-ref-tile__roll { font: 400 12px var(--mono); color: var(--ink2); }
+/* Table variant (M12): NAME / RATING / TYPE / LINE. */
+.tl-table--ref th { padding: 0 16px 10px 0; }
+.tl-table--ref td { padding: 12px 16px 12px 0; }
+.tl-table--ref a { text-decoration: none; }
+.tl-ref-name { font: 400 19px var(--serif); }
+.tl-table--ref td.tl-num { font: 500 14px var(--mono); }
+.tl-table--ref td.is-neg { color: var(--rubric); }
+.tl-ref-type { font: 400 15px var(--serif); color: var(--ink2); }
+.tl-ref-line { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+/* Detail (M13, C15): source line at the cover foot, sphere cells, rote cost, link lists. */
+.tl-cover__source { font: 400 13px/1.5 var(--mono); opacity: .85; }
+.tl-cover__source a { text-decoration: none; }
+.tl-section__cost { display: flex; align-items: baseline; gap: 10px; }
+.tl-section__cost b { font: 400 30px/1 var(--serif); color: var(--ink); letter-spacing: 0; }
+.tl-sphererow { display: flex; flex-wrap: wrap; gap: 16px 48px; padding-top: 4px; }
+.tl-sphererow__cell { display: flex; flex-direction: column; gap: 8px; }
+.tl-ref-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 400 17px var(--serif); }
+.tl-ref-links a { text-decoration-color: var(--rule); }
+.tl-cover__actions .tl-btnpair:not(:has(*)) { display: none; }

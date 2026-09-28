@@ -57,6 +57,10 @@ class RitualListView(ListView):
     ordering = ["path", "level", "name"]
     template_name = "characters/mage/linear_magic_ritual/list.html"
 
+    def get_queryset(self):
+        # Each ritual card names its path.
+        return super().get_queryset().select_related("path")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["paths"] = LinearMagicPath.objects.all().order_by("name")

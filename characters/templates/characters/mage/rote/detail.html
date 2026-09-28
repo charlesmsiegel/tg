@@ -1,5 +1,16 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% include "characters/mage/rote/display_includes/basics.html" %}
-    {% include "characters/mage/effect/display_includes/spheres.html" with object=object.effect %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:rote' %}">← Rotes</a>{% endblock back %}
+{% block facts %}
+    {% fact "Effect" object.effect.name object.effect.get_absolute_url %}
+    {% fact "Practice" object.practice %}
+    {% if object.attribute or object.ability %}
+        {% fact "Dice pool" object.attribute.name|add:" + "|add:object.ability.name %}
+    {% endif %}
+{% endblock facts %}
+{% block ref_actions %}
+    {% if object.effect %}<a class="tl-btn tl-btn--ghost" href="{{ object.effect.get_absolute_url }}">View effect</a>{% endif %}
+{% endblock ref_actions %}
+{% block sections %}
+    {% include "characters/mage/effect/tl_spheres.html" with effect=object.effect %}
+{% endblock sections %}

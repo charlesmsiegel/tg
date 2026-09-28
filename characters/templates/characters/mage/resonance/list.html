@@ -1,150 +1,55 @@
-{% extends "core/base.html" %}
-{% load filterable_list %}
-{% block title %}
-    Resonances
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="mta">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title mta_heading">Resonances</h1>
-            </div>
-        </div>
-
-        <!-- Filter Controls -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header d-flex justify-content-between align-items-center">
-                <h5 class="tg-card-title mb-0">Filters</h5>
-                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-                    Toggle Filters
-                </button>
-            </div>
-            <div class="collapse show" id="filterPanel">
-                <div class="tg-card-body" style="padding: 20px;">
-                    <!-- Search Filter -->
-                    <div class="mb-3">
-                        <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
-                        <input type="text" class="form-control" id="nameFilter" data-filter-input="name" placeholder="Type to filter by name...">
-                    </div>
-
-                    <!-- Sphere Filters -->
-                    <div class="mb-3">
-                        <label style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); display: block; margin-bottom: 8px;">Filter by Spheres</label>
-                        <div class="row" data-filter-mode="all">
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="correspondence" id="filterCorrespondence">
-                                    <label class="form-check-label" for="filterCorrespondence">Correspondence</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="entropy" id="filterEntropy">
-                                    <label class="form-check-label" for="filterEntropy">Entropy</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="forces" id="filterForces">
-                                    <label class="form-check-label" for="filterForces">Forces</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="life" id="filterLife">
-                                    <label class="form-check-label" for="filterLife">Life</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="matter" id="filterMatter">
-                                    <label class="form-check-label" for="filterMatter">Matter</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="mind" id="filterMind">
-                                    <label class="form-check-label" for="filterMind">Mind</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="prime" id="filterPrime">
-                                    <label class="form-check-label" for="filterPrime">Prime</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="spirit" id="filterSpirit">
-                                    <label class="form-check-label" for="filterSpirit">Spirit</label>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-filter-checkbox="sphere" value="time" id="filterTime">
-                                    <label class="form-check-label" for="filterTime">Time</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Clear Filters -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
-                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resonance List -->
-        <div class="row" data-filterable-list="resonances">
-            {% for obj in object_list %}
-                <div class="col-md-4 col-sm-6 mb-3"
-                     data-filterable-item
-                     data-name="{{ obj.name|lower }}"
-                     data-sphere-correspondence="{{ obj.correspondence|yesno:'true,false' }}"
-                     data-sphere-entropy="{{ obj.entropy|yesno:'true,false' }}"
-                     data-sphere-forces="{{ obj.forces|yesno:'true,false' }}"
-                     data-sphere-life="{{ obj.life|yesno:'true,false' }}"
-                     data-sphere-matter="{{ obj.matter|yesno:'true,false' }}"
-                     data-sphere-mind="{{ obj.mind|yesno:'true,false' }}"
-                     data-sphere-prime="{{ obj.prime|yesno:'true,false' }}"
-                     data-sphere-spirit="{{ obj.spirit|yesno:'true,false' }}"
-                     data-sphere-time="{{ obj.time|yesno:'true,false' }}">
-                    <div class="tg-card h-100">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <h6 class="tg-card-title mb-2">
-                                <a href="{{ obj.get_absolute_url }}" style="text-decoration: none; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                            </h6>
-                            {% if obj.associated_spheres %}
-                                <div style="font-size: 0.75rem; color: var(--theme-text-secondary);">
-                                    {{ obj.associated_spheres }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center" style="padding: 20px;">
-                            <p style="color: var(--theme-text-secondary); margin: 0;">No resonances found.</p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- No Results Message -->
-        <div data-filter-no-results class="tg-card" style="display: none;">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <p style="color: var(--theme-text-secondary); margin: 0;">No resonances match the current filters.</p>
-            </div>
-        </div>
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Resonances{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Resonances{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Resonances" line="mta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <span class="tl-subhead">Associated with every checked sphere</span>
+    <div class="tl-ref-maxes" data-filter-mode="all">
+        <label class="tl-ref-check" for="filterCorrespondence"><input type="checkbox" data-filter-checkbox="sphere" value="correspondence" id="filterCorrespondence">Correspondence</label>
+        <label class="tl-ref-check" for="filterEntropy"><input type="checkbox" data-filter-checkbox="sphere" value="entropy" id="filterEntropy">Entropy</label>
+        <label class="tl-ref-check" for="filterForces"><input type="checkbox" data-filter-checkbox="sphere" value="forces" id="filterForces">Forces</label>
+        <label class="tl-ref-check" for="filterLife"><input type="checkbox" data-filter-checkbox="sphere" value="life" id="filterLife">Life</label>
+        <label class="tl-ref-check" for="filterMatter"><input type="checkbox" data-filter-checkbox="sphere" value="matter" id="filterMatter">Matter</label>
+        <label class="tl-ref-check" for="filterMind"><input type="checkbox" data-filter-checkbox="sphere" value="mind" id="filterMind">Mind</label>
+        <label class="tl-ref-check" for="filterPrime"><input type="checkbox" data-filter-checkbox="sphere" value="prime" id="filterPrime">Prime</label>
+        <label class="tl-ref-check" for="filterSpirit"><input type="checkbox" data-filter-checkbox="sphere" value="spirit" id="filterSpirit">Spirit</label>
+        <label class="tl-ref-check" for="filterTime"><input type="checkbox" data-filter-checkbox="sphere" value="time" id="filterTime">Time</label>
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:resonance' %}">+ New resonance</a>
+{% endblock ref_create %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Spheres</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="resonances">
+                {% for obj in object_list %}
+                    <tr data-filterable-item
+                        data-name="{{ obj.name|lower }}"
+                        data-sphere-correspondence="{{ obj.correspondence|yesno:'true,false' }}"
+                        data-sphere-entropy="{{ obj.entropy|yesno:'true,false' }}"
+                        data-sphere-forces="{{ obj.forces|yesno:'true,false' }}"
+                        data-sphere-life="{{ obj.life|yesno:'true,false' }}"
+                        data-sphere-matter="{{ obj.matter|yesno:'true,false' }}"
+                        data-sphere-mind="{{ obj.mind|yesno:'true,false' }}"
+                        data-sphere-prime="{{ obj.prime|yesno:'true,false' }}"
+                        data-sphere-spirit="{{ obj.spirit|yesno:'true,false' }}"
+                        data-sphere-time="{{ obj.time|yesno:'true,false' }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-ref-type">{{ obj.associated_spheres }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No resonances match the current filters." empty="No resonances yet." %}
 {% endblock content %}
-
-{% block extra_js %}
-{% filterable_list_script %}
-{% endblock extra_js %}

@@ -1,0 +1,25 @@
+{% load tl %}
+{% comment %}
+Spheres section (C15): rote cost on the right of the heading, then only the Spheres above 0,
+each a mono eyebrow over large accent dots. Pass effect=<Effect>.
+{% endcomment %}
+{% if effect %}
+    <section class="tl-section tl-section--power" id="spheres">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Spheres</h2>
+            <span class="tl-section__aside tl-section__cost tl-mono tl-muted">Rote cost <b>{{ effect.rote_cost }}</b></span>
+        </div>
+        <div class="tl-section__body tl-sphererow">
+            {% if effect.correspondence > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Correspondence</span>{% dots effect.correspondence 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.entropy > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Entropy</span>{% dots effect.entropy 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.forces > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Forces</span>{% dots effect.forces 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.life > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Life</span>{% dots effect.life 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.matter > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Matter</span>{% dots effect.matter 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.mind > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Mind</span>{% dots effect.mind 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.prime > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Prime</span>{% dots effect.prime 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.spirit > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Spirit</span>{% dots effect.spirit 5 "acc" "lg" %}</div>{% endif %}
+            {% if effect.time > 0 %}<div class="tl-sphererow__cell"><span class="tl-subhead">Time</span>{% dots effect.time 5 "acc" "lg" %}</div>{% endif %}
+        </div>
+    </section>
+{% endif %}

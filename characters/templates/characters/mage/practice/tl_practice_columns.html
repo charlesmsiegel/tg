@@ -1,0 +1,30 @@
+{% comment %}
+Practices section for tenets and paradigms: Associated and Limited practices side by side.
+Pass associated=<practices> limited=<practices>; hidden when both are empty.
+{% endcomment %}
+{% if associated or limited %}
+    <section class="tl-section tl-section--cols" id="practices">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Practices</h2>
+        </div>
+        <div class="tl-section__body tl-cols tl-cols--2">
+            <div class="tl-col">
+                <span class="tl-col__head">Associated</span>
+                {% for practice in associated %}
+                    <a href="{{ practice.get_absolute_url }}">{{ practice.name }}</a>
+                {% empty %}
+                    <span class="tl-note">No associated practices.</span>
+                {% endfor %}
+            </div>
+            <div class="tl-col">
+                <span class="tl-col__head">Limited</span>
+                {% for practice in limited %}
+                    <a href="{{ practice.get_absolute_url }}">{{ practice.name }}</a>
+                {% empty %}
+                    <span class="tl-note">No limited practices.</span>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endif %}

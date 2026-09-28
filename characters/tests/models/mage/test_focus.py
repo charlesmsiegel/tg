@@ -128,7 +128,7 @@ class TestInstrumentDetailView(TestCase):
 
     def test_effect_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "core/object.html")
+        self.assertTemplateUsed(response, "characters/mage/instrument/detail.html")
 
 
 class TestInstrumentCreateView(TestCase):

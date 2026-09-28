@@ -32,6 +32,10 @@ class RoteListView(ListView):
     ordering = ["name"]
     template_name = "characters/mage/rote/list.html"
 
+    def get_queryset(self):
+        # Every rote card reads its effect, practice, attribute and ability.
+        return super().get_queryset().select_related("effect", "practice", "attribute", "ability")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["practices"] = Practice.objects.all().order_by("name")

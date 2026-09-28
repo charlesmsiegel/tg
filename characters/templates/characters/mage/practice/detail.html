@@ -1,14 +1,85 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% include "characters/mage/practice/display_includes/abilities.html" %}
-    {% include "characters/mage/practice/display_includes/instruments.html" %}
-    {% include "characters/mage/practice/display_includes/common_resonance_traits.html" %}
-    {% include "characters/mage/practice/display_includes/benefit_penalty.html" %}
-    {% include "characters/mage/rote/display_includes/rote_list.html" with rote_list=object.get_rotes %}
+{% extends "characters/tl/reference_detail.html" %}
+{% comment %}
+Practice (also the parent of specialized and corrupted practices, which add cover facts and
+empty the `extensions` block). Sections: Description, Focus (abilities, instruments,
+common resonance traits), Benefits & Penalties, Rotes, then Specializations and Corruptions.
+{% endcomment %}
+{% load sanitize_text %}
+{% block back %}<a href="{% url 'characters:mage:list:practice' %}">← Practices</a>{% endblock back %}
+{% block after_description %}
+    {% with abilities=object.abilities.all instruments=object.instruments.all traits=object.common_resonance_traits.all %}
+        {% if abilities or instruments or traits %}
+            <section class="tl-section tl-section--cols" id="focus">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Focus</h2>
+                </div>
+                <div class="tl-section__body tl-cols">
+                    <div class="tl-col">
+                        <span class="tl-col__head">Abilities</span>
+                        {% for ability in abilities %}<span>{{ ability.name }}</span>{% empty %}<span class="tl-note">None specified.</span>{% endfor %}
+                    </div>
+                    <div class="tl-col">
+                        <span class="tl-col__head">Instruments</span>
+                        {% for instrument in instruments %}<a href="{{ instrument.get_absolute_url }}">{{ instrument.name }}</a>{% empty %}<span class="tl-note">None specified.</span>{% endfor %}
+                    </div>
+                    <div class="tl-col">
+                        <span class="tl-col__head">Common resonance traits</span>
+                        {% for trait in traits %}<a href="{{ trait.get_absolute_url }}">{{ trait }}</a>{% empty %}<span class="tl-note">None specified.</span>{% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% if object.benefit or object.penalty or object.extra_benefit or object.price %}
+        <section class="tl-section tl-section--cols" id="benefits">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Benefits &amp; Penalties</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col tl-stack--lg">
+                    {% include "characters/tl/prose_block.html" with label="Benefit" text=object.benefit %}
+                    {% include "characters/tl/prose_block.html" with label="Extra benefit" text=object.extra_benefit %}
+                </div>
+                <div class="tl-col tl-stack--lg">
+                    {% include "characters/tl/prose_block.html" with label="Penalty" text=object.penalty %}
+                    {% include "characters/tl/prose_block.html" with label="Price" text=object.price %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    {% include "characters/tl/rotes.html" with rote_list=object.get_rotes %}
     {% block extensions %}
-        {% include "characters/mage/practice/display_includes/specializations.html" %}
-        {% include "characters/mage/practice/display_includes/corruptions.html" %}
+        {% if specializations %}
+            <section class="tl-section" id="specializations">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Specializations</h2>
+                </div>
+                <div class="tl-section__body tl-rows">
+                    {% for practice in specializations %}
+                        <div class="tl-kv">
+                            <a href="{{ practice.get_absolute_url }}">{{ practice.name }}</a>
+                            {% if practice.faction %}<a class="tl-kv__v" href="{{ practice.faction.get_absolute_url }}">{{ practice.faction }}</a>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+        {% if corruptions %}
+            <section class="tl-section" id="corruptions">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Corruptions</h2>
+                </div>
+                <div class="tl-section__body tl-rows">
+                    {% for practice in corruptions %}
+                        <div class="tl-kv"><a href="{{ practice.get_absolute_url }}">{{ practice.name }}</a></div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
     {% endblock extensions %}
-    {% block specialization %}
-    {% endblock specialization %}
-{% endblock contents %}
+    {% block specialization %}{% endblock specialization %}
+{% endblock after_description %}

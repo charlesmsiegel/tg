@@ -1,39 +1,39 @@
-{% extends "core/object.html" %}
-{% block status_row %}
-    {% load dots %}
-    <div class="col-md-6 mb-3">
-        <div class="card">
-            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 wta_heading">Basic Information</h5>
-                <span class="badge badge-pill badge-wta">Willpower: {{ object.willpower }}</span>
-            </div>
-            <div class="card-body py-3">
-                <h6 class="text-muted mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Camps</h6>
-                {% include "characters/werewolf/tribe/display_includes/camps.html" with camps=object.get_camps %}
-            </div>
-        </div>
-    </div>
-{% endblock status_row %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light py-2">
-                    <h5 class="mb-0 wta_heading">Gifts</h5>
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl sanitize_text %}
+{% block back %}<a href="{% url 'characters:werewolf:list:tribe' %}">← Tribes</a>{% endblock back %}
+{% block facts %}
+    {% fact "Willpower" object.willpower %}
+{% endblock facts %}
+{% block after_description %}
+    {% with camps=object.get_camps %}
+        {% if camps %}
+            <section class="tl-section" id="camps">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Camps</h2>
                 </div>
-                <div class="card-body py-3">
-                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=1 gifts=object.gifts_1 %}
-                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=2 gifts=object.gifts_2 %}
-                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=3 gifts=object.gifts_3 %}
-                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=4 gifts=object.gifts_4 %}
-                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=5 gifts=object.gifts_5 %}
-                    {% if object.gift_6 %}
-                        {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=6 gifts=object.gifts_6 %}
-                    {% endif %}
+                <div class="tl-section__body tl-ref-links">
+                    {% for camp in camps %}<a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>{% endfor %}
                 </div>
-            </div>
-        </div>
-    </div>
-{% endblock contents %}
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% with g1=object.gifts_1 g2=object.gifts_2 g3=object.gifts_3 g4=object.gifts_4 g5=object.gifts_5 g6=object.gifts_6 %}
+        {% if g1 or g2 or g3 or g4 or g5 or g6 %}
+            <section class="tl-section tl-section--power" id="gifts">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Gifts</h2>
+                </div>
+                <div class="tl-section__body tl-stack tl-stack--lg">
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=1 gifts=g1 %}
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=2 gifts=g2 %}
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=3 gifts=g3 %}
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=4 gifts=g4 %}
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=5 gifts=g5 %}
+                    {% include "characters/werewolf/tribe/tl_gift_rank.html" with level=6 gifts=g6 %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock after_description %}

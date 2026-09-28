@@ -1,4 +1,10 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/mage/linear_magic_ritual/display_includes/title.html" %}
-{% endblock objectname %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:ritual' %}">← Rituals</a>{% endblock back %}
+{% block rank %}
+    {% if object.level %}<span class="tl-cover__rank">{% dots object.level %}</span>{% endif %}
+{% endblock rank %}
+{% block facts %}
+    {% fact "Path" object.path %}
+    {% fact "Level" object.level %}
+{% endblock facts %}

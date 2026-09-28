@@ -1,4 +1,9 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% include "characters/mage/effect/display_includes/spheres.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:effect' %}">← Effects</a>{% endblock back %}
+{% block facts %}
+    {% fact "Rote cost" object.rote_cost %}
+{% endblock facts %}
+{% block sections %}
+    {% include "characters/mage/effect/tl_spheres.html" with effect=object %}
+{% endblock sections %}

@@ -31,6 +31,10 @@ class GiftListView(CachedListView):
     ordering = ["name"]
     template_name = "characters/werewolf/gift/list.html"
 
+    def get_queryset(self):
+        # Each gift card lists who may learn it.
+        return super().get_queryset().prefetch_related("allowed")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get unique shifter types for filtering

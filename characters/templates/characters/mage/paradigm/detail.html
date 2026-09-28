@@ -1,7 +1,22 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    {% include "characters/mage/paradigm/display_includes/tenets.html" %}
-    {% include "characters/mage/paradigm/display_includes/practices.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% block back %}<a href="{% url 'characters:mage:list:paradigm' %}">← Paradigms</a>{% endblock back %}
+{% block after_description %}
+    {% with tenets=object.tenets.all %}
+        {% if tenets %}
+            <section class="tl-section" id="tenets">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Tenets</h2>
+                </div>
+                <div class="tl-section__body tl-rows">
+                    {% for tenet in tenets %}
+                        <div class="tl-kv"><a href="{{ tenet.get_absolute_url }}">{{ tenet.name }}</a><span class="tl-kv__v tl-muted">{{ tenet.get_tenet_type_display }}</span></div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% with associated=object.get_associated_practices limited=object.get_limited_practices %}
+        {% include "characters/mage/practice/tl_practice_columns.html" %}
+    {% endwith %}
+{% endblock after_description %}

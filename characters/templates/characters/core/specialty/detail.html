@@ -1,4 +1,6 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/core/specialty/display_includes/title.html" %}
-{% endblock objectname %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:list:specialty' %}">← Specialties</a>{% endblock back %}
+{% block facts %}
+    {% fact "Statistic" object.display_stat %}
+{% endblock facts %}

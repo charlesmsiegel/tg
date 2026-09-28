@@ -1,101 +1,56 @@
-{% extends "core/base.html" %}
-{% load static %}
-{% block title %}
-    Gifts
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wta">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title wta_heading">Gifts</h1>
-            </div>
+{% extends "characters/tl/reference_list.html" %}
+{% load tl %}
+{% block title %}Gifts{% endblock title %}
+{% block gameline %}wta{% endblock gameline %}
+{% block cover_label %}Gifts{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Werewolf: the Apocalypse" title="Gifts" line="wta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="rank-filter">Rank</label>
+            <select id="rank-filter" data-filter-select="rank">
+                <option value="">Rank</option>
+                {% for rank in ranks %}<option value="{{ rank }}">Rank {{ rank }}</option>{% endfor %}
+            </select>
         </div>
-
-        <!-- Filter Panel -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <button class="btn btn-link"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#filterPanel"
-                        aria-expanded="false"
-                        aria-controls="filterPanel">
-                    <i class="fas fa-filter"></i> Filter Gifts
-                </button>
-            </div>
-            <div class="collapse" id="filterPanel">
-                <div class="tg-card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="nameFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
-                            <input type="text" class="form-control" id="nameFilter" placeholder="Search by name...">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="rankFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Level</label>
-                            <select class="form-select" id="rankFilter">
-                                <option value="">All Levels</option>
-                                {% for rank in ranks %}
-                                    <option value="{{ rank }}">Level {{ rank }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="typeFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Allowed Type</label>
-                            <select class="form-select" id="typeFilter">
-                                <option value="">All Types</option>
-                                {% for permission in gift_permissions %}
-                                    <option value="{{ permission.id }}">{{ permission.shifter|title }} - {{ permission.condition|title }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="button" class="btn btn-secondary" id="clearFilters">Clear Filters</button>
-                            <span class="ms-3" id="resultCount" style="font-weight: 600; color: var(--theme-text-secondary);"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gifts List -->
-        <div class="tg-card">
-            <div class="tg-card-body" style="padding: 0;">
-                <div id="giftsList">
-                    {% for obj in object_list %}
-                        <div class="gift-item"
-                             data-name="{{ obj.name|lower }}"
-                             data-rank="{{ obj.rank }}"
-                             data-allowed="{% for perm in obj.allowed.all %}{{ perm.id }},{% endfor %}"
-                             style="border-bottom: 1px solid rgba(0,0,0,0.1);">
-                            <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary); text-decoration: none;">
-                                    {{ obj.name }}
-                                </a>
-                                <div style="display: flex; gap: 12px; align-items: center;">
-                                    <span class="tg-badge badge-pill" style="background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
-                                        Level {{ obj.rank }}
-                                    </span>
-                                    <span style="font-size: 0.85rem; color: var(--theme-text-secondary);">
-                                        {% for perm in obj.allowed.all %}
-                                            {{ perm.shifter|title }}{% if not forloop.last %}, {% endif %}
-                                        {% empty %}
-                                            Any
-                                        {% endfor %}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div style="padding: 20px; text-align: center; color: var(--theme-text-secondary);">
-                            No gifts found.
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="allowed-filter">Available to</label>
+            <select id="allowed-filter" data-filter-select="allowed" data-filter-match="token">
+                <option value="">Available to</option>
+                {% for permission in gift_permissions %}
+                    <option value="{{ permission.id }}">{{ permission.shifter|title }} · {{ permission.condition|title }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
-
-    <script src="{% static 'characters/js/gift-list.js' %}"></script>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:werewolf:create:gift' %}">+ New gift</a>
+{% endblock ref_create %}
+{% block content %}
+    <div class="tl-grid" data-filterable-list="gifts">
+        {% for gift in object_list %}
+            {% with allowed=gift.allowed.all %}
+                <div class="tl-ref-item"
+                     data-filterable-item
+                     data-name="{{ gift.name|lower }}"
+                     data-rank="{{ gift.rank }}"
+                     data-allowed="{% for perm in allowed %}{{ perm.id }} {% endfor %}">
+                    <article class="tl-tile tl-ref-tile">
+                        <h2 class="tl-tile__name"><a href="{{ gift.get_absolute_url }}">{{ gift.name }}</a></h2>
+                        {% if gift.description %}<p class="tl-tile__text">{{ gift.description|striptags|truncatewords:30 }}</p>{% endif %}
+                        <div class="tl-ref-tile__foot">
+                            {% trait "Rank" gift.rank variant="acc" %}
+                            <span class="tl-ref-tile__roll">
+                                {% for perm in allowed %}{{ perm.shifter|title }} ({{ perm.condition }}){% if not forloop.last %} · {% endif %}{% empty %}Any{% endfor %}
+                            </span>
+                        </div>
+                    </article>
+                </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% include "characters/tl/reference_no_results.html" with text="No gifts match the current filters." empty="No gifts yet." %}
 {% endblock content %}

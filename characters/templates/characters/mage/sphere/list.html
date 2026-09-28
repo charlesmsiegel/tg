@@ -1,38 +1,31 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Spheres
-{% endblock title %}
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Spheres{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Spheres{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Spheres" line="mta" %}
+{% endblock cover_title %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:sphere' %}">+ New sphere</a>
+{% endblock ref_create %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="mta">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title mta_heading">Spheres</h1>
-            </div>
-        </div>
-
-        <div class="tg-card">
-            <div class="tg-card-body">
-                <table class="tg-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Property Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for obj in object_list %}
-                            <tr>
-                                <td><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
-                                <td>{{ obj.property_name }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="2" class="text-center">No spheres found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Property name</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="spheres">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-ref-type">{{ obj.property_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No spheres match the current filters." empty="No spheres yet." %}
 {% endblock content %}

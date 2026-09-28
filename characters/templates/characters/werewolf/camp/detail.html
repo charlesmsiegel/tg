@@ -1,8 +1,7 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/werewolf/camp/title.html" %}
-{% endblock objectname %}
-{% block contents %}
-    {% load dots %}
-    {# No additional content needed as tribe is shown in title #}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:camp' %}">← Camps</a>{% endblock back %}
+{% block facts %}
+    {% fact "Tribe" object.tribe %}
+    {% fact "Type" object.get_camp_type_display %}
+{% endblock facts %}

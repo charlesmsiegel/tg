@@ -1,8 +1,17 @@
-{% extends "core/object.html" %}
-{% block status_row %}
-    <div class="col-md-6 mb-3">{% include "characters/changeling/house_faction/display_includes/details.html" %}</div>
-    {{ block.super }}
-{% endblock status_row %}
-{% block contents %}
-    {# No additional content needed as details are shown in status_row #}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% block back %}<a href="{% url 'characters:changeling:list:house_faction' %}">← House factions</a>{% endblock back %}
+{% block after_description %}
+    {% with houses=object.house_set.all %}
+        {% if houses %}
+            <section class="tl-section" id="houses">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Houses</h2>
+                </div>
+                <div class="tl-section__body tl-ref-links">
+                    {% for house in houses %}<a href="{{ house.get_absolute_url }}">{{ house.name }}</a>{% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock after_description %}

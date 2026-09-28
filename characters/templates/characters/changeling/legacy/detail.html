@@ -1,4 +1,6 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/shared/changeling/court_title.html" %}
-{% endblock objectname %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:changeling:list:legacy' %}">← Legacies</a>{% endblock back %}
+{% block facts %}
+    {% fact "Court" object.get_court_display %}
+{% endblock facts %}

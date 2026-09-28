@@ -188,11 +188,12 @@ class TestWerewolfFamilySheets(TestCase):
         self.assertContains(response, charm.get_absolute_url())
         self.assertContains(response, "Cold.")
 
-    def test_sept_position_uses_the_object_page(self):
+    def test_sept_position_uses_the_reference_page(self):
         staff = User.objects.create_user(username="staff", password="pw", is_staff=True)
         position = SeptPosition.objects.create(name="Warder", description="Guards the caern.")
         self.client.force_login(staff)
         response = self.client.get(position.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/object.html")
+        self.assertTemplateUsed(response, "characters/tl/reference_detail.html")
+        self.assertContains(response, "Responsibilities")
         self.assertContains(response, "Guards the caern.")

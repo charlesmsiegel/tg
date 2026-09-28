@@ -1,17 +1,43 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Tenets
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Tenets</h3>
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Tenets{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Tenets{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Tenets" line="mta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="type-filter">Type</label>
+            <select id="type-filter" data-filter-select="type">
+                <option value="">Type</option>
+                {% regroup object_list|dictsort:"tenet_type" by tenet_type as groups %}
+                {% for group in groups %}{% if group.grouper %}<option value="{{ group.grouper }}">{{ group.list.0.get_tenet_type_display }}</option>{% endif %}{% endfor %}
+            </select>
         </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:tenet' %}">+ New tenet</a>
+{% endblock ref_create %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="tenets">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}" data-type="{{ obj.tenet_type }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-ref-type">{{ obj.get_tenet_type_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No tenets match the current filters." empty="No tenets yet." %}
 {% endblock content %}

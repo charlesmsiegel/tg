@@ -1,111 +1,38 @@
-{% extends "core/base.html" %}
-{% load filterable_list %}
-{% block title %}
-    Effects
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="card-body text-center">
-                <h2 class="mta_heading">Effects</h2>
-            </div>
-        </div>
-        <div class="row mb-4 justify-content-center">
-            <div class="col-auto">
-                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filter-panel" aria-expanded="false" aria-controls="filter-panel">
-                    <i class="fas fa-filter"></i> Filters
-                </button>
-            </div>
-        </div>
-
-        <div class="collapse mb-4" id="filter-panel">
-            <div class="tg-card">
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="name-filter" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name-filter" data-filter-input="name">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="cost-filter" class="form-label">Max Cost</label>
-                            <input type="number" class="form-control" id="cost-filter" data-filter-max="cost" min="0">
-                        </div>
-                    </div>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label for="correspondence-filter" class="form-label">Correspondence (≤)</label>
-                            <input type="number" class="form-control" id="correspondence-filter" data-filter-max="correspondence" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="entropy-filter" class="form-label">Entropy (≤)</label>
-                            <input type="number" class="form-control" id="entropy-filter" data-filter-max="entropy" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="forces-filter" class="form-label">Forces (≤)</label>
-                            <input type="number" class="form-control" id="forces-filter" data-filter-max="forces" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="life-filter" class="form-label">Life (≤)</label>
-                            <input type="number" class="form-control" id="life-filter" data-filter-max="life" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="matter-filter" class="form-label">Matter (≤)</label>
-                            <input type="number" class="form-control" id="matter-filter" data-filter-max="matter" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="mind-filter" class="form-label">Mind (≤)</label>
-                            <input type="number" class="form-control" id="mind-filter" data-filter-max="mind" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="prime-filter" class="form-label">Prime (≤)</label>
-                            <input type="number" class="form-control" id="prime-filter" data-filter-max="prime" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="spirit-filter" class="form-label">Spirit (≤)</label>
-                            <input type="number" class="form-control" id="spirit-filter" data-filter-max="spirit" min="0" max="5">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="time-filter" class="form-label">Time (≤)</label>
-                            <input type="number" class="form-control" id="time-filter" data-filter-max="time" min="0" max="5">
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
-                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4" data-filterable-list="effects">
-            {% for obj in object_list %}
-                <div class="col-3 mb-4"
-                     data-filterable-item
-                     data-name="{{ obj.name|lower }}"
-                     data-cost="{{ obj.rote_cost }}"
-                     data-correspondence="{{ obj.correspondence }}"
-                     data-entropy="{{ obj.entropy }}"
-                     data-forces="{{ obj.forces }}"
-                     data-life="{{ obj.life }}"
-                     data-matter="{{ obj.matter }}"
-                     data-mind="{{ obj.mind }}"
-                     data-prime="{{ obj.prime }}"
-                     data-spirit="{{ obj.spirit }}"
-                     data-time="{{ obj.time }}">
-                    {% include "characters/mage/effect/summary.html" with object=obj %}
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- No Results Message -->
-        <div data-filter-no-results class="tg-card" style="display: none;">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <p style="color: var(--theme-text-secondary); margin: 0;">No effects match the current filters.</p>
-            </div>
-        </div>
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Effects{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Effects{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Effects" line="mta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row">
+        <label class="tl-ref-max" for="cost-filter">Max cost<span class="tl-ref-max__val">≤ <input type="number" id="cost-filter" data-filter-max="cost" min="0" placeholder="any"></span></label>
     </div>
-
-    {% block extra_js %}
-    {% filterable_list_script %}
-    {% endblock %}
+    {% include "characters/mage/effect/tl_sphere_maxes.html" %}
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:effect' %}">+ New effect</a>
+{% endblock ref_create %}
+{% block content %}
+    <div class="tl-grid" data-filterable-list="effects">
+        {% for effect in object_list %}
+            <div class="tl-ref-item"
+                 data-filterable-item
+                 data-name="{{ effect.name|lower }}"
+                 data-cost="{{ effect.rote_cost }}"
+                 data-correspondence="{{ effect.correspondence }}"
+                 data-entropy="{{ effect.entropy }}"
+                 data-forces="{{ effect.forces }}"
+                 data-life="{{ effect.life }}"
+                 data-matter="{{ effect.matter }}"
+                 data-mind="{{ effect.mind }}"
+                 data-prime="{{ effect.prime }}"
+                 data-spirit="{{ effect.spirit }}"
+                 data-time="{{ effect.time }}">
+                {% include "characters/mage/effect/tl_card.html" %}
+            </div>
+        {% endfor %}
+    </div>
+    {% include "characters/tl/reference_no_results.html" with text="No effects match the current filters." empty="No effects yet." %}
 {% endblock content %}

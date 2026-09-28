@@ -1,12 +1,11 @@
-{% extends "core/object.html" %}
-{% block references %}
-    {{ block.super }}
-    <div class="text-center mb-3">
-        <span class="badge badge-pill badge-mta" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ object.get_tenet_type_display }}</span>
-    </div>
-{% endblock references %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    {% include "characters/mage/tenet/display_includes/practices.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:tenet' %}">← Tenets</a>{% endblock back %}
+{% block facts %}
+    {% fact "Type" object.get_tenet_type_display %}
+{% endblock facts %}
+{% block after_description %}
+    {% with associated=object.associated_practices.all limited=object.limited_practices.all %}
+        {% include "characters/mage/practice/tl_practice_columns.html" %}
+    {% endwith %}
+{% endblock after_description %}
