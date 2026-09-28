@@ -1,0 +1,40 @@
+{% load tl %}
+{% comment %}Edges: one integer field per Edge, in three columns by the Virtue that fuels it.{% endcomment %}
+<section class="tl-section tl-section--power" id="edges">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Edges</h2>
+    </div>
+    <div class="tl-section__body tl-cols">
+        <div class="tl-stack">
+            <span class="tl-subhead">Conviction (Judgement)</span>
+            {% trait "Discern" object.discern variant="acc" %}
+            {% trait "Burden" object.burden variant="acc" %}
+            {% trait "Balance" object.balance variant="acc" %}
+            {% trait "Expose" object.expose variant="acc" %}
+            {% trait "Investigate" object.investigate variant="acc" %}
+            {% trait "Witness" object.witness variant="acc" %}
+            {% trait "Prosecute" object.prosecute variant="acc" %}
+        </div>
+        <div class="tl-stack">
+            <span class="tl-subhead">Vision (Defense)</span>
+            {% trait "Illuminate" object.illuminate variant="acc" %}
+            {% trait "Ward" object.ward variant="acc" %}
+            {% trait "Cleave" object.cleave variant="acc" %}
+            {% trait "Hide" object.hide variant="acc" %}
+            {% trait "Blaze" object.blaze variant="acc" %}
+            {% trait "Radiate" object.radiate variant="acc" %}
+            {% trait "Vengeance" object.vengeance variant="acc" %}
+        </div>
+        <div class="tl-stack">
+            <span class="tl-subhead">Zeal (Redemption)</span>
+            {% trait "Demand" object.demand variant="acc" %}
+            {% trait "Confront" object.confront variant="acc" %}
+            {% trait "Donate" object.donate variant="acc" %}
+            {% trait "Becalm" object.becalm variant="acc" %}
+            {% trait "Respire" object.respire variant="acc" %}
+            {% trait "Rejuvenate" object.rejuvenate variant="acc" %}
+            {% trait "Redeem" object.redeem variant="acc" %}
+        </div>
+    </div>
+</section>

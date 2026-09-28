@@ -1,21 +1,29 @@
 {% extends "characters/mummy/mtrhuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Mummy Character Sheet
-{% endblock creation_title %}
+{% comment %}
+Mummy sheet (C21): ancient name under the name, Hekau (--acc) beside Advantages, Virtues,
+then Backgrounds / Health / Merits as on every human sheet.
+{% endcomment %}
+{% block cover_sub %}
+    {{ block.super }}
+    {% if object.ancient_name %}<span class="tl-cover__sub">Ancient name: {{ object.ancient_name }}</span>{% endif %}
+{% endblock cover_sub %}
 {% block basics %}
     {% include "characters/mummy/mummy/basics_display_include.html" %}
 {% endblock basics %}
-{% block advantages %}
-    {% include "characters/mummy/mummy/advantages_display.html" %}
-{% endblock advantages %}
 {% block powers %}
     {% include "characters/mummy/mummy/hekau_block_display.html" %}
 {% endblock powers %}
-{% block equipment %}
-    {% include "characters/core/human/equipment_block.html" %}
-{% endblock equipment %}
+{% block advantages %}
+    {% include "characters/mummy/mummy/advantages_display.html" %}
+{% endblock advantages %}
+{% block backgrounds %}{% endblock backgrounds %}
+{% block line %}
+    {% include "characters/mummy/mummy/virtues_block_display.html" %}
+    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds span="tl-span-6" %}
+{% endblock line %}
+{% block appearance %}
+    {% include "characters/tl/appearance.html" with extra_label="Mummified form" extra_value=object.get_mummified_appearance_display %}
+{% endblock appearance %}
 {% block history %}
     {% include "characters/mummy/mummy/history_block_display.html" %}
 {% endblock history %}

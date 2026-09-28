@@ -1,79 +1,35 @@
-{% load dots %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header {{ object.get_heading }}">
-                <h5 class="tg-card-title mb-0">Mummy Traits</h5>
-            </div>
-            <div class="tg-card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="tg-card h-100">
-                            <div class="tg-card-header {{ object.get_heading }}">
-                                <h6 class="tg-card-title mb-0">Power</h6>
-                            </div>
-                            <div class="tg-card-body">
-                                <div class="row mb-2">
-                                    <div class="col-6">Sekhem</div>
-                                    <div class="col-6 dots">{{ object.sekhem|dots }}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6">Ba</div>
-                                    <div class="col-6">{{ object.ba }} / {{ object.ka_rating }}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6">Balance</div>
-                                    <div class="col-6 dots">{{ object.balance|dots }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="tg-card h-100">
-                            <div class="tg-card-header {{ object.get_heading }}">
-                                <h6 class="tg-card-title mb-0">Virtues</h6>
-                            </div>
-                            <div class="tg-card-body">
-                                <div class="row mb-2">
-                                    <div class="col-6">Conviction</div>
-                                    <div class="col-6 dots">{{ object.conviction|dots }}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6">Restraint</div>
-                                    <div class="col-6 dots">{{ object.restraint|dots }}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6">Willpower</div>
-                                    <div class="col-6 dots">{{ object.willpower|dots }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="tg-card h-100">
-                            <div class="tg-card-header {{ object.get_heading }}">
-                                <h6 class="tg-card-title mb-0">Incarnation</h6>
-                            </div>
-                            <div class="tg-card-body">
-                                <div class="row mb-2">
-                                    <div class="col-6">Incarnation</div>
-                                    <div class="col-6">{{ object.incarnation }}</div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-6">Years Since Rebirth</div>
-                                    <div class="col-6">{{ object.years_since_rebirth }}</div>
-                                </div>
-                                {% if object.mummified_appearance %}
-                                    <div class="row mb-2">
-                                        <div class="col-6">Appearance</div>
-                                        <div class="col-6">{{ object.get_mummified_appearance_display }}</div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{% load tl %}
+{% comment %}
+Mummy advantages: Sekhem, Balance, Ba / Ka and Willpower. The ratings run 0-10 but read
+as 5-dot scales, widening to 10 only past 5 (as the old |dots filter did). Ba / Ka is a
+pool of up to 100, so it stays a number.
+{% endcomment %}
+<section class="tl-section tl-span-5" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
+    </div>
+    <div class="tl-section__body">
+        {% if object.sekhem > 5 %}
+            {% track "Sekhem" perm=object.sekhem %}
+        {% else %}
+            {% track "Sekhem" perm=object.sekhem total=5 %}
+        {% endif %}
+        {% if object.balance > 5 %}
+            {% track "Balance" perm=object.balance %}
+        {% else %}
+            {% track "Balance" perm=object.balance total=5 %}
+        {% endif %}
+        <div class="tl-track">
+            <span class="tl-track__label">Ba / Ka</span>
+            <div class="tl-track__rows">
+                <span class="tl-kv__v">{{ object.ba }} / {{ object.ka_rating }}</span>
             </div>
         </div>
+        {% if object.willpower > 5 or object.temporary_willpower > 5 %}
+            {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+        {% else %}
+            {% track "Willpower" perm=object.willpower temp=object.temporary_willpower total=5 %}
+        {% endif %}
     </div>
-</div>
+</section>

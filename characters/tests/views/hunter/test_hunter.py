@@ -1,5 +1,6 @@
 """Tests for Hunter views."""
 
+import datetime
 import unittest
 
 from django.contrib.auth.models import User
@@ -49,6 +50,35 @@ class TestHunterDetailView(TestCase):
         self.assertEqual(edges["conviction"]["discern"], 2)
         self.assertEqual(edges["vision"]["illuminate"], 1)
         self.assertEqual(edges["zeal"], {})  # No zeal edges set
+
+    def test_detail_view_renders_spread_sheet(self):
+        """The sheet shows the Hunter cover facts, Edges, Advantages and Virtues."""
+        self.client.login(username="Player", password="password")
+        response = self.client.get(self.url)
+
+        self.assertContains(response, '<span class="tl-facts__k">Creed</span>', html=False)
+        self.assertContains(response, f'href="{self.creed.get_absolute_url()}"')
+        self.assertContains(response, '<span class="tl-facts__k">Primary virtue</span>')
+        self.assertContains(response, 'class="tl-section tl-section--power" id="edges"')
+        self.assertContains(response, "Conviction (Judgement)")
+        self.assertContains(response, "Zeal (Redemption)")
+        self.assertContains(response, 'aria-label="2 of 5"')  # Discern 2, accent dots
+        self.assertContains(response, 'id="advantages"')
+        self.assertContains(response, 'id="virtues"')
+        self.assertContains(response, '<span class="tl-track__label">Conviction</span>')
+        self.assertNotContains(response, "tg-card")
+
+    def test_detail_view_imbuing_date_fact(self):
+        """The imbuing date shows as the Imbued cover fact only when set."""
+        self.client.login(username="Player", password="password")
+        response = self.client.get(self.url)
+        self.assertNotContains(response, '<span class="tl-facts__k">Imbued</span>')
+
+        self.hunter.imbuing_date = datetime.date(2024, 2, 14)
+        self.hunter.save()
+        response = self.client.get(self.url)
+        self.assertContains(response, '<span class="tl-facts__k">Imbued</span>')
+        self.assertContains(response, "14 Feb 2024")
 
 
 class TestHunterCreateView(TestCase):

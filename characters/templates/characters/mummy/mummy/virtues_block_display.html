@@ -1,0 +1,11 @@
+{% load tl %}
+<section class="tl-section" id="virtues">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Virtues</h2>
+    </div>
+    <div class="tl-section__body tl-cols tl-cols--2">
+        {% trait "Conviction" object.conviction %}
+        {% trait "Restraint" object.restraint %}
+    </div>
+</section>

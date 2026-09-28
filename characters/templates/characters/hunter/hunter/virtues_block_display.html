@@ -1,0 +1,16 @@
+{% load tl %}
+{% comment %}
+Virtues: the Hunter trinity as the model declares it (conviction / vision / zeal in
+characters/models/hunter/hunter.py), each a permanent rating over its temporary pool.
+{% endcomment %}
+<section class="tl-section tl-span-6" id="virtues">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Virtues</h2>
+    </div>
+    <div class="tl-section__body">
+        {% track "Conviction" perm=object.conviction temp=object.temporary_conviction %}
+        {% track "Vision" perm=object.vision temp=object.temporary_vision %}
+        {% track "Zeal" perm=object.zeal temp=object.temporary_zeal %}
+    </div>
+</section>
