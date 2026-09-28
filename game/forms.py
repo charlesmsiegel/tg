@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 
 from characters.forms.core.xp import XPForm
 from characters.forms.mage.xp import MageXPForm
@@ -774,6 +775,13 @@ class StoryXPRequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.character = kwargs.pop("character", None)
         super().__init__(*args, **kwargs)
+        character = self.character or (self.instance.character if self.instance.pk else None)
+        if character is not None:
+            # The character's own chronicle's stories, and those from before stories
+            # belonged to a chronicle: never another chronicle's story.
+            self.fields["story"].queryset = Story.objects.filter(
+                Q(chronicle_id=character.chronicle_id) | Q(chronicle__isnull=True)
+            ).order_by("name")
 
     def save(self, commit=True):
         instance = super().save(commit=False)

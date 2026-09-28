@@ -7,8 +7,8 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from characters.models.core.human import Human
-from game.forms import StoryEditForm
-from game.models import Chronicle, Gameline, Story, STRelationship
+from game.forms import StoryEditForm, StoryXPRequestForm
+from game.models import Chronicle, Gameline, Story, StoryXPRequest, STRelationship
 
 
 class StoryChronicleTestBase(TestCase):
@@ -25,7 +25,9 @@ class StoryChronicleTestBase(TestCase):
             chronicle=self.chronicle,
             gameline=Gameline.objects.create(name="Mage: the Ascension"),
         )
-        Human.objects.create(name="Played", owner=self.player, chronicle=self.chronicle)
+        self.played = Human.objects.create(
+            name="Played", owner=self.player, chronicle=self.chronicle
+        )
         self.ours = Story.objects.create(name="The Moving Streets", chronicle=self.chronicle)
         self.theirs = Story.objects.create(name="Distant Schism", chronicle=self.elsewhere)
         self.legacy = Story.objects.create(name="First Survey")
@@ -158,3 +160,22 @@ class StoryPagesTests(StoryChronicleTestBase):
         self.assertEqual(list(form.fields["chronicle"].queryset), [self.chronicle, self.elsewhere])
         form = StoryEditForm(user=self.head)
         self.assertEqual(list(form.fields["chronicle"].queryset), [self.chronicle])
+
+
+class StoryXPRequestStoryChoiceTests(StoryChronicleTestBase):
+    """A story XP request is for a story of the character's chronicle, or a legacy one."""
+
+    def test_create_offers_only_the_characters_chronicle_and_legacy_stories(self):
+        form = StoryXPRequestForm(character=self.played)
+        self.assertEqual(list(form.fields["story"].queryset), [self.legacy, self.ours])
+
+    def test_another_chronicles_story_is_rejected(self):
+        form = StoryXPRequestForm(data={"story": self.theirs.pk}, character=self.played)
+        self.assertFalse(form.is_valid())
+        self.assertIn("story", form.errors)
+
+    def test_editing_keeps_the_scope(self):
+        request = StoryXPRequest.objects.create(character=self.played, story=self.ours)
+        form = StoryXPRequestForm(instance=request)
+        self.assertNotIn(self.theirs, form.fields["story"].queryset)
+        self.assertIn(self.legacy, form.fields["story"].queryset)
