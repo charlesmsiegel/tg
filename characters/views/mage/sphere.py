@@ -1,11 +1,12 @@
 from django.views.generic import CreateView, UpdateView
 
 from characters.models.mage import Sphere
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 from core.views import CachedDetailView, CachedListView
 
 
-class SphereDetailView(CachedDetailView):
+class SphereDetailView(KnownByMixin, CachedDetailView):
     model = Sphere
     template_name = "characters/mage/sphere/detail.html"
 

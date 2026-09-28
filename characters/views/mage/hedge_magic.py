@@ -1,10 +1,11 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class PathDetailView(DetailView):
+class PathDetailView(KnownByMixin, DetailView):
     model = LinearMagicPath
     template_name = "characters/mage/linear_magic_path/detail.html"
 

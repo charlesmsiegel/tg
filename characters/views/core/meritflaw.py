@@ -5,12 +5,13 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.core import MeritFlaw
+from characters.views.core.known_by import KnownByMixin
 from core.cache import cache_page_per_visitor
 from core.mixins import MessageMixin
 
 
 @method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")  # Cache for 15 minutes
-class MeritFlawDetailView(DetailView):
+class MeritFlawDetailView(KnownByMixin, DetailView):
     model = MeritFlaw
     template_name = "characters/core/meritflaw/detail.html"
 

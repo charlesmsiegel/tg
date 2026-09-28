@@ -1464,3 +1464,9 @@ body.tl {
 .tl-xpspend__rule { margin: 0; font: 400 14px/1.5 var(--serif); color: var(--ink2); }
 .tl-xpspend__rule.tl-rubric { color: var(--rubric); }
 /* ---- end spend xp ---- */
+/* ---- known by ---- */
+/* Reference detail, 03 Known by (M13): chronicle groups of character rows, rating last. */
+.tl-knownby__group { display: flex; flex-direction: column; gap: 4px; }
+.tl-knownby__meta { display: flex; align-items: center; gap: 12px; }
+.tl-knownby__rating { flex: none; }
+/* ---- end known by ---- */

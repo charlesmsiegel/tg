@@ -3,12 +3,13 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.wraith.arcanos import Arcanos
+from characters.views.core.known_by import KnownByMixin
 from core.cache import cache_page_per_visitor
 from core.mixins import MessageMixin
 
 
 @method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")
-class ArcanosDetailView(DetailView):
+class ArcanosDetailView(KnownByMixin, DetailView):
     model = Arcanos
     template_name = "characters/wraith/arcanos/detail.html"
 

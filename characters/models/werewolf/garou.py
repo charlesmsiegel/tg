@@ -34,6 +34,12 @@ class Werewolf(WtAHuman):
     ]
 
     rank = models.IntegerField(default=1)
+    deed_name = models.CharField(
+        max_length=200,
+        default="",
+        blank=True,
+        help_text="The name the Garou earned by deed (Rite of Passage or later)",
+    )
     auspice = models.CharField(
         default="",
         max_length=100,

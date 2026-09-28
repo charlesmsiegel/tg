@@ -17,6 +17,8 @@ reference pages (clans, disciplines, arcanoi, lores, edges, dynasties...).
 Sections go straight into the .tl-sheet grid; prose sections take .tl-span-8 so the
 rule stops at the text measure (68ch), as in the mock. Use
 characters/tl/ref2_prose.html for a titled prose section that hides when empty.
+Known by (characters/tl/known_by.html) follows the sections when the view supplies
+`known_by` (characters.views.core.known_by.KnownByMixin).
 {% endcomment %}
 {% load tl sanitize_text %}
 {% block title %}{% block ref_title %}{{ object.name|sanitize_html }}{% endblock ref_title %}{% endblock title %}
@@ -47,5 +49,6 @@ characters/tl/ref2_prose.html for a titled prose section that hides when empty.
 {% block content %}
     <div class="tl-sheet">
         {% block ref_sections %}{% endblock ref_sections %}
+        {% include "characters/tl/known_by.html" %}
     </div>
 {% endblock content %}

@@ -74,11 +74,14 @@ class TestDemonSheet(DemonSheetTestBase):
 
     def test_cover_basics(self):
         response = self.get(self.demon)
-        for label in ("House", "Faction", "Visage", "Celestial name"):
+        for label in ("House", "Faction", "Visage", "Host"):
             self.assertContains(response, f'<span class="tl-facts__k">{label}</span>', html=False)
         self.assertContains(response, self.house.get_absolute_url())
         self.assertContains(response, self.faction.get_absolute_url())
-        self.assertContains(response, "Ahrimel of the Flame")
+        # C19: the celestial name titles the cover; the name is the mortal host's.
+        title = response.content.decode().split('class="tl-cover__name', 1)[1].split("</h1>", 1)[0]
+        self.assertIn("Ahrimel of the Flame", title)
+        self.assertContains(response, f"Host: {self.demon.name}")
 
     def test_lores_are_the_power_section(self):
         response = self.get(self.demon)

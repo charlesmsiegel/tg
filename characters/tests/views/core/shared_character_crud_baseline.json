@@ -168,8 +168,8 @@
     "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.werewolf.garou.WerewolfUpdateView": {
-    "fields_sha256": "51b96a70a62bea54e867964d83100e66ae4db08c09d837ae71a9723c21241174",
-    "field_count": 74,
+    "fields_sha256": "b42f15bff947e3dcd65d5b64abebb44f5760829031ac918434c0709239e815f6",
+    "field_count": 75,
     "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.werewolf.kinfolk.KinfolkUpdateView": {

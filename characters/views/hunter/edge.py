@@ -1,10 +1,11 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.hunter import Edge
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class EdgeDetailView(DetailView):
+class EdgeDetailView(KnownByMixin, DetailView):
     model = Edge
     template_name = "characters/hunter/edge/detail.html"
 

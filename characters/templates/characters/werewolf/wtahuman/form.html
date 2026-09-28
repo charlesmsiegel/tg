@@ -10,6 +10,9 @@ it: a storyteller gets the full form, an owner without that scope only the story
     {% if form.fields.name %}
         <div class="tl-formgrid">
             {% include "core/tl/field.html" with field=form.name %}
+            {% if form.fields.deed_name %}
+                {% include "core/tl/field.html" with field=form.deed_name %}
+            {% endif %}
             {% if form.fields.owner %}
                 {% include "core/tl/field.html" with field=form.owner label="Player" %}
             {% endif %}

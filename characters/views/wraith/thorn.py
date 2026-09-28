@@ -2,10 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.wraith.thorn import Thorn
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class ThornDetailView(DetailView):
+class ThornDetailView(KnownByMixin, DetailView):
     model = Thorn
     template_name = "characters/wraith/thorn/detail.html"
 

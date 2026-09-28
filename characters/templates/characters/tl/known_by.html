@@ -1,0 +1,52 @@
+{% load tl %}
+{% comment %}
+Known by (Spread M13, 03): the characters holding this reference power whose full sheet
+the viewer can read, grouped by chronicle, with their rating. Filled by
+characters.views.core.known_by.KnownByMixin; the reference shells include it after
+their own sections, and nothing renders without `known_by` (anonymous viewers, pages
+with no holder source).
+{% endcomment %}
+{% if known_by %}
+    <section class="tl-section tl-span-8 tl-knownby" id="known-by" aria-labelledby="known-by-title">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title" id="known-by-title">Known by</h2>
+            {% if known_by.count %}<span class="tl-section__count">{{ known_by.count }}</span>{% endif %}
+        </div>
+        {% if known_by.groups %}
+            <div class="tl-section__body tl-stack">
+                {% for group in known_by.groups %}
+                    <div class="tl-knownby__group" data-known-by-chronicle="{{ group.chronicle.pk|default:'none' }}">
+                        <div class="tl-grouphead">
+                            <h3 class="tl-grouphead__name">
+                                {% if group.chronicle %}<a href="{{ group.chronicle.get_absolute_url }}">{{ group.chronicle.name }}</a>{% else %}No chronicle{% endif %}
+                            </h3>
+                            <span class="tl-grouphead__rule"></span>
+                            <span class="tl-grouphead__count">{{ group.rows|length }}</span>
+                        </div>
+                        <div class="tl-knownby__rows">
+                            {% for row in group.rows %}
+                                <div class="tl-row" data-gameline="{{ row.gameline|gameline_code }}">
+                                    <a class="tl-row__name tl-row__name--acc" href="{{ row.url }}">{{ row.name }}</a>
+                                    <span class="tl-row__meta tl-knownby__meta">
+                                        <span>{{ row.type }}{% if row.owner %} · {{ row.owner }}{% endif %}</span>
+                                        {% if row.rating is not None and known_by.style == "dots" %}
+                                            <span class="tl-knownby__rating" aria-label="Rating {{ row.rating }}">{% dots row.rating row.total %}</span>
+                                        {% elif row.rating is not None and known_by.style == "number" %}
+                                            <span class="tl-knownby__rating{% if row.rating < 0 %} tl-rubric{% endif %}">{% if row.rating > 0 %}+{% endif %}{{ row.rating }}</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if known_by.truncated %}
+                    <p class="tl-note">Showing the first {{ known_by.limit }} characters.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            {% include "core/tl/empty.html" with text="None of the characters you can see know this yet." %}
+        {% endif %}
+    </section>
+{% endif %}

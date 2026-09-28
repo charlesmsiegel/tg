@@ -1,10 +1,11 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.demon import Ritual
+from characters.views.core.known_by import KnownByMixin
 from core.mixins import MessageMixin
 
 
-class RitualDetailView(DetailView):
+class RitualDetailView(KnownByMixin, DetailView):
     model = Ritual
     template_name = "characters/demon/ritual/detail.html"
 
