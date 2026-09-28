@@ -11,7 +11,8 @@ Data-attribute API:
 
   Filter inputs (place in filter panel):
     data-filter-input="field"           - Text input filter (searches data-field attribute)
-    data-filter-select="field"          - Select dropdown filter
+    data-filter-select="field"          - Select dropdown filter (exact match)
+    data-filter-match="token"           - On a select: match one word of a space-separated value
     data-filter-checkbox="field"        - Checkbox filter
     data-filter-mode="any|all|none"     - Mode for checkbox groups (default: 'all')
     data-filter-max="field"             - Numeric max filter (item's data-field <= input value)
@@ -22,8 +23,8 @@ Data-attribute API:
     data-field="value"                  - Any data attribute for filtering
 
   Counter and no-results:
-    data-filter-count                   - Element to show "Showing X of Y items"
-    data-filter-no-results              - Element to show when no items match
+    data-filter-count                   - Element to show "X of Y shown"
+    data-filter-no-results              - Element to show when no items match (start it hidden)
 
 Example usage:
     <!-- Filter panel -->
@@ -49,7 +50,7 @@ Example usage:
         </div>
     </div>
 
-    <div data-filter-no-results style="display:none;">No items match.</div>
+    <div data-filter-no-results hidden>No items match.</div>
 """
 
 from django import forms

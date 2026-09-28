@@ -1,7 +1,62 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    {% include "characters/mage/faction/display_includes/history.html" %}
-    {% include "characters/mage/faction/display_includes/focus.html" %}
-    {% include "characters/mage/faction/display_includes/culture.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl sanitize_text %}
+{% block back %}<a href="{% url 'characters:mage:list:mage_faction' %}">← Factions</a>{% endblock back %}
+{% block facts %}
+    {% if object.founded > 0 %}{% fact "Founded" year|stringformat:"s AD" %}{% else %}{% fact "Founded" year|stringformat:"s BC" %}{% endif %}
+    {% if object.ended < 5000 %}
+        {% if object.ended > 0 %}{% fact "Ended" ended_year|stringformat:"s AD" %}{% else %}{% fact "Ended" ended_year|stringformat:"s BC" %}{% endif %}
+    {% endif %}
+    {% fact "Parent faction" object.parent %}
+{% endblock facts %}
+{% block after_description %}
+    {% with affinities=object.affinities.all paradigms=object.paradigms.all practices=object.practices.all %}
+        {% if affinities or paradigms or practices %}
+            <section class="tl-section tl-section--cols" id="focus">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Focus</h2>
+                </div>
+                <div class="tl-section__body tl-cols">
+                    <div class="tl-col">
+                        <span class="tl-col__head">Affinities</span>
+                        {% for sphere in affinities %}<a class="tl-acc" href="{{ sphere.get_absolute_url }}">{{ sphere.name|sanitize_html }}</a>{% empty %}<span class="tl-note">None.</span>{% endfor %}
+                    </div>
+                    <div class="tl-col">
+                        <span class="tl-col__head">Paradigms</span>
+                        {% for paradigm in paradigms %}<a href="{{ paradigm.get_absolute_url }}">{{ paradigm.name|sanitize_html }}</a>{% empty %}<span class="tl-note">None.</span>{% endfor %}
+                    </div>
+                    <div class="tl-col">
+                        <span class="tl-col__head">Practices</span>
+                        {% for practice in practices %}<a href="{{ practice.get_absolute_url }}">{{ practice.name|sanitize_html }}</a>{% empty %}<span class="tl-note">None.</span>{% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% if languages or media or materials %}
+        <section class="tl-section" id="culture">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Culture</h2>
+            </div>
+            <div class="tl-section__body tl-facts">
+                {% if languages %}{% fact "Languages" languages %}{% endif %}
+                {% if media %}<div class="tl-facts__row"><span class="tl-facts__k">Media</span><span class="tl-facts__v">{{ media|sanitize_html }}</span></div>{% endif %}
+                {% if materials %}<div class="tl-facts__row"><span class="tl-facts__k">Materials</span><span class="tl-facts__v">{{ materials|sanitize_html }}</span></div>{% endif %}
+            </div>
+        </section>
+    {% endif %}
+    {% with subfactions=object.magefaction_set.all %}
+        {% if subfactions %}
+            <section class="tl-section" id="subfactions">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Subfactions</h2>
+                </div>
+                <div class="tl-section__body tl-ref-links">
+                    {% for subfaction in subfactions %}<a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name|sanitize_html }}</a>{% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock after_description %}

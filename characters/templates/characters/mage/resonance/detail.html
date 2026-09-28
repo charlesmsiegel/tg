@@ -1,45 +1,6 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% if object.correspondence or object.life or object.prime or object.entropy or object.matter or object.spirit or object.forces or object.mind or object.time %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light py-2">
-                        <h5 class="mb-0 mta_heading">Sphere Associations</h5>
-                    </div>
-                    <div class="card-body py-3">
-                        <div class="d-flex flex-wrap justify-content-center">
-                            {% if object.correspondence %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Correspondence</span>
-                            {% endif %}
-                            {% if object.entropy %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Entropy</span>
-                            {% endif %}
-                            {% if object.forces %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Forces</span>
-                            {% endif %}
-                            {% if object.life %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Life</span>
-                            {% endif %}
-                            {% if object.matter %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Matter</span>
-                            {% endif %}
-                            {% if object.mind %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Mind</span>
-                            {% endif %}
-                            {% if object.prime %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Prime</span>
-                            {% endif %}
-                            {% if object.spirit %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Spirit</span>
-                            {% endif %}
-                            {% if object.time %}
-                                <span class="badge badge-pill badge-mta mr-2 mb-2">Time</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:mage:list:resonance' %}">← Resonances</a>{% endblock back %}
+{% block facts %}
+    {% fact "Spheres" object.associated_spheres %}
+{% endblock facts %}

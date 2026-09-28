@@ -1,0 +1,10 @@
+{% comment %}
+Empty states for a reference list: nothing at all, or nothing left after filtering
+(widgets/filterable.js reveals the data-filter-no-results block).
+  {% include "characters/tl/reference_no_results.html" with text="No rotes match the current filters." empty="No rotes yet." %}
+{% endcomment %}
+{% if object_list %}
+    <div data-filter-no-results hidden>{% include "core/tl/empty.html" with text=text %}</div>
+{% else %}
+    {% include "core/tl/empty.html" with text=empty|default:"Nothing here yet." %}
+{% endif %}

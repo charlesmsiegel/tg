@@ -1,7 +1,30 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    {% include "characters/werewolf/totem/display_includes/basics.html" %}
-    {% include "characters/werewolf/totem/display_includes/traits.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:totem' %}">← Totems</a>{% endblock back %}
+{% block facts %}
+    {% fact "Cost" object.cost %}
+    {% fact "Type" object.get_totem_type_display %}
+{% endblock facts %}
+{% block after_description %}
+    {% if object.individual_traits or object.pack_traits %}
+        <section class="tl-section tl-section--cols tl-section--power" id="traits">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Traits</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col">{% include "characters/tl/prose_block.html" with label="Individual traits" text=object.individual_traits %}</div>
+                <div class="tl-col">{% include "characters/tl/prose_block.html" with label="Pack traits" text=object.pack_traits %}</div>
+            </div>
+        </section>
+    {% endif %}
+    {% if object.ban %}
+        <section class="tl-section" id="ban">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Ban</h2>
+            </div>
+            <div class="tl-section__body tl-prose">{{ object.ban|linebreaks }}</div>
+        </section>
+    {% endif %}
+{% endblock after_description %}

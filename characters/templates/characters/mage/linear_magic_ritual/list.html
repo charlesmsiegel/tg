@@ -1,104 +1,38 @@
-{% extends "core/base.html" %}
-{% load dots filterable_list %}
-{% block title %}
-    Linear Magic Rituals
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="mta">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title mta_heading">Linear Magic Rituals</h1>
-            </div>
+{% extends "characters/tl/reference_list.html" %}
+{% load tl %}
+{% block title %}Linear Magic Rituals{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Linear Magic Rituals{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Linear Magic Rituals" line="mta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="path-filter">Path</label>
+            <select id="path-filter" data-filter-select="path">
+                <option value="">Path</option>
+                {% for path in paths %}<option value="{{ path.id }}">{{ path.name }}</option>{% endfor %}
+            </select>
         </div>
-
-        <!-- Filter Controls -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header d-flex justify-content-between align-items-center">
-                <h5 class="tg-card-title mb-0">Filters</h5>
-                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-                    Toggle Filters
-                </button>
-            </div>
-            <div class="collapse show" id="filterPanel">
-                <div class="tg-card-body" style="padding: 20px;">
-                    <!-- Search Filter -->
-                    <div class="mb-3">
-                        <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
-                        <input type="text" class="form-control" id="nameFilter" data-filter-input="name" placeholder="Type to filter by name...">
-                    </div>
-
-                    <!-- Path Filter -->
-                    <div class="mb-3">
-                        <label for="pathFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Filter by Path</label>
-                        <select class="form-control" id="pathFilter" data-filter-select="path">
-                            <option value="">All Paths</option>
-                            {% for path in paths %}
-                                <option value="{{ path.id }}">{{ path.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Level Filter -->
-                    <div class="mb-3">
-                        <label for="levelFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Max Level</label>
-                        <input type="number" class="form-control" id="levelFilter" data-filter-max="level" min="1" max="5" placeholder="Filter by max level...">
-                    </div>
-
-                    <!-- Clear Filters -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
-                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ritual List -->
-        <div class="row" data-filterable-list="rituals">
-            {% for obj in object_list %}
-                <div class="col-md-4 col-sm-6 mb-3"
-                     data-filterable-item
-                     data-name="{{ obj.name|lower }}"
-                     data-path="{{ obj.path.id|default:'' }}"
-                     data-level="{{ obj.level }}">
-                    <div class="tg-card h-100">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <h6 class="tg-card-title mb-2">
-                                <a href="{{ obj.get_absolute_url }}" style="text-decoration: none; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                            </h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                {% if obj.path %}
-                                    <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">
-                                        <a href="{{ obj.path.get_absolute_url }}" style="text-decoration: none; color: var(--theme-text-secondary);">{{ obj.path.name }}</a>
-                                    </span>
-                                {% else %}
-                                    <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">No Path</span>
-                                {% endif %}
-                                <span class="dots">{{ obj.level|dots:5 }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center" style="padding: 20px;">
-                            <p style="color: var(--theme-text-secondary); margin: 0;">No linear magic rituals found.</p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- No Results Message -->
-        <div data-filter-no-results class="tg-card" style="display: none;">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <p style="color: var(--theme-text-secondary); margin: 0;">No rituals match the current filters.</p>
-            </div>
-        </div>
+        <label class="tl-ref-max" for="level-filter">Maximum level<span class="tl-ref-max__val">≤ <input type="number" id="level-filter" data-filter-max="level" min="1" max="5" placeholder="5"></span></label>
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:ritual' %}">+ New ritual</a>
+{% endblock ref_create %}
+{% block content %}
+    <div class="tl-grid" data-filterable-list="rituals">
+        {% for ritual in object_list %}
+            <div class="tl-ref-item" data-filterable-item data-name="{{ ritual.name|lower }}" data-path="{{ ritual.path.id|default:'' }}" data-level="{{ ritual.level }}">
+                <article class="tl-tile tl-ref-tile">
+                    <span class="tl-tile__meta"><span>{{ ritual.path.name|default:"No path" }}</span></span>
+                    <h2 class="tl-tile__name"><a href="{{ ritual.get_absolute_url }}">{{ ritual.name }}</a></h2>
+                    {% if ritual.description %}<p class="tl-tile__text">{{ ritual.description|striptags|truncatewords:30 }}</p>{% endif %}
+                    <div class="tl-ref-tile__foot">{% trait "Level" ritual.level variant="acc" %}</div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+    {% include "characters/tl/reference_no_results.html" with text="No rituals match the current filters." empty="No linear magic rituals yet." %}
 {% endblock content %}
-
-{% block extra_js %}
-{% filterable_list_script %}
-{% endblock extra_js %}

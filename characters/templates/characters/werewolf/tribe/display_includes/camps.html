@@ -1,9 +1,0 @@
-{% if camps %}
-    <div class="d-flex flex-wrap">
-        {% for camp in camps %}
-            <a href="{{ camp.get_absolute_url }}" class="badge badge-pill badge-wta-faded mr-2 mb-2" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">{{ camp.name }}</a>
-        {% endfor %}
-    </div>
-{% else %}
-    <p class="text-muted mb-0">No camps available.</p>
-{% endif %} 

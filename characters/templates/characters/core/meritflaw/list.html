@@ -1,17 +1,64 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Merits and Flaws
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Merits and Flaws</h3>
+{% extends "characters/tl/reference_list.html" %}
+{% load tl %}
+{% block title %}Merits and Flaws{% endblock title %}
+{% block gameline %}wod{% endblock gameline %}
+{% block cover_label %}Merits and Flaws{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="World of Darkness" title="Merits & Flaws" line="wod" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="line-filter">Line</label>
+            <select id="line-filter" data-filter-select="lines" data-filter-match="token">
+                <option value="">Line</option>
+                {% for code in gamelines %}<option value="{{ code }}">{{ code|gameline_name }}</option>{% endfor %}
+            </select>
         </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="kind-filter">Merit or flaw</label>
+            <select id="kind-filter" data-filter-select="kind" data-filter-match="token">
+                <option value="">Merit / Flaw</option>
+                <option value="merit">Merits</option>
+                <option value="flaw">Flaws</option>
+            </select>
+        </div>
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:create:meritflaw' %}">+ New</a>
+{% endblock ref_create %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="tl-num">Rating</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Line</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="merits-flaws">
+                {% for mf in object_list %}
+                    <tr data-filterable-item
+                        data-name="{{ mf.name|lower }}"
+                        data-kind="{% if mf.max_rating > 0 %}merit {% endif %}{% if mf.min_rating < 0 %}flaw{% endif %}"
+                        data-lines="{% if mf.line_codes %}{{ mf.line_codes|join:' ' }}{% else %}{{ gamelines|join:' ' }}{% endif %}">
+                        <td class="tl-ref-name"><a href="{{ mf.get_absolute_url }}">{{ mf.name }}</a></td>
+                        <td class="tl-num{% if mf.max_rating < 0 %} is-neg{% endif %}">
+                            {% if mf.min_rating > 0 %}+{% endif %}{{ mf.min_rating }}{% if mf.max_rating != mf.min_rating %} – {% if mf.max_rating > 0 %}+{% endif %}{{ mf.max_rating }}{% endif %}
+                        </td>
+                        <td class="tl-ref-type">
+                            {% if mf.max_rating > 0 and mf.min_rating < 0 %}Merit / Flaw{% elif mf.min_rating < 0 %}Flaw{% else %}Merit{% endif %}
+                        </td>
+                        <td class="tl-ref-line">
+                            {% for code in mf.line_codes %}{{ code|gameline_name }}{% if not forloop.last %} · {% endif %}{% empty %}All{% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No merits or flaws match the current filters." empty="No merits or flaws yet." %}
 {% endblock content %}

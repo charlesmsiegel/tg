@@ -1,17 +1,33 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Charms
-{% endblock title %}
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Spirit Charms{% endblock title %}
+{% block gameline %}wta{% endblock gameline %}
+{% block cover_label %}Spirit Charms{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Werewolf: the Apocalypse" title="Spirit Charms" line="wta" %}
+{% endblock cover_title %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:werewolf:create:spirit_charm' %}">+ New charm</a>
+{% endblock ref_create %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Charms</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="tl-num">Essence</th>
+                    <th scope="col" class="tl-num">Points</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="charms">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-num">{{ obj.essence_cost }}</td>
+                        <td class="tl-num">{{ obj.point_cost }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No spirit charms match the current filters." empty="No spirit charms yet." %}
 {% endblock content %}

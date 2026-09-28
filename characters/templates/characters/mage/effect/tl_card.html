@@ -1,0 +1,18 @@
+{% load tl %}
+{% comment %}Effect card (C7 pattern): cost, name, description, spheres above 0. Pass effect=<Effect>.{% endcomment %}
+<article class="tl-tile tl-rote" data-gameline="mta">
+    <span class="tl-tile__meta"><span>Effect</span><span>Cost {{ effect.rote_cost }}</span></span>
+    <h3 class="tl-tile__name"><a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a></h3>
+    {% if effect.description %}<p class="tl-tile__text">{{ effect.description|striptags|truncatewords:40 }}</p>{% endif %}
+    <div class="tl-rote__spheres">
+        {% if effect.correspondence %}{% trait "Correspondence" effect.correspondence variant="acc" %}{% endif %}
+        {% if effect.entropy %}{% trait "Entropy" effect.entropy variant="acc" %}{% endif %}
+        {% if effect.forces %}{% trait "Forces" effect.forces variant="acc" %}{% endif %}
+        {% if effect.life %}{% trait "Life" effect.life variant="acc" %}{% endif %}
+        {% if effect.matter %}{% trait "Matter" effect.matter variant="acc" %}{% endif %}
+        {% if effect.mind %}{% trait "Mind" effect.mind variant="acc" %}{% endif %}
+        {% if effect.prime %}{% trait "Prime" effect.prime variant="acc" %}{% endif %}
+        {% if effect.spirit %}{% trait "Spirit" effect.spirit variant="acc" %}{% endif %}
+        {% if effect.time %}{% trait "Time" effect.time variant="acc" %}{% endif %}
+    </div>
+</article>

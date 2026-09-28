@@ -294,6 +294,41 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             """,
         )
 
+    def test_filterable_list_count_token_select_and_hidden_empty_state(self):
+        self.run_browser(
+            """
+            <select id="line" data-filter-select="lines" data-filter-match="token">
+              <option value=""></option><option value="mta">Mage</option><option value="wta">W</option>
+            </select>
+            <select id="kind" data-filter-select="kind"><option value=""></option>
+              <option value="merit">Merit</option></select>
+            <span id="count" data-filter-count>2 of 2 shown</span>
+            <div id="empty" data-filter-no-results hidden>No results</div>
+            <table><tbody data-filterable-list="mfs">
+              <tr id="both" data-filterable-item data-lines="mta wta" data-kind="merit"><td>A</td></tr>
+              <tr id="mage" data-filterable-item data-lines="mta" data-kind="flaw"><td>B</td></tr>
+            </tbody></table>
+            """ + render_filterable_list_script(),
+            """
+            check(get('count').textContent === '2 of 2 shown', 'initial count');
+            check(!visible('empty'), 'hidden empty state stays hidden');
+            change('line', 'wta');
+            check(visible('both') && !visible('mage'), 'token match on a multi-valued item');
+            check(get('count').textContent === '1 of 2 shown', 'count follows the filter');
+            change('line', 'mta');
+            check(visible('both') && visible('mage'), 'token shared by both items');
+            change('kind', 'merit');
+            check(visible('both') && !visible('mage'), 'plain select stays an exact match');
+            get('both').dataset.kind = 'flaw';
+            change('kind', 'merit');
+            check(visible('empty') && !get('empty').hidden, 'empty state revealed');
+            check(get('count').textContent === '0 of 2 shown', 'zero count');
+            change('kind', '');
+            change('line', '');
+            check(!visible('empty') && get('count').textContent === '2 of 2 shown', 'reset');
+            """,
+        )
+
     def test_attribute_validator_allocation_and_constraints(self):
         names = (
             "strength",

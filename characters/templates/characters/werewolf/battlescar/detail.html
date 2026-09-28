@@ -1,18 +1,6 @@
-{% extends "core/object.html" %}
-{% load dots %}
-{% block contents %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title wta_heading">Glory Gained</h5>
-                </div>
-                <div class="tg-card-body text-center" style="padding: 32px;">
-                    <div style="display: inline-block; padding: 24px 48px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
-                        <div style="font-size: 3rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.glory|default:"0" }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:battlescar' %}">← Battle scars</a>{% endblock back %}
+{% block facts %}
+    {% fact "Glory gained" object.glory|default:"0" %}
+{% endblock facts %}

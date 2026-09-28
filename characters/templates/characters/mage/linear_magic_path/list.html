@@ -1,89 +1,43 @@
-{% extends "core/base.html" %}
-{% load filterable_list %}
-{% block title %}
-    Linear Magic Paths
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="mta">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title mta_heading">Linear Magic Paths</h1>
-            </div>
-        </div>
-
-        <!-- Filter Controls -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header d-flex justify-content-between align-items-center">
-                <h5 class="tg-card-title mb-0">Filters</h5>
-                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-                    Toggle Filters
-                </button>
-            </div>
-            <div class="collapse show" id="filterPanel">
-                <div class="tg-card-body" style="padding: 20px;">
-                    <!-- Search Filter -->
-                    <div class="mb-3">
-                        <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
-                        <input type="text" class="form-control" id="nameFilter" data-filter-input="name" placeholder="Type to filter by name...">
-                    </div>
-
-                    <!-- Type Filter -->
-                    <div class="mb-3">
-                        <label for="typeFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Filter by Type</label>
-                        <select class="form-control" id="typeFilter" data-filter-select="type">
-                            <option value="">All Types</option>
-                            <option value="hedge_magic">Hedge Magic</option>
-                            <option value="psychic">Psychic Phenomenon</option>
-                        </select>
-                    </div>
-
-                    <!-- Clear Filters -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
-                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Path List -->
-        <div class="row" data-filterable-list="paths">
-            {% for obj in object_list %}
-                <div class="col-md-4 col-sm-6 mb-3"
-                     data-filterable-item
-                     data-name="{{ obj.name|lower }}"
-                     data-type="{{ obj.numina_type }}">
-                    <div class="tg-card h-100">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <h6 class="tg-card-title mb-2">
-                                <a href="{{ obj.get_absolute_url }}" style="text-decoration: none; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                            </h6>
-                            <div style="font-size: 0.75rem; color: var(--theme-text-secondary);">
-                                {{ obj.get_numina_type_display }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center" style="padding: 20px;">
-                            <p style="color: var(--theme-text-secondary); margin: 0;">No linear magic paths found.</p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- No Results Message -->
-        <div data-filter-no-results class="tg-card" style="display: none;">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <p style="color: var(--theme-text-secondary); margin: 0;">No paths match the current filters.</p>
-            </div>
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Linear Magic Paths{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Linear Magic Paths{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Linear Magic Paths" line="mta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="type-filter">Type</label>
+            <select id="type-filter" data-filter-select="type">
+                <option value="">Type</option>
+                {% regroup object_list|dictsort:"numina_type" by numina_type as groups %}
+                {% for group in groups %}{% if group.grouper %}<option value="{{ group.grouper }}">{{ group.list.0.get_numina_type_display }}</option>{% endif %}{% endfor %}
+            </select>
         </div>
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:path' %}">+ New path</a>
+{% endblock ref_create %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="paths">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}" data-type="{{ obj.numina_type }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-ref-type">{{ obj.get_numina_type_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No linear magic paths match the current filters." empty="No linear magic paths yet." %}
 {% endblock content %}
-
-{% block extra_js %}
-{% filterable_list_script %}
-{% endblock extra_js %}

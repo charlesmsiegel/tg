@@ -1,5 +1,11 @@
-{% extends "core/object.html" %}
-{% load dots %}
-{% block objectname %}
-    {% include "characters/mage/advantage/display_includes/title.html" %}
-{% endblock objectname %}
+{% extends "characters/tl/reference_detail.html" %}
+{% block facts %}
+    {% with ratings=object.ratings.all|dictsort:"value" %}
+        {% if ratings %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Available ratings</span>
+                <span class="tl-facts__v">{% for rating in ratings %}{{ rating.value }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock facts %}

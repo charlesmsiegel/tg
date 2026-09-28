@@ -26,6 +26,7 @@ class MageFactionDetailView(DetailView):
             [f'<a href="{x.get_absolute_url()}">{x}</a>' for x in self.object.materials.all()]
         )
         context["year"] = abs(self.object.founded)
+        context["ended_year"] = abs(self.object.ended)
         context["subfactions"] = ", ".join(
             [
                 f'<a href="{x.get_absolute_url()}">{x}</a>'

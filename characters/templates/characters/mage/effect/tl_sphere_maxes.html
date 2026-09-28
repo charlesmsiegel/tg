@@ -1,0 +1,17 @@
+{% comment %}
+Nine sphere-maximum steppers for a Mage reference list cover (rotes, effects): an item stays
+visible while its data-<sphere> value is at most the entered number (widgets/filterable.js
+data-filter-max). Empty means no limit; the placeholder reads "≤ 5".
+{% endcomment %}
+<span class="tl-subhead">Maximum sphere rating</span>
+<div class="tl-ref-maxes">
+    <label class="tl-ref-max" for="correspondence-filter">Correspondence<span class="tl-ref-max__val">≤ <input type="number" id="correspondence-filter" data-filter-max="correspondence" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="entropy-filter">Entropy<span class="tl-ref-max__val">≤ <input type="number" id="entropy-filter" data-filter-max="entropy" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="forces-filter">Forces<span class="tl-ref-max__val">≤ <input type="number" id="forces-filter" data-filter-max="forces" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="life-filter">Life<span class="tl-ref-max__val">≤ <input type="number" id="life-filter" data-filter-max="life" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="matter-filter">Matter<span class="tl-ref-max__val">≤ <input type="number" id="matter-filter" data-filter-max="matter" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="mind-filter">Mind<span class="tl-ref-max__val">≤ <input type="number" id="mind-filter" data-filter-max="mind" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="prime-filter">Prime<span class="tl-ref-max__val">≤ <input type="number" id="prime-filter" data-filter-max="prime" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="spirit-filter">Spirit<span class="tl-ref-max__val">≤ <input type="number" id="spirit-filter" data-filter-max="spirit" min="0" max="5" placeholder="5"></span></label>
+    <label class="tl-ref-max" for="time-filter">Time<span class="tl-ref-max__val">≤ <input type="number" id="time-filter" data-filter-max="time" min="0" max="5" placeholder="5"></span></label>
+</div>

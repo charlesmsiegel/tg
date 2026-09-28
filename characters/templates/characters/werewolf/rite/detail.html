@@ -1,4 +1,10 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/werewolf/rite/display_includes/title.html" %}
-{% endblock objectname %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:rite' %}">← Rites</a>{% endblock back %}
+{% block rank %}
+    {% if object.level %}<span class="tl-cover__rank">{% dots object.level %}</span>{% endif %}
+{% endblock rank %}
+{% block facts %}
+    {% fact "Level" object.level %}
+    {% fact "Type" object.rite_type|title %}
+{% endblock facts %}

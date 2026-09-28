@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -42,3 +43,18 @@ class MeritFlawListView(ListView):
     model = MeritFlaw
     ordering = ["name"]
     template_name = "characters/core/meritflaw/list.html"
+
+    def get_queryset(self):
+        # The LINE column reads each entry's allowed character types.
+        return super().get_queryset().prefetch_related("allowed_types")
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        gamelines = [code for code, _ in settings.GAMELINE_CHOICES if code != "wod"]
+        for mf in context["object_list"]:
+            # Gamelines the entry is limited to; none means every line may take it.
+            mf.line_codes = sorted(
+                {t.gameline for t in mf.allowed_types.all() if t.gameline in gamelines}
+            )
+        context["gamelines"] = gamelines
+        return context

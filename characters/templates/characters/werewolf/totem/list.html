@@ -1,17 +1,45 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Totems
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Totems</h3>
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Totems{% endblock title %}
+{% block gameline %}wta{% endblock gameline %}
+{% block cover_label %}Totems{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Werewolf: the Apocalypse" title="Totems" line="wta" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="type-filter">Type</label>
+            <select id="type-filter" data-filter-select="type">
+                <option value="">Type</option>
+                {% regroup object_list|dictsort:"totem_type" by totem_type as groups %}
+                {% for group in groups %}{% if group.grouper %}<option value="{{ group.grouper }}">{{ group.list.0.get_totem_type_display }}</option>{% endif %}{% endfor %}
+            </select>
         </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
     </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:werewolf:create:totem' %}">+ New totem</a>
+{% endblock ref_create %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="tl-num">Cost</th>
+                    <th scope="col">Type</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="totems">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}" data-type="{{ obj.totem_type }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        <td class="tl-num">{{ obj.cost }}</td>
+                        <td class="tl-ref-type">{{ obj.get_totem_type_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No totems match the current filters." empty="No totems yet." %}
 {% endblock content %}

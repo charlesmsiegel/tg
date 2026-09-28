@@ -1,9 +1,12 @@
-{% extends "core/object.html" %}
-{% block status_row %}
-    <div class="col-md-6 mb-3">{% include "characters/werewolf/gift/display_includes/permissions.html" %}</div>
-    {{ block.super }}
-{% endblock status_row %}
-{% block contents %}
-    {% load dots %}
-    {# No additional content needed as permissions are shown in status_row #}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:werewolf:list:gift' %}">← Gifts</a>{% endblock back %}
+{% block facts %}
+    {% fact "Rank" object.rank %}
+    {% with allowed=object.allowed.all %}
+        <div class="tl-facts__row">
+            <span class="tl-facts__k">Available to</span>
+            <span class="tl-facts__v">{% for permission in allowed %}{{ permission.shifter|capfirst }} ({{ permission.condition }}){% if not forloop.last %} · {% endif %}{% empty %}Any{% endfor %}</span>
+        </div>
+    {% endwith %}
+{% endblock facts %}

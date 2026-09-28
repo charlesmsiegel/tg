@@ -1,0 +1,10 @@
+{% load sanitize_text %}
+{% comment %}One rank of a tribe's Gifts: a mono eyebrow over the linked names; hidden when empty.{% endcomment %}
+{% if gifts %}
+    <div class="tl-stack">
+        <span class="tl-subhead">Rank {{ level }}</span>
+        <div class="tl-ref-links">
+            {% for gift in gifts %}<a href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>{% endfor %}
+        </div>
+    </div>
+{% endif %}

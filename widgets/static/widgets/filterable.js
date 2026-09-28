@@ -131,12 +131,14 @@
         }
 
         getSelectFilters(list) {
+            // data-filter-match="token" matches one word of a space-separated item value
+            // (an item that belongs to several groups); the default is an exact match.
             const filters = {};
             list.selects.forEach(select => {
                 const field = select.dataset.filterSelect;
                 const value = select.value;
                 if (value) {
-                    filters[field] = value;
+                    filters[field] = { value: value, token: select.dataset.filterMatch === 'token' };
                 }
             });
             return filters;
@@ -183,10 +185,13 @@
                 }
             }
 
-            // Select filters - exact match
-            for (const [field, value] of Object.entries(selectFilters)) {
+            // Select filters - exact match, or one of the item's space-separated tokens
+            for (const [field, filter] of Object.entries(selectFilters)) {
                 const itemValue = item.dataset[field] || '';
-                if (itemValue !== value) {
+                const matches = filter.token
+                    ? itemValue.split(/\s+/).includes(filter.value)
+                    : itemValue === filter.value;
+                if (!matches) {
                     return false;
                 }
             }
@@ -257,23 +262,16 @@
         updateCount(list, visible, total) {
             if (!list.countEl) return;
 
-            const hasFilters = this.hasActiveFilters(list);
-
-            if (hasFilters) {
-                list.countEl.textContent = `Showing ${visible} of ${total}`;
-            } else {
-                list.countEl.textContent = `${total} items`;
-            }
+            list.countEl.textContent = `${visible} of ${total} shown`;
         }
 
         updateNoResults(list, visible, total) {
             if (!list.noResultsEl) return;
 
-            if (visible === 0 && total > 0) {
-                list.noResultsEl.style.display = '';
-            } else {
-                list.noResultsEl.style.display = 'none';
-            }
+            // Templates may start the message hidden with the hidden attribute (no inline style).
+            const show = visible === 0 && total > 0;
+            list.noResultsEl.hidden = !show;
+            list.noResultsEl.style.display = show ? '' : 'none';
         }
 
         hasActiveFilters(list) {

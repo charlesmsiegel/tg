@@ -1,0 +1,9 @@
+{% load tl %}
+{% comment %}
+Reference list cover title: gameline eyebrow, the list name at cover size, and the live
+"N of M shown" count (widgets/filterable.js rewrites it through data-filter-count).
+  {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Rotes" line="mta" %}
+{% endcomment %}
+<span class="tl-cover__eyebrow">{{ eyebrow }}</span>
+<h1 class="tl-cover__name {{ title|cover_title_class:line }}" data-fit-title>{{ title }}</h1>
+<span class="tl-ref-count" data-filter-count aria-live="polite">{% with n=object_list|length %}{{ n }} of {{ n }} shown{% endwith %}</span>

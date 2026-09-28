@@ -1,7 +1,24 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    {% include "characters/mage/fellowship/display_includes/attributes.html" %}
-    {% include "characters/mage/fellowship/display_includes/paths.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% block back %}<a href="{% url 'characters:mage:list:sorcerer_fellowship' %}">← Fellowships</a>{% endblock back %}
+{% block after_description %}
+    {% with attributes=object.favored_attributes.all paths=object.favored_paths.all %}
+        {% if attributes or paths %}
+            <section class="tl-section tl-section--cols" id="favored">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Favored</h2>
+                </div>
+                <div class="tl-section__body tl-cols tl-cols--2">
+                    <div class="tl-col">
+                        <span class="tl-col__head">Attributes</span>
+                        {% for attribute in attributes %}<span>{{ attribute.name }}</span>{% empty %}<span class="tl-note">No favored attributes specified.</span>{% endfor %}
+                    </div>
+                    <div class="tl-col">
+                        <span class="tl-col__head">Paths</span>
+                        {% for path in paths %}<a href="{{ path.get_absolute_url }}">{{ path.name }}</a>{% empty %}<span class="tl-note">No favored paths specified.</span>{% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock after_description %}

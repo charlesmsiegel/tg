@@ -1,8 +1,26 @@
-{% extends "core/object.html" %}
-{% block status_row %}
-    <div class="col-md-6 mb-3">{% include "characters/changeling/kith/display_includes/details.html" %}</div>
-    {{ block.super }}
-{% endblock status_row %}
-{% block contents %}
-    {# No additional content needed as details are shown in status_row #}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:changeling:list:kith' %}">← Kiths</a>{% endblock back %}
+{% block facts %}
+    {% fact "Affinity" object.affinity|title %}
+{% endblock facts %}
+{% block after_description %}
+    {% if object.birthrights or object.frailty %}
+        <section class="tl-section tl-section--cols tl-section--power" id="birthrights">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Birthrights &amp; Frailty</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col">
+                    <span class="tl-col__head">Birthrights</span>
+                    {% for birthright in object.birthrights %}<p>{{ birthright }}</p>{% empty %}<span class="tl-note">No birthrights specified.</span>{% endfor %}
+                </div>
+                <div class="tl-col">
+                    <span class="tl-col__head">Frailty</span>
+                    <p>{{ object.frailty|default:"No frailty specified." }}</p>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock after_description %}

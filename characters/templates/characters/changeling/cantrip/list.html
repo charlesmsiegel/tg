@@ -1,17 +1,42 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Cantrips
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Cantrips</h3>
+{% extends "characters/tl/reference_list.html" %}
+{% load tl %}
+{% block title %}Cantrips{% endblock title %}
+{% block gameline %}ctd{% endblock gameline %}
+{% block cover_label %}Cantrips{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Changeling: the Dreaming" title="Cantrips" line="ctd" %}
+{% endblock cover_title %}
+{% block filters %}
+    <div class="tl-ref-filters__row tl-ref-filters__row--2">
+        <div class="tl-field tl-field--select">
+            <label class="tl-sr" for="art-filter">Art</label>
+            <select id="art-filter" data-filter-select="art">
+                <option value="">Art</option>
+                {% regroup object_list|dictsort:"art" by art as groups %}
+                {% for group in groups %}{% if group.grouper %}<option value="{{ group.grouper }}">{{ group.list.0.get_art_display }}</option>{% endif %}{% endfor %}
+            </select>
         </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+        <label class="tl-ref-max" for="level-filter">Maximum level<span class="tl-ref-max__val">≤ <input type="number" id="level-filter" data-filter-max="level" min="1" max="5" placeholder="5"></span></label>
+    </div>
+{% endblock filters %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:changeling:create:cantrip' %}">+ New cantrip</a>
+{% endblock ref_create %}
+{% block content %}
+    <div class="tl-grid" data-filterable-list="cantrips">
+        {% for cantrip in object_list %}
+            <div class="tl-ref-item" data-filterable-item data-name="{{ cantrip.name|lower }}" data-art="{{ cantrip.art }}" data-level="{{ cantrip.level }}">
+                <article class="tl-tile tl-ref-tile">
+                    <span class="tl-tile__meta"><span>{{ cantrip.get_art_display|default:"Cantrip" }}</span><span>{{ cantrip.get_primary_realm_display }}</span></span>
+                    <h2 class="tl-tile__name"><a href="{{ cantrip.get_absolute_url }}">{{ cantrip.name }}</a></h2>
+                    {% if cantrip.description %}<p class="tl-tile__text">{{ cantrip.description|striptags|truncatewords:30 }}</p>{% endif %}
+                    <div class="tl-ref-tile__foot">
+                        {% trait "Level" cantrip.level variant="acc" %}
+                        <span class="tl-ref-tile__roll">Difficulty {{ cantrip.difficulty }}{% if cantrip.glamour_cost %} · Cost {{ cantrip.glamour_cost }}{% endif %}</span>
+                    </div>
+                </article>
             </div>
         {% endfor %}
     </div>
+    {% include "characters/tl/reference_no_results.html" with text="No cantrips match the current filters." empty="No cantrips yet." %}
 {% endblock content %}

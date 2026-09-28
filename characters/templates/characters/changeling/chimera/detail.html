@@ -1,70 +1,29 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    <div class="tg-card">
-        <div class="tg-card-header ctd_heading">
-            <h4>{{ object.name }}</h4>
-        </div>
-        <div class="tg-card-body">
-            {% if object.chimera_type %}
-            <div class="row">
-                <div class="col-4"><strong>Type:</strong></div>
-                <div class="col-8">{{ object.get_chimera_type_display }}</div>
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:changeling:list:chimera' %}">← Chimera</a>{% endblock back %}
+{% block facts %}
+    {% fact "Type" object.get_chimera_type_display %}
+    {% fact "Chimera points" object.chimera_points %}
+    {% fact "Sentience" object.get_sentience_level_display %}
+    {% fact "Durability" object.durability %}
+    {% fact "Physical interaction" object.can_interact_with_physical|yesno:"Yes,No" %}
+    {% fact "Loyalty" object.loyalty %}
+    {% fact "Creator" object.creator %}
+    {% fact "Origin" object.get_origin_display %}
+    {% fact "Permanent" object.is_permanent|yesno:"Yes,No" %}
+    {% fact "Dream source" object.dream_source %}
+{% endblock facts %}
+{% block after_description %}
+    {% if object.behavior or object.appearance %}
+        <section class="tl-section tl-section--cols" id="nature">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Nature</h2>
             </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-4"><strong>Chimera Points:</strong></div>
-                <div class="col-8">{{ object.chimera_points }}</div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col">{% include "characters/tl/prose_block.html" with label="Behavior" text=object.behavior %}</div>
+                <div class="tl-col">{% include "characters/tl/prose_block.html" with label="Appearance" text=object.appearance %}</div>
             </div>
-            <div class="row">
-                <div class="col-4"><strong>Sentience:</strong></div>
-                <div class="col-8">{{ object.get_sentience_level_display }}</div>
-            </div>
-            {% if object.behavior %}
-            <div class="row">
-                <div class="col-4"><strong>Behavior:</strong></div>
-                <div class="col-8">{{ object.behavior }}</div>
-            </div>
-            {% endif %}
-            {% if object.appearance %}
-            <div class="row">
-                <div class="col-4"><strong>Appearance:</strong></div>
-                <div class="col-8">{{ object.appearance }}</div>
-            </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-4"><strong>Durability:</strong></div>
-                <div class="col-8">{{ object.durability }}</div>
-            </div>
-            <div class="row">
-                <div class="col-4"><strong>Physical Interaction:</strong></div>
-                <div class="col-8">{{ object.can_interact_with_physical|yesno:"Yes,No" }}</div>
-            </div>
-            <div class="row">
-                <div class="col-4"><strong>Loyalty:</strong></div>
-                <div class="col-8">{{ object.loyalty }}</div>
-            </div>
-            {% if object.creator %}
-            <div class="row">
-                <div class="col-4"><strong>Creator:</strong></div>
-                <div class="col-8">{{ object.creator }}</div>
-            </div>
-            {% endif %}
-            {% if object.origin %}
-            <div class="row">
-                <div class="col-4"><strong>Origin:</strong></div>
-                <div class="col-8">{{ object.get_origin_display }}</div>
-            </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-4"><strong>Permanent:</strong></div>
-                <div class="col-8">{{ object.is_permanent|yesno:"Yes,No" }}</div>
-            </div>
-            {% if object.dream_source %}
-            <div class="row">
-                <div class="col-4"><strong>Dream Source:</strong></div>
-                <div class="col-8">{{ object.dream_source }}</div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-{% endblock contents %}
+        </section>
+    {% endif %}
+{% endblock after_description %}

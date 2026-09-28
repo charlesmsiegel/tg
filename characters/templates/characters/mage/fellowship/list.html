@@ -1,17 +1,29 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Fellowships
-{% endblock title %}
+{% extends "characters/tl/reference_list.html" %}
+{% block title %}Sorcerer Fellowships{% endblock title %}
+{% block gameline %}mta{% endblock gameline %}
+{% block cover_label %}Sorcerer Fellowships{% endblock cover_label %}
+{% block cover_title %}
+    {% include "characters/tl/reference_cover_title.html" with eyebrow="Mage: the Ascension" title="Sorcerer Fellowships" line="mta" %}
+{% endblock cover_title %}
+{% block ref_create %}
+    <a class="tl-btn tl-btn--quiet tl-ref-new" href="{% url 'characters:mage:create:sorcerer_fellowship' %}">+ New fellowship</a>
+{% endblock ref_create %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Fellowships</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
+    {% if object_list %}
+        <table class="tl-table tl-table--ref">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                </tr>
+            </thead>
+            <tbody data-filterable-list="fellowships">
+                {% for obj in object_list %}
+                    <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                        <td class="tl-ref-name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% include "characters/tl/reference_no_results.html" with text="No sorcerer fellowships match the current filters." empty="No sorcerer fellowships yet." %}
 {% endblock content %}

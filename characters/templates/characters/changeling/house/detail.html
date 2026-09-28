@@ -1,7 +1,34 @@
-{% extends "core/object.html" %}
-{% block objectname %}
-    {% include "characters/shared/changeling/court_title.html" %}
-{% endblock objectname %}
-{% block contents %}
-    {% include "characters/changeling/house/display_includes/details.html" %}
-{% endblock contents %}
+{% extends "characters/tl/reference_detail.html" %}
+{% load tl %}
+{% block back %}<a href="{% url 'characters:changeling:list:house' %}">← Houses</a>{% endblock back %}
+{% block facts %}
+    {% fact "Court" object.get_court_display %}
+    {% with factions=object.factions.all %}
+        {% if factions %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Factions</span>
+                <span class="tl-facts__v">{% for faction in factions %}<a href="{{ faction.get_absolute_url }}">{{ faction.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock facts %}
+{% block after_description %}
+    {% if object.boon or object.flaw %}
+        <section class="tl-section tl-section--cols tl-section--power" id="boon">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Boon &amp; Flaw</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col">
+                    <span class="tl-col__head">Boon</span>
+                    <p>{{ object.boon|default:"No boon specified." }}</p>
+                </div>
+                <div class="tl-col">
+                    <span class="tl-col__head">Flaw</span>
+                    <p>{{ object.flaw|default:"No flaw specified." }}</p>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock after_description %}

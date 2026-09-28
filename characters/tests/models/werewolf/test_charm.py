@@ -15,7 +15,7 @@ class TestSpiritCharmDetailView(TestCase):
 
     def test_charm_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "core/object.html")
+        self.assertTemplateUsed(response, "characters/werewolf/charm/detail.html")
 
 
 class TestSpiritCharmCreateView(TestCase):
