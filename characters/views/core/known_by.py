@@ -191,7 +191,7 @@ KNOWN_BY_SOURCES = {
     Gift: Members((Werewolf, Fera, Kinfolk), "gifts"),
     Rite: Members((Werewolf, Fera), "rites_known"),
     Rote: Members((Mage,), "rotes"),
-    DemonRitual: Members((Demon,), "rituals"),
+    DemonRitual: Members((Demon, Earthbound), "rituals"),
     MeritFlaw: Ratings(MeritFlawRating, "mf", "character", style="number"),
     Thorn: Ratings(ThornRating, "thorn", "wraith"),
     LinearMagicPath: Ratings(PathRating, "path", "character"),

@@ -15,6 +15,7 @@ from django.urls import reverse
 from characters.models.core import Human, MeritFlaw
 from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.demon import Demon
+from characters.models.demon.earthbound import Earthbound
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual as DemonRitual
 from characters.models.hunter import Edge, Hunter
@@ -316,8 +317,10 @@ class KnownBySourceTests(TestCase):
         ritual = DemonRitual.objects.create(name="Summon the Storm")
         demon = Demon.objects.create(name="Ahrimel", owner=self.user)
         demon.rituals.add(ritual)
+        earthbound = Earthbound.objects.create(name="The Drowned King", owner=self.user)
+        earthbound.rituals.add(ritual)
         url = reverse("characters:demon:ritual", kwargs={"pk": ritual.pk})
-        self.assertEqual(self.names(url), [("Ahrimel", None)])
+        self.assertEqual(self.names(url), [("Ahrimel", None), ("The Drowned King", None)])
 
     def test_thorn_path_and_advantage_ratings(self):
         thorn = Thorn.objects.create(name="Shadow Life")
