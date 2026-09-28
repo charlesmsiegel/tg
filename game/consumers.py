@@ -3,8 +3,8 @@
 Protocol v2 (``/ws/scene/<id>/?v=2``): the page's htmx ``ws`` extension sends
 JSON objects built by ``ws-send`` (``{"action": "post", <PostForm fields>}``)
 or by ``scene-chat.js`` (``{"action": "sync", "after": <post id>}``), and
-receives HTML whose top-level elements it swaps out of band. The legacy JSON
-protocol (bare URL) serves tabs opened before the switch.
+receives HTML whose top-level elements it swaps out of band. Any other URL is
+a tab from before the switch and is closed with 4400.
 
 Group events carry ids, never markup: each connection re-checks its viewer's
 access and renders the event for that viewer, so one viewer's rendering never
@@ -21,11 +21,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 from django.db import transaction
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from characters.models.core import CharacterModel
 from core.actions import ActionFailed
-from core.templatetags.sanitize_text import render_post_html
 from game import scene_chat
 from game.forms import AddCharForm, PostForm
 from game.models import Scene
@@ -35,8 +33,11 @@ from game.text import straighten_quotes
 
 logger = logging.getLogger(__name__)
 
+PROTOCOL = "2"  # /ws/scene/<id>/?v=2; the JSON protocol (v1) was removed in Step 11
+
 # Close codes outside the htmx ws extension's retry list (1006, 1011-1013).
 CLOSE_NORMAL = 1000
+CLOSE_OUTDATED = 4400
 CLOSE_DENIED = 4403
 
 POST_FIELDS = ("character", "display_name", "message")
@@ -52,19 +53,20 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = scene_chat.group_name(self.scene_id)
         self.user = self.scope["user"]
         query = parse_qs(self.scope.get("query_string", b"").decode())
-        self.html = query.get("v") == ["2"]
 
+        # A refused handshake reaches the browser as 1006, which clients retry;
+        # accepting and closing with a code of our own ends the retries.
+        if query.get("v") != [PROTOCOL]:
+            # A tab from before the switch: its script falls back to HTTP posting.
+            await self.accept()
+            await self.close(code=CLOSE_OUTDATED)
+            return
         # Public scenes admit anonymous readers; every other audience is
         # checked before joining the broadcast group. Missing and hidden
         # scenes are refused alike.
         if not await self.can_view():
-            if self.html:
-                # A refused handshake reaches the browser as 1006, which the
-                # htmx extension retries forever; 4403 stops it.
-                await self.accept()
-                await self.close(code=CLOSE_DENIED)
-            else:
-                await self.close()
+            await self.accept()
+            await self.close(code=CLOSE_DENIED)
             return
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -72,11 +74,12 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         logger.info("User %s connected to scene %s", self.user, self.scene_id)
 
     async def disconnect(self, close_code):
+        # Harmless for connections that were refused before joining.
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         logger.info("User %s disconnected from scene %s", self.user, self.scene_id)
 
     async def deliver(self, html):
-        """Send a v2 reply; ``None`` means the viewer can no longer read the scene."""
+        """Send a reply; ``None`` means the viewer can no longer read the scene."""
         if html is None:
             await self.close(code=CLOSE_DENIED)
         elif html:
@@ -85,9 +88,6 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     # Client messages -------------------------------------------------------
 
     async def receive(self, text_data=None, bytes_data=None):
-        if not self.html:
-            await self.receive_legacy(text_data)
-            return
         try:
             data = self.decode(text_data)
             action = data.get("action")
@@ -152,34 +152,19 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
     async def scene_post(self, event):
         """A post was committed."""
-        if self.html:
-            await self.deliver(await self.post_html(event["post_id"]))
-            return
-        payload = await self.post_payload(event["post_id"])
-        if payload is False:
-            await self.close()
-        elif payload:
-            await self.send(text_data=json.dumps({"type": "new_post", "post": payload}))
+        await self.deliver(await self.post_html(event["post_id"]))
 
     async def scene_characters(self, event):
         """A character joined the scene."""
-        if self.html:
-            await self.deliver(await self.characters_html(event["character_id"]))
-            return
-        payload = await self.character_payload(event["character_id"])
-        if payload is False:
-            await self.close()
-        elif payload:
-            await self.send(text_data=json.dumps({"type": "character_added", "character": payload}))
+        await self.deliver(await self.characters_html(event["character_id"]))
 
     async def scene_closed(self, event):
         """The scene was closed: no more posting, and no reason to stay connected."""
-        if self.html:
-            html = await self.closed_html()
-            if html is None:
-                await self.close(code=CLOSE_DENIED)
-                return
-            await self.send(text_data=html)
+        html = await self.closed_html()
+        if html is None:
+            await self.close(code=CLOSE_DENIED)
+            return
+        await self.send(text_data=html)
         await self.close(code=CLOSE_NORMAL)
 
     @database_sync_to_async
@@ -289,119 +274,5 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             {"messages": messages, "level": level, "reload_url": reload_url},
         )
 
-    # Legacy JSON protocol (removed once no page loads the inline script) ------
-
+    # Kept because tests pin one straighten_quotes implementation (Step 4).
     straighten_quotes = staticmethod(straighten_quotes)
-
-    async def receive_legacy(self, text_data):
-        try:
-            data = json.loads(text_data)
-            message_type = data.get("type")
-            if message_type == "chat_message":
-                await self.handle_chat_message(data)
-            elif message_type == "add_character":
-                await self.handle_add_character(data)
-            else:
-                logger.warning("Unknown message type: %s", message_type)
-        except json.JSONDecodeError:
-            logger.error("Invalid JSON received")
-            await self.send_error("Invalid message format")
-        except Exception as e:
-            logger.error(f"Error processing WebSocket message: {e}", exc_info=True)
-            await self.send_error("Could not process message")
-
-    async def handle_chat_message(self, data):
-        fields = {
-            "character": data.get("character_id"),
-            "display_name": data.get("display_name", ""),
-            "message": data.get("message", ""),
-        }
-        errors, outcome = await self.submit_legacy(fields)
-        if errors:
-            await self.send_error(errors[0])
-        elif outcome.object is None:
-            await self.send(
-                text_data=json.dumps({"type": "system_message", "message": outcome.message})
-            )
-
-    @database_sync_to_async
-    def submit_legacy(self, fields):
-        scene = self.visible_scene()
-        if scene is None:
-            return ["Cannot post to a finished scene"], None
-        return self.submit(scene, fields)
-
-    async def handle_add_character(self, data):
-        character_id = data.get("character_id")
-        scene = await self.get_scene()
-        if scene is None or scene.finished or not await self.user_can_view_scene(scene):
-            await self.send_error("Cannot add character to finished scene")
-            return
-        character = await self.get_character(character_id)
-        if character is None:
-            await self.send_error("Character not found")
-            return
-        if not (self.user.is_authenticated and character.owner_id == self.user.pk):
-            await self.send_error("You can only add your own characters")
-            return
-        if character.chronicle_id != scene.chronicle_id:
-            await self.send_error("Character cannot join this scene")
-            return
-        await self.add_character_to_scene(scene, character)
-
-    async def send_error(self, message):
-        await self.send(text_data=json.dumps({"type": "error", "message": message}))
-
-    @database_sync_to_async
-    def get_scene(self):
-        return (
-            Scene.objects.select_related("chronicle", "location").filter(pk=self.scene_id).first()
-        )
-
-    @database_sync_to_async
-    def get_character(self, character_id):
-        return CharacterModel.objects.select_related("owner").filter(pk=character_id).first()
-
-    @database_sync_to_async
-    def user_can_view_scene(self, scene):
-        return can_view_scene(self.user, scene)
-
-    @database_sync_to_async
-    def add_character_to_scene(self, scene, character):
-        with transaction.atomic():
-            scene.add_character(character)
-            scene_chat.broadcast(scene.pk, scene_chat.CHARACTER_JOINED, character_id=character.pk)
-
-    @database_sync_to_async
-    def post_payload(self, post_id):
-        """The old JSON shape of a post; ``False`` if the viewer lost access."""
-        scene = self.visible_scene()
-        if scene is None:
-            return False
-        post = scene_post(scene, post_id)
-        if post is None:
-            return None
-        character = post.character
-        return {
-            "id": post.pk,
-            "character_id": post.character_id,
-            "character_name": character.name if character else "",
-            "character_url": (
-                reverse("characters:character", kwargs={"pk": character.pk}) if character else ""
-            ),
-            "display_name": post.display_name,
-            "message": post.message,
-            "message_html": render_post_html(post.message),
-            "datetime_created": post.datetime_created.isoformat(),
-            "owner_id": character.owner_id if character else None,
-            "is_st": post.author_is_st,
-        }
-
-    @database_sync_to_async
-    def character_payload(self, character_id):
-        if self.visible_scene() is None:
-            return False
-        character = CharacterModel.objects.filter(pk=character_id).first()
-        if character is None:
-            return None
-        return {"id": character.pk, "name": character.name, "owner_id": character.owner_id}
