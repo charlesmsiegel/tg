@@ -132,10 +132,6 @@ class FreeholdAdmin(admin.ModelAdmin):
 
 
 # Demon locations
-from locations.models.demon.bastion import Bastion
-from locations.models.demon.reliquary import Reliquary
-
-
 @admin.register(Bastion)
 class BastionAdmin(admin.ModelAdmin):
     list_display = ("name", "ritual_strength", "warding_level", "consecration_date")
