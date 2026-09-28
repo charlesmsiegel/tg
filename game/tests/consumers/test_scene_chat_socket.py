@@ -394,7 +394,8 @@ class SceneEventTests(SocketTestBase):
             self.assertIn(">Newcomer</a>", text)
         # The owner can now post as Newcomer too, so their choice becomes a select.
         self.assertIn(
-            '<div id="post-character-field" hx-swap-oob="true" class="tl-composer__who">', seen["owner"]
+            '<div id="post-character-field" hx-swap-oob="true" class="tl-composer__who">',
+            seen["owner"],
         )
         self.assertIn(f'<option value="{newcomer.pk}">Newcomer</option>', seen["owner"])
         self.assertNotIn("post-character-field", seen["st"])

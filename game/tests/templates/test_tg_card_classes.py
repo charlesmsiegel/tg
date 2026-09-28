@@ -20,7 +20,9 @@ class TestSceneDetailTemplateSpread(SimpleTestCase):
         legacy = []
         for class_value in re.findall(r'class="([^"]*)"', content_without_scripts):
             for cls in class_value.split():
-                if cls in {"card", "tg-card", "btn", "row"} or cls.startswith(("card-", "btn-", "col-")):
+                if cls in {"card", "tg-card", "btn", "row"} or cls.startswith(
+                    ("card-", "btn-", "col-")
+                ):
                     legacy.append(cls)
         self.assertEqual(legacy, [], "Legacy Bootstrap/tg-card classes in scene/detail.html")
 

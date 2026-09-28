@@ -539,8 +539,6 @@ registry = ModelRegistry(
                 "list": "locations:list:location",
             },
             templates={
-                # Base-model list: plain rows showing str(), not the card list.
-                "list": "core/registry/object_list.html",
                 "detail": "locations/core/location/detail.html",
                 "list": "locations/core/location/list.html",
                 "create": "locations/core/location/form.html",

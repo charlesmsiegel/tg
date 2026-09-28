@@ -8,7 +8,8 @@ Two kinds of check:
   Changeling and Kinfolk sheets 114-115 and the scene page 82. A page that needs more
   should get a reviewed ceiling change here, not a silent regression. (Fera and Drone
   sheets rose by 4-7 when they moved onto Spread: they used to render only the cover
-  and now show the full human sheet plus Gifts, Rites and Fetishes.)
+  and now show the full human sheet plus Gifts, Rites and Fetishes. Every character cover
+  also lists its book sources, one query; the Wraith sheet's Thorns section is one more.)
 * **Scaling**: a sheet costs the same with more specialties, the scene page the same
   with more posts, and the character index and chronicle page the same with more
   grouped characters. These are the N+1 patterns the old templates had
@@ -32,48 +33,48 @@ from game.models import Post
 
 # Queries per character detail page for the fixture storyteller, by model label.
 SHEET_CEILINGS = {
-    "characters.Ajaba": 56,
-    "characters.Ananasi": 39,
+    "characters.Ajaba": 57,
+    "characters.Ananasi": 40,
     "characters.AutumnPerson": 31,
-    "characters.Bastet": 35,
+    "characters.Bastet": 36,
     "characters.Changeling": 33,
     "characters.Character": 66,
     "characters.Companion": 36,
-    "characters.Corax": 35,
+    "characters.Corax": 36,
     "characters.CtDHuman": 33,
-    "characters.Demon": 32,
-    "characters.Drone": 30,
+    "characters.Demon": 33,
+    "characters.Drone": 31,
     "characters.DtFHuman": 31,
-    "characters.Earthbound": 31,
-    "characters.Fera": 35,
+    "characters.Earthbound": 32,
+    "characters.Fera": 36,
     "characters.Fomor": 34,
     "characters.Ghoul": 31,
-    "characters.Grondr": 35,
-    "characters.Gurahl": 35,
+    "characters.Grondr": 36,
+    "characters.Gurahl": 36,
     "characters.HtRHuman": 31,
     "characters.Human": 33,
     "characters.Hunter": 31,
     "characters.Inanimae": 31,
-    "characters.Kinfolk": 35,
-    "characters.Kitsune": 35,
+    "characters.Kinfolk": 36,
+    "characters.Kitsune": 36,
     "characters.Mage": 85,
-    "characters.Mokole": 35,
+    "characters.Mokole": 36,
     "characters.MtAHuman": 33,
     "characters.MtRHuman": 31,
     "characters.Mummy": 31,
-    "characters.Nagah": 35,
+    "characters.Nagah": 36,
     "characters.Nunnehi": 31,
-    "characters.Nuwisha": 35,
-    "characters.Ratkin": 35,
+    "characters.Nuwisha": 36,
+    "characters.Ratkin": 36,
     "characters.Revenant": 31,
-    "characters.Rokea": 35,
+    "characters.Rokea": 36,
     "characters.Sorcerer": 36,
-    "characters.SpiritCharacter": 28,
+    "characters.SpiritCharacter": 29,
     "characters.Thrall": 32,
     "characters.Vampire": 31,
     "characters.VtMHuman": 33,
-    "characters.Werewolf": 38,
-    "characters.Wraith": 33,
+    "characters.Werewolf": 39,
+    "characters.Wraith": 35,
     "characters.WtAHuman": 33,
     "characters.WtOHuman": 33,
 }
@@ -82,6 +83,8 @@ INDEX_CEILING = 56
 
 
 class QueryBudgetTest(TestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         cls.fixtures = seed()
