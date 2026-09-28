@@ -1,88 +1,26 @@
 {% extends "characters/changeling/ctdhuman/detail.html" %}
-{% load dots %}
+{% load tl %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Kingdom:</span>
-                            {{ object.get_kingdom_display|default:"-" }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Seeming:</span>
-                            {{ object.get_inanimae_seeming_display|default:"-" }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Season:</span>
-                            {{ object.get_season_display|default:"-" }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
+    {% fact "Kingdom" object.get_kingdom_display %}
+    {% fact "Seeming" object.get_inanimae_seeming_display %}
+    {% fact "Season" object.get_season_display %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
-                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Mana:</div>
-                        <div class="col-3 dots">{{ object.mana|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
-                        <div class="col-3 dots">{{ object.banality|dots:10 }}</div>
-                    </div>
-
-                    {% if object.anchor_description %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Anchor</h6>
-                            <p>{{ object.anchor_description }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if object.elemental_strength %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Elemental Strength</h6>
-                            <p>{{ object.elemental_strength }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if object.elemental_weakness %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Elemental Weakness</h6>
-                            <p>{{ object.elemental_weakness }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+    <section class="tl-section tl-span-6" id="advantages">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Advantages</h2>
         </div>
-    </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div>
+                {% track "Mana" perm=object.mana %}
+                {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+            </div>
+            {% include "characters/tl/prose_block.html" with label="Anchor" text=object.anchor_description %}
+            {% include "characters/tl/prose_block.html" with label="Elemental Strength" text=object.elemental_strength %}
+            {% include "characters/tl/prose_block.html" with label="Elemental Weakness" text=object.elemental_weakness %}
+        </div>
+    </section>
 {% endblock advantages %}

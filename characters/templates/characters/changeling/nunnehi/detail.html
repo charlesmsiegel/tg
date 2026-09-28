@@ -1,81 +1,26 @@
 {% extends "characters/changeling/ctdhuman/detail.html" %}
-{% load dots %}
+{% load tl %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Tribe:</span>
-                            {{ object.get_tribe_display|default:"-" }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Seeming:</span>
-                            {{ object.get_nunnehi_seeming_display|default:"-" }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Path:</span>
-                            {{ object.get_path_display|default:"-" }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
+    {% fact "Tribe" object.get_tribe_display %}
+    {% fact "Seeming" object.get_nunnehi_seeming_display %}
+    {% fact "Path" object.get_path_display %}
+    {% fact "Spirit Guide" object.spirit_guide %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
-                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Medicine:</div>
-                        <div class="col-3 dots">{{ object.spirit_medicine|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
-                        <div class="col-3 dots">{{ object.banality|dots:10 }}</div>
-                    </div>
-
-                    {% if object.sacred_place %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Sacred Place</h6>
-                            <p>{{ object.sacred_place }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if object.tribal_duty %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Tribal Duty</h6>
-                            <p>{{ object.tribal_duty }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+    <section class="tl-section tl-span-6" id="advantages">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Advantages</h2>
         </div>
-    </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div>
+                {% track "Medicine" perm=object.spirit_medicine %}
+                {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+            </div>
+            {% include "characters/tl/prose_block.html" with label="Sacred Place" text=object.sacred_place %}
+            {% include "characters/tl/prose_block.html" with label="Tribal Duty" text=object.tribal_duty %}
+        </div>
+    </section>
 {% endblock advantages %}

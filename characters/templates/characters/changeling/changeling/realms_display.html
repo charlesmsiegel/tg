@@ -1,0 +1,24 @@
+{% load tl %}
+{% comment %}Realms (the line block): all six in two columns once any has a dot.{% endcomment %}
+{% with realms=object.realm_rows %}
+    {% if realms %}
+        <section class="tl-section" id="realms">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Realms</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-stack">
+                    {% for label, rating, specialty in realms|slice:":3" %}
+                        {% trait label rating specialty %}
+                    {% endfor %}
+                </div>
+                <div class="tl-stack">
+                    {% for label, rating, specialty in realms|slice:"3:" %}
+                        {% trait label rating specialty %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

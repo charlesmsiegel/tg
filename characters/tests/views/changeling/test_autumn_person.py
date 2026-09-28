@@ -48,6 +48,27 @@ class TestAutumnPersonDetailView(TestCase):
         )
         self.assertTemplateUsed(response, "characters/changeling/autumn_person/detail.html")
 
+    def test_detail_view_sheet(self):
+        """Archetype / Dauntain are cover facts; Banality is a track; prose sits in Advantages."""
+        self.autumn_person.make_dauntain("Sidhe")
+        self.autumn_person.motivation = "Order above all"
+        self.autumn_person.anti_fae_abilities = ["Cold Iron Gaze"]
+        self.autumn_person.save()
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse(
+                "characters:changeling:autumn_person",
+                kwargs={"pk": self.autumn_person.pk},
+            )
+        )
+        self.assertContains(response, "Bureaucrat")
+        self.assertContains(response, '<span class="tl-facts__k">Former Kith</span>', html=False)
+        self.assertContains(response, "Sidhe")
+        self.assertContains(response, '<span class="tl-track__label">Banality</span>', html=False)
+        self.assertContains(response, 'aria-label="10 of 10"')  # Dauntain: maximum Banality
+        self.assertContains(response, "Order above all")
+        self.assertContains(response, "Cold Iron Gaze")
+
 
 class TestAutumnPersonCreateView(TestCase):
     """Test AutumnPerson create view."""

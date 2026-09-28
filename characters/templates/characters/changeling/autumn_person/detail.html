@@ -1,100 +1,35 @@
 {% extends "characters/changeling/ctdhuman/detail.html" %}
-{% load dots %}
+{% load tl %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Archetype:</span>
-                            {{ object.get_archetype_display|default:"-" }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Awareness:</span>
-                            {{ object.get_awareness_display|default:"-" }}
-                        </div>
-                        {% if object.organization %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Organization:</span>
-                                {{ object.organization }}
-                            </div>
-                        {% endif %}
-                        {% if object.is_dauntain %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Dauntain:</span>
-                                Yes
-                            </div>
-                            {% if object.former_kith %}
-                                <div class="px-3 py-2">
-                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Former Kith:</span>
-                                    {{ object.former_kith }}
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
+    {% fact "Archetype" object.get_archetype_display %}
+    {% fact "Awareness" object.get_awareness_display %}
+    {% fact "Organization" object.organization %}
+    {% if object.is_dauntain %}
+        {% fact "Dauntain" "Yes" %}
+        {% fact "Former Kith" object.former_kith %}
+    {% endif %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
-                        <div class="col-3 dots">{{ object.banality_rating|dots:10 }}</div>
-                    </div>
-
-                    {% if object.motivation %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Motivation</h6>
-                            <p>{{ object.motivation }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if object.sphere_of_influence %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Sphere of Influence</h6>
-                            <p>{{ object.sphere_of_influence }}</p>
-                        </div>
-                    {% endif %}
-
-                    {% if object.anti_fae_abilities %}
-                        <div class="mt-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Anti-Fae Abilities</h6>
-                            <ul>
-                                {% for ability in object.anti_fae_abilities %}
-                                    <li>{{ ability }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+    <section class="tl-section tl-span-6" id="advantages">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Advantages</h2>
         </div>
-    </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div>
+                {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+                {% track "Banality" perm=object.banality_rating %}
+            </div>
+            {% include "characters/tl/prose_block.html" with label="Motivation" text=object.motivation %}
+            {% include "characters/tl/prose_block.html" with label="Sphere of Influence" text=object.sphere_of_influence %}
+            {% if object.anti_fae_abilities %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Anti-Fae Abilities</span>
+                    {% for ability in object.anti_fae_abilities %}<div>{{ ability }}</div>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
 {% endblock advantages %}

@@ -1,34 +1,19 @@
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Seelie Legacy:</span>
-                        <a href="{{ object.seelie_legacy.get_absolute_url }}">{{ object.seelie_legacy }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Unseelie Legacy:</span>
-                        <a href="{{ object.unseelie_legacy.get_absolute_url }}">{{ object.unseelie_legacy }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Court:</span>
-                        {{ object.get_court_display }}
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Kith:</span>
-                        <a href="{{ object.kith.get_absolute_url }}">{{ object.kith }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{% if object.house %}House{% else %}Seeming{% endif %}:</span>
-                        {% if object.house %}
-                            <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
-                        {% else %}
-                            {{ object.get_seeming_display }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+{% load tl %}
+{% comment %}Changeling cover facts: Kith, Seeming (House when set), Court, Legacies, Nature, Demeanor.{% endcomment %}
+{% fact "Kith" object.kith %}
+{% if object.house %}
+    {% fact "House" object.house %}
+{% else %}
+    {% fact "Seeming" object.get_seeming_display %}
+{% endif %}
+{% fact "Court" object.get_court_display %}
+{% if object.seelie_legacy or object.unseelie_legacy %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Legacies</span>
+        <span class="tl-facts__v">
+            {% if object.seelie_legacy %}<a href="{{ object.seelie_legacy.get_absolute_url }}" title="Seelie Legacy">{{ object.seelie_legacy }}</a>{% endif %}{% if object.seelie_legacy and object.unseelie_legacy %} / {% endif %}{% if object.unseelie_legacy %}<a href="{{ object.unseelie_legacy.get_absolute_url }}" title="Unseelie Legacy">{{ object.unseelie_legacy }}</a>{% endif %}
+        </span>
     </div>
-</div>
+{% endif %}
+{% fact "Nature" object.nature %}
+{% fact "Demeanor" object.demeanor %}

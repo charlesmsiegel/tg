@@ -120,6 +120,28 @@ class Changeling(CtDHuman):
         verbose_name = "Changeling"
         verbose_name_plural = "Changelings"
 
+    # Sheet labels that are not just the field name in title case.
+    TRAIT_LABELS = {"dragons_ire": "Dragon's Ire", "nature_realm": "Nature"}
+
+    def _sheet_rows(self, ratings):
+        return [
+            (
+                self.TRAIT_LABELS.get(stat, stat.replace("_", " ").title()),
+                rating,
+                self.get_specialty(stat),
+            )
+            for stat, rating in ratings.items()
+        ]
+
+    def art_rows(self):
+        """Arts with dots as ``[(label, rating, specialty), ...]`` for the character sheet."""
+        return self._sheet_rows({k: v for k, v in self.get_arts().items() if v > 0})
+
+    def realm_rows(self):
+        """All six Realms as ``[(label, rating, specialty), ...]``, or [] when none has dots."""
+        realms = self.get_realms()
+        return self._sheet_rows(realms) if any(realms.values()) else []
+
     def has_court(self):
         return self.court != ""
 
