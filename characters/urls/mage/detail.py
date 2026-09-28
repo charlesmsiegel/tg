@@ -1,11 +1,11 @@
 from django.urls import path
 
 from characters import views
-from characters.views.mage.actions import MageXPSpendView
 from characters.views.mage import (
     MtAHumanCharacterCreationView,
     MtAHumanTemplateSelectView,
 )
+from characters.views.mage.actions import MageXPSpendView
 
 urls = [
     path(
