@@ -602,6 +602,10 @@ class Scene(models.Model):
         return award_xp_atomically(Scene, self.pk, character_xp_map)
 
 
+# mark_read's default: read through the scene's latest post, looked up at update time.
+LATEST_POST = object()
+
+
 class UserSceneReadStatusManager(models.Manager):
     def record_post(self, scene, post, author):
         """A new post: unread for the scene's other players, read up to it for its author.
@@ -633,8 +637,11 @@ class UserSceneReadStatusManager(models.Manager):
             self.mark_read(scene, author_id, post)
         others.update(read=False)
 
-    def mark_read(self, scene, user_id, post=None, shown_from=None):
+    def mark_read(self, scene, user_id, post=LATEST_POST, shown_from=None):
         """``user_id`` has read ``scene`` through ``post`` (by default its latest post).
+
+        ``post=None`` means an empty window was shown: the scene becomes read only
+        if it still has no posts, so a first post that lands meanwhile stays unread.
 
         Updates existing rows only, in one query; the marker never moves back
         to an older post. ``read`` becomes true only if no post is newer than the
@@ -644,9 +651,11 @@ class UserSceneReadStatusManager(models.Manager):
         row moves only if no unread post precedes it: a backlog the reader has not
         loaded yet keeps its marker. Returns the number of rows updated.
         """
-        if post is None:
-            post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
         rows = self.filter(scene=scene, user_id=user_id)
+        if post is LATEST_POST:
+            post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
+        if post is None:
+            return rows.update(read=~Exists(Post.objects.filter(scene=scene)))
         if shown_from is not None:
             unseen = Post.objects.filter(
                 scene=scene,
@@ -654,8 +663,6 @@ class UserSceneReadStatusManager(models.Manager):
                 pk__gt=Coalesce(OuterRef("last_read_post"), Value(0)),
             )
             rows = rows.exclude(Exists(unseen))
-        if post is None:
-            return rows.update(read=True)
         marker = Greatest(Coalesce("last_read_post", Value(post.pk)), Value(post.pk))
         newer = Post.objects.filter(
             scene=scene,
