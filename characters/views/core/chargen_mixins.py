@@ -39,7 +39,11 @@ class ChargenStepMixin:
     fragment_template = "characters/core/chargen/step_fragment.html"
     feedback_template = "characters/core/chargen/feedback.html"
     options_template = "characters/core/chargen/options.html"
-    interactive_scripts = ("characters/js/chargen.js", "characters/js/chargen-components.js")
+    interactive_scripts = (
+        "characters/js/chargen.js",
+        "characters/js/chargen-components.js",
+        "characters/js/chargen-priority.js",
+    )
 
     def dispatch(self, request, *args, **kwargs):
         from characters.models.core import Character
@@ -214,8 +218,11 @@ class ChargenStepMixin:
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        if getattr(self, "chargen_interactive", False):
-            use_dot_widgets(form, self.dot_bounds())
+        interactive = getattr(self, "chargen_interactive", False)
+        # Every workflow rates with clickable dots: Alpine drives them on
+        # interactive pages, widgets/dot_rating.js (the widget's media) elsewhere.
+        use_dot_widgets(form, self.dot_bounds(), alpine=interactive)
+        if interactive:
             if hasattr(form, "enable_htmx_chains"):
                 form.enable_htmx_chains(self.request.path)
         return form
@@ -278,8 +285,12 @@ class ChargenStepMixin:
         return ["characters/core/chargen.html"]
 
 
-def use_dot_widgets(form, bounds):
-    """Render bounded number fields as clickable dots (the input stays the control)."""
+def use_dot_widgets(form, bounds, alpine=True):
+    """Render bounded number fields as clickable dots (the input stays the control).
+
+    ``alpine`` picks the driver: the Alpine ``tgDots`` component (interactive
+    pages, which load Alpine) or the widget's plain-JavaScript media.
+    """
     from widgets.widgets.dots import DotRatingInput
 
     for name, (minimum, maximum) in bounds.items():
@@ -289,6 +300,7 @@ def use_dot_widgets(form, bounds):
                 minimum=minimum,
                 maximum=maximum,
                 label=field.label or name,
+                alpine=alpine,
                 attrs=field.widget.attrs,
             )
 
@@ -297,12 +309,18 @@ def totals_over(totals):
     """Whether any running total from ``validation_totals`` is above its target.
 
     A plain total is over when ``current`` exceeds ``target``; a priority total
-    (``groups``) when its groups together exceed the sum of its targets.
+    (``groups``) when its groups together exceed the sum of its targets, or,
+    once the player has ranked the groups, when any group exceeds its own target.
     """
     for total in totals:
         if total.get("groups"):
             current = sum(group["current"] or 0 for group in total["groups"])
             if current > sum(total.get("targets") or ()):
+                return True
+            if any(
+                group.get("target") is not None and (group["current"] or 0) > group["target"]
+                for group in total["groups"]
+            ):
                 return True
         elif total.get("target") is not None and (total.get("current") or 0) > total["target"]:
             return True

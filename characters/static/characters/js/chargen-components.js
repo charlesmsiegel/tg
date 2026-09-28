@@ -46,7 +46,8 @@ document.addEventListener('alpine:init', function () {
 
     /* tgPool: running sums of the enclosing form's visible inputs against the
      * targets in the json_script named by data-rules (rule.client_data()).
-     * summary: text such as "Physical 8 · Social 6 · Mental 5 (need 10/8/6)". */
+     * summary: text such as "Physical 8 · Social 6 · Mental 5 (need 10/8/6)", or
+     * "Physical 8/10 · Social 6/8 · Mental 5/6" once the groups are ranked. */
     window.Alpine.data('tgPool', function () {
         return {
             summary: '',
@@ -76,12 +77,32 @@ document.addEventListener('alpine:init', function () {
                     return value === null ? total : total + value;
                 }, 0);
             },
+            /* {group: target} from the PRI / SEC / TER picker when every group
+             * holds a different rank, else null (any order of rule.targets). */
+            chosen: function (rule) {
+                if (!rule.priority_fields || !this.form) return null;
+                var form = this.form;
+                var ranks = [];
+                var targets = {};
+                rule.groups.forEach(function (group) {
+                    var name = rule.priority_fields[group[0]];
+                    var radio = form.querySelector('input[name="' + name + '"]:checked');
+                    if (radio && ranks.indexOf(radio.value) === -1) {
+                        ranks.push(radio.value);
+                        targets[group[0]] = Number(radio.dataset.target);
+                    }
+                });
+                return ranks.length === rule.groups.length ? targets : null;
+            },
             describe: function (rule) {
                 var self = this;
                 if (rule.groups) {
+                    var chosen = this.chosen(rule);
                     var parts = rule.groups.map(function (group) {
-                        return rule.group_labels[group[0]] + ' ' + self.sum(group[1]);
+                        var text = rule.group_labels[group[0]] + ' ' + self.sum(group[1]);
+                        return chosen ? text + '/' + chosen[group[0]] : text;
                     });
+                    if (chosen) return parts.join(' · ');
                     return parts.join(' · ') + ' (need ' + rule.targets.join('/') + ')';
                 }
                 var current = this.sum(rule.fields || []);

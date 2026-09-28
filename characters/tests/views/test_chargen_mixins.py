@@ -139,6 +139,17 @@ class TotalsOverTests(TestCase):
         self.assertFalse(totals_over([total(10, 8, 6)]))
         self.assertTrue(totals_over([total(10, 8, 7)]))
 
+    def test_ranked_priority_totals_compare_each_group_with_its_target(self):
+        from characters.views.core.chargen_mixins import totals_over
+
+        def ranked(*pairs):
+            groups = [{"current": current, "target": target} for current, target in pairs]
+            return {"groups": groups, "targets": [10, 8, 6]}
+
+        self.assertFalse(totals_over([ranked((6, 10), (8, 8), (6, 6))]))
+        # Within the 24-dot budget, but Physical holds more than its rank allows.
+        self.assertTrue(totals_over([ranked((9, 6), (8, 8), (6, 10))]))
+
     def test_progress_mixin_supplies_rows(self):
         view = FakeView()
         view.object = FakeCharacter(2)

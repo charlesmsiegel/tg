@@ -133,14 +133,24 @@ class AllocationRule:
         return data
 
 
+RANKS = ("primary", "secondary", "tertiary")
+RANK_SHORT = {"primary": "Pri", "secondary": "Sec", "tertiary": "Ter"}
+
+
 @dataclass(frozen=True)
 class PriorityRule:
-    """Groups whose totals, sorted, equal primary/secondary/tertiary points.
+    """Groups ranked primary/secondary/tertiary, each totalling its rank's points.
 
     ``base`` is the free rating every field starts with (1 for Attributes), so
     a group of three Attributes must total ``3 * base + points``. Every rated
     field must lie within ``minimum``..``maximum``; that range check runs
     before the distribution check, as the chargen views always did.
+
+    The player ranks the groups with one choice per group (``priority_field``,
+    posted as ``primary``/``secondary``/``tertiary``). When no choice is posted
+    the ranking is inferred from the dots: the group totals, sorted, must equal
+    the targets in any order. A partial or repeated choice is an error.
+
     ``message`` is formatted with ``primary``, ``secondary`` and ``tertiary``;
     ``flash`` additionally with ``allocation`` (the formatted message) and each
     group's name mapped to its current total.
@@ -157,6 +167,7 @@ class PriorityRule:
     flash: str | None = None
     range_flash: str | None = None
     range_fields: tuple[str, ...] | None = field(default=None)
+    ranks_message: str = "Choose primary, secondary and tertiary once each for {groups}"
 
     @property
     def fields(self) -> tuple[str, ...]:
@@ -164,8 +175,22 @@ class PriorityRule:
             return self.range_fields
         return tuple(name for _, names in self.groups for name in names)
 
+    @staticmethod
+    def priority_field(group: str) -> str:
+        """The form field holding a group's chosen rank."""
+        return f"priority_{group}"
+
+    @property
+    def priority_fields(self) -> tuple[str, ...]:
+        return tuple(self.priority_field(group) for group, _ in self.groups)
+
     def group_totals(self, values: Mapping[str, int | None]) -> dict[str, int]:
         return {group: sum(_value(values, name) for name in names) for group, names in self.groups}
+
+    def target(self, group: str, rank: str) -> int:
+        """What ``group`` must total when it holds ``rank``."""
+        names = dict(self.groups)[group]
+        return self.base * len(names) + self.points[RANKS.index(rank)]
 
     def _targets(self) -> list[int]:
         primary, secondary, tertiary = self.points
@@ -174,15 +199,62 @@ class PriorityRule:
             for (_, names), points in zip(self.groups, (tertiary, secondary, primary), strict=False)
         )
 
+    def posted_ranks(self, values: Mapping) -> dict[str, str]:
+        """The ranks a submission chose, by group (groups without a choice are left out)."""
+        posted = {}
+        for group, _ in self.groups:
+            rank = values.get(self.priority_field(group))
+            if rank in RANKS:
+                posted[group] = rank
+        return posted
+
+    def chosen_ranks(self, values: Mapping) -> dict[str, str] | None:
+        """The posted ranking when every group holds a different rank, else None."""
+        posted = self.posted_ranks(values)
+        if len(posted) == len(self.groups) and len(set(posted.values())) == len(posted):
+            return posted
+        return None
+
+    def rank_conflict(self, values: Mapping) -> bool:
+        """A choice was posted but it does not rank every group exactly once."""
+        return bool(self.posted_ranks(values)) and self.chosen_ranks(values) is None
+
+    def inferred_ranks(self, values: Mapping) -> dict[str, str]:
+        """Ranks by current totals, largest first; ties keep the groups' order."""
+        totals = self.group_totals(values)
+        order = sorted(self.groups, key=lambda group: -totals[group[0]])
+        return {group: rank for (group, _), rank in zip(order, RANKS, strict=False)}
+
+    def ranks(self, values: Mapping) -> tuple[dict[str, str], bool]:
+        """``(ranks, chosen)``: the posted ranking if complete, else the inferred one."""
+        chosen = self.chosen_ranks(values)
+        if chosen is not None:
+            return chosen, True
+        return self.inferred_ranks(values), False
+
+    def _ranked_summary(self, ranks: Mapping[str, str]) -> str:
+        return ", ".join(f"{label(group)} {ranks[group]}" for group, _ in self.groups)
+
     def violations(self, values: Mapping[str, int | None], phase: str) -> list[RuleViolation]:
         if phase != TOTALS:
             return []
         if any(not self.minimum <= _value(values, name) <= self.maximum for name in self.fields):
             return [RuleViolation(self.range_message, flash=self.range_flash)]
+        if self.rank_conflict(values):
+            names = [label(group) for group, _ in self.groups]
+            groups = ", ".join(names[:-1]) + " and " + names[-1]
+            return [RuleViolation(self.ranks_message.format(groups=groups))]
         totals = self.group_totals(values)
-        if sorted(totals.values()) != self._targets():
+        chosen = self.chosen_ranks(values)
+        if chosen is not None:
+            broken = any(totals[group] != self.target(group, chosen[group]) for group in totals)
+        else:
+            broken = sorted(totals.values()) != self._targets()
+        if broken:
             primary, secondary, tertiary = self.points
             message = self.message.format(primary=primary, secondary=secondary, tertiary=tertiary)
+            if chosen is not None:
+                message = f"{message} as ranked ({self._ranked_summary(chosen)})"
             flash = None
             if self.flash:
                 flash = self.flash.format(allocation=message, **totals)
@@ -193,18 +265,69 @@ class PriorityRule:
         """Group totals a valid allocation has, largest first."""
         return sorted(self._targets(), reverse=True)
 
-    def status(self, values: Mapping[str, int | None]) -> dict:
-        """Running group totals for display; the form's violations remain the verdict."""
+    def columns(self, values: Mapping) -> list[dict]:
+        """Per-group running counts against the ranking in force (chosen or inferred).
+
+        Each column: ``name``, ``label``, ``rank``, ``target``, ``current``,
+        ``left`` (negative when over), ``state`` (``progress``/``done``/``over``)
+        and ``count`` ("2 left", "done", "1 over").
+        """
         totals = self.group_totals(values)
+        ranks, _ = self.ranks(values)
+        columns = []
+        for group, _ in self.groups:
+            target = self.target(group, ranks[group])
+            left = target - totals[group]
+            if left > 0:
+                state, count = "progress", f"{left} left"
+            elif left < 0:
+                state, count = "over", f"{-left} over"
+            else:
+                state, count = "done", "done"
+            columns.append(
+                {
+                    "name": group,
+                    "label": label(group),
+                    "rank": ranks[group],
+                    "target": target,
+                    "current": totals[group],
+                    "left": left,
+                    "state": state,
+                    "count": count,
+                }
+            )
+        return columns
+
+    def status(self, values: Mapping[str, int | None]) -> dict:
+        """Running group totals for display; the form's violations remain the verdict.
+
+        When the submission chose a ranking, each group also carries its
+        ``rank``, ``target`` and ``count`` and the status is ``ranked``.
+        """
+        totals = self.group_totals(values)
+        chosen = self.chosen_ranks(values)
+        groups = [
+            {"name": group, "label": label(group), "current": totals[group]}
+            for group, _ in self.groups
+        ]
+        if chosen is not None:
+            for group, column in zip(groups, self.columns(values), strict=True):
+                group.update(
+                    rank=column["rank"],
+                    target=column["target"],
+                    count=column["count"],
+                    state=column["state"],
+                )
+            satisfied = all(group["current"] == group["target"] for group in groups)
+        else:
+            satisfied = sorted(totals.values()) == self._targets()
         return {
             "name": self.name,
             "label": label(self.name),
-            "groups": [
-                {"name": group, "label": label(group), "current": totals[group]}
-                for group, _ in self.groups
-            ],
+            "groups": groups,
             "targets": self.targets(),
-            "satisfied": sorted(totals.values()) == self._targets(),
+            "ranked": chosen is not None,
+            "satisfied": satisfied,
         }
 
     def client_data(self) -> dict:
@@ -220,6 +343,7 @@ class PriorityRule:
             "groups": [[group, list(names)] for group, names in self.groups],
             "group_labels": {group: label(group) for group, _ in self.groups},
             "targets": self.targets(),
+            "priority_fields": {group: self.priority_field(group) for group, _ in self.groups},
         }
 
 

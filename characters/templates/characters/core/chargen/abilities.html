@@ -1,17 +1,32 @@
-{% comment %} Abilities step: Talents, Skills and Knowledges as ruled columns
-   (ability_columns from ChargenStepMixin), then a status line checked by
-   ability-validation.js (non-interactive) or tgPool + the server's verdict. {% endcomment %}
-<p class="tl-lede">Distribute {{ primary }} / {{ secondary }} / {{ tertiary }} dots across Talents, Skills and Knowledges.</p>
-<div class="tl-alloc">
-    {% for title, fields in ability_columns %}
-        <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-{{ forloop.counter }}">
-            <div class="tl-alloc__head">
-                <h2 class="tl-alloc__name" id="abilities-{{ forloop.counter }}">{{ title }}</h2>
-            </div>
-            {% for field in fields %}
-                {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
-            {% endfor %}
-        </section>
-    {% endfor %}
+{% load static %}
+{% comment %} Abilities step: Talents, Skills and Knowledges as ruled columns, each with a
+   running count and a PRI / SEC / TER picker (`priority` from AllocationStepMixin;
+   without it, the plain ability_columns from ChargenStepMixin), then a status line
+   checked by ability-validation.js (non-interactive) or tgPool + the server's verdict. {% endcomment %}
+<p class="tl-lede">Rank Talents, Skills and Knowledges as primary, secondary and tertiary, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
+<div class="tl-alloc"{% if priority %} data-priority="{{ priority.rule }}"{% endif %}>
+    {% if priority %}
+        {% for column in priority.columns %}
+            <section class="tl-alloc__col" data-ability-group data-priority-group="{{ column.name }}" aria-labelledby="abilities-{{ forloop.counter }}">
+                {% with number=forloop.counter|stringformat:"d" %}
+                    {% include "characters/core/chargen/priority_head.html" with title=column.label heading_id="abilities-"|add:number status_id=column.name|add:"-status" column=column %}
+                {% endwith %}
+                {% for field in column.fields %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+                {% endfor %}
+            </section>
+        {% endfor %}
+    {% else %}
+        {% for title, fields in ability_columns %}
+            <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-{{ forloop.counter }}">
+                <div class="tl-alloc__head">
+                    <h2 class="tl-alloc__name" id="abilities-{{ forloop.counter }}">{{ title }}</h2>
+                </div>
+                {% for field in fields %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+                {% endfor %}
+            </section>
+        {% endfor %}
+    {% endif %}
 </div>
 {% include "characters/core/ability_block/status.html" %}

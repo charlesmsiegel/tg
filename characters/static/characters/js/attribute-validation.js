@@ -31,6 +31,28 @@
             input.addEventListener('input', updateDisplay);
         }
     });
+    // The PRI / SEC / TER picker (chargen-priority.js swaps a taken rank and
+    // fires change on the swapped radio, so this runs again once ranks are unique).
+    document.addEventListener('change', function(event) {
+        if (event.target.matches && event.target.matches('[data-priority-picker] input')) {
+            updateDisplay();
+        }
+    });
+
+    // The targets the player chose ({category: total}), or null when the picker
+    // is absent or its ranks are not three different ones (then the ranking is
+    // inferred from the dots, as the server does).
+    function getChosenTargets() {
+        const chosen = {};
+        const ranks = new Set();
+        for (const categoryName of Object.keys(CATEGORIES)) {
+            const radio = document.querySelector(`input[name="priority_${categoryName}"]:checked`);
+            if (!radio || !radio.dataset.target) return null;
+            chosen[categoryName] = Number(radio.dataset.target);
+            ranks.add(radio.value);
+        }
+        return ranks.size === Object.keys(CATEGORIES).length ? chosen : null;
+    }
 
     function getCategoryTotal(categoryName) {
         return CATEGORIES[categoryName].reduce((sum, attr) => {
@@ -54,6 +76,11 @@
 
     // Check if a given distribution can still reach a valid [6,8,10] assignment
     function isValidState(physTotal, socTotal, menTotal) {
+        // Chosen ranks fix each category's target.
+        const chosen = getChosenTargets();
+        if (chosen) {
+            return physTotal <= chosen.physical && socTotal <= chosen.social && menTotal <= chosen.mental;
+        }
         // Try all 6 permutations of assigning TARGETS to the three categories
         const permutations = [
             [physTotal, socTotal, menTotal],
@@ -126,6 +153,8 @@
     // keep Physical, Social, Mental order), which is the assignment that
     // overshoots least. Returns {category: target}.
     function getRankedTargets() {
+        const chosen = getChosenTargets();
+        if (chosen) return chosen;
         const totals = getCurrentTotals();
         const ranked = Object.keys(CATEGORIES).sort((a, b) => totals[b] - totals[a]);
         const descending = TARGETS.slice().reverse();
@@ -150,11 +179,14 @@
         const totalPoints = getTotalPoints();
         const pointsRemaining = TOTAL_POINTS - totalPoints;
 
-        // Check if we have a valid distribution
+        // Check if we have a valid distribution: the chosen targets exactly, or
+        // without a choice the targets in any order.
+        const chosen = getChosenTargets();
         const sortedTotals = [totals.physical, totals.social, totals.mental].sort((a,b) => a-b);
-        const isValidDistribution = pointsRemaining === 0 &&
-                                   sortedTotals.length === TARGETS.length &&
-                                   sortedTotals.every((val, idx) => val === TARGETS[idx]);
+        const isValidDistribution = pointsRemaining === 0 && (chosen
+            ? Object.keys(chosen).every(name => totals[name] === chosen[name])
+            : sortedTotals.length === TARGETS.length &&
+              sortedTotals.every((val, idx) => val === TARGETS[idx]));
 
         // Update total remaining points and the status tag beside it
         const totalElement = document.getElementById('total-remaining');
@@ -192,23 +224,8 @@
             setState(tagElement, state);
         }
 
-        // Per-category count against its ranked target: "n left", "done" or "n over"
-        for (const [categoryName, currentTotal] of Object.entries(totals)) {
-            const element = document.getElementById(categoryName + '-status');
-            if (element) {
-                const difference = ranked[categoryName] - currentTotal;
-                if (difference < 0) {
-                    element.textContent = -difference + ' over';
-                    setState(element, 'over');
-                } else if (difference > 0) {
-                    element.textContent = difference + ' left';
-                    setState(element, 'progress');
-                } else {
-                    element.textContent = 'done';
-                    setState(element, 'done');
-                }
-            }
-        }
+        // The per-column counts ("n left" / "done" / "n over") belong to
+        // chargen-priority.js, which also runs on interactive workflows.
 
         // Validate each input and enforce constraints
         Object.entries(inputs).forEach(([attrName, input]) => {
