@@ -1,24 +1,18 @@
-<div class="row">
-    <h2 class="col-sm mta_heading">Create Library</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Name and describe your character's library, as well as place is within some location. Appropriate books will be generated randomly.
+{% comment %}
+LibraryForm fields. Shared by the library create / edit form, the chantry generator's
+Library step and the Library step of the Mage-family character wizards. `books` is only
+on the edit form.
+{% endcomment %}
+<div class="tl-locform">
+    <p class="tl-lede">
+        Name and describe the library and place it within a location. Books appropriate to its rank are generated at random.
+    </p>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "locations/tl/field.html" with field=form.name %}
+        {% include "locations/tl/field.html" with field=form.rank %}
+        {% include "locations/tl/field.html" with field=form.faction %}
+        {% include "locations/tl/field.html" with field=form.contained_within %}
+        {% include "locations/tl/field.html" with field=form.books %}
     </div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.name }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.contained_within }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Rank</div>
-    <div class="col-sm">{{ form.rank }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.faction }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.description }}</div>
+    {% include "locations/tl/field.html" with field=form.description %}
 </div>

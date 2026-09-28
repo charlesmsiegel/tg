@@ -1,0 +1,18 @@
+{% extends "core/form.html" %}
+{% comment %}
+Spread create / edit shell for every location form and generator step: core/form.html's
+cover, Save / Cancel and scripts, with the pages rendered natively (no legacy wrapper),
+the M14 error summary and the Spread submit / approve actions after the form. The cover takes the gameline colour even before the object
+exists: children set `form_line` ("mta", "vtm"...). Children fill `contents`, usually as
+a .tl-locform of .tl-locgroup sections of locations/tl/field.html rows.
+{% endcomment %}
+{% load tl %}
+{% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}{% block form_line %}wod{% endblock form_line %}{% endif %}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block content_mod %}{% endblock content_mod %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}
+{% block after_content %}
+    {% tl_object_actions %}
+{% endblock after_content %}

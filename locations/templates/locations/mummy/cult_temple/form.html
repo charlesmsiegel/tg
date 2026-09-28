@@ -1,46 +1,24 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Cult Temple
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="cultTempleForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Cult Temple{% endblock creation_title %}
+{% block form_line %}mtr{% endblock form_line %}
+{% block formdetails %}method="post" id="cultTempleForm" action="" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Contained Within</div>
-            <div class="col-sm">{{ form.contained_within }}</div>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
         </div>
-        <div class="row">
-            <div class="col-sm">Cult Size</div>
-            <div class="col-sm">{{ form.cult_size }}</div>
-            <div class="col-sm">Public Cover</div>
-            <div class="col-sm">{{ form.public_cover }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Cult Leader Name</div>
-            <div class="col-sm">{{ form.cult_leader_name }}</div>
-            <div class="col-sm">Cult Wealth</div>
-            <div class="col-sm">{{ form.cult_wealth }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Has Library</div>
-            <div class="col-sm">{{ form.has_library }}</div>
-            <div class="col-sm">Has Ritual Chamber</div>
-            <div class="col-sm">{{ form.has_ritual_chamber }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Cult</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.cult_size label="Cult size" %}
+                {% include "locations/tl/field.html" with field=form.public_cover label="Public cover" %}
+                {% include "locations/tl/field.html" with field=form.cult_leader_name label="Cult leader" %}
+                {% include "locations/tl/field.html" with field=form.cult_wealth label="Cult wealth" %}
+                {% include "locations/tl/field.html" with field=form.has_library label="Has library" %}
+                {% include "locations/tl/field.html" with field=form.has_ritual_chamber label="Has ritual chamber" %}
+            </div>
+        </section>
+        {% include "locations/tl/field.html" with field=form.description %}
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

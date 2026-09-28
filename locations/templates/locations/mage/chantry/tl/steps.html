@@ -1,0 +1,13 @@
+{% comment %}
+The chantry generator's steps on the cover. `step` is 0 while naming the chantry, then its
+creation_status (ChantryCreationView.view_mapping).
+{% endcomment %}
+<ol class="tl-steps" aria-label="Chantry creation steps">
+    {% include "locations/tl/step_row.html" with at=0 label="Basics" tag=None %}
+    {% include "locations/tl/step_row.html" with at=1 label="Backgrounds" tag=None %}
+    {% include "locations/tl/step_row.html" with at=2 label="Integrated effects" tag="if any" %}
+    {% include "locations/tl/step_row.html" with at=3 label="Node" tag="if taken" %}
+    {% include "locations/tl/step_row.html" with at=4 label="Library" tag="if taken" %}
+    {% include "locations/tl/step_row.html" with at=5 label="Allies" tag="if taken" %}
+    {% include "locations/tl/step_row.html" with at=6 label="Sanctum" tag="if taken" %}
+</ol>

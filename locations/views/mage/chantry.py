@@ -11,7 +11,6 @@ from django.views.generic import CreateView, DetailView, FormView, ListView, Upd
 
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.core.background_block import Background
-from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
@@ -309,36 +308,95 @@ class ChantryIntegratedEffectsView(EditPermissionMixin, ChantryObjectMixin, Form
         return super().post(request, *args, **kwargs)
 
 
-class ChantryNodeView(GenericBackgroundView):
-    primary_object_class = Chantry
+class ChantryBackgroundView(EditPermissionMixin, ChantryObjectMixin, FormView):
+    """Wizard steps 3-6: detail the chantry's next unfinished rating of one background.
+
+    The character wizards' GenericBackgroundView resolves a Character and advances the
+    character workflow, so it cannot serve a chantry. Here the new node, library, ally or
+    sanctum takes the chantry's owner and chronicle; once no rating of the background is
+    left unfinished the chantry moves to the next step. With nothing to detail, GET shows
+    the step without a form and POST skips it.
+    """
+
+    background_name = ""
+    template_name = "locations/mage/chantry/locgen.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.current_background = self.object.backgrounds.filter(
+            bg__property_name=self.background_name, complete=False
+        ).first()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if issubclass(self.get_form_class(), LinkedNPCForm):
+            kwargs["obj"] = self.object
+            kwargs["npc_role"] = self.background_name
+        return kwargs
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if "rank" in form.fields and self.current_background is not None:
+            rating = self.current_background.rating
+            form.fields["rank"].initial = rating
+            form.fields["rank"].widget.attrs.update({"min": rating, "max": rating})
+        return form
+
+    def get_context_data(self, **kwargs):
+        if self.current_background is None:
+            kwargs["form"] = None
+        context = super().get_context_data(**kwargs)
+        context["object"] = self.object
+        context["current_background"] = self.current_background
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if self.current_background is None:
+            return self.next_step()
+        return super().post(request, *args, **kwargs)
+
+    def next_step(self):
+        self.object.creation_status += 1
+        self.object.save(update_fields=["creation_status"])
+        return HttpResponseRedirect(self.object.get_absolute_url())
+
+    def form_valid(self, form):
+        background_object = form.save()
+        background_object.owner = self.object.owner
+        background_object.chronicle = self.object.chronicle
+        background_object.status = "Sub"
+        background_object.save()
+        self.current_background.note = background_object.name
+        self.current_background.url = background_object.get_absolute_url()
+        self.current_background.linked_object = background_object
+        self.current_background.complete = True
+        self.current_background.save()
+        if not self.object.backgrounds.filter(
+            bg__property_name=self.background_name, complete=False
+        ).exists():
+            return self.next_step()
+        return HttpResponseRedirect(self.object.get_absolute_url())
+
+
+class ChantryNodeView(ChantryBackgroundView):
     background_name = "node"
     form_class = NodeForm
-    is_owned = False
-    template_name = "locations/mage/chantry/locgen.html"
 
 
-class ChantryLibrarysView(GenericBackgroundView):
-    primary_object_class = Chantry
+class ChantryLibrarysView(ChantryBackgroundView):
     background_name = "library"
     form_class = LibraryForm
-    is_owned = False
-    template_name = "locations/mage/chantry/locgen.html"
 
 
-class ChantryAlliesView(GenericBackgroundView):
-    primary_object_class = Chantry
+class ChantryAlliesView(ChantryBackgroundView):
     background_name = "allies"
     form_class = LinkedNPCForm
-    is_owned = False
-    template_name = "locations/mage/chantry/locgen.html"
 
 
-class ChantrySanctumView(GenericBackgroundView):
-    primary_object_class = Chantry
+class ChantrySanctumView(ChantryBackgroundView):
     background_name = "sanctum"
     form_class = SanctumForm
-    is_owned = False
-    template_name = "locations/mage/chantry/locgen.html"
 
 
 class ChantryCreationView(DictView):

@@ -26,6 +26,10 @@ class NodeResonanceRatingForm(forms.ModelForm):
             suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
         self.fields["resonance"].widget.suggestions = suggestions
         self.fields["resonance"].widget.attrs.update({"placeholder": "Enter Resonance Trait"})
+        # The field is free text: show a saved rating's Resonance by name, not its pk,
+        # so re-submitting the edit form keeps it.
+        if self.instance.pk and self.instance.resonance_id is not None:
+            self.initial["resonance"] = self.instance.resonance.name
 
     def clean_resonance(self):
         resonance = self.cleaned_data.get("resonance")
@@ -80,6 +84,13 @@ class NodeMeritFlawForm(ChainedSelectMixin, forms.ModelForm):
             ratings = mf.ratings.all().order_by("value")
             rating_choices_map[str(mf.pk)] = [(str(r.pk), str(r.value)) for r in ratings]
         self.fields["rating"].choices_map = rating_choices_map
+
+        # A saved row stores the rating's value; the select offers Number pks.
+        if self.instance.pk and self.instance.mf_id is not None:
+            self.initial["mf"] = str(self.instance.mf_id)
+            number = self.instance.mf.ratings.filter(value=self.instance.rating).first()
+            if number is not None:
+                self.initial["rating"] = str(number.pk)
 
         # Re-run chain setup
         self._setup_chains()

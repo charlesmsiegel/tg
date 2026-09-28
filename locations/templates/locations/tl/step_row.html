@@ -1,0 +1,11 @@
+{% comment %}
+One row of a location generator's step list (the chargen .tl-steps look): `at` is this
+row's position, `step` the current one; tag="if taken" marks a step that may be skipped.
+  {% include "locations/tl/step_row.html" with at=2 label="Integrated effects" %}
+{% endcomment %}
+<li class="tl-steps__row is-{% if step > at %}completed{% elif step == at %}current{% else %}pending{% endif %}"{% if step == at %} aria-current="step"{% endif %}>
+    <span class="tl-steps__num">{{ at|add:1|stringformat:"02d" }}</span>
+    <span class="tl-steps__label">{{ label }}</span>
+    {% if tag %}<span class="tl-steps__tag">{{ tag }}</span>{% endif %}
+    <span class="tl-steps__mark">{% if step > at %}<span aria-hidden="true">✓</span><span class="tl-sr">done</span>{% elif step == at %}<span aria-hidden="true">●</span><span class="tl-sr">current</span>{% endif %}</span>
+</li>

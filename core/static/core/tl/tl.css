@@ -1412,3 +1412,27 @@ body.tl {
 .tl-mageform__row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px 24px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
 .tl-mageform__row + .tl-mageform__row { margin-top: 14px; }
 .tl-mageform__add { width: fit-content; }
+/* ---- location forms ---- */
+/* Pages of a location create / edit form or generator step: ruled groups of fields. */
+.tl-locform { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+.tl-locgroup { display: flex; flex-direction: column; gap: 16px; min-width: 0; border-top: 2px solid var(--ink); padding-top: 12px; }
+.tl-locgroup--power { border-top-color: var(--acc); }
+.tl-locform select[multiple] { min-height: 7.5em; border: 1px solid var(--rule); padding: 6px 8px; font-size: 16px; }
+.tl-locform .tl-field > div:not([class]) { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.tl-locform .tl-field > div:not([class]) label { display: flex; gap: 8px; align-items: center; font: 400 16px var(--serif); }
+.tl-locform .tl-field > div:not([class]) input { width: 18px; height: 18px; accent-color: var(--acc); }
+/* One formset row: fields side by side, the remove / delete control last. */
+.tl-locrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px 20px; align-items: end; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.tl-locrow > .tl-field--full { grid-column: 1 / -1; }
+.tl-locrow > button { justify-self: start; }
+.tl-locform [data-formset-add] { align-self: flex-start; }
+/* Point costs in the chantry generator; collapsible rules notes (freehold generator). */
+.tl-loccosts { max-width: 520px; }
+.tl-locguide { border-top: 1px solid var(--rule); padding-top: 10px; }
+.tl-locguide > summary { cursor: pointer; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+.tl-locguide[open] > summary { margin-bottom: 10px; }
+.tl-locguide ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 4px; font: 400 15px/1.5 var(--serif); }
+@media (max-width: 720px) {
+  .tl-locrow { grid-template-columns: 1fr 1fr; }
+}
+/* ---- end location forms ---- */

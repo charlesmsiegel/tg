@@ -1,12 +1,12 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Reality Zone
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Reality Zone{% endblock creation_title %}
+{% block form_line %}mta{% endblock form_line %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.description %}
+            {% include "locations/tl/field.html" with field=form.practices help="Practices already in the zone keep their ratings; new ones start at 0." %}
+        </div>
     </div>
 {% endblock contents %}

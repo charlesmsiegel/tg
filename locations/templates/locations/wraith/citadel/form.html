@@ -1,22 +1,20 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Citadel
-{% endblock creation_title %}
+{% block creation_title %}Create Citadel{% endblock creation_title %}
+{% block form_line %}wto{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">{{ form.purpose }}</div>
-        <div class="col-sm">{{ form.defense_rating }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.garrison_size }}</div>
-        <div class="col-sm">{{ form.commander }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.controlling_faction }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.has_soulforges }}</div>
-        <div class="col-sm">{{ form.has_prison }}</div>
-        <div class="col-sm">{{ form.has_gateway }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Citadel</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.purpose %}
+            {% include "locations/tl/field.html" with field=form.defense_rating %}
+            {% include "locations/tl/field.html" with field=form.garrison_size %}
+            {% include "locations/tl/field.html" with field=form.commander %}
+            {% include "locations/tl/field.html" with field=form.controlling_faction %}
+        </div>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.has_soulforges %}
+            {% include "locations/tl/field.html" with field=form.has_prison %}
+            {% include "locations/tl/field.html" with field=form.has_gateway %}
+        </div>
+    </section>
 {% endblock other %}

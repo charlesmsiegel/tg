@@ -1,99 +1,31 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Rack
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Rack{% endblock creation_title %}
+{% block form_line %}vtm{% endblock form_line %}
 {% block contents %}
-    <div class="tg-card">
-        <div class="tg-card-header">
-            <h2 class="tg-card-title vtm_heading">Rack Information</h2>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
         </div>
-        <div class="tg-card-body" style="padding: 24px;">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-                    {{ form.name }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.contained_within.id_for_label }}" class="form-label">Contained Within</label>
-                    {{ form.contained_within }}
-                </div>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Rack</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.rack_type label="Rack type" help="E.g. nightclub, hospital, university." %}
+                {% include "locations/tl/field.html" with field=form.blood_quality label="Blood quality" help="Special qualities of the blood available." %}
+                {% include "locations/tl/field.html" with field=form.quality label="Quality (1–5)" help="Quality and safety of hunting." %}
+                {% include "locations/tl/field.html" with field=form.population_density label="Population density (1–5)" help="Number of available vessels." %}
+                {% include "locations/tl/field.html" with field=form.risk_level label="Risk level (1–5)" help="1 very safe, 5 very dangerous." %}
+                {% include "locations/tl/field.html" with field=form.masquerade_risk label="Masquerade risk (1–5)" help="1 very low, 5 very high." %}
             </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.rack_type.id_for_label }}" class="form-label">Rack Type</label>
-                    {{ form.rack_type }}
-                    <small class="form-text text-muted">E.g., 'Nightclub', 'Hospital', 'University'</small>
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.blood_quality.id_for_label }}" class="form-label">Blood Quality</label>
-                    {{ form.blood_quality }}
-                    <small class="form-text text-muted">Special qualities of blood available</small>
-                </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Status</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.is_protected label="Protected by law or custom" %}
+                {% include "locations/tl/field.html" with field=form.is_exclusive label="Exclusive rights" %}
+                {% include "locations/tl/field.html" with field=form.is_contested label="Contested territory" %}
             </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.quality.id_for_label }}" class="form-label">Quality (1-5 dots)</label>
-                    {{ form.quality }}
-                    <small class="form-text text-muted">Quality and safety of hunting</small>
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.population_density.id_for_label }}" class="form-label">Population Density (1-5 dots)</label>
-                    {{ form.population_density }}
-                    <small class="form-text text-muted">Number of available vessels</small>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.risk_level.id_for_label }}" class="form-label">Risk Level (1-5)</label>
-                    {{ form.risk_level }}
-                    <small class="form-text text-muted">1=very safe, 5=very dangerous</small>
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.masquerade_risk.id_for_label }}" class="form-label">Masquerade Risk (1-5)</label>
-                    {{ form.masquerade_risk }}
-                    <small class="form-text text-muted">1=very low, 5=very high</small>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <h6 class="vtm_heading mb-2">Status</h6>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        {{ form.is_protected }}
-                        <label class="form-check-label" for="{{ form.is_protected.id_for_label }}">
-                            Protected by Law/Custom
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        {{ form.is_exclusive }}
-                        <label class="form-check-label" for="{{ form.is_exclusive.id_for_label }}">
-                            Exclusive Rights
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        {{ form.is_contested }}
-                        <label class="form-check-label" for="{{ form.is_contested.id_for_label }}">
-                            Contested Territory
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                    {{ form.description }}
-                </div>
-            </div>
-        </div>
+        </section>
+        {% include "locations/tl/field.html" with field=form.description %}
     </div>
 {% endblock contents %}

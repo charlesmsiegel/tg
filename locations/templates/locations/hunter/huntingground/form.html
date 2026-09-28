@@ -1,78 +1,44 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Hunting Ground
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Hunting Ground{% endblock creation_title %}
+{% block form_line %}htr{% endblock form_line %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Contained Within</div>
-        <div class="col-sm">{{ form.contained_within }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Territory</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Size</div>
-        <div class="col-sm">{{ form.size }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Population</div>
-        <div class="col-sm">{{ form.population }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Supernatural Activity</div>
-        <div class="col-sm">{{ form.supernatural_activity }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Threats</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Primary Threat</div>
-        <div class="col-sm">{{ form.primary_threat }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Threat Description</div>
-        <div class="col-sm">{{ form.threat_description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Contested</div>
-        <div class="col-sm">{{ form.is_contested }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Control</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Control Level</div>
-        <div class="col-sm">{{ form.control_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Contact Network</div>
-        <div class="col-sm">{{ form.contact_network }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Surveillance Coverage</div>
-        <div class="col-sm">{{ form.surveillance_coverage }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Incidents</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Last Incident</div>
-        <div class="col-sm">{{ form.last_incident }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Incident Log</div>
-        <div class="col-sm">{{ form.incident_log }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Key Locations</div>
-        <div class="col-sm">{{ form.key_locations }}</div>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
+        </div>
+        {% include "locations/tl/field.html" with field=form.description %}
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Territory</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.size %}
+                {% include "locations/tl/field.html" with field=form.population %}
+                {% include "locations/tl/field.html" with field=form.supernatural_activity label="Supernatural activity" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Threats</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.primary_threat label="Primary threat" %}
+                {% include "locations/tl/field.html" with field=form.is_contested label="Contested" %}
+                {% include "locations/tl/field.html" with field=form.threat_description label="Threat description" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Control</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.control_level label="Control level" %}
+                {% include "locations/tl/field.html" with field=form.contact_network label="Contact network" %}
+                {% include "locations/tl/field.html" with field=form.surveillance_coverage label="Surveillance coverage" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Incidents</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.last_incident label="Last incident" %}
+                {% include "locations/tl/field.html" with field=form.incident_log label="Incident log" %}
+                {% include "locations/tl/field.html" with field=form.key_locations label="Key locations" %}
+            </div>
+        </section>
     </div>
 {% endblock contents %}

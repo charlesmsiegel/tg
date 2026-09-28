@@ -1,26 +1,20 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create City
-{% endblock creation_title %}
+{% block creation_title %}Create City{% endblock creation_title %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Population</div>
-        <div class="col-sm">{{ form.population }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.mood }}</div>
-        <div class="col-sm">{{ form.theme }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.media }}</div>
-        <div class="col-sm">{{ form.politicians }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">City</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.population %}
+            {% include "locations/tl/field.html" with field=form.mood %}
+            {% include "locations/tl/field.html" with field=form.theme %}
+            {% include "locations/tl/field.html" with field=form.media %}
+            {% include "locations/tl/field.html" with field=form.politicians %}
+        </div>
+    </section>
 {% endblock other %}
 {% block post_description %}
-    <div class="row">
-        <h2 class="col-sm">Characters</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.characters }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Characters</h2>
+        {% include "locations/tl/field.html" with field=form.characters label="Characters in this city" %}
+    </section>
 {% endblock post_description %}

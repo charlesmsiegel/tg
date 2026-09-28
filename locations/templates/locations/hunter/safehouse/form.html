@@ -1,89 +1,46 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Safehouse
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% block creation_title %}Create Safehouse{% endblock creation_title %}
+{% block form_line %}htr{% endblock form_line %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Contained Within</div>
-        <div class="col-sm">{{ form.contained_within }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Size & Capacity</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Size</div>
-        <div class="col-sm">{{ form.size }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Capacity</div>
-        <div class="col-sm">{{ form.capacity }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Resources</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Security Level</div>
-        <div class="col-sm">{{ form.security_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Armory Level</div>
-        <div class="col-sm">{{ form.armory_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Surveillance Level</div>
-        <div class="col-sm">{{ form.surveillance_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Medical Facilities</div>
-        <div class="col-sm">{{ form.medical_facilities }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Status</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Compromised</div>
-        <div class="col-sm">{{ form.is_compromised }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Mobile</div>
-        <div class="col-sm">{{ form.is_mobile }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Features</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Has Panic Room</div>
-        <div class="col-sm">{{ form.has_panic_room }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Has Escape Routes</div>
-        <div class="col-sm">{{ form.has_escape_routes }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Has Dead Drop</div>
-        <div class="col-sm">{{ form.has_dead_drop }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Has Communications</div>
-        <div class="col-sm">{{ form.has_communications }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm htr_heading">Cover</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Legal Owner</div>
-        <div class="col-sm">{{ form.legal_owner }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Cover Story</div>
-        <div class="col-sm">{{ form.cover_story }}</div>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
+        </div>
+        {% include "locations/tl/field.html" with field=form.description %}
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Size and capacity</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.size %}
+                {% include "locations/tl/field.html" with field=form.capacity %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Resources</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.security_level label="Security level" %}
+                {% include "locations/tl/field.html" with field=form.armory_level label="Armory level" %}
+                {% include "locations/tl/field.html" with field=form.surveillance_level label="Surveillance level" %}
+                {% include "locations/tl/field.html" with field=form.medical_facilities label="Medical facilities" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Status and features</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.is_compromised label="Compromised" %}
+                {% include "locations/tl/field.html" with field=form.is_mobile label="Mobile" %}
+                {% include "locations/tl/field.html" with field=form.has_panic_room label="Has panic room" %}
+                {% include "locations/tl/field.html" with field=form.has_escape_routes label="Has escape routes" %}
+                {% include "locations/tl/field.html" with field=form.has_dead_drop label="Has dead drop" %}
+                {% include "locations/tl/field.html" with field=form.has_communications label="Has communications" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Cover</h2>
+            <div class="tl-formgrid tl-formgrid--2">
+                {% include "locations/tl/field.html" with field=form.legal_owner label="Legal owner" %}
+                {% include "locations/tl/field.html" with field=form.cover_story label="Cover story" %}
+            </div>
+        </section>
     </div>
 {% endblock contents %}

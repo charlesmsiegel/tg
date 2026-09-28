@@ -1,20 +1,13 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Bastion
-{% endblock creation_title %}
+{% block creation_title %}Create Bastion{% endblock creation_title %}
+{% block form_line %}dtf{% endblock form_line %}
 {% block other %}
-    <div class="row mb-3">
-        <div class="col-sm-4">
-            <label for="{{ form.ritual_strength.id_for_label }}">Ritual Strength</label>
-            {{ form.ritual_strength }}
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Bastion</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.ritual_strength label="Ritual strength" %}
+            {% include "locations/tl/field.html" with field=form.warding_level label="Warding level" %}
+            {% include "locations/tl/field.html" with field=form.consecration_date label="Consecration date" %}
         </div>
-        <div class="col-sm-4">
-            <label for="{{ form.warding_level.id_for_label }}">Warding Level</label>
-            {{ form.warding_level }}
-        </div>
-        <div class="col-sm-4">
-            <label for="{{ form.consecration_date.id_for_label }}">Consecration Date</label>
-            {{ form.consecration_date }}
-        </div>
-    </div>
+    </section>
 {% endblock other %}

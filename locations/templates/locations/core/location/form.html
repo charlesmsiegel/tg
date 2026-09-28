@@ -1,37 +1,38 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Location
-{% endblock creation_title %}
+{% extends "locations/core/tl_form.html" %}
+{% comment %}
+Create / edit a location (Spread). Children override the blocks: name and
+contained_within (the first row), gauntlets (the Barriers group, shown when the form has
+any barrier field), reality_zone and other (their own .tl-locgroup sections), then
+description and post_description.
+{% endcomment %}
+{% block creation_title %}Create Location{% endblock creation_title %}
 {% block contents %}
-    {% block name %}
-        <div class="row">
-            <h2 class="col-sm">{{ form.name }}</h2>
+    <div class="tl-locform">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% block name %}
+                {% include "locations/tl/field.html" with field=form.name %}
+            {% endblock name %}
+            {% block contained_within %}
+                {% include "locations/tl/field.html" with field=form.contained_within %}
+            {% endblock contained_within %}
         </div>
-    {% endblock name %}
-    {% block contained_within %}
-        <div class="row">
-            <div class="col-sm">{{ form.contained_within }}</div>
-        </div>
-    {% endblock contained_within %}
-    {% block gauntlets %}
-        <div class="row">
-            <div class="col-sm">Gauntlet</div>
-            <div class="col-sm">{{ form.gauntlet }}</div>
-            <div class="col-sm">Shroud</div>
-            <div class="col-sm">{{ form.shroud }}</div>
-            <div class="col-sm">Dimension Barrier</div>
-            <div class="col-sm">{{ form.dimension_barrier }}</div>
-        </div>
-    {% endblock gauntlets %}
-    {% block reality_zone %}
-    {% endblock reality_zone %}
-    {% block other %}
-    {% endblock other %}
-    {% block description %}
-        <div class="row">
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
-    {% endblock description %}
-    {% block post_description %}
-    {% endblock post_description %}
+        {% block gauntlets %}
+            {% if form.gauntlet.name or form.shroud.name or form.dimension_barrier.name %}
+                <section class="tl-locgroup">
+                    <h2 class="tl-subhead">Barriers</h2>
+                    <div class="tl-formgrid">
+                        {% include "locations/tl/field.html" with field=form.gauntlet %}
+                        {% include "locations/tl/field.html" with field=form.shroud %}
+                        {% include "locations/tl/field.html" with field=form.dimension_barrier %}
+                    </div>
+                </section>
+            {% endif %}
+        {% endblock gauntlets %}
+        {% block reality_zone %}{% endblock reality_zone %}
+        {% block other %}{% endblock other %}
+        {% block description %}
+            {% include "locations/tl/field.html" with field=form.description %}
+        {% endblock description %}
+        {% block post_description %}{% endblock post_description %}
+    </div>
 {% endblock contents %}

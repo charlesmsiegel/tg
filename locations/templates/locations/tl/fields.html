@@ -1,0 +1,11 @@
+{% comment %}
+Every field of a form, in form order, as a two-column grid: hidden inputs first, check
+rows for checkboxes, full rows for textareas and multiple selects.
+  {% include "locations/tl/fields.html" with fields_form=form %}
+{% endcomment %}
+{% for field in fields_form.hidden_fields %}{{ field }}{% endfor %}
+<div class="tl-formgrid tl-formgrid--2">
+    {% for field in fields_form.visible_fields %}
+        {% include "locations/tl/field.html" with label=None help=None full=None %}
+    {% endfor %}
+</div>

@@ -1,0 +1,66 @@
+{% comment %}
+Freehold rules reminders as collapsible notes. Pass the parts to show:
+  {% include "locations/changeling/freehold/tl/guide.html" with archetypes=True powers=True %}
+  features=True, about=True, quirks=True
+{% endcomment %}
+{% if about %}
+    <details class="tl-locguide" open>
+        <summary>About freeholds</summary>
+        <div class="tl-stack">
+            <p class="tl-lede">
+                Freeholds are constructed places between the Dreaming and the Autumn World where changelings work, socialize, hold court and take refuge from Banality. They are usually built atop Glades and held by freeholders who have bonded their souls to the balefire.
+            </p>
+            <p class="tl-lede">
+                The <em>Aspect</em> is the underlying dream or story of the freehold: its history, the emotions it evokes or the legends around it. For example “birthplace of chimerical creatures”, “ancient font of memories”, or “sexy nightclub with hidden primal darkness”.
+            </p>
+        </div>
+    </details>
+{% endif %}
+{% if features %}
+    <details class="tl-locguide" open>
+        <summary>Features</summary>
+        <ul>
+            <li><b>Balefire:</b> heart of the freehold, generates Glamour or dross daily.</li>
+            <li><b>Size:</b> physical area (0 miniscule, 5 countryside or town).</li>
+            <li><b>Sanctuary:</b> defense rating, grants bonus dice and threshold.</li>
+            <li><b>Resources:</b> mundane or chimerical resources generated.</li>
+            <li><b>Passages:</b> trods and raths (the first is free, others cost 1 point each).</li>
+        </ul>
+    </details>
+{% endif %}
+{% if archetypes %}
+    <details class="tl-locguide">
+        <summary>Archetype benefits</summary>
+        <ul>
+            <li><b>Academy:</b> −2 difficulty on a chosen Ability.</li>
+            <li><b>Hearth:</b> −2 difficulty on Leadership or Socialize.</li>
+            <li><b>Homestead:</b> −2 difficulty on Survival or Animal Ken; produces chimerical goods.</li>
+            <li><b>Manor:</b> −2 difficulty on Etiquette.</li>
+            <li><b>Market:</b> −2 difficulty on Persuasion or Subterfuge.</li>
+            <li><b>Repository:</b> −2 difficulty on Lore.</li>
+            <li><b>Stronghold:</b> −2 difficulty on Firearms or Melee.</li>
+            <li><b>Thorpe:</b> −2 difficulty on Empathy (multiple balefires).</li>
+            <li><b>Workshop:</b> −2 difficulty on Craft; creates chimerical items.</li>
+        </ul>
+    </details>
+{% endif %}
+{% if powers %}
+    <details class="tl-locguide">
+        <summary>Powers</summary>
+        <ul>
+            <li><b>Warning Call (•):</b> alerts freeholders to intruders and their location.</li>
+            <li><b>Glamour to Dross (••):</b> converts unused Glamour to dross nightly.</li>
+            <li><b>Resonant Dreams (••):</b> +2 dice on checks matching the freehold’s Aspect.</li>
+            <li><b>Call Forth the Flame (•••):</b> produces Covenant Embers for Covenants of Flame.</li>
+            <li><b>Dual Nature (•••):</b> gains the benefits of two Archetypes.</li>
+        </ul>
+    </details>
+{% endif %}
+{% if quirks %}
+    <details class="tl-locguide" open>
+        <summary>Quirks</summary>
+        <p class="tl-lede">
+            Quirks are features of the freehold that don’t answer to the holders’ wishes: they spring from nightmares or the ambient Dreaming. They can be harmless and strange or dangerous, but should add character to the freehold rather than make it unlivable.
+        </p>
+    </details>
+{% endif %}

@@ -1,15 +1,63 @@
 {% extends "locations/core/location/form.html" %}
-{% block creation_title %}
-    Create Sector
-{% endblock creation_title %}
-{% block gauntlets %}
-{% endblock gauntlets %}
+{% comment %}
+Digital Web sector: every SectorForm field, grouped as on the sector page.
+{% endcomment %}
+{% block creation_title %}Create Sector{% endblock creation_title %}
+{% block form_line %}mta{% endblock form_line %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Sector Class</div>
-        <div class="col-sm">{{ form.sector_class }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.constraints }}</div>
-    </div>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Classification</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.sector_class %}
+            {% include "locations/tl/field.html" with field=form.access_level %}
+            {% include "locations/tl/field.html" with field=form.genre_theme %}
+            {% include "locations/tl/field.html" with field=form.size_rating %}
+            {% include "locations/tl/field.html" with field=form.administrator %}
+            {% include "locations/tl/field.html" with field=form.estimated_users %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Power and security</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.power_rating %}
+            {% include "locations/tl/field.html" with field=form.security_level %}
+            {% include "locations/tl/field.html" with field=form.password_hint %}
+            {% include "locations/tl/field.html" with field=form.requires_password %}
+            {% include "locations/tl/field.html" with field=form.approved_users %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Reality</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.reality_zone %}
+            {% include "locations/tl/field.html" with field=form.difficulty_modifier %}
+            {% include "locations/tl/field.html" with field=form.paradox_risk_modifier %}
+            {% include "locations/tl/field.html" with field=form.has_lag %}
+            {% include "locations/tl/field.html" with field=form.constraints %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Corruption and time</h2>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.corruption_level %}
+            {% include "locations/tl/field.html" with field=form.time_dilation %}
+            {% include "locations/tl/field.html" with field=form.is_reformattable %}
+            {% include "locations/tl/field.html" with field=form.temporal_instability %}
+        </div>
+    </section>
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Data</h2>
+        <div class="tl-formgrid">
+            {% include "locations/tl/field.html" with field=form.aro_count %}
+            {% include "locations/tl/field.html" with field=form.aro_density %}
+            {% include "locations/tl/field.html" with field=form.data_flow_rate %}
+            {% include "locations/tl/field.html" with field=form.connected_sectors %}
+        </div>
+    </section>
 {% endblock other %}
+{% block post_description %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "locations/tl/field.html" with field=form.hazards %}
+        {% include "locations/tl/field.html" with field=form.notable_features %}
+    </div>
+{% endblock post_description %}

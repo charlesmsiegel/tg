@@ -1,47 +1,40 @@
-<div class="row {{ object.get_heading }}">
-    <h2 class="col-sm">Chantry Background</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Create New? {{ form.create_new }}</div>
-</div>
-<div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="select">
-    <div class="row">
-        <div class="col-sm">Add {{ current_background.rating }} points to existing Chantry:</div>
-        <div class="col-sm">{{ form.existing_chantry }} {{ form.existing_chantry.errors }}</div>
+{% comment %}
+Chantry step of the Mage-family character wizards (ChantrySelectOrCreateForm): join an
+existing chantry with the background's points, or found a new one. create_or_select.js
+swaps the two data-create-or-select-container blocks (keep those attributes and the
+initial d-none) when create_new changes.
+{% endcomment %}
+<div class="tl-locform">
+    <p class="tl-lede">
+        Add the {{ current_background.rating }} points of your Chantry Background to an existing chantry, or found a new one.
+    </p>
+    {% include "core/misc/check.html" with field=form.create_new label="Create a new chantry" %}
+    <div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="select">
+        {% include "core/tl/field.html" with field=form.existing_chantry label="Existing chantry" %}
     </div>
-</div>
-<div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="create" class="d-none">
-    <div class="row">
-        <h3 class="col-sm">{{ form.name }}</h3>
-        {{ form.name.errors }}
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.contained_within }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Gauntlet</div>
-        <div class="col-sm">{{ form.gauntlet }}</div>
-        <div class="col-sm">Shroud</div>
-        <div class="col-sm">{{ form.shroud }}</div>
-        <div class="col-sm">Dimension Barrier</div>
-        <div class="col-sm">{{ form.dimension_barrier }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Faction</div>
-        <div class="col-sm">{{ form.faction }}</div>
-        <div class="col-sm">Season</div>
-        <div class="col-sm">{{ form.season }}</div>
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ form.chantry_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leadership Type</div>
-        <div class="col-sm">{{ form.leadership_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">The new Chantry starts with {{ current_background.rating }} points. You will spend them in the Chantry wizard.</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
+    <div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="create" class="d-none tl-locform">
+        <p class="tl-note">The new chantry starts with {{ current_background.rating }} points; you spend them in the chantry generator.</p>
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "locations/tl/field.html" with field=form.name %}
+            {% include "locations/tl/field.html" with field=form.contained_within %}
+        </div>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Chantry</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.faction %}
+                {% include "locations/tl/field.html" with field=form.season %}
+                {% include "locations/tl/field.html" with field=form.chantry_type label="Type" %}
+                {% include "locations/tl/field.html" with field=form.leadership_type label="Leadership type" %}
+            </div>
+        </section>
+        <section class="tl-locgroup">
+            <h2 class="tl-subhead">Barriers</h2>
+            <div class="tl-formgrid">
+                {% include "locations/tl/field.html" with field=form.gauntlet %}
+                {% include "locations/tl/field.html" with field=form.shroud %}
+                {% include "locations/tl/field.html" with field=form.dimension_barrier %}
+            </div>
+        </section>
+        {% include "locations/tl/field.html" with field=form.description %}
     </div>
 </div>

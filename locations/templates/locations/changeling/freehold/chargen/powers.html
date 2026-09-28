@@ -1,60 +1,20 @@
-{% extends "core/base.html" %}
+{% extends "locations/changeling/freehold/chargen/base.html" %}
 {% load static %}
-{% load crispy_forms_tags dots %}
-
-{% block content %}
-    <div class="container mt-4">
-        <div class="tg-card header-card mb-4" data-gameline="ctd">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title ctd_heading">Create Freehold - Step 3: Powers</h1>
-                <p class="tg-card-subtitle mb-0">Select special abilities for your freehold</p>
+{% block step_title %}Powers{% endblock step_title %}
+{% block step_num %}03{% endblock step_num %}
+{% block step_label %}Powers{% endblock step_label %}
+{% block formdetails %}method="post" id="powersForm"{% endblock formdetails %}
+{% block contents %}
+    <div class="tl-locform">
+        <p class="tl-lede">Select the freehold’s special abilities.</p>
+        {% include "locations/tl/fields.html" with fields_form=form %}
+        <div class="tl-chargen__status" role="status">
+            <div class="tl-chargen__line">
+                <span class="tl-chargen__tag">Current totals</span>
+                <span>{{ feature_points }} feature points · {{ holdings_required }} Holdings dots required</span>
             </div>
         </div>
-
-        <!-- Progress Indicator -->
-        <div class="mb-4">
-            <div class="progress" style="height: 30px;">
-                <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                    Step 3 of 4
-                </div>
-            </div>
-        </div>
-
-        <div class="tg-card">
-            <div class="tg-card-body" style="padding: 24px;">
-                <form method="post" id="powersForm">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-
-                    <div class="alert alert-info mt-4">
-                        <strong>Current Totals:</strong>
-                        <div>Feature Points: {{ feature_points }}</div>
-                        <div>Holdings Required: {{ holdings_required }} dots</div>
-                    </div>
-
-                    <div class="alert alert-secondary">
-                        <h6><strong>Power Descriptions:</strong></h6>
-                        <ul class="mb-0">
-                            <li><strong>Warning Call (•):</strong> Alerts freeholders to intruders and their location</li>
-                            <li><strong>Glamour to Dross (••):</strong> Converts unused Glamour to dross nightly</li>
-                            <li><strong>Resonant Dreams (••):</strong> +2 dice on checks matching freehold's Aspect</li>
-                            <li><strong>Call Forth the Flame (•••):</strong> Produces Covenant Embers for Covenants of Flame</li>
-                            <li><strong>Dual Nature (•••):</strong> Gains benefits from two Archetypes</li>
-                        </ul>
-                    </div>
-
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            Next: Details <i class="fas fa-arrow-right"></i>
-                        </button>
-                        <a href="{% url 'locations:changeling:list:freehold' %}" class="btn btn-secondary">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+        {% include "locations/changeling/freehold/tl/guide.html" with powers=True %}
     </div>
-
     <script src="{% static 'locations/js/freehold-powers.js' %}"></script>
-{% endblock content %}
+{% endblock contents %}
