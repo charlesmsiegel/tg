@@ -1,53 +1,32 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Hunter Edges
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">Hunter Edges</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm-6">
-                                        <a href="{% url 'characters:hunter:edge' obj.pk %}">{{ obj.name }}</a>
-                                    </div>
-                                    <div class="col-sm-3 text-muted">
-                                        {{ obj.get_virtue_display }}
-                                    </div>
-                                    <div class="col-sm-3 text-muted">
-                                        Level {{ obj.level }}
-                                    </div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No edges found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:create:edge' %}" class="tg-btn btn-primary">Create Edge</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% load tl %}
+{% block title %}Hunter Edges{% endblock title %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_eyebrow %}Hunter: the Reckoning{% endblock ref_eyebrow %}
+{% block ref_title %}Edges{% endblock ref_title %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}<a href="{% url 'characters:hunter:create:edge' %}">+ New edge</a>{% endif %}
+{% endblock ref_actions %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Level</th>
+                <th scope="col" class="ref2-table__type">Virtue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{% url 'characters:hunter:edge' obj.pk %}">{{ obj.name }}</a></td>
+                    <td>{% dots obj.level %}<span class="tl-sr">Level {{ obj.level }}</span></td>
+                    <td class="ref2-table__type">{{ obj.get_virtue_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No edges found." %}
+{% endblock ref_empty %}

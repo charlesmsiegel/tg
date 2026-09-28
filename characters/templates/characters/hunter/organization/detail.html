@@ -1,106 +1,42 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
-                            <div class="tg-card-subtitle">{{ object.get_organization_type_display }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.philosophy %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Philosophy</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.philosophy }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.goals %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Goals</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.goals }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title htr_heading">Resources</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.resources }} / 5</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.leader %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Leader</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">
-                                    <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.members.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Members</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for member in object.members.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm">
-                                            <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:update:organization' object.pk %}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:hunter:list:organization' %}">← Organizations</a>{% endblock ref_back %}
+{% block ref_eyebrow %}{{ object.get_organization_type_display }} · Hunter{% endblock ref_eyebrow %}
+{% block ref_name_class %}{{ object.name|cover_title_class:"htr" }}{% endblock ref_name_class %}
+{% block ref_facts %}
+    {% fact "Type" object.get_organization_type_display %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Resources</span>
+        <span class="tl-facts__v">{% dots object.resources %}<span class="tl-sr">{{ object.resources }} / 5</span></span>
     </div>
-{% endblock content %}
+    {% if object.leader %}{% fact "Leader" object.leader.name object.leader.get_absolute_url %}{% endif %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'characters:hunter:update:organization' object.pk %}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% include "characters/tl/ref2_prose.html" with title="Philosophy" text=object.philosophy %}
+    {% include "characters/tl/ref2_prose.html" with title="Goals" text=object.goals power=True %}
+    {% with members=object.members.all %}
+        {% if members %}
+            <section class="tl-section">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Members</h2>
+                </div>
+                <div class="tl-section__body ref2-rows">
+                    {% for member in members %}
+                        <div class="tl-scenerow">
+                            <span class="tl-scenerow__name"><a href="{{ member.get_absolute_url }}">{{ member.name }}</a></span>
+                            {% if member == object.leader %}<span class="tl-scenerow__when tl-acc">Leader</span>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock ref_sections %}

@@ -1,84 +1,19 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% load dots %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            {% include "core/includes/title.html" %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Philosophy</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.philosophy|default:"No philosophy specified." }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Goal</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.goal|default:"No goal specified." }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Leadership</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.leadership|default:"No leadership information." }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Tactics</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.tactics|default:"No tactics specified." }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.description %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Description</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_detail.html" %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:demon:list:faction' %}">← Factions</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Faction · Demon{% endblock ref_eyebrow %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_update_url }}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Philosophy" text=object.philosophy %}
+    {% include "characters/tl/ref2_prose.html" with title="Goal" text=object.goal power=True %}
+    {% include "characters/tl/ref2_prose.html" with title="Leadership" text=object.leadership %}
+    {% include "characters/tl/ref2_prose.html" with title="Tactics" text=object.tactics %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% if not object.philosophy and not object.goal and not object.leadership and not object.tactics and not object.description %}
+        {% include "core/tl/empty.html" with text="No details recorded for this faction yet." %}
+    {% endif %}
+{% endblock ref_sections %}

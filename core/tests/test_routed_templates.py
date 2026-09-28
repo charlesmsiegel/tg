@@ -30,14 +30,6 @@ KNOWN_MISSING = {
         "characters.views.werewolf.drone.DroneBasicsView",
         "Step 2",
     ),
-    "characters/demon/ritual/form.html": (
-        "characters.views.demon.ritual.RitualUpdateView",
-        "Step 7",
-    ),
-    "characters/demon/ritual/list.html": (
-        "characters.views.demon.ritual.RitualListView",
-        "Step 7",
-    ),
     "characters/wraith/wraith/form.html": (
         "characters.views.wraith.wraith.WraithUpdateView",
         "Step 7",

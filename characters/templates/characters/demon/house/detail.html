@@ -1,111 +1,55 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% load dots %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            {% include "core/includes/title.html" %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">House Details</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <div class="row mb-2">
-                                <div class="col-sm-4">
-                                    <strong>Celestial Name:</strong>
-                                </div>
-                                <div class="col-sm-8">{{ object.celestial_name }}</div>
-                            </div>
-                            <div class="row mb-0">
-                                <div class="col-sm-4">
-                                    <strong>Starting Torment:</strong>
-                                </div>
-                                <div class="col-sm-8 dots">{{ object.starting_torment|dots }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Domain</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.domain|default:"No domain specified." }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.lores.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">House Lores</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for lore in object.lores.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm">
-                                            <a href="{{ lore.get_absolute_url }}">{{ lore.name }}</a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.visages.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Visages</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for visage in object.visages.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm">
-                                            <a href="{{ visage.get_absolute_url }}">{{ visage.name }}</a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.description %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Description</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:demon:list:house' %}">← Houses</a>{% endblock ref_back %}
+{% block ref_eyebrow %}House · Demon{% endblock ref_eyebrow %}
+{% block ref_facts %}
+    {% fact "Celestial name" object.celestial_name %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Starting torment</span>
+        <span class="tl-facts__v">{% dots object.starting_torment 10 %}</span>
     </div>
-{% endblock content %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_update_url }}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% include "characters/tl/ref2_prose.html" with title="Domain" text=object.domain power=True %}
+    {% with lores=object.lores.all %}
+        {% if lores %}
+            <section class="tl-section tl-span-6">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">House Lores</h2>
+                </div>
+                <div class="tl-section__body ref2-rows">
+                    {% for lore in lores %}
+                        <div class="tl-scenerow">
+                            <span class="tl-scenerow__name"><a href="{{ lore.get_absolute_url }}">{{ lore.name }}</a></span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+    {% with visages=object.visages.all %}
+        {% if visages %}
+            <section class="tl-section tl-span-6">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Visages</h2>
+                </div>
+                <div class="tl-section__body ref2-rows">
+                    {% for visage in visages %}
+                        <div class="tl-scenerow">
+                            <span class="tl-scenerow__name"><a href="{{ visage.get_absolute_url }}">{{ visage.name }}</a></span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock ref_sections %}

@@ -1,36 +1,25 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Vampire Sects
-{% endblock title %}
-{% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h3 class="tg-card-title vtm_heading">Vampire Sects</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Vampire Sects{% endblock title %}
+{% block gameline %}vtm{% endblock gameline %}
+{% block ref_eyebrow %}Vampire: the Masquerade{% endblock ref_eyebrow %}
+{% block ref_title %}Sects{% endblock ref_title %}
+{% block ref_list %}
+    <div class="tl-grid">
         {% for obj in object_list %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center" style="color: var(--theme-text-secondary);">No vampire sects found.</p>
-                </div>
-            </div>
+            <article class="tl-tile" data-filterable-item data-name="{{ obj.name|lower }}">
+                <span class="tl-tile__meta"><span>Sect</span></span>
+                <h2 class="tl-tile__name">
+                    <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                </h2>
+                {% if obj.description %}
+                    <p class="tl-tile__text">{{ obj.description|striptags|truncatewords:28 }}</p>
+                {% elif obj.philosophy %}
+                    <p class="tl-tile__text">{{ obj.philosophy|striptags|truncatewords:28 }}</p>
+                {% endif %}
+            </article>
         {% endfor %}
     </div>
-{% endblock content %}
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No vampire sects found." %}
+{% endblock ref_empty %}

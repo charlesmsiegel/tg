@@ -1,39 +1,26 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Lores
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="dtf">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title dtf_heading">Lores</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm">
-                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-                                    </div>
-                                    <div class="col-sm">{{ obj.property_name }}</div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No lores found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Lores{% endblock title %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_eyebrow %}Demon: the Fallen{% endblock ref_eyebrow %}
+{% block ref_title %}Lores{% endblock ref_title %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="ref2-table__type">Property</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    <td class="ref2-table__type tl-meta">{{ obj.property_name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No lores found." %}
+{% endblock ref_empty %}

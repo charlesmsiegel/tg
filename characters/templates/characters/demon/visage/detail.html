@@ -1,97 +1,60 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% load dots %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            {% include "core/includes/title.html" %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Visage Details</h5>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:demon:list:visage' %}">← Visages</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Visage · Demon{% endblock ref_eyebrow %}
+{% block ref_facts %}
+    {% if object.house %}{% fact "House" object.house %}{% else %}{% fact "House" "None" %}{% endif %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_update_url }}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% with form=object.default_apocalyptic_form %}
+        {% if form %}
+            {% with low=form.low_torment_traits.all high=form.high_torment_traits.all %}
+                {% if low %}
+                    <section class="tl-section tl-section--power tl-span-6">
+                        <div class="tl-section__head">
+                            <span class="tl-section__num"></span>
+                            <h2 class="tl-section__title">Low Torment Traits</h2>
                         </div>
-                        <div class="tg-card-body">
-                            <div class="row mb-0">
-                                <div class="col-sm-4">
-                                    <strong>House:</strong>
+                        <div class="tl-section__body ref2-rows">
+                            {% for trait in low %}
+                                <div class="tl-scenerow">
+                                    <span class="tl-stack">
+                                        <span class="tl-scenerow__name"><a href="{{ trait.get_absolute_url }}">{{ trait.name }}</a></span>
+                                        {% if trait.description %}<span class="tl-tile__text">{{ trait.description }}</span>{% endif %}
+                                    </span>
+                                    <span class="tl-scenerow__when">{{ trait.cost }} pt</span>
                                 </div>
-                                <div class="col-sm-8">
-                                    {% if object.house %}
-                                        <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
-                                    {% else %}
-                                        None
-                                    {% endif %}
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+                {% if high %}
+                    <section class="tl-section tl-section--power tl-span-6">
+                        <div class="tl-section__head">
+                            <span class="tl-section__num"></span>
+                            <h2 class="tl-section__title">High Torment Traits</h2>
+                        </div>
+                        <div class="tl-section__body ref2-rows">
+                            {% for trait in high %}
+                                <div class="tl-scenerow">
+                                    <span class="tl-stack">
+                                        <span class="tl-scenerow__name"><a href="{{ trait.get_absolute_url }}">{{ trait.name }}</a></span>
+                                        {% if trait.description %}<span class="tl-tile__text">{{ trait.description }}</span>{% endif %}
+                                    </span>
+                                    <span class="tl-scenerow__when">{{ trait.cost }} pt</span>
                                 </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.default_apocalyptic_form and object.default_apocalyptic_form.low_torment_traits.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Low Torment Traits</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for trait in object.default_apocalyptic_form.low_torment_traits.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm-4">{{ trait.name }}</div>
-                                        <div class="col-sm-8">{{ trait.description }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.default_apocalyptic_form and object.default_apocalyptic_form.high_torment_traits.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">High Torment Traits</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for trait in object.default_apocalyptic_form.high_torment_traits.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm-4">{{ trait.name }}</div>
-                                        <div class="col-sm-8">{{ trait.description }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.description %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Description</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    {% endwith %}
+{% endblock ref_sections %}

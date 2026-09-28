@@ -1,50 +1,31 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Hunter Organizations
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">Hunter Organizations</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm-6">
-                                        <a href="{% url 'characters:hunter:organization' obj.pk %}">{{ obj.name }}</a>
-                                    </div>
-                                    <div class="col-sm-6 text-muted">
-                                        {{ obj.get_organization_type_display }}
-                                    </div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No organizations found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:create:organization' %}" class="tg-btn btn-primary">Create Organization</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% load tl %}
+{% block title %}Hunter Organizations{% endblock title %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_eyebrow %}Hunter: the Reckoning{% endblock ref_eyebrow %}
+{% block ref_title %}Organizations{% endblock ref_title %}
+{% block ref_title_class %}{{ "Organizations"|cover_title_class:"htr" }}{% endblock ref_title_class %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}<a href="{% url 'characters:hunter:create:organization' %}">+ New organization</a>{% endif %}
+{% endblock ref_actions %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="ref2-table__type">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{% url 'characters:hunter:organization' obj.pk %}">{{ obj.name }}</a></td>
+                    <td class="ref2-table__type">{{ obj.get_organization_type_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No organizations found." %}
+{% endblock ref_empty %}

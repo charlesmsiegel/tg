@@ -1,26 +1,16 @@
-{% extends "core/object.html" %}
-{% load sanitize_text %}
-
-{% block contents %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title dtf_heading">Apocalyptic Form Trait Details</h5>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:demon:list:apocalyptic_trait' %}">← Traits</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Apocalyptic Form Trait · Demon{% endblock ref_eyebrow %}
+{% block ref_facts %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Cost</span>
+        <span class="tl-facts__v">{{ object.cost }} point{{ object.cost|pluralize }}</span>
     </div>
-    <div class="tg-card-body">
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>Cost:</strong></div>
-            <div class="col-md-8">{{ object.cost }} point{{ object.cost|pluralize }}</div>
-        </div>
-        {% if object.house %}
-            <div class="row mb-2">
-                <div class="col-md-4"><strong>House:</strong></div>
-                <div class="col-md-8"><a href="{{ object.house.get_absolute_url }}">{{ object.house.name }}</a></div>
-            </div>
-        {% endif %}
-        <div class="row mb-2">
-            <div class="col-md-4"><strong>High Torment Only:</strong></div>
-            <div class="col-md-8">{% if object.high_torment_only %}Yes{% else %}No{% endif %}</div>
-        </div>
-    </div>
-</div>
-{% endblock contents %}
+    {% if object.house %}{% fact "House" object.house %}{% endif %}
+    {% if object.high_torment_only %}{% fact "High torment only" "Yes" %}{% else %}{% fact "High torment only" "No" %}{% endif %}
+{% endblock ref_facts %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+{% endblock ref_sections %}

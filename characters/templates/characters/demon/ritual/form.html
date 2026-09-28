@@ -1,0 +1,22 @@
+{% extends "core/form.html" %}
+{% block creation_title %}Create Ritual{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.house %}
+        {% include "core/tl/field.html" with field=form.source_page %}
+        {% include "core/tl/field.html" with field=form.primary_lore %}
+        {% include "core/tl/field.html" with field=form.primary_lore_rating %}
+        {% include "core/tl/field.html" with field=form.base_cost %}
+        {% include "core/tl/field.html" with field=form.minimum_casting_time %}
+        <div class="tl-field--full">
+            {% include "core/tl/field.html" with field=form.secondary_lore_requirements %}
+        </div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.system %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.restrictions %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.torment_effect %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.variations %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.flavor_text %}</div>
+    </div>
+{% endblock contents %}

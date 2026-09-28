@@ -1,46 +1,15 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card header-card" data-gameline="mtr">
-                    <div class="tg-card-header text-center">
-                        <h1 class="tg-card-title mtr_heading">{{ object.name }}</h1>
-                        {% if object.era %}
-                            <p class="tg-card-subtitle mb-0">{{ object.era }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% if object.description %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title mtr_heading">Description</h5>
-                        </div>
-                        <div class="tg-card-body" style="padding: 20px;">
-                            <p class="mb-0" style="line-height: 1.6;">{{ object.description }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        {% if object.favored_hekau %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center" style="padding: 16px;">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Favored Hekau:</span>
-                            {{ object.favored_hekau }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}mtr{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:mummy:list:dynasty' %}">← Dynasties</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Dynasty · Mummy{% endblock ref_eyebrow %}
+{% block ref_name_class %}{{ object.name|cover_title_class:"mtr" }}{% endblock ref_name_class %}
+{% block ref_name %}{{ object.name }}{% endblock ref_name %}
+{% block ref_facts %}
+    {% fact "Era" object.era %}
+    {% fact "Favored Hekau" object.favored_hekau %}
+{% endblock ref_facts %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+{% endblock ref_sections %}

@@ -1,39 +1,30 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Houses
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="dtf">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title dtf_heading">Houses of the Fallen</h1>
-                        </div>
-                    </div>
+{% extends "characters/tl/ref2_list.html" %}
+{% load tl %}
+{% block title %}Houses{% endblock title %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_eyebrow %}Demon: the Fallen{% endblock ref_eyebrow %}
+{% block ref_title %}Houses of the Fallen{% endblock ref_title %}
+{% block ref_title_class %}{{ "Houses of the Fallen"|cover_title_class:"dtf" }}{% endblock ref_title_class %}
+{% block ref_list %}
+    <div class="tl-grid">
+        {% for obj in object_list %}
+            <article class="tl-tile" data-filterable-item data-name="{{ obj.name|lower }}">
+                <span class="tl-tile__meta"><span>House</span></span>
+                <h2 class="tl-tile__name">
+                    <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                </h2>
+                {% if obj.celestial_name %}<span class="tl-tile__sub">{{ obj.celestial_name }}</span>{% endif %}
+                {% if obj.domain %}
+                    <p class="tl-tile__text">{{ obj.domain|striptags|truncatewords:24 }}</p>
+                {% endif %}
+                <div class="tl-tile__foot">
+                    <span>Torment</span>
+                    {% dots obj.starting_torment 10 "acc" %}
                 </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm">
-                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-                                    </div>
-                                    <div class="col-sm">{{ obj.celestial_name }}</div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No houses found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </article>
+        {% endfor %}
     </div>
-{% endblock content %}
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No houses found." %}
+{% endblock ref_empty %}

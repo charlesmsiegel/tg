@@ -1,71 +1,48 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% load dots %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            {% include "core/includes/title.html" %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Lore Details</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <div class="row mb-0">
-                                <div class="col-sm-4">
-                                    <strong>Property Name:</strong>
-                                </div>
-                                <div class="col-sm-8">{{ object.property_name }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}dtf{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:demon:list:lore' %}">← Lores</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Lore · Demon{% endblock ref_eyebrow %}
+{% block ref_facts %}
+    {% fact "Property name" object.property_name %}
+    {% with houses=object.houses.all %}
+        {% if houses %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Houses</span>
+                <span class="tl-facts__v">
+                    {% for house in houses %}<a href="{{ house.get_absolute_url }}">{{ house }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}
+                </span>
             </div>
-            {% if object.houses.all %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title dtf_heading">Associated Houses</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                {% for house in object.houses.all %}
-                                    <div class="row mb-1">
-                                        <div class="col-sm">
-                                            <a href="{{ house.get_absolute_url }}">{{ house }}</a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
+        {% endif %}
+    {% endwith %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{{ object.get_update_url }}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% if object.description %}
+        {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% else %}
+        {% include "core/tl/empty.html" with text="No description available." %}
+    {% endif %}
+    {% with rituals=object.primary_rituals.all %}
+        {% if rituals %}
+            <section class="tl-section tl-section--power">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Rituals</h2>
                 </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title dtf_heading">Description</h5>
+                <div class="tl-section__body ref2-rows">
+                    {% for ritual in rituals %}
+                        <div class="tl-scenerow">
+                            <span class="tl-scenerow__name"><a href="{{ ritual.get_absolute_url }}">{{ ritual.name }}</a></span>
+                            {% dots ritual.primary_lore_rating 5 "acc" %}
                         </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.description|default:"No description available."|sanitize_html }}</p>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+            </section>
+        {% endif %}
+    {% endwith %}
+{% endblock ref_sections %}

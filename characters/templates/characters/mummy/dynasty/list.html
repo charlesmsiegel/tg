@@ -1,46 +1,28 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Dynasties
-{% endblock title %}
-{% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h3 class="tg-card-title mtr_heading">Dynasties</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% for obj in object_list %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
-                                <div class="d-flex gap-3">
-                                    {% if obj.era %}
-                                        <span style="font-size: 0.9rem; color: var(--theme-text-secondary);">
-                                            {{ obj.era }}
-                                        </span>
-                                    {% endif %}
-                                    {% if obj.favored_hekau %}
-                                        <span class="tg-badge badge-pill badge-secondary">{{ obj.favored_hekau }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center" style="color: var(--theme-text-secondary);">No dynasties found.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Dynasties{% endblock title %}
+{% block gameline %}mtr{% endblock gameline %}
+{% block ref_eyebrow %}Mummy: the Resurrection{% endblock ref_eyebrow %}
+{% block ref_title %}Dynasties{% endblock ref_title %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="ref2-table__type">Era</th>
+                <th scope="col">Favored Hekau</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    <td class="ref2-table__type">{{ obj.era|default:"—" }}</td>
+                    <td>{{ obj.favored_hekau|default:"—" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No dynasties found." %}
+{% endblock ref_empty %}

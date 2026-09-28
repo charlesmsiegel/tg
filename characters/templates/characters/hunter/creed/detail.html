@@ -1,90 +1,27 @@
-{% extends "core/base.html" %}
-{% load sanitize_text %}
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
-                            {% if object.nickname %}
-                                <div class="tg-card-subtitle">{{ object.nickname }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header">
-                            <h5 class="tg-card-title htr_heading">Primary Virtue</h5>
-                        </div>
-                        <div class="tg-card-body">
-                            <p style="line-height: 1.6;">{{ object.get_primary_virtue_display }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% if object.philosophy %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Philosophy</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.philosophy }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.description %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Description</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% if object.favored_edges %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="tg-card">
-                            <div class="tg-card-header">
-                                <h5 class="tg-card-title htr_heading">Favored Edges</h5>
-                            </div>
-                            <div class="tg-card-body">
-                                <p style="line-height: 1.6;">
-                                    {% for edge in object.favored_edges %}
-                                        {{ edge }}{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:update:creed' object.pk %}" class="tg-btn btn-primary">Edit</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+{% extends "characters/tl/ref2_detail.html" %}
+{% load tl %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_back %}<a href="{% url 'characters:hunter:list:creed' %}">← Creeds</a>{% endblock ref_back %}
+{% block ref_eyebrow %}Creed · Hunter{% endblock ref_eyebrow %}
+{% block ref_name_class %}{{ object.name|cover_title_class:"htr" }}{% endblock ref_name_class %}
+{% block ref_after_name %}
+    {% if object.nickname %}<span class="tl-cover__sub">{{ object.nickname }}</span>{% endif %}
+{% endblock ref_after_name %}
+{% block ref_facts %}
+    {% fact "Primary virtue" object.get_primary_virtue_display %}
+    {% if object.favored_edges %}
+        <div class="tl-facts__row">
+            <span class="tl-facts__k">Favored edges</span>
+            <span class="tl-facts__v">{% for edge in object.favored_edges %}{{ edge }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
         </div>
-    </div>
-{% endblock content %}
+    {% endif %}
+{% endblock ref_facts %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'characters:hunter:update:creed' object.pk %}">Edit</a>
+    {% endif %}
+{% endblock ref_actions %}
+{% block ref_sections %}
+    {% include "characters/tl/ref2_prose.html" with title="Description" text=object.description %}
+    {% include "characters/tl/ref2_prose.html" with title="Philosophy" text=object.philosophy power=True %}
+{% endblock ref_sections %}

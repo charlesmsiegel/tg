@@ -1,44 +1,30 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Revenant Families
-{% endblock title %}
-{% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h3 class="tg-card-title vtm_heading">Revenant Families</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% for obj in object_list %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
-                                <div class="d-flex gap-3">
-                                    {% if obj.disciplines.exists %}
-                                        <span style="font-size: 0.9rem; color: var(--theme-text-secondary);">
-                                            {{ obj.disciplines.count }} discipline{{ obj.disciplines.count|pluralize }}
-                                        </span>
-                                    {% endif %}
-                                    <span class="tg-badge badge-pill badge-secondary">{{ obj.revenants.count }} member{{ obj.revenants.count|pluralize }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center" style="color: var(--theme-text-secondary);">No revenant families found.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "characters/tl/ref2_list.html" %}
+{% load tl %}
+{% block title %}Revenant Families{% endblock title %}
+{% block gameline %}vtm{% endblock gameline %}
+{% block ref_eyebrow %}Vampire: the Masquerade{% endblock ref_eyebrow %}
+{% block ref_title %}Revenant Families{% endblock ref_title %}
+{% block ref_title_class %}{{ "Revenant Families"|cover_title_class:"vtm" }}{% endblock ref_title_class %}
+{% block ref_list %}
+    <table class="tl-table ref2-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="tl-num">Disciplines</th>
+                <th scope="col" class="tl-num">Members</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in object_list %}
+                <tr data-filterable-item data-name="{{ obj.name|lower }}">
+                    <td class="ref2-table__name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                    <td class="tl-num">{{ obj.disciplines.count }}</td>
+                    <td class="tl-num">{{ obj.revenants.count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No revenant families found." %}
+{% endblock ref_empty %}

@@ -1,53 +1,29 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Hunter Creeds
-{% endblock title %}
-{% block content %}
-    <div class="centertext container">
-        <div class="container py-4">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card header-card" data-gameline="htr">
-                        <div class="tg-card-header">
-                            <h1 class="tg-card-title htr_heading">Hunter Creeds</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body">
-                            {% for obj in object_list %}
-                                <div class="row mb-2">
-                                    <div class="col-sm-6">
-                                        <a href="{% url 'characters:hunter:creed' obj.pk %}">{{ obj.name }}</a>
-                                        {% if obj.nickname %}
-                                            <span class="text-muted">({{ obj.nickname }})</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="col-sm-6 text-muted">
-                                        {{ obj.get_primary_virtue_display }}
-                                    </div>
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <div class="col-sm">No creeds found.</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body text-center">
-                            <a href="{% url 'characters:hunter:create:creed' %}" class="tg-btn btn-primary">Create Creed</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% extends "characters/tl/ref2_list.html" %}
+{% block title %}Hunter Creeds{% endblock title %}
+{% block gameline %}htr{% endblock gameline %}
+{% block ref_eyebrow %}Hunter: the Reckoning{% endblock ref_eyebrow %}
+{% block ref_title %}Creeds{% endblock ref_title %}
+{% block ref_actions %}
+    {% if user.is_authenticated %}<a href="{% url 'characters:hunter:create:creed' %}">+ New creed</a>{% endif %}
+{% endblock ref_actions %}
+{% block ref_list %}
+    <div class="tl-grid">
+        {% for obj in object_list %}
+            <article class="tl-tile" data-filterable-item data-name="{{ obj.name|lower }}">
+                <span class="tl-tile__meta"><span>{{ obj.get_primary_virtue_display }}</span></span>
+                <h2 class="tl-tile__name">
+                    <a href="{% url 'characters:hunter:creed' obj.pk %}">{{ obj.name }}</a>
+                </h2>
+                {% if obj.nickname %}<span class="tl-tile__sub">{{ obj.nickname }}</span>{% endif %}
+                {% if obj.philosophy %}
+                    <p class="tl-tile__text">{{ obj.philosophy|striptags|truncatewords:28 }}</p>
+                {% elif obj.description %}
+                    <p class="tl-tile__text">{{ obj.description|striptags|truncatewords:28 }}</p>
+                {% endif %}
+            </article>
+        {% endfor %}
     </div>
-{% endblock content %}
+{% endblock ref_list %}
+{% block ref_empty %}
+    {% include "core/tl/empty.html" with text="No creeds found." %}
+{% endblock ref_empty %}
