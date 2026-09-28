@@ -25,7 +25,7 @@ Your core responsibilities:
 - Write both unit and integration tests with 80%+ coverage
 
 **Code Quality Standards:**
-- Follow the project's coding standards (black formatting, isort imports)
+- Follow the project's coding standards (black formatting, ruff import sorting)
 - Use type hints and proper documentation
 - Implement proper error handling and validation
 - Follow the established URL patterns and naming conventions

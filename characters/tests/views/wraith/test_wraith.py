@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from characters.models.wraith.fetter import Fetter
-from characters.models.wraith.guild import Guild
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.wraith.faction import WraithFaction
+from characters.models.wraith.fetter import Fetter
+from characters.models.wraith.guild import Guild
 from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn

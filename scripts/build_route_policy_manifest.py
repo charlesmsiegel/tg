@@ -26,8 +26,8 @@ from characters.models.changeling.chimera import Chimera
 from characters.models.core import CharacterModel, Group
 from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
-from core.models import CharacterTemplate
 from core.actions import ObjectActionView
+from core.models import CharacterTemplate
 from core.views.generic import DictView
 from items.models.core import ItemModel
 from locations.models.core import LocationModel

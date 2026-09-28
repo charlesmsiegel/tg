@@ -4,7 +4,6 @@ from django.db import migrations
 
 from characters.models.vampire.discipline import Discipline
 
-
 DISCIPLINE_FIELDS = (
     "celerity",
     "fortitude",
