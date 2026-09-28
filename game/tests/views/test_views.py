@@ -775,14 +775,33 @@ class TestXPSpendingRequestViews(TestCase):
         self.assertTrue(response.context["form"].errors["category"])
         self.assertEqual(XPSpendingRequest.objects.count(), initial_count)
 
-    def test_update_view_accessible_to_owner(self):
-        """Test that update view is accessible to character owner."""
+    def test_owner_cannot_change_a_filed_request(self):
+        """The XP was deducted when filed; the player may not rewrite the request."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("game:xp_spending_request:update", kwargs={"pk": self.xp_request.pk})
-        )
+        url = reverse("game:xp_spending_request:update", kwargs={"pk": self.xp_request.pk})
+        self.assertEqual(self.client.get(url).status_code, 403)
+        self.assertEqual(self.client.post(url, {"trait_value": 5}).status_code, 403)
+
+    def test_storyteller_corrects_the_trait_but_not_the_cost(self):
+        self.client.login(username="stuser", password="password")
+        url = reverse("game:xp_spending_request:update", kwargs={"pk": self.xp_request.pk})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "game/xp_spending_request/form.html")
+        self.assertNotIn("cost", response.context["form"].fields)
+        cost = self.xp_request.cost
+        response = self.client.post(
+            url,
+            {
+                "trait_name": self.xp_request.trait_name,
+                "trait_type": self.xp_request.trait_type,
+                "trait_value": self.xp_request.trait_value,
+                "cost": cost + 50,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.xp_request.refresh_from_db()
+        self.assertEqual(self.xp_request.cost, cost)
 
     def test_approve_view_requires_st(self):
         """Test that approve view requires storyteller permissions."""

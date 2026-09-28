@@ -32,8 +32,8 @@ and cost, the approver's decision form while it is pending, and Edit for the own
 {% endblock cover_body %}
 {% block cover_actions %}
     <div class="tl-btnpair">
-        {% if is_owner and object.approved == "Pending" %}
-            <a class="tl-btn" href="{% url 'game:xp_spending_request:update' object.pk %}">Edit</a>
+        {% if object_perms.can_approve_spending and object.approved == "Pending" %}
+            <a class="tl-btn" href="{% url 'game:xp_spending_request:update' object.pk %}">Correct</a>
         {% endif %}
         <a class="tl-btn tl-btn--ghost" href="{% url 'game:xp_spending_request:list' %}">Back to list</a>
     </div>

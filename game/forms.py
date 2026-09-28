@@ -577,29 +577,16 @@ class WeeklyXPRequestForm(forms.ModelForm):
         return cleaned_data
 
 
-class XPSpendingRequestForm(forms.ModelForm):
-    """Form for creating and updating XP spending requests."""
+class XPSpendingRequestCorrectionForm(forms.ModelForm):
+    """A Storyteller's correction to a pending request: what it names, never its cost.
+
+    The cost was deducted when the request was filed and a denial refunds it, so the
+    cost stays as filed.
+    """
 
     class Meta:
         model = XPSpendingRequest
-        fields = ["trait_name", "trait_type", "trait_value", "cost"]
-
-    def __init__(self, *args, **kwargs):
-        self.character = kwargs.pop("character", None)
-        super().__init__(*args, **kwargs)
-        # Add help text placeholders
-        self.fields["trait_name"].widget.attrs.update({"placeholder": "e.g., Strength"})
-        self.fields["trait_type"].widget.attrs.update({"placeholder": "e.g., Attribute"})
-        self.fields["trait_value"].widget.attrs.update({"placeholder": "New value"})
-        self.fields["cost"].widget.attrs.update({"placeholder": "XP cost"})
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if self.character:
-            instance.character = self.character
-        if commit:
-            instance.save()
-        return instance
+        fields = ["trait_name", "trait_type", "trait_value"]
 
 
 # Trait types the Spend XP page (Spread M8) offers: the rated traits of the character's

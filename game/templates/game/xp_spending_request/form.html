@@ -30,10 +30,11 @@ and requests filed before spends went through the XP service never deducted thei
 {% endblock cover_body %}
 {% block form_wrap %}tl-split{% endblock form_wrap %}
 {% block form_intro %}
-    <h2 class="tl-section__title">{% if object.pk %}Update XP spending request{% else %}Spend experience{% endif %}</h2>
+    <h2 class="tl-section__title">{% if object.pk %}Correct XP spending request{% else %}Spend experience{% endif %}</h2>
 {% endblock form_intro %}
 {% block fields %}
     {% if object.pk %}
+        <p class="tl-note">The cost ({{ object.cost }} XP) was deducted when the request was filed and stays as filed; a denial refunds it.</p>
         <div class="tl-formgrid tl-formgrid--2">
             {% include "game/tl/fields.html" %}
         </div>
