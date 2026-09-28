@@ -1,227 +1,69 @@
 {% extends "characters/demon/dtfhuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-
-{% block creation_title %}
-    Create Earthbound
-{% endblock creation_title %}
-
+{% comment %}
+Earthbound sheet: the Demon sheet's pieces (Lores, Faith / Torment / Willpower, Virtues,
+apocalyptic form, rituals) plus Urges, the Reliquary and the Cult.
+{% endcomment %}
+{% load tl %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">House:</span>
-                            {% if object.house %}
-                                <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        {% if object.celestial_name %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Celestial Name:</span>
-                                {{ object.celestial_name }}
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {# Urges Section #}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Urges</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm">Flesh</div>
-                        <div class="col-sm dots">{{ object.urge_flesh|dots }}</div>
-                        <div class="col-sm">Thought</div>
-                        <div class="col-sm dots">{{ object.urge_thought|dots }}</div>
-                        <div class="col-sm">Emotion</div>
-                        <div class="col-sm dots">{{ object.urge_emotion|dots }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {# Reliquary Section #}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Reliquary</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Type:</strong>
-                        </div>
-                        <div class="col-sm-9">{{ object.get_reliquary_type_display }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Description:</strong>
-                        </div>
-                        <div class="col-sm-9">{{ object.reliquary_description|default:"-" }}</div>
-                    </div>
-                    {% if object.reliquary_materials %}
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <strong>Materials:</strong>
-                            </div>
-                            <div class="col-sm-9">{{ object.reliquary_materials }}</div>
-                        </div>
-                    {% endif %}
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Health:</span>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.reliquary_current_health }}/{{ object.reliquary_max_health }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Soak:</span>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.reliquary_soak }}</span>
-                            </div>
-                        </div>
-                        {% if object.reliquary_type == "location" %}
-                            <div class="col-md-4 mb-3">
-                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Range:</span>
-                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.manifestation_range }} yards</span>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% fact "House" object.house %}
+    {% fact "Visage" object.visage %}
+    {% fact "Celestial name" object.celestial_name %}
+    {% fact "Reliquary" object.get_reliquary_type_display %}
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
 {% endblock basics %}
-
 {% block powers %}
-    {{ block.super }}
-
-    {# Lores Section - using shared include #}
-    {% include "characters/demon/display_includes/lore_block.html" %}
-
-    {# Visage and Apocalyptic Form Section #}
-    {% if object.visage or object.apocalyptic_form %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">
-                            Visage{% if object.visage %}: <a href="{{ object.visage.get_absolute_url }}">{{ object.visage.name }}</a>{% endif %}
-                        </h5>
-                    </div>
-                    <div class="tg-card-body">
-                        {% if object.visage and object.visage.description %}
-                            <div class="mb-4">
-                                <p style="line-height: 1.6; font-style: italic;">{{ object.visage.description }}</p>
-                            </div>
-                        {% endif %}
-                        {% if object.apocalyptic_form %}
-                            <div class="row">
-                                {# Low Torment Traits Column #}
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="{{ object.get_heading }} mb-3">Low Torment Traits ({{ object.apocalyptic_form_low_torment_count }}/4)</h6>
-                                    {% for trait in object.get_low_torment_traits %}
-                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
-                                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                                <strong>{{ trait.name }}</strong>
-                                                <span class="badge bg-secondary" style="font-size: 0.7rem;">
-                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
-                                                </span>
-                                            </div>
-                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
-                                        </div>
-                                    {% empty %}
-                                        <p class="text-muted">No low torment traits selected.</p>
-                                    {% endfor %}
-                                </div>
-                                {# High Torment Traits Column #}
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="{{ object.get_heading }} mb-3">High Torment Traits ({{ object.apocalyptic_form_high_torment_count }}/4)</h6>
-                                    {% for trait in object.get_high_torment_traits %}
-                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
-                                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                                <strong>{{ trait.name }}</strong>
-                                                <span class="badge {% if trait.high_torment_only %}bg-danger{% else %}bg-warning{% endif %}" style="font-size: 0.7rem;">
-                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
-                                                </span>
-                                            </div>
-                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
-                                        </div>
-                                    {% empty %}
-                                        <p class="text-muted">No high torment traits selected.</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div class="mt-2 text-muted" style="font-size: 0.875rem;">
-                                <strong>Points Spent:</strong> {{ object.apocalyptic_form_points_spent }}/16
-                            </div>
-                        {% else %}
-                            <p class="text-muted">No apocalyptic form selected.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    {# Cult Section #}
-    {% if object.cult_size %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Cult</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <div class="row mb-2">
-                            <div class="col-sm-3">
-                                <strong>Size:</strong>
-                            </div>
-                            <div class="col-sm-9">{{ object.cult_size }}</div>
-                        </div>
-                        {% if object.worship_ritual_frequency %}
-                            <div class="row mb-0">
-                                <div class="col-sm-3">
-                                    <strong>Worship Frequency:</strong>
-                                </div>
-                                <div class="col-sm-9">{{ object.worship_ritual_frequency }}</div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    {% include "characters/demon/display_includes/lore_block.html" with span="tl-span-7" %}
 {% endblock powers %}
+{% block advantages %}
+    {% include "characters/demon/display_includes/advantages.html" with span="tl-span-5" %}
+{% endblock advantages %}
+{% block line %}
+    {% include "characters/demon/display_includes/virtues.html" with span="tl-span-6" %}
+    <section class="tl-section tl-span-6" id="urges">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Urges</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% trait "Flesh" object.urge_flesh variant="acc" %}
+            {% trait "Thought" object.urge_thought variant="acc" %}
+            {% trait "Emotion" object.urge_emotion variant="acc" %}
+        </div>
+    </section>
+    <section class="tl-section tl-span-6" id="reliquary">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Reliquary</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div class="tl-stack">
+                <div class="tl-kv"><span>Type</span><span>{{ object.get_reliquary_type_display }}</span></div>
+                <div class="tl-kv"><span>Health</span><span class="tl-kv__v">{{ object.reliquary_current_health }}/{{ object.reliquary_max_health }}</span></div>
+                <div class="tl-kv"><span>Soak</span><span class="tl-kv__v">{{ object.reliquary_soak }}</span></div>
+                {% if object.reliquary_type == "location" %}
+                    <div class="tl-kv"><span>Range</span><span class="tl-kv__v">{{ object.manifestation_range }} yards</span></div>
+                {% endif %}
+            </div>
+            {% include "characters/tl/prose_block.html" with label="Description" text=object.reliquary_description %}
+            {% include "characters/tl/prose_block.html" with label="Materials" text=object.reliquary_materials %}
+        </div>
+    </section>
+    {% include "characters/demon/display_includes/apocalyptic_form.html" %}
+    {% if object.cult_size or object.worship_ritual_frequency %}
+        <section class="tl-section" id="cult">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Cult</h2>
+            </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% include "characters/tl/prose_block.html" with label="Size" text=object.cult_size %}
+                {% include "characters/tl/prose_block.html" with label="Worship frequency" text=object.worship_ritual_frequency %}
+            </div>
+        </section>
+    {% endif %}
+    {% include "characters/demon/display_includes/rituals.html" %}
+{% endblock line %}
+{% block history %}
+    {% include "characters/demon/display_includes/history.html" %}
+{% endblock history %}

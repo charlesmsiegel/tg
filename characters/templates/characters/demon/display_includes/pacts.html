@@ -1,0 +1,23 @@
+{% comment %}
+Pacts between a demon and its thralls. Pass pacts=<queryset> and title="…"; each row links
+the pact, with the Faith it pays and its terms. Hidden when there are none.
+{% endcomment %}
+{% if pacts %}
+    <section class="tl-section" id="pacts">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">{{ title|default:"Pacts" }}</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-divided">
+            {% for pact in pacts %}
+                <div>
+                    <div class="tl-kv">
+                        <a href="{{ pact.get_absolute_url }}">{{ pact }}</a>
+                        <span class="tl-kv__v">{% if not pact.active %}Inactive · {% endif %}{{ pact.faith_payment }} Faith</span>
+                    </div>
+                    {% if pact.terms %}<div class="tl-note">{{ pact.terms }}</div>{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

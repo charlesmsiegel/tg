@@ -303,7 +303,7 @@ class Demon(LoreBlock, DtFHuman):
         """Get all pacts this demon has with thralls."""
         from characters.models.demon.pact import Pact
 
-        return Pact.objects.filter(demon=self)
+        return Pact.objects.filter(demon=self).select_related("demon", "thrall")
 
     def add_pact(self, thrall, terms="", faith_payment=0, enhancements=None):
         """Create a new pact with a thrall."""

@@ -1,0 +1,30 @@
+{% comment %}
+History for the Fallen (Demon, Earthbound): Age of Fall / Summoned as a fact row, then
+Time in the Abyss / Time in stasis and the usual History, Goals, Notes, Public information.
+{% endcomment %}
+{% if object.history or object.goals or object.notes or object.public_info or object.age_of_fall or object.abyss_duration or object.date_summoned or object.time_in_stasis %}
+    <section class="tl-section" id="history">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">History</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            {% if object.age_of_fall or object.date_summoned %}
+                <div class="tl-factrow">
+                    {% if object.age_of_fall %}
+                        <div><span class="tl-subhead">Age of Fall</span><span>{{ object.age_of_fall }}</span></div>
+                    {% endif %}
+                    {% if object.date_summoned %}
+                        <div><span class="tl-subhead">Summoned</span><span>{{ object.date_summoned }}</span></div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% include "characters/tl/prose_block.html" with label="Time in the Abyss" text=object.abyss_duration %}
+            {% include "characters/tl/prose_block.html" with label="Time in stasis" text=object.time_in_stasis %}
+            {% include "characters/tl/prose_block.html" with label="History" text=object.history %}
+            {% include "characters/tl/prose_block.html" with label="Goals" text=object.goals %}
+            {% include "characters/tl/prose_block.html" with label="Notes" text=object.notes %}
+            {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+        </div>
+    </section>
+{% endif %}

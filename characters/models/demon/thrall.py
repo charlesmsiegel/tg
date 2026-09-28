@@ -80,7 +80,7 @@ class Thrall(DtFHuman):
         """Get all pacts this thrall has with demons."""
         from characters.models.demon.pact import Pact
 
-        return Pact.objects.filter(thrall=self)
+        return Pact.objects.filter(thrall=self).select_related("demon", "thrall")
 
     def get_active_pacts(self):
         """Get all active pacts."""

@@ -1,0 +1,13 @@
+{% load tl %}
+{% comment %}Virtues (Demon, Earthbound, Thrall): Conviction, Conscience, Courage. Pass span to sit beside Backgrounds.{% endcomment %}
+<section class="tl-section {{ span|default:'tl-span-6' }}" id="virtues">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Virtues</h2>
+    </div>
+    <div class="tl-section__body tl-stack">
+        {% trait "Conviction" object.conviction %}
+        {% trait "Conscience" object.conscience %}
+        {% trait "Courage" object.courage %}
+    </div>
+</section>

@@ -1,40 +1,19 @@
-{% load dots %}
-{# Lore Block Display Include - for Demon and Earthbound characters #}
-{# Expects: object with get_lores() method that returns dict of lore_name: rating #}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title {{ object.get_heading }}">Lores</h5>
-            </div>
-            <div class="tg-card-body">
-                {% with lores=object.get_lores %}
-                    {% if lores %}
-                        <div class="row">
-                            {% for lore_name, lore_value in lores.items %}
-                                {% if lore_value > 0 %}
-                                    <div class="col-md-6 mb-2">
-                                        <div class="row">
-                                            <div class="col-sm">{{ lore_name|lore_name }}</div>
-                                            <div class="col-sm dots">{{ lore_value|dots }}</div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% empty %}
-                                <div class="col-12">
-                                    <p class="text-muted mb-0">No lores selected.</p>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="row">
-                            <div class="col-12">
-                                <p class="text-muted mb-0">No lores selected.</p>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endwith %}
-            </div>
-        </div>
+{% load tl %}
+{% comment %}
+Lores: the Demon / Earthbound power section (accent). Rated lores as trait rows with
+accent dots, linked to the Lore page when one exists. Reads object.lore_rows.
+Pass span="tl-span-7" to sit beside Advantages.
+{% endcomment %}
+<section class="tl-section tl-section--power {{ span }}" id="lores">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Lores</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stack">
+        {% for label, rating, url in object.lore_rows %}
+            {% trait label rating variant="acc" url=url %}
+        {% empty %}
+            <p class="tl-muted">No lores selected.</p>
+        {% endfor %}
+    </div>
+</section>

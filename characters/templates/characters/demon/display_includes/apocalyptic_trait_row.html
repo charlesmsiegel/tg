@@ -1,0 +1,8 @@
+{% comment %}One apocalyptic form trait: name (linked) and cost, then its description. Reads `trait`.{% endcomment %}
+<div>
+    <div class="tl-kv">
+        <a href="{{ trait.get_absolute_url }}">{{ trait.name }}</a>
+        <span class="tl-kv__v">{% if trait.high_torment_only %}High Torment only · {% endif %}{{ trait.cost }} pt{{ trait.cost|pluralize }}</span>
+    </div>
+    {% if trait.description %}<div class="tl-note">{{ trait.description }}</div>{% endif %}
+</div>
