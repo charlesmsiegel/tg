@@ -70,6 +70,8 @@ numbers predate Steps 4, 5 and 8, which already fixed several findings.
 7. **Anonymous readers of a `PUBLIC` scene get no live updates**: the inline
    script opens the socket only when `CURRENT_USER_ID` is set, although the
    consumer admits them.
+8. **Post author links on the page are blank** (`href=""`); found while
+   implementing, see the implementation record.
 
 ## Decisions
 
@@ -81,7 +83,7 @@ numbers predate Steps 4, 5 and 8, which already fixed several findings.
 | Protocol version | The socket URL chooses it: `/ws/scene/<id>/?v=2` speaks HTML; the bare URL speaks the old JSON until PR 4, after which it is refused with close code `4400`. | Per-recipient rendering makes serving both formats trivial during the rollout (each connection renders its own). Tabs opened before the deploy keep their old script, which reconnects to the bare URL; after PR 4 it gets `4400`, gives up after its five retries and falls back to posting over HTTP, as it already does when the socket is down. |
 | Denied connections | Accept, then close with code **`4403`** (missing and hidden scenes alike). | A handshake rejected before `accept` reaches the browser as `1006`, which the htmx `ws` extension retries forever (up to every 64 s). `4403` is outside its retry list (1006, 1011, 1012, 1013), carries no existence information, and lets the page say "live updates unavailable". |
 | Catching up | On every `htmx:wsOpen` the client sends `{"action": "sync", "after": <highest post id on the page>}`; the server answers on that socket with the posts after it (at most one window; beyond that a "reload" notice). | Covers both the render-to-connect gap and reconnects, uses the same authorization as posting, and needs no new URL. |
-| Duplicates and order | Post elements have `id="post-<pk>"`. The client drops an incoming post whose id is already on the page and inserts each post before the first post with a higher id. | The sync reply and the live broadcast can overlap; two players posting at once can reach a third viewer in either order. Ids are monotonic and match `datetime_created` order for posts created through `add_post`. |
+| Duplicates and order | Post elements have `id="post-<pk>"`. The client drops an incoming post whose id is already on the page and inserts each post before the first post with a higher id. Windows and sync are ordered by id too. | The sync reply and the live broadcast can overlap; two players posting at once can reach a third viewer in either order. Ids are monotonic and match `datetime_created` order for every post the application creates (nothing sets `datetime_created` explicitly outside tests). |
 | Long scenes | The page shows the latest `SCENE_POST_WINDOW = 100` posts. "Show earlier posts" is a link to `?before=<first id>` (full page without JS) with `hx-get` to the same URL, which returns the previous window as a fragment. | No new URL or route policy; the same view and authorization serve both. |
 | `django-htmx` | Still not added. | Nothing here needs more than `core.htmx`. |
 | Alpine | Not loaded on the scene page. | Nothing needs it; the include gains a flag to omit it. |
@@ -94,10 +96,10 @@ numbers predate Steps 4, 5 and 8, which already fixed several findings.
 page and the consumer render it identically.
 
 ```html
-<div class="post-item" id="post-{{ post.pk }}" data-post-id="{{ post.pk }}">
+<div class="mb-3 post-item" id="post-{{ post.pk }}" data-post-id="{{ post.pk }}">
   <p class="post mb-0">
     <strong {% if post.author_is_st %}class="st"{% elif viewer_id and post.character.owner_id == viewer_id %}class="highlight"{% endif %}>
-      {% if post.character %}<a href="{{ post.character.get_absolute_url }}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}
+      {% if post.character %}<a href="{% url 'characters:character' post.character_id %}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}
     </strong>: {{ post.message|safe_post }}
   </p>
 </div>
@@ -108,15 +110,17 @@ message goes through the same `safe_post` filter (bleach allowlist and quote
 spans) that `render_post_html` used for the JSON; `display_name` is
 autoescaped.
 
-**Selector.** `game.selectors.scene_posts(scene, *, before=None, after=None,
-limit=SCENE_POST_WINDOW)` returns a list of posts in ascending id order with
-`character__owner` joined and `author_is_st` set from one
+**Selectors** (`game/selectors.py`), all returning posts in ascending id
+order with `character__owner` joined and `author_is_st` set from one
 `scene_storyteller_ids(scene, owner_ids)` query (staff, superusers, the head
 ST, and `STRelationship` rows for the scene's chronicle and gameline, the
-exact facts `can_manage_scope` reads without a request). `before` returns the
-window just before an id, `after` the posts after one (used by sync, with
-`limit + 1` to detect overflow). A test checks that `scene_storyteller_ids`
-agrees with `can_manage_scope` for every role.
+exact facts `can_manage_scope` reads without a request):
+`scene_post_window(scene, before=None)` returns the latest window (or the one
+before an id) and whether earlier posts exist; `scene_posts_after(scene,
+after)` returns the posts after an id and whether more than a window remain
+(sync); `scene_post(scene, id)` returns one post of that scene (live render).
+Each fetches `limit + 1` rows to detect overflow. A test checks that
+`scene_storyteller_ids` agrees with `can_manage_scope` for every role.
 
 `PostManager.for_scene_optimized()` keeps its signature and `select_related`
 but drops the "ST anywhere" `Exists()` annotation, which nothing else reads.
@@ -136,7 +140,7 @@ div#scene-live  hx-ext="ws"  ws-connect="/ws/scene/<pk>/?v=2"   (open scenes onl
       div#no-posts-message (only when empty; CSS hides it once a post exists)
   div#scene-actions                                          (always present)
       form#post-form  method=post action=scene_post  ws-send
-                      hx-vals='{"action": "post"}'  hx-params="not csrfmiddlewaretoken"
+                      hx-vals='{"action": "post"}'
           csrf
           div#post-character-field   {% include "_post_character_field.html" %}
           div#post-message-fields    {% include "_post_message_fields.html" %}
@@ -144,7 +148,7 @@ div#scene-live  hx-ext="ws"  ws-connect="/ws/scene/<pk>/?v=2"   (open scenes onl
       form#add-char-form method=post action=scene_add_character
           csrf, span#add-char-field (select), submit          (CSS hides it with no options)
       form close, commands link                               (unchanged)
-{% include "core/includes/interactive_scripts.html" with ws=True alpine=False %}
+{% include "core/includes/interactive_scripts.html" with ws=live alpine=False %}
 ```
 
 Without JavaScript nothing changes: the forms post to the Step 5 endpoints,
@@ -172,7 +176,7 @@ region itself stays in place and screen readers announce the change.
 {display: none}` hides it once a post arrives. No message has to know whether
 it is the first post.
 
-**`scene-chat.js`** (static, `defer`, about 90 lines, no inline code):
+**`scene-chat.js`** (static, `defer`, 180 lines with comments, no inline code):
 
 - connection state: sets `data-ws-state` and the status text on
   `htmx:wsConnecting/wsOpen/wsClose/wsError`, with a specific message for
@@ -180,7 +184,8 @@ it is the first post.
 - on `htmx:wsOpen`, sends the sync message with the highest `data-post-id`;
 - on `htmx:wsConfigSend` from the post form, if the socket is not open,
   cancels the socket send and calls `form.submit()`, so the post goes through
-  `ScenePostView` (htmx has already cancelled the native submit);
+  `ScenePostView` (htmx has already cancelled the native submit); otherwise
+  drops the CSRF token from the socket message;
 - disables the Post button between `htmx:wsAfterSend` and the reply (or a close);
 - on `htmx:oobBeforeSwap` into `#posts-container`, removes posts already on the
   page from the incoming fragment and inserts out-of-order posts before the
@@ -200,8 +205,9 @@ test renders it with both and checks every file.
 
 **Client to server (v2).** `ws-send` serialises the form's fields plus
 `hx-vals` as a JSON object and adds a `HEADERS` object (htmx request headers),
-which the server ignores. `hx-params` keeps the CSRF token off the socket; the
-socket's origin is already checked by `AllowedHostsOriginValidator`.
+which the server ignores. `scene-chat.js` drops the CSRF token from the
+message (`hx-params` cannot; see the implementation record); the socket's
+origin is already checked by `AllowedHostsOriginValidator`.
 
 ```json
 {"action": "post", "character": "12", "display_name": "", "message": "…", "HEADERS": {…}}
@@ -286,7 +292,7 @@ form)`; the consumer's post handler runs `can_post`, `PostForm` and
 
 ## 7. Performance
 
-- The page renders one window of posts from `scene_posts()`: two queries
+- The page renders one window of posts from `scene_post_window()`: two queries
   (posts with authors, storyteller ids) whatever the window size. The query
   budget test keeps its ceiling and gains a "window does not grow" case.
 - The per-post `profile.is_st` query is gone (Step 8), and the new ST test is
@@ -335,18 +341,64 @@ form)`; the consumer's post handler runs `can_post`, `PostForm` and
 ## 9. PR slicing
 
 1. **Partial, selector and service; no protocol change.** `_post.html`,
-   `scene_posts`/`scene_storyteller_ids`, `game/scene_chat.py`; the page uses
+   the post selectors, `game/scene_chat.py`; the page uses
    the partial; `ScenePostView` and the v1 consumer post through the service
    (fixes findings 2 and 6); HTTP actions broadcast `scene.*` events, which
    the v1 consumer translates to its JSON (finding 1).
 2. **The consumer speaks HTML on `?v=2`.** Per-recipient rendering, notices,
    sync, closed-scene handling, `4403`; v1 unchanged.
 3. **The client switches to htmx ws.** Vendored extension, include flags, page
-   regions, `scene-chat.js`, earlier-posts window, CSS; the inline script is
-   no longer used by the page.
-4. **Delete v1.** The inline script (if not already gone), `serialize_post`,
-   the JSON handlers, the socket `add_character`, the inventory-test
-   exception; the bare URL gets `4400`.
+   regions, `scene-chat.js`, earlier-posts fragment, CSS. The inline script
+   is deleted here, because a page cannot run both clients, and so is the
+   inventory-test exception.
+4. **Delete v1.** `serialize_post` (by then `post_payload`), the JSON
+   handlers, the socket `add_character`; the bare URL gets `4400`.
+
+## Implementation record and findings
+
+Implemented as four commits matching §9. Deviations and discoveries:
+
+- **`hx-params` breaks `ws-send` (confirmed in Chromium).** htmx 2.0.11's
+  `filterValues` calls `FormData.delete`, but `htmx-ext-ws` 2.0.4 passes a
+  plain object, so any `hx-params` makes every send throw `n.delete is not a
+  function`. The attribute is gone; `scene-chat.js` deletes the token from
+  `event.detail.parameters` in `htmx:wsConfigSend`. A page test asserts there
+  is no `hx-params`.
+- **Finding 8, confirmed and fixed: post links were always blank on the page.**
+  `post.character` is loaded through the foreign key as the base
+  `CharacterModel`, which has no `get_absolute_url`, so the template rendered
+  `href=""` for every post (before and after Step 8); only posts added live by
+  the old script had links. The partial links to the type-dispatching
+  `characters:character` route, which every character type (all subclass
+  `Character`) resolves through `GenericCharacterDetailView`. Checked against
+  the old code with a throwaway test before the fix.
+- **Finding 2 checked against the old code:** a malformed `/extended` command
+  over HTTP flashed "Post added successfully!" with zero posts written.
+- **The inline script went in PR 3, not PR 4** (see §9); PR 4 removed only
+  server-side v1 code.
+- **Browser test server.** Channels 4.1's `ChannelsLiveServerTestCase` calls
+  `_pre_setup()` on the instance, but Django 5.2 made it a classmethod, so it
+  fails in `setUpClass`. `multiprocessing` (Daphne's `DaphneProcess`) also
+  cannot run in `--parallel` workers, which are daemonic. The tests start
+  `python -m daphne` with `subprocess` against a generated settings shim that
+  points at the worker's test database, and run under `--parallel`.
+- **Frames injected through Playwright's `route_web_socket`** make the
+  reconnect, duplicate and ordering tests deterministic: a `1012` close from
+  the route is retried by htmx, a post written from the test process is never
+  broadcast (so only sync can deliver it), and a frame carrying a duplicate
+  plus a late post exercises the client's ordering. The ordering test fails
+  with the `htmx:oobBeforeSwap` handler disabled (`[1, 3, 1, 2]`).
+- **`SceneDetailView` picks the fragment template in `render_to_response`**,
+  not `get_template_names`: `core.tests.test_routed_templates` calls
+  `get_template_names()` with no request.
+- **htmx loads on every scene page** so "Show earlier posts" works in place on
+  finished scenes and history pages too; the `ws` extension loads only when
+  the page is live.
+- **Noted, not changed:** `Scene.add_post` still writes read status with one
+  `get_or_create` and `save` per participant; the "Close Scene" button is
+  shown to every signed-in viewer and refused by the endpoint for non-STs
+  (template permission flags belong to Step 6); a flood of socket posts is
+  limited only as HTTP posts are (not at all).
 
 ## Theory
 
