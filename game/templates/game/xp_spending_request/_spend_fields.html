@@ -1,0 +1,43 @@
+{% comment %}
+Spend XP fields (Spread M8), the inside of #xp-spend-fields. htmx swaps them in place
+(fragment "xp-spend") whenever a select changes: trait type, the trait (types that list
+traits), the rating (merits and flaws), a note (backgrounds), then the preview of the
+dots with the new ones in --acc, the change, the cost and the rule the cost follows.
+Without JavaScript the "Preview" button posts the selection back for the same answer.
+{% endcomment %}
+{% include "core/tl/field.html" with field=form.category %}
+{% with category=form.selected_category %}
+    {% if category and form.has_traits %}
+        {% if form.fields.example.choices|length > 1 %}
+            {% include "core/tl/field.html" with field=form.example %}
+        {% else %}
+            <p class="tl-note">Nothing of this type is affordable with {{ character.xp }} XP.</p>
+        {% endif %}
+    {% endif %}
+    {% if category == "MeritFlaw" and form.selected_example %}
+        {% include "core/tl/field.html" with field=form.value %}
+    {% endif %}
+    {% if category == "Background" %}
+        {% include "core/tl/field.html" with field=form.note help=form.note.help_text %}
+    {% endif %}
+{% endwith %}
+{% if preview.error %}
+    <p class="tl-xpspend__rule tl-rubric" role="status">{{ preview.error }}</p>
+{% elif preview %}
+    <div class="tl-xpspend__preview" role="status">
+        {% if preview.dots %}
+            <span class="tl-dots tl-dots--lg" role="img" aria-label="{{ preview.current }} to {{ preview.new }} of {{ preview.dot_total }}">{% for state in preview.dots %}<span class="tl-dot{% if state != 'off' %} is-on{% endif %}{% if state == 'new' %} is-new{% endif %}"></span>{% endfor %}</span>
+        {% endif %}
+        <span class="tl-xpspend__change">{{ preview.current }} → {{ preview.new }}</span>
+        <span class="tl-xpspend__cost">Cost <b>{{ preview.cost }}</b></span>
+    </div>
+    <p class="tl-xpspend__rule">
+        {% if preview.rule %}{{ preview.rule }}{% endif %}
+        After this request: {{ preview.unspent_after }} XP unspent. The Storyteller approves the spend.
+    </p>
+{% endif %}
+<noscript>
+    <div class="tl-actions">
+        <button type="submit" name="preview" value="1" class="tl-btn tl-btn--ghost">Preview</button>
+    </div>
+</noscript>

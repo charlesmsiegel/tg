@@ -80,7 +80,7 @@ class ChronicleTabsTest(TestCase):
         self.assertContains(response, 'id="new-story" open')
 
     def test_cover_facts(self):
-        Story.objects.create(name="Open story")
+        Story.objects.create(name="Open story", chronicle=self.chronicle)
         HouseRule.objects.create(name="Rule", chronicle=self.chronicle)
         week = Week.objects.create(end_date=timezone.localdate() + timedelta(days=2))
         response = self.get(self.player)

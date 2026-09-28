@@ -1,6 +1,9 @@
 from django import forms
 
+from characters.forms.core.xp import XPForm
+from characters.forms.mage.xp import MageXPForm
 from characters.models.core import CharacterModel
+from characters.models.mage.mage import Mage
 from core.constants import GameLine, XPApprovalStatus
 from core.permissions import PermissionManager
 from game.models import (
@@ -14,6 +17,7 @@ from game.models import (
     WeeklyXPRequest,
     XPSpendingRequest,
 )
+from game.security import staffed_chronicles
 from locations.models.core import LocationModel
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
@@ -439,6 +443,8 @@ class PostForm(forms.Form):
 
 
 class StoryForm(forms.ModelForm):
+    """A chronicle page's "New story": the chronicle comes from the page."""
+
     class Meta:
         model = Story
         fields = ("name",)
@@ -446,6 +452,20 @@ class StoryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Story Name"})
+
+
+class StoryEditForm(StoryForm):
+    """The standalone story create / edit form, where the chronicle is chosen."""
+
+    class Meta(StoryForm.Meta):
+        fields = ("name", "chronicle")
+
+    def __init__(self, *args, user, **kwargs):
+        super().__init__(*args, **kwargs)
+        chronicle = self.fields["chronicle"]
+        chronicle.queryset = staffed_chronicles(user).order_by("name")
+        chronicle.empty_label = "Unassigned"
+        chronicle.help_text = "The chronicle whose Stories tab lists this story."
 
 
 class JournalEntryForm(forms.Form):
@@ -580,6 +600,146 @@ class XPSpendingRequestForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+# Trait types the Spend XP page (Spread M8) offers: the rated traits of the character's
+# own XP form. Its other categories (image, rotes, tenets, resonance, rote points) keep
+# their fields on the character sheet.
+XP_SPEND_TRAIT_TYPES = (
+    "Attribute",
+    "Ability",
+    "Background",
+    "Willpower",
+    "MeritFlaw",
+    "Sphere",
+    "Arete",
+    "Practice",
+)
+XP_SPEND_TYPE_LABELS = {"MeritFlaw": "Merit or flaw"}
+# Trait types without a list of traits to choose from.
+XP_SPEND_SINGLE_TRAITS = ("Willpower", "Arete")
+
+
+class XPSpendFormMixin:
+    """Spend XP (Spread M8): trait type, trait and, for merits and flaws, the rating.
+
+    The choices come from the character's own XP form (XPForm, or MageXPForm for a
+    mage), which knows which traits the character may raise and can afford. Only the
+    chosen trait type's traits (and the chosen merit's ratings) are built, and plain
+    selects replace the chained widgets: htmx asks the page again for the fields.
+    """
+
+    def __init__(self, *args, character, **kwargs):
+        data = args[0] if args else kwargs.get("data")
+        source = data if data is not None else (kwargs.get("initial") or {})
+        self.selected_category = source.get("category") or ""
+        self.selected_example = source.get("example") or ""
+        super().__init__(*args, character=character, **kwargs)
+        types = [
+            (value, XP_SPEND_TYPE_LABELS.get(value, label))
+            for value, label in self.fields["category"].choices
+            if value in XP_SPEND_TRAIT_TYPES
+        ]
+        traits = self.fields["example"].choices_map.get(self.selected_category, [])
+        ratings = self.fields["value"].choices_map.get(self.selected_example, [])
+        self.fields["category"] = forms.ChoiceField(
+            label="Trait type", choices=[("", "Choose a trait type")] + types
+        )
+        self.fields["example"] = forms.ChoiceField(
+            label="Trait", required=False, choices=[("", "Choose a trait")] + list(traits)
+        )
+        self.fields["value"] = forms.ChoiceField(
+            label="Rating", required=False, choices=[("", "Choose a rating")] + list(ratings)
+        )
+        self.fields["note"].label = "Note"
+        self.fields["note"].help_text = "For a new background: what it is (optional)."
+        for name in ("pooled", "image_field", "resonance"):
+            self.fields.pop(name, None)
+        self._forget_stale_choices()
+
+    def _forget_stale_choices(self):
+        """A trait or rating not on offer for the chosen trait type counts as unchosen.
+
+        Changing the trait type still submits the previous type's trait; it must not
+        block Willpower or Arete (which list no traits) or mark the new list invalid.
+        """
+        if not self.is_bound:
+            return
+        stale = [
+            name
+            for name in ("example", "value")
+            if self.data.get(name)
+            and self.data.get(name) not in {str(value) for value, _ in self.fields[name].choices}
+        ]
+        if stale:
+            self.data = self.data.copy()
+            for name in stale:
+                self.data.pop(name, None)
+            if "example" in stale:
+                self.selected_example = ""
+
+    def _build_example_choices_map(self, category_choices):
+        chosen = [choice for choice in category_choices if choice[0] == self.selected_category]
+        return super()._build_example_choices_map(chosen)
+
+    def _build_value_choices_map(self, example_choices_map):
+        chosen = [
+            choice
+            for choice in example_choices_map.get("MeritFlaw", [])
+            if choice[0] == self.selected_example
+        ]
+        return super()._build_value_choices_map({"MeritFlaw": chosen} if chosen else {})
+
+    @property
+    def has_traits(self):
+        """Whether the chosen trait type lists traits (Willpower and Arete do not)."""
+        return self.selected_category not in XP_SPEND_SINGLE_TRAITS
+
+    def enable_htmx(self, url):
+        """Each select asks ``url`` for the fields and preview of the new selection."""
+        for name in ("category", "example", "value"):
+            self.fields[name].widget.attrs.update(
+                {
+                    "hx-get": url,
+                    "hx-trigger": "change",
+                    "hx-target": "#xp-spend-fields",
+                    "hx-swap": "innerHTML",
+                    "hx-sync": "closest form:replace",
+                    # The selection only: never the CSRF token.
+                    "hx-include": "#xp-spend-fields",
+                }
+            )
+
+    def quiet(self):
+        """Drop validation messages: a preview asks what the selection costs, and an
+        unfinished selection is not an error yet. Call after reading is_valid()."""
+        self.errors.clear()
+
+    def clean_example(self):
+        category = self.cleaned_data.get("category")
+        if not self.cleaned_data.get("example"):
+            if category and category not in XP_SPEND_SINGLE_TRAITS:
+                raise forms.ValidationError("Choose a trait.")
+            return None
+        return super().clean_example()
+
+    def clean_value(self):
+        value = super().clean_value()
+        if value is None and self.cleaned_data.get("category") == "MeritFlaw":
+            raise forms.ValidationError("Choose a rating.")
+        return value
+
+
+class XPSpendForm(XPSpendFormMixin, XPForm):
+    pass
+
+
+class MageXPSpendForm(XPSpendFormMixin, MageXPForm):
+    pass
+
+
+def xp_spend_form_class(character):
+    return MageXPSpendForm if isinstance(character, Mage) else XPSpendForm
 
 
 class XPSpendingRequestApprovalForm(forms.ModelForm):

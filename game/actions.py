@@ -178,7 +178,9 @@ class ChronicleStoryCreateView(ChronicleActionView):
         return kwargs
 
     def perform(self, form):
-        story = form.save()
+        story = form.save(commit=False)
+        story.chronicle = self.object
+        story.save()
         return ServiceResult.ok(f"Story '{story.name}' created successfully!", obj=story)
 
 

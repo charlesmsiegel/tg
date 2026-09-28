@@ -100,7 +100,9 @@ class STRelationshipAdmin(admin.ModelAdmin):
 
 @admin.register(Story)
 class StoryAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "chronicle", "xp_given")
+    list_filter = ("chronicle", "xp_given")
+    list_select_related = ("chronicle",)
     search_fields = ("name",)
 
 
