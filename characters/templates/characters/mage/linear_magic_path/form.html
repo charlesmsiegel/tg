@@ -1,27 +1,9 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit {{ object.name }}
-    {% else %}
-        Create Linear Magic Path
-    {% endif %}
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% block creation_title %}Create Linear Magic Path{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-sm-3"><label for="id_name" class="form-label">Name</label></div>
-        <div class="col-sm-9">{{ form.name }}</div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-sm-3"><label for="id_numina_type" class="form-label">Type</label></div>
-        <div class="col-sm-9">{{ form.numina_type }}</div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-sm-3"><label for="id_description" class="form-label">Description</label></div>
-        <div class="col-sm-9">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.numina_type label="Type" %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <button type="submit" class="btn btn-primary">
-        <i class="fas fa-save"></i> Save Path
-    </button>
-{% endblock buttons %}

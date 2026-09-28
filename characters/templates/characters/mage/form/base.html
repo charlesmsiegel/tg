@@ -1,0 +1,11 @@
+{% extends "core/form.html" %}
+{% comment %}
+Shell for the Mage create / edit forms (characters, reference data): core/form.html
+rendered natively (outside the legacy wrapper) with the M14 error summary. Children
+fill creation_title and contents, usually with characters/mage/form/field.html rows
+in a .tl-formgrid.
+{% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}

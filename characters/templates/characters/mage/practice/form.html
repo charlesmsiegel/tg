@@ -1,37 +1,19 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Practice
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %}
+Practice create / edit; corrupted and specialized practices add their fields in the
+specialization block.
+{% endcomment %}
+{% block creation_title %}Create Practice{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% block specialization_head %}{% endblock specialization_head %}
+        {% include "characters/mage/form/field.html" with field=form.abilities %}
+        {% include "characters/mage/form/field.html" with field=form.instruments %}
+        {% include "characters/mage/form/field.html" with field=form.common_resonance_traits label="Common Resonance traits" %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
+        {% include "characters/mage/form/field.html" with field=form.benefit %}
+        {% include "characters/mage/form/field.html" with field=form.penalty %}
+        {% block specialization %}{% endblock specialization %}
     </div>
-    <div class="row">
-        <div class="col-sm">Abilities</div>
-        <div class="col-sm">{{ form.abilities }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Instruments</div>
-        <div class="col-sm">{{ form.instruments }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Common Resonance Traits</div>
-        <div class="col-sm">{{ form.common_resonance_traits }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Benefit</div>
-        <div class="col-sm">{{ form.benefit }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Penalty</div>
-        <div class="col-sm">{{ form.penalty }}</div>
-    </div>
-    {% block specialization %}
-    {% endblock specialization %}
 {% endblock contents %}

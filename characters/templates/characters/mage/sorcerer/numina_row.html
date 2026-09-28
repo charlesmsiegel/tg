@@ -1,0 +1,15 @@
+{% comment %} One numina path row (sorcerer/numina_formset.html): hidden fields, path and rating, then practice and ability when with_practice. {% endcomment %}
+<div class="tl-chargen__form" data-formset-form>
+    {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+    {% include "characters/mage/form/field.html" with field=f.path label="Path" %}
+    {% include "characters/mage/form/field.html" with field=f.rating label="Rating" %}
+    {% if with_practice %}
+        {% include "characters/mage/form/field.html" with field=f.practice label="Practice" %}
+        {% include "characters/mage/form/field.html" with field=f.ability label="Ability" %}
+    {% endif %}
+    {% if f.non_field_errors %}
+        <ul class="tl-field__error">
+            {% for error in f.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>

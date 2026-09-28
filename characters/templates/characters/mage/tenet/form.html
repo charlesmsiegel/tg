@@ -1,11 +1,11 @@
-{% extends "core/form.html" %}
+{% extends "characters/mage/form/base.html" %}
 {% block creation_title %}New tenet{% endblock creation_title %}
 {% block contents %}
     <div class="tl-formgrid">
-        {% include "core/tl/field.html" with field=form.name %}
-        {% include "core/tl/field.html" with field=form.tenet_type %}
-        {% include "core/tl/field.html" with field=form.description %}
-        {% include "core/tl/field.html" with field=form.associated_practices %}
-        {% include "core/tl/field.html" with field=form.limited_practices %}
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.tenet_type %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
+        {% include "characters/mage/form/field.html" with field=form.associated_practices %}
+        {% include "characters/mage/form/field.html" with field=form.limited_practices %}
     </div>
 {% endblock contents %}

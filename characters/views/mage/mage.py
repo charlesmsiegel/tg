@@ -10,8 +10,6 @@ from core.mixins import ScopedCreationFormMixin, ScopedEditFormMixin
 
 logger = logging.getLogger(__name__)
 
-from itertools import zip_longest
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -48,6 +46,7 @@ from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
+from characters.views.mage.form_layout import MAGE_LAYOUT, MageFamilyFormMixin
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
@@ -89,37 +88,30 @@ class MageDetailView(HumanDetailView):
         return context
 
 
-class MageFormContextMixin:
-    """Model data the Mage create/edit template shows next to the form.
+class MageFormContextMixin(MageFamilyFormMixin):
+    """Sections of the Mage create/edit form, plus what the page lists but does not edit.
 
-    The template used to read these off ``form`` (``form.affiliation.name``,
-    ``form.paradigms.all``, ``<stat>_spec``, ...), where they never exist, so the
-    Technocracy labels, specialties, rotes and resonance never rendered.
+    Technocrats see Enlightenment and Primal Energy for Arete and Quintessence, and their
+    own names for Correspondence, Prime and Spirit (form_layout's sphere labels).
     """
+
+    form_layout = MAGE_LAYOUT
+    TECHNOCRACY_LABELS = {"arete": "Enlightenment", "quintessence": "Primal Energy"}
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.object is not None and self.object.is_technocrat:
+            for name, label in self.TECHNOCRACY_LABELS.items():
+                if name in form.fields:
+                    form.fields[name].label = label
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         mage = self.object  # None while creating
-        form = context["form"]
         context["technocratic"] = mage is not None and mage.is_technocrat
-        groups = []
-        for _heading, group in Mage.ABILITY_GROUPS:
-            stats = sorted(
-                (stat for stat in getattr(Mage, group) if stat in Mage.primary_abilities),
-                key=Mage.ability_label,
-            )
-            groups.append(
-                [
-                    (
-                        Mage.ability_label(stat),
-                        form[stat] if stat in form.fields else "",
-                        mage.get_specialty(stat) if mage else None,
-                    )
-                    for stat in stats
-                ]
-            )
-        context["ability_rows"] = list(zip_longest(*groups, fillvalue=("", "", None)))
         if mage is not None:
+            context["backgrounds"] = mage.backgrounds.select_related("bg")
             context["rotes"] = mage.rotes.select_related("effect")
             context["resonance"] = (
                 ResRating.objects.filter(mage=mage)

@@ -1,0 +1,24 @@
+{% comment %}
+The nine Sphere ratings of `form` (correspondence ... time) as three ruled columns of
+label + number rows, in sheet order. Used by the effect form and the rote steps.
+{% endcomment %}
+<fieldset class="tl-mageform__group">
+    <legend class="tl-subhead">Spheres</legend>
+    <div class="tl-alloc">
+        <div class="tl-alloc__col">
+            {% include "characters/core/chargen/alloc_row.html" with field=form.correspondence label="Correspondence" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.entropy label="Entropy" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.forces label="Forces" %}
+        </div>
+        <div class="tl-alloc__col">
+            {% include "characters/core/chargen/alloc_row.html" with field=form.life label="Life" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.matter label="Matter" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.mind label="Mind" %}
+        </div>
+        <div class="tl-alloc__col">
+            {% include "characters/core/chargen/alloc_row.html" with field=form.prime label="Prime" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.spirit label="Spirit" %}
+            {% include "characters/core/chargen/alloc_row.html" with field=form.time label="Time" %}
+        </div>
+    </div>
+</fieldset>

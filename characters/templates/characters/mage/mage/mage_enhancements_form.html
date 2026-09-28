@@ -1,103 +1,69 @@
-{% load static %}
-{% load startswith %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Enhancements</h2>
+{% load static startswith %}
+{% comment %}
+Enhancement background step (EnhancementForm). mage-enhancements.js shows the part for
+the chosen type by toggling d-none on #attributes, #device and #new_device, and swaps
+#new_device_power_select / #new_device_new_power on the power option; keep those ids.
+{% endcomment %}
+<p class="tl-lede">Choose enhancement type, benefit type and details, and flaw. New Devices are built as Wonders.</p>
+<div class="tl-chargen__form">
+    {% include "characters/mage/form/field.html" with field=form.enhancement_style label="Style" %}
+    {% include "characters/mage/form/field.html" with field=form.enhancement_type label="Benefit" %}
 </div>
-<div class="row">
-    <div class="col-sm">Choose enhancement type, benefit type and details, and flaw. New Devices are built as Wonders.</div>
-</div>
-<div class="row">
-    <div class="col-sm">{{ form.enhancement_style }}</div>
-    <div class="col-sm">{{ form.enhancement_type }}</div>
-</div>
-<div class="form-group" id="attributes">
+<div class="tl-chargen__form" id="attributes">
     {% for field in form %}
         {% if field.name|startswith:"attribute_" %}
-            <div class="row">
-                <div class="col-sm">{{ field.label_tag }}</div>
-                <div class="col-sm">{{ field }}</div>
-            </div>
+            {% include "characters/mage/form/field.html" with field=field label="Attribute" %}
         {% endif %}
     {% endfor %}
 </div>
-<div class="form-group d-none" id="new_device">
-    <div class="row">
-        <div class="col-sm">{{ form.new_device_rank.label_tag }} {{ form.new_device_rank }}</div>
-        <div class="col-sm">{{ form.new_device_arete.label_tag }} {{ form.new_device_arete }}</div>
+<div class="tl-chargen__fields d-none" id="new_device">
+    <div class="tl-chargen__form">
+        {% include "characters/mage/form/field.html" with field=form.new_device_wonder_type label="Wonder type" %}
+        {% include "characters/mage/form/field.html" with field=form.new_device_name label="Name" %}
+        {% include "characters/mage/form/field.html" with field=form.new_device_rank label="Rank" %}
+        {% include "characters/mage/form/field.html" with field=form.new_device_arete label="Arete" %}
+        {% include "characters/mage/form/field.html" with field=form.new_device_resonance label="Resonance" %}
+        {% include "characters/mage/form/field.html" with field=form.new_device_description label="Description" %}
     </div>
-    <div class="row">
-        <div class="col-sm">{{ form.new_device_wonder_type }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.new_device_name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.new_device_description }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm mta_heading">Resonance</h3>
-    </div>
-    <div>
-        <div class="row form-row">
-            <div class="col-sm">{{ form.new_device_resonance }}</div>
+    <fieldset class="tl-mageform__group">
+        <legend class="tl-subhead">Powers</legend>
+        <div class="tl-chargen__form">
+            {% include "characters/mage/form/field.html" with field=form.new_device_new_power_option label="Power" %}
         </div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm mta_heading">Powers</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.new_device_new_power_option }}</div>
-    </div>
-    <div class="form-group d-none" id="new_device_power_select">
-        <div class="row">
-            <div class="col-sm">{{ form.new_device_effect }}</div>
+        <div class="tl-chargen__form d-none" id="new_device_power_select">
+            {% include "characters/mage/form/field.html" with field=form.new_device_effect label="Effect" %}
         </div>
-    </div>
-    <div class="form-group" id="new_device_new_power">
-        <div>
-            <div class="row form-row">
-                <div class="col-sm">Name</div>
-                <div class="col-sm">{{ form.new_device_new_effect_name }}</div>
+        <div class="tl-chargen__fields" id="new_device_new_power">
+            <div class="tl-chargen__form">
+                {% include "characters/mage/form/field.html" with field=form.new_device_new_effect_name label="Effect name" %}
             </div>
-            <div class="row form-row">
-                <div class="col-sm">Correspondence</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_correspondence }}</div>
-                <div class="col-sm">Life</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_life }}</div>
-                <div class="col-sm">Prime</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_prime }}</div>
+            <div class="tl-alloc">
+                <div class="tl-alloc__col">
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_correspondence label="Correspondence" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_entropy label="Entropy" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_forces label="Forces" %}
+                </div>
+                <div class="tl-alloc__col">
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_life label="Life" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_matter label="Matter" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_mind label="Mind" %}
+                </div>
+                <div class="tl-alloc__col">
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_prime label="Prime" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_spirit label="Spirit" %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form.new_device_new_effect_time label="Time" %}
+                </div>
             </div>
-            <div class="row form-row">
-                <div class="col-sm">Entropy</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_entropy }}</div>
-                <div class="col-sm">Matter</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_matter }}</div>
-                <div class="col-sm">Spirit</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_spirit }}</div>
-            </div>
-            <div class="row form-row">
-                <div class="col-sm">Forces</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_forces }}</div>
-                <div class="col-sm">Mind</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_mind }}</div>
-                <div class="col-sm">Time</div>
-                <div class="col-sm dots">{{ form.new_device_new_effect_time }}</div>
-            </div>
-            <div class="row form-row">
-                <div class="col-sm">Description</div>
-                <div class="col-sm">{{ form.new_device_new_effect_description }}</div>
+            <div class="tl-chargen__form">
+                {% include "characters/mage/form/field.html" with field=form.new_device_new_effect_description label="Effect description" %}
             </div>
         </div>
-    </div>
+    </fieldset>
 </div>
-<div class="form-group d-none" id="device">
-    <div class="row">
-        <div class="col-sm">{{ form.device }}</div>
-    </div>
+<div class="tl-chargen__form d-none" id="device">
+    {% include "characters/mage/form/field.html" with field=form.device label="Device" %}
 </div>
-<div class="form-group" id="genetic_flaw">
-    <div class="row">
-        <div class="col-sm">{{ form.flaw }}</div>
-    </div>
+<div class="tl-chargen__form" id="genetic_flaw">
+    {% include "characters/mage/form/field.html" with field=form.flaw label="Flaw" %}
 </div>
 <script src="{% static 'characters/js/mage-enhancements.js' %}"></script>

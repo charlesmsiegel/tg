@@ -1,56 +1,23 @@
-{% extends "core/form.html" %}
-{% block formdetails %}
-    method="post"
-    id="mageForm"
-    action=""
-    novalidate
-    enctype="multipart/form-data"
-{% endblock formdetails %}
-{% block creation_title %}
-    Create Companion
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %}
+First step of Companion creation: identity, Archetypes, companion type and whose
+companion it is. NPC is offered to Storytellers only.
+{% endcomment %}
+{% block creation_title %}Create Companion{% endblock creation_title %}
+{% block formdetails %}method="post" id="mageForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-sm">Decide identity and motivation; choose concept, companion type and Archetypes.</div>
-    </div>
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">{{ form.image }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Name</div>
-            <div class="col-sm-2">{{ form.name }}</div>
-            <div class="col-sm-2">Nature</div>
-            <div class="col-sm-2">{{ form.nature }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Chronicle</div>
-            <div class="col-sm-2">{{ form.chronicle }}</div>
-            <div class="col-sm-2">Demeanor</div>
-            <div class="col-sm-2">{{ form.demeanor }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Companion Type</div>
-            <div class="col-sm-2">{{ form.companion_type }}</div>
-            <div class="col-sm-2">Concept</div>
-            <div class="col-sm-2">{{ form.concept }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Companion Of</div>
-            <div class="col-sm-2">{{ form.companion_of }}</div>
-            <div class="col-sm-2">Cabal</div>
-            <div class="col-sm-2">{{ form.cabal }}</div>
-            {% if storyteller %}
-                <div class="col-sm-2">NPC</div>
-                <div class="col-sm-2">{{ form.npc }}</div>
-            {% else %}
-                <div class="col-sm-2"></div>
-                <div class="col-sm-2"></div>
-            {% endif %}
-        </div>
+    <p class="tl-lede">Decide identity and motivation; choose concept, companion type and Archetypes.</p>
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.concept %}
+        {% include "characters/mage/form/field.html" with field=form.chronicle %}
+        {% include "characters/mage/form/field.html" with field=form.nature %}
+        {% include "characters/mage/form/field.html" with field=form.demeanor %}
+        {% include "characters/mage/form/field.html" with field=form.companion_type %}
+        {% include "characters/mage/form/field.html" with field=form.companion_of %}
+        {% include "characters/mage/form/field.html" with field=form.image label="Character portrait" %}
+        {% if storyteller %}
+            {% include "characters/mage/form/field.html" with field=form.npc label="NPC" %}
+        {% endif %}
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

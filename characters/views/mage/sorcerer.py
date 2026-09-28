@@ -44,6 +44,7 @@ from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
+from characters.views.mage.form_layout import SORCERER_LAYOUT, MageFamilyFormMixin
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
@@ -83,8 +84,11 @@ class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMix
         return super().form_valid(form)
 
 
-class SorcererUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
+class SorcererUpdateView(
+    MageFamilyFormMixin, ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView
+):
     model = Sorcerer
+    form_layout = SORCERER_LAYOUT
     form_class = SorcererForm
     template_name = "characters/mage/sorcerer/form.html"
     success_message = "Sorcerer '{name}' updated successfully."

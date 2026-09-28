@@ -1,54 +1,39 @@
-{% load dots %}
-<div class="row">
-    <h2 class="col-sm mta_heading">Create Rote</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        A rote is an effect along with a Practice, an Associated Ability of the Practice, and an Attribute. Describe how the character performs the rote, what it does, and the game mechanical impact. A rote's cost is the total number of sphere dots.
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm">Create New Rote: {{ form.select_or_create_rote }}</div>
-</div>
+{% comment %}
+Rote step (RoteCreationForm): pick a known rote, or create one; a new rote picks an
+existing effect or creates one from Sphere ratings. The select / create containers
+are toggled with d-none by widgets/create_or_select.js (data-create-or-select-*).
+{% endcomment %}
+<p class="tl-lede">
+    A rote is an effect along with a Practice, an Associated Ability of the Practice, and an Attribute. Describe how the character performs the rote, what it does, and the game mechanical impact. A rote's cost is the total number of sphere dots.
+</p>
+{% include "characters/mage/form/field.html" with field=form.select_or_create_rote label="Create a new rote" %}
 <div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="select">
-    <div class="row">
-        <div class="col-sm">{{ form.rote_options }}</div>
+    <div class="tl-chargen__form">
+        {% include "characters/mage/form/field.html" with field=form.rote_options label="Rote" %}
     </div>
 </div>
-<div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="create" class="d-none">
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Rote Points Remaining</h3>
-        <h3 class="col-sm {{ object.get_heading }}">{{ object.rote_points }}</h3>
+<div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="create" class="tl-chargen__fields d-none">
+    <p class="tl-chargen__line">
+        <span class="tl-chargen__tag">Rote points remaining</span>
+        <span class="tl-chargen__pool">{{ object.rote_points }}</span>
+    </p>
+    <div class="tl-chargen__form">
+        {% include "characters/mage/form/field.html" with field=form.name label="Name" %}
+        {% include "characters/mage/form/field.html" with field=form.practice label="Practice" %}
+        {% include "characters/mage/form/field.html" with field=form.attribute label="Attribute" %}
+        {% include "characters/mage/form/field.html" with field=form.ability label="Ability" %}
+        {% include "characters/mage/form/field.html" with field=form.description label="Description" %}
     </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Practice</div>
-        <div class="col-sm">{{ form.practice }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Dicepool</div>
-        <div class="col-sm">{{ form.attribute }} + {{ form.ability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Create New Effect: {{ form.select_or_create_effect }}</div>
-    </div>
+    {% include "characters/mage/form/field.html" with field=form.select_or_create_effect label="Create a new effect" %}
     <div data-create-or-select-container="select_or_create_effect" data-create-or-select-mode="select">
-        <div class="row">
-            <div class="col-sm">{{ form.effect_options }}</div>
+        <div class="tl-chargen__form">
+            {% include "characters/mage/form/field.html" with field=form.effect_options label="Effect" %}
         </div>
     </div>
-    <div data-create-or-select-container="select_or_create_effect" data-create-or-select-mode="create" class="d-none">
-        {% include "characters/mage/spheres/form.html" %}
-        <div class="row">
-            <div class="col-sm">Systems</div>
-            <div class="col-sm">{{ form.systems }}</div>
+    <div data-create-or-select-container="select_or_create_effect" data-create-or-select-mode="create" class="tl-chargen__fields d-none">
+        {% include "characters/mage/form/spheres.html" %}
+        <div class="tl-chargen__form">
+            {% include "characters/mage/form/field.html" with field=form.systems label="Systems" %}
         </div>
     </div>
 </div>

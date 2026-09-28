@@ -1,30 +1,22 @@
-<div class="row">
-    <h3 class="col-sm {{ object.get_heading }}">Familiar Creation</h3>
+{% comment %}
+Familiar background step (FamiliarForm): the familiar is made as a Companion of type
+Familiar in this character's chronicle, then built through its own creation steps.
+{% endcomment %}
+<p class="tl-lede">Decide the familiar's identity and motivation; choose its concept and Archetypes.</p>
+<div class="tl-factrow">
+    <div>
+        <span class="tl-subhead">Companion type</span>
+        <span>Familiar</span>
+    </div>
+    <div>
+        <span class="tl-subhead">Chronicle</span>
+        <span>{{ object.chronicle|default:"None" }}</span>
+    </div>
 </div>
-<div class="row">
-    <div class="col-sm">Decide identity and motivation; choose concept, Affiliation, Essence, and Archetypes.</div>
-</div>
-<div class="centertext container"
-     id="mageForm">
-    <div class="row">
-        <div class="col-sm">{{ form.image }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">Name</div>
-        <div class="col-sm-2">{{ form.name }}</div>
-        <div class="col-sm-2">Nature</div>
-        <div class="col-sm-2">{{ form.nature }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">Chronicle</div>
-        <div class="col-sm-2">{{ object.chronicle }}</div>
-        <div class="col-sm-2">Demeanor</div>
-        <div class="col-sm-2">{{ form.demeanor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">Companion Type</div>
-        <div class="col-sm-2">Familiar</div>
-        <div class="col-sm-2">Concept</div>
-        <div class="col-sm-2">{{ form.concept }}</div>
-    </div>
+<div class="tl-chargen__form" id="mageForm">
+    {% include "characters/mage/form/field.html" with field=form.name %}
+    {% include "characters/mage/form/field.html" with field=form.concept %}
+    {% include "characters/mage/form/field.html" with field=form.nature %}
+    {% include "characters/mage/form/field.html" with field=form.demeanor %}
+    {% include "characters/mage/form/field.html" with field=form.image label="Portrait" %}
 </div>

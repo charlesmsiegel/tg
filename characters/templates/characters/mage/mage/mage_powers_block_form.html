@@ -1,27 +1,23 @@
-{% load dots %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
+{% comment %}
+Spheres step (MageSpheresForm): Arete (Enlightenment for the Technocracy), Affinity
+Sphere and a starting Resonance trait, the nine Spheres as ruled columns, then the
+names this mage uses for Correspondence, Prime and Spirit.
+{% endcomment %}
+<p class="tl-lede">
+    Arete may be chosen from 1-3, each dot costs 4 Freebie Points. You must place one dot into your Affinity Sphere, 5 more dots into your Spheres capped at Arete, and choose a starting Resonance trait.
+</p>
+<div class="tl-chargen__form">
+    {% if object.is_technocrat %}
+        {% include "characters/mage/form/field.html" with field=form.arete label="Enlightenment" %}
+    {% else %}
+        {% include "characters/mage/form/field.html" with field=form.arete label="Arete" %}
+    {% endif %}
+    {% include "characters/mage/form/field.html" with field=form.affinity_sphere label="Affinity Sphere" %}
+    {% include "characters/mage/form/field.html" with field=form.resonance label="Resonance" %}
 </div>
-<div class="row">
-    <div class="col-sm">
-        Arete may be chosen from 1-3, each dot costs 4 Freebie Points. You must place one dot into your Affinity Sphere, 5 more dots into your Spheres capped at Arete, and choose a starting Resonance trait.
-    </div>
+{% include "characters/mage/form/spheres.html" %}
+<div class="tl-chargen__form">
+    {% include "characters/mage/form/field.html" with field=form.corr_name label="Correspondence name" %}
+    {% include "characters/mage/form/field.html" with field=form.prime_name label="Prime name" %}
+    {% include "characters/mage/form/field.html" with field=form.spirit_name label="Spirit name" %}
 </div>
-<div class="row">
-    <div class="col-sm">
-        {% if object.is_technocrat %}
-            Enlightenment
-        {% else %}
-            Arete
-        {% endif %}
-    </div>
-    <div class="col-sm dots">{{ form.arete }}</div>
-    <div class="col-sm">Affinity</div>
-    <div class="col-sm dots">{{ form.affinity_sphere }}</div>
-    <div class="col-sm">Resonance</div>
-    <div class="col-sm dots">{{ form.resonance }}</div>
-</div>
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Spheres</h2>
-</div>
-{% include "characters/mage/spheres/form_with_names.html" %}

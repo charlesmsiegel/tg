@@ -31,6 +31,7 @@ from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
+from characters.views.mage.form_layout import MTA_HUMAN_LAYOUT, MageFamilyFormMixin
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
@@ -52,18 +53,15 @@ class MtAHumanDetailView(HumanDetailView):
         return context
 
 
-class MtAHumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
+class MtAHumanUpdateView(MageFamilyFormMixin, ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     model = MtAHuman
+    form_layout = MTA_HUMAN_LAYOUT
     success_message = "MtA Human updated successfully."
     error_message = "Error updating MtA Human."
     fields = MT_A_HUMAN_UPDATE_FIELDS
     template_name = "characters/mage/mtahuman/form.html"
 
     limited_form_class = LimitedHumanEditForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class MtAHumanAbilityView(HumanAbilityView):

@@ -1,0 +1,24 @@
+{% comment %} Body of one form section (characters/mage/form/sections.html): trait columns
+   of label + number rows, or a grid of fields. {% endcomment %}
+{% if section.columns %}
+    <div class="tl-alloc">
+        {% for heading, rows in section.columns %}
+            <div class="tl-alloc__col">
+                {% if heading %}
+                    <div class="tl-alloc__head">
+                        <h3 class="tl-alloc__name">{{ heading }}</h3>
+                    </div>
+                {% endif %}
+                {% for field, label in rows %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=field label=label %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="tl-formgrid">
+        {% for field in section.fields %}
+            {% include "characters/mage/form/field.html" with field=field label="" %}
+        {% endfor %}
+    </div>
+{% endif %}

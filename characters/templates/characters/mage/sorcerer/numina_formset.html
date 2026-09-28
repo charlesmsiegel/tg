@@ -1,0 +1,25 @@
+{% comment %}
+Starting numina paths (numina_form_context from MultipleFormsetsMixin): one row per path
+with its rating, plus practice and ability for hedge magic (with_practice). "Add Path"
+clones the hidden empty row (widgets/formset_manager.js reads the data-formset-* hooks
+and the container / empty-form ids).
+  {% include "characters/mage/sorcerer/numina_formset.html" with with_practice=True %}
+{% endcomment %}
+<p class="tl-lede">Select 5 levels of Numina Paths.</p>
+{{ numina_form_context.formset.management_form }}
+{% if numina_form_context.formset.non_form_errors %}
+    <ul class="tl-field__error">
+        {% for error in numina_form_context.formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+{% endif %}
+<div id="{{ numina_form_context.container_id }}" class="tl-stack tl-stack--lg" data-formset-container data-formset-prefix="numina_form">
+    {% for f in numina_form_context.formset %}
+        {% include "characters/mage/sorcerer/numina_row.html" %}
+    {% endfor %}
+</div>
+<div id="{{ numina_form_context.empty_form_id }}" class="d-none">
+    {% include "characters/mage/sorcerer/numina_row.html" with f=numina_form_context.empty_form %}
+</div>
+<div class="tl-actions">
+    <button type="button" class="tl-btn tl-btn--ghost tl-btn--sm" data-formset-add="numina_form">Add Path</button>
+</div>

@@ -1,0 +1,27 @@
+{% comment %}
+The sections of a Mage-family create / edit form (`form_sections`, built by
+characters.views.mage.form_layout from the view's form_layout): numbered sections of
+fields, or of trait columns (Attributes, Abilities, Spheres) as label + number rows.
+A "reveal" section waits behind a ghost button and opens when one of its fields has
+an error.
+{% endcomment %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% for section in form_sections %}
+    <section class="tl-section{% if section.power %} tl-section--power{% endif %}{% if section.columns and not section.reveal %} tl-section--cols{% endif %}"
+             aria-labelledby="form-section-{{ section.num }}">
+        <div class="tl-section__head">
+            <span class="tl-section__num">{{ section.num }}</span>
+            <h2 class="tl-section__title" id="form-section-{{ section.num }}">{{ section.title }}</h2>
+        </div>
+        <div class="tl-section__body">
+            {% if section.reveal %}
+                <details class="tl-reveal"{% if section.open %} open{% endif %}>
+                    <summary class="tl-btn tl-btn--ghost tl-btn--sm">Show {{ section.title|lower }}</summary>
+                    {% include "characters/mage/form/section_body.html" %}
+                </details>
+            {% else %}
+                {% include "characters/mage/form/section_body.html" %}
+            {% endif %}
+        </div>
+    </section>
+{% endfor %}

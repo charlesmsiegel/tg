@@ -1,376 +1,59 @@
-{% extends "core/form.html" %}
-{% load get_specialty %}
-{% block creation_title %}
-    Create Mage
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="mageForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "characters/mage/mtahuman/form.html" %}
+{% comment %}
+Mage create / edit: the form_layout sections (MageFormContextMixin), then what the sheet
+lists but this form does not edit (backgrounds, rotes, resonance, focus).
+{% endcomment %}
+{% load tl %}
+{% block creation_title %}Create Mage{% endblock creation_title %}
+{% block formdetails %}method="post" id="mageForm" action="" enctype="multipart/form-data" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Nature</div>
-            <div class="col-sm">{{ form.nature }}</div>
-            <div class="col-sm">Affiliation</div>
-            <div class="col-sm">{{ form.affiliation }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Chronicle</div>
-            <div class="col-sm">{{ form.chronicle }}</div>
-            <div class="col-sm">Demeanor</div>
-            <div class="col-sm">{{ form.demeanor }}</div>
-            <div class="col-sm">Faction</div>
-            <div class="col-sm">{{ form.faction }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Essence</div>
-            <div class="col-sm">{{ form.essence }}</div>
-            <div class="col-sm">Concept</div>
-            <div class="col-sm">{{ form.concept }}</div>
-            <div class="col-sm">Subfaction</div>
-            <div class="col-sm">{{ form.subfaction }}</div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Attributes</h2>
-        </div>
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Physical</h3>
-            <h3 class="col-sm {{ object.get_heading }}">Social</h3>
-            <h3 class="col-sm {{ object.get_heading }}">Mental</h3>
-        </div>
-        <div class="row">
-            <div class="col-sm">Strength</div>
-            <div class="col-sm">{{ form.strength }}</div>
-            <div class="col-sm">Charisma</div>
-            <div class="col-sm">{{ form.charisma }}</div>
-            <div class="col-sm">Perception</div>
-            <div class="col-sm">{{ form.perception }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Dexterity</div>
-            <div class="col-sm">{{ form.dexterity }}</div>
-            <div class="col-sm">Manipulation</div>
-            <div class="col-sm">{{ form.manipulation }}</div>
-            <div class="col-sm">Intelligence</div>
-            <div class="col-sm">{{ form.intelligence }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Stamina</div>
-            <div class="col-sm">{{ form.stamina }}</div>
-            <div class="col-sm">Appearance</div>
-            <div class="col-sm">{{ form.appearance }}</div>
-            <div class="col-sm">Wits</div>
-            <div class="col-sm">{{ form.wits }}</div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
-        </div>
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Talents</h3>
-            <h3 class="col-sm {{ object.get_heading }}">Skills</h3>
-            <h3 class="col-sm {{ object.get_heading }}">Knowledges</h3>
-        </div>
-        {% for row in ability_rows %}
-            <div class="row">
-                {% for label, field, specialty in row %}
-                    <div class="col-sm">
-                        {{ label }}
-                        {% if specialty %}({{ specialty }}){% endif %}
-                    </div>
-                    <div class="col-sm">{{ field }}</div>
-                {% endfor %}
+    {{ block.super }}
+    {% if object %}
+        <section class="tl-section" aria-labelledby="mage-form-readonly">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title" id="mage-form-readonly">Edited elsewhere</h2>
             </div>
-        {% endfor %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Secondary Abilities</h2>
-        </div>
-        {% for tal, ski, kno in object.get_secondaries_for_display %}
-            <div class="row">
-                <div class="col-sm">{{ tal|first }}</div>
-                {% if tal|slice:"1:"|first != 0 %}
-                    <div class="col-sm">{{ tal|slice:"1:"|first }}</div>
-                {% else %}
-                    <div class="col-sm"></div>
-                {% endif %}
-                <div class="col-sm">{{ ski|first }}</div>
-                {% if ski|slice:"1:"|first != 0 %}
-                    <div class="col-sm">{{ ski|slice:"1:"|first }}</div>
-                {% else %}
-                    <div class="col-sm"></div>
-                {% endif %}
-                <div class="col-sm">{{ kno|first }}</div>
-                {% if kno|slice:"1:"|first != 0 %}
-                    <div class="col-sm">{{ kno|slice:"1:"|first }}</div>
-                {% else %}
-                    <div class="col-sm"></div>
-                {% endif %}
-            </div>
-        {% endfor %}
-        {% if object.faction.name == "Akashayana" %}
-            <div class="row">
-                <div class="col-sm">
-                    Do
-                    {% with spec=object|get_specialty:'do' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-col">
+                    <span class="tl-col__head">Backgrounds</span>
+                    {% for background in backgrounds %}
+                        {% include "characters/tl/background_row.html" %}
+                    {% empty %}
+                        <p class="tl-muted">None.</p>
+                    {% endfor %}
                 </div>
-                <div class="col-sm">{{ form.do }}</div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
+                <div class="tl-col">
+                    <span class="tl-col__head">Rotes</span>
+                    {% for rote in rotes %}
+                        <div class="tl-kv">
+                            <a href="{{ rote.get_absolute_url }}">{{ rote.name }}</a>
+                            <span class="tl-kv__v">{{ rote.effect.spheres }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="tl-muted">None.</p>
+                    {% endfor %}
+                </div>
+                <div class="tl-col">
+                    <span class="tl-col__head">Resonance</span>
+                    {% for res in resonance %}
+                        {% trait res.resonance.name res.rating variant="acc" url=res.resonance.get_absolute_url %}
+                    {% empty %}
+                        <p class="tl-muted">None.</p>
+                    {% endfor %}
+                </div>
+                <div class="tl-col">
+                    <span class="tl-col__head">Focus</span>
+                    {% for paradigm in object.paradigms.all %}
+                        <div class="tl-kv"><span class="tl-subhead">Paradigm</span><a href="{{ paradigm.get_absolute_url }}">{{ paradigm }}</a></div>
+                    {% endfor %}
+                    {% for practice in object.practices.all %}
+                        <div class="tl-kv"><span class="tl-subhead">Practice</span><a href="{{ practice.get_absolute_url }}">{{ practice }}</a></div>
+                    {% endfor %}
+                    {% for instrument in object.instruments.all %}
+                        <div class="tl-kv"><span class="tl-subhead">Instrument</span><a href="{{ instrument.get_absolute_url }}">{{ instrument }}</a></div>
+                    {% endfor %}
+                </div>
             </div>
-        {% endif %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Willpower</div>
-            <div class="col-sm">{{ form.willpower }}</div>
-            <div class="col-sm">Arete</div>
-            <div class="col-sm">{{ form.arete }}</div>
-            <div class="col-sm">Affinity Sphere</div>
-            <div class="col-sm">{{ object.affinity_sphere|default_if_none:'' }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Quintessence</div>
-            <div class="col-sm">{{ form.quintessence }}</div>
-            <div class="col-sm">Paradox</div>
-            <div class="col-sm">{{ form.paradox }}</div>
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Backgrounds</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Allies</div>
-            <div class="col-sm">{{ form.allies }}</div>
-            <div class="col-sm">Alternate Identity</div>
-            <div class="col-sm">{{ form.alternate_identity }}</div>
-            {% if technocratic %}
-                <div class="col-sm">Cloaking</div>
-            {% else %}
-                <div class="col-sm">Arcane</div>
-            {% endif %}
-            <div class="col-sm">{{ form.arcane }}</div>
-        </div>
-        <div class="row">
-            {% if technocratic %}
-                <div class="col-sm">Genius</div>
-            {% else %}
-                <div class="col-sm">Avatar</div>
-            {% endif %}
-            <div class="col-sm">{{ form.avatar }}</div>
-            <div class="col-sm">Backup</div>
-            <div class="col-sm">{{ form.backup }}</div>
-            <div class="col-sm">Blessing</div>
-            <div class="col-sm">{{ form.blessing }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Certification</div>
-            <div class="col-sm">{{ form.certification }}</div>
-            {% if technocratic %}
-                <div class="col-sm">Construct</div>
-            {% else %}
-                <div class="col-sm">Chantry</div>
-            {% endif %}
-            <div class="col-sm">{{ form.chantry }}</div>
-            <div class="col-sm">Contacts</div>
-            <div class="col-sm">{{ form.contacts }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Cult</div>
-            <div class="col-sm">{{ form.cult }}</div>
-            <div class="col-sm">Demesne</div>
-            <div class="col-sm">{{ form.demesne }}</div>
-            <div class="col-sm">Destiny</div>
-            <div class="col-sm">{{ form.destiny }}</div>
-        </div>
-        <div class="row">
-            {% if technocratic %}
-                <div class="col-sm">Hypercram</div>
-            {% else %}
-                <div class="col-sm">Dream</div>
-            {% endif %}
-            <div class="col-sm">{{ form.dream }}</div>
-            <div class="col-sm">Enhancement</div>
-            <div class="col-sm">{{ form.enhancement }}</div>
-            <div class="col-sm">Fame</div>
-            <div class="col-sm">{{ form.fame }}</div>
-        </div>
-        <div class="row">
-            {% if technocratic %}
-                <div class="col-sm">Companion</div>
-            {% else %}
-                <div class="col-sm">Familiar</div>
-            {% endif %}
-            <div class="col-sm">{{ form.familiar }}</div>
-            <div class="col-sm">Influence</div>
-            <div class="col-sm">{{ form.influence }}</div>
-            <div class="col-sm">Legend</div>
-            <div class="col-sm">{{ form.legend }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Library</div>
-            <div class="col-sm">{{ form.library }}</div>
-            <div class="col-sm">Mentor</div>
-            <div class="col-sm">{{ form.mentor }}</div>
-            <div class="col-sm">Node</div>
-            <div class="col-sm">{{ form.node }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Past Lives</div>
-            <div class="col-sm">{{ form.past_lives }}</div>
-            <div class="col-sm">Patron</div>
-            <div class="col-sm">{{ form.patron }}</div>
-            <div class="col-sm">Rank</div>
-            <div class="col-sm">{{ form.rank }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Resources</div>
-            <div class="col-sm">{{ form.resources }}</div>
-            <div class="col-sm">Retainers</div>
-            <div class="col-sm">{{ form.retainers }}</div>
-            {% if technocratic %}
-                <div class="col-sm">Laboratory</div>
-            {% else %}
-                <div class="col-sm">Sanctum</div>
-            {% endif %}
-            <div class="col-sm">{{ form.sanctum }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Spies</div>
-            <div class="col-sm">{{ form.spies }}</div>
-            <div class="col-sm">Status</div>
-            <div class="col-sm">{{ form.status_background }}</div>
-            <div class="col-sm">Totem</div>
-            <div class="col-sm">{{ form.totem }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Wonder</div>
-            <div class="col-sm">{{ form.wonder }}</div>
-            {% if technocratic %}
-                <div class="col-sm">Requisitions</div>
-                <div class="col-sm">{{ form.requisitions }}</div>
-                <div class="col-sm">Secret Weapons</div>
-                <div class="col-sm">{{ form.secret_weapons }}</div>
-            {% else %}
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
-                <div class="col-sm"></div>
-            {% endif %}
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Spheres</h2>
-        </div>
-        {% include "characters/mage/spheres/form.html" %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Rotes</h2>
-        </div>
-        {% for rote in rotes %}
-            <div class="row">
-                <a class="col-sm" href="{{ rote.get_absolute_url }}">{{ rote.name }}</a>
-                <div class="col-sm">{{ rote.effect.spheres }}</div>
-            </div>
-        {% endfor %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Resonance</h2>
-        </div>
-        <div class="row">
-            {% for res in resonance %}
-                <div class="col-sm">{{ res.resonance }}</div>
-                <div class="col-sm">{{ res.rating }}</div>
-            {% endfor %}
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Focus</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Paradigm</div>
-            <div class="col-sm">
-                {% for paradigm in object.paradigms.all %}
-                    <a href="{{ paradigm.get_absolute_url }}">{{ paradigm }}</a>
-                    <br />
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Practices</div>
-            <div class="col-sm">
-                {% for practice in object.practices.all %}
-                    <a href="{{ practice.get_absolute_url }}">{{ practice }}</a>
-                    <br />
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Instruments</div>
-            <div class="col-sm">
-                {% for instrument in object.instruments.all %}
-                    <a href="{{ instrument.get_absolute_url }}">{{ instrument }}</a>
-                    <br />
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Merits and Flaws</h2>
-        </div>
-        <div class="row">
-            {% for mf, rating in object.get_mf_and_rating_list %}
-                <a class="col-sm" href="{{ mf.get_absolute_url }}">{{ mf }}: {{ rating }}</a>
-            {% endfor %}
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Languages</h2>
-        </div>
-        <div class="row">
-            {% for lang in object.languages.all %}<div class="col-sm">{{ lang }}</div>{% endfor %}
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Appearance</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Date of Birth</div>
-            <div class="col-sm">{{ form.date_of_birth }}</div>
-            <div class="col-sm">Age of Awakening</div>
-            <div class="col-sm">{{ form.age_of_awakening }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Apparent Age</div>
-            <div class="col-sm">{{ form.apparent_age }}</div>
-            <div class="col-sm">Age</div>
-            <div class="col-sm">{{ form.age }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">History</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">History</div>
-            <div class="col-sm">{{ form.history }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Avatar Description</div>
-            <div class="col-sm">{{ form.avatar_description }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Goals</div>
-            <div class="col-sm">{{ form.goals }}</div>
-            <div class="col-sm">Notes</div>
-            <div class="col-sm">{{ form.notes }}</div>
-        </div>
-    </div>
-    {# ChainedSelect JavaScript auto-injects - no manual script needed #}
+        </section>
+    {% endif %}
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

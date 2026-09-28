@@ -1,76 +1,21 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Faction
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %}
+Mage faction create / edit. Founded and Ended are years, negative for BC; an Ended of
+5000 or later (the default) means the faction still exists.
+{% endcomment %}
+{% block creation_title %}Create Faction{% endblock creation_title %}
 {% block contents %}
-    {% load sanitize_text %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Languages</div>
-        <div class="col-sm">{{ languages }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Affinities</div>
-        <div class="col-sm">{{ affinities }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Paradigms</div>
-        <div class="col-sm">{{ paradigms|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Practices</div>
-        <div class="col-sm">{{ practices|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Media</div>
-        <div class="col-sm">{{ media|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Materials</div>
-        <div class="col-sm">{{ materials|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Founded</div>
-        <div class="col-sm">
-            {{ year }}
-            {% if date_written > 0 %}
-                AD
-            {% else %}
-                BC
-            {% endif %}
-        </div>
-    </div>
-    {% if form.ended < 5000 %}
-        <div class="row">
-            <div class="col-sm">Ended</div>
-            <div class="col-sm">
-                {{ year }}
-                {% if form.ended > 0 %}
-                    AD
-                {% else %}
-                    BC
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-sm">Parent Faction</div>
-        {% if form.parent %}
-            <a class="col-sm" href="{{ form.parent.get_absolute_url }}">{{ form.parent }}</a>
-        {% else %}
-            <div class="col-sm"></div>
-        {% endif %}
-    </div>
-    <div class="row">
-        <div class="col-sm">Subfactions</div>
-        <div class="col-sm">{{ subfactions|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.parent label="Parent faction" %}
+        {% include "characters/mage/form/field.html" with field=form.founded %}
+        {% include "characters/mage/form/field.html" with field=form.ended %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
+        {% include "characters/mage/form/field.html" with field=form.affinities %}
+        {% include "characters/mage/form/field.html" with field=form.paradigms %}
+        {% include "characters/mage/form/field.html" with field=form.practices %}
+        {% include "characters/mage/form/field.html" with field=form.languages %}
+        {% include "characters/mage/form/field.html" with field=form.media %}
+        {% include "characters/mage/form/field.html" with field=form.materials %}
     </div>
 {% endblock contents %}

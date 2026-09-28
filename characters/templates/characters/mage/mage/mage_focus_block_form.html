@@ -1,35 +1,35 @@
 {% load formset_tags %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Focus</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Choose a Metaphysical, a Personal, and an Ascension Tenet. Other Tenets are optional. Then choose Practices with total equal to your Arete. Note: a Practice must be at least the Sphere rating of an effect to be used, and all effects must have a Practice.
+{% comment %}
+Focus step (MageFocusForm + practice_formset): the three required Tenets and any others,
+then starting Practices totalling Arete ("Add Practice" clones a row; formset_manager.js).
+{% endcomment %}
+<p class="tl-lede">
+    Choose a Metaphysical, a Personal, and an Ascension Tenet. Other Tenets are optional. Then choose Practices with total equal to your Arete. Note: a Practice must be at least the Sphere rating of an effect to be used, and all effects must have a Practice.
+</p>
+<fieldset class="tl-mageform__group">
+    <legend class="tl-subhead">Tenets</legend>
+    <div class="tl-chargen__form">
+        {% include "characters/mage/form/field.html" with field=form.metaphysical_tenet label="Metaphysical" %}
+        {% include "characters/mage/form/field.html" with field=form.personal_tenet label="Personal" %}
+        {% include "characters/mage/form/field.html" with field=form.ascension_tenet label="Ascension" %}
+        {% include "characters/mage/form/field.html" with field=form.other_tenets label="Other Tenets" %}
     </div>
-</div>
-<div class="row">
-    <h3 class="col-sm {{ object.get_heading }}">Tenets</h3>
-</div>
-<div class="row">
-    <div class="col-sm">Metaphysical</div>
-    <div class="col-sm">{{ form.metaphysical_tenet }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Personal</div>
-    <div class="col-sm">{{ form.personal_tenet }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Ascension</div>
-    <div class="col-sm">{{ form.ascension_tenet }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Other Tenets</div>
-    <div class="col-sm">{{ form.other_tenets }}</div>
-</div>
-<div class="row">
-    <h3 class="col-sm {{ object.get_heading }}">Practices</h3>
-</div>
-{% formset practice_formset prefix="practicerating_set" add_label="Add Practice" wrapper_class="row form-row" show_remove=False %}
-    <div class="col-sm">{{ subform.practice }}</div>
-    <div class="col-sm">{{ subform.rating }}</div>
-{% endformset %}
+</fieldset>
+<fieldset class="tl-mageform__group">
+    <legend class="tl-subhead">Practices</legend>
+    {% if practice_formset.non_form_errors %}
+        <ul class="tl-field__error">
+            {% for error in practice_formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% formset practice_formset prefix="practicerating_set" add_label="Add Practice" add_class="tl-btn tl-btn--ghost tl-btn--sm tl-mageform__add" wrapper_class="tl-mageform__row" show_remove=False %}
+        {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+        {% include "characters/mage/form/field.html" with field=subform.practice label="Practice" %}
+        {% include "characters/mage/form/field.html" with field=subform.rating label="Rating" %}
+        {% if subform.non_field_errors %}
+            <ul class="tl-field__error">
+                {% for error in subform.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    {% endformset %}
+</fieldset>
