@@ -1,300 +1,44 @@
 {% extends "characters/werewolf/wtahuman/detail.html" %}
-{% load dots %}
-{% load sanitize_text %}
+{% comment %}
+Garou sheet (Spread C13): Gifts by rank (--acc) with Rites and Fetishes; Advantages
+beside Renown; Backgrounds, Health and Merits in three columns; Appearance with the Age
+of First Change; History with Childhood / First Change / Battle Scars. Experience and
+Renown Incidents live on the Experience tab.
+{% endcomment %}
+{% block cover_sub %}
+    {% if object.deed_name or object.concept %}
+        <span class="tl-cover__sub">
+            {% if object.deed_name %}“{{ object.deed_name }}”{% if object.concept %} · {% endif %}{% endif %}{{ object.concept }}
+        </span>
+    {% endif %}
+{% endblock cover_sub %}
 {% block basics %}
     {% include "characters/werewolf/garou/basics_display_include.html" %}
 {% endblock basics %}
+{% block powers %}
+    {% include "characters/werewolf/tl/gifts.html" %}
+{% endblock powers %}
 {% block advantages %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
-                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Gnosis:</div>
-                        <div class="col-3 dots">{{ object.gnosis|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Gnosis:</div>
-                        <div class="col-3 dots">{{ object.temporary_gnosis|default:0|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-0 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Rage:</div>
-                        <div class="col-3 dots">{{ object.rage|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Rage:</div>
-                        <div class="col-3 dots">{{ object.temporary_rage|default:0|boxes:10 }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Renown Section -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Renown</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glory:</div>
-                        <div class="col-3 dots">{{ object.glory|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glory:</div>
-                        <div class="col-3 dots">{{ object.temporary_glory|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-2 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Honor:</div>
-                        <div class="col-3 dots">{{ object.honor|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Honor:</div>
-                        <div class="col-3 dots">{{ object.temporary_honor|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-0 text-center">
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Wisdom:</div>
-                        <div class="col-3 dots">{{ object.wisdom|dots:10 }}</div>
-                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Wisdom:</div>
-                        <div class="col-3 dots">{{ object.temporary_wisdom|boxes:10 }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/werewolf/tl/advantages.html" with pools="full" %}
+    {% include "characters/werewolf/tl/renown.html" %}
 {% endblock advantages %}
 {% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds span="tl-span-4" %}
 {% endblock backgrounds %}
-{% block powers %}
-    {% block gifts %}
-        {% if object.gifts.all %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header text-center">
-                            <h5 class="tg-card-title {{ object.get_heading }}">Gifts</h5>
-                        </div>
-                        <div class="tg-card-body" style="padding: 20px;">
-                            <div class="row">
-                                {% for gift in object.gifts.all %}
-                                    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                                        <div class="tg-card h-100">
-                                            <div class="tg-card-body text-center" style="padding: 16px;">
-                                                <div class="mb-2">
-                                                    <a href="{{ gift.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ gift }}</a>
-                                                </div>
-                                                <div style="font-size: 0.75rem; color: var(--theme-text-secondary);">Rank {{ gift.rank }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endblock gifts %}
-    {% block rites %}
-        {% if rites %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header text-center">
-                            <h5 class="tg-card-title {{ object.get_heading }}">Rites</h5>
-                        </div>
-                        <div class="tg-card-body" style="padding: 20px;">
-                            <div class="row">
-                                {% for row in rites %}
-                                    {% for rite in row %}
-                                        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                                            <div class="tg-card h-100">
-                                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                                    <a href="{{ rite.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ rite.name }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endblock rites %}
-    {% block fetishes %}
-        {% if object.fetishes_owned.all %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-header text-center">
-                            <h5 class="tg-card-title {{ object.get_heading }}">Fetishes</h5>
-                        </div>
-                        <div class="tg-card-body" style="padding: 20px;">
-                            <div class="row">
-                                {% for fetish in object.fetishes_owned.all %}
-                                    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                                        <div class="tg-card h-100">
-                                            <div class="tg-card-body text-center" style="padding: 16px;">
-                                                <a href="{{ fetish.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ fetish.name }}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endblock fetishes %}
-{% endblock powers %}
+{% block health %}
+    {% include "characters/core/human/health_block_display.html" with span="tl-span-4" %}
+{% endblock health %}
+{% block mfs %}
+    {% include "characters/tl/merits.html" with span="tl-span-4" %}
+{% endblock mfs %}
 {% block appearance %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
-                </div>
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Birth:</span>
-                            {{ object.date_of_birth }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age of First Change:</span>
-                            {{ object.age_of_first_change }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Apparent Age:</span>
-                            {{ object.apparent_age }}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age:</span>
-                            {{ object.age }}
-                        </div>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <div class="mb-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Description:</span>
-                        </div>
-                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.description|sanitize_html|linebreaks }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/tl/appearance.html" with extra_label="Age of First Change" extra_value=object.age_of_first_change %}
 {% endblock appearance %}
 {% block history %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
-                </div>
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <!-- Main History Sections -->
-                    <div class="mb-3 text-center">
-                        <div class="mb-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Childhood:</span>
-                        </div>
-                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.childhood|sanitize_html|linebreaks }}</p>
-                    </div>
-                    
-                    <div class="mb-3 text-center">
-                        <div class="mb-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">History:</span>
-                        </div>
-                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.history|sanitize_html|linebreaks }}</p>
-                    </div>
-                    
-                    <div class="mb-3 text-center">
-                        <div class="mb-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">First Change:</span>
-                        </div>
-                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.first_change|sanitize_html|linebreaks }}</p>
-                    </div>
-                    
-                    <!-- Goals -->
-                    {% if object.goals %}
-                        <div class="mb-3 text-center">
-                            <div class="mb-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Goals:</span>
-                            </div>
-                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.goals|sanitize_html|linebreaks }}</p>
-                        </div>
-                    {% endif %}
-
-                    <!-- Battle Scars -->
-                    {% if object.battle_scars.all %}
-                        <div class="mb-3 text-center">
-                            <div class="mb-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Battle Scars:</span>
-                            </div>
-                            <p class="mb-0 text-center">{% for scar in object.battle_scars.all %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                        </div>
-                    {% endif %}
-
-                    <!-- Notes -->
-                    {% if object.notes %}
-                        <div class="text-center">
-                            <div class="mb-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Notes:</span>
-                            </div>
-                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.notes|sanitize_html|linebreaks }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/werewolf/tl/history.html" %}
 {% endblock history %}
 {% block xp %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Experience</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-0">
-                        <div class="col-sm-3">
-                            <strong>Experience Points:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.xp }}</div>
-                        <div class="col-sm-3">
-                            <strong>Spent XP:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.total_spent_xp }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% if object.renown_incidents %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Renown Incidents</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        {% for incident in object.renown_incidents %}
-                            <div class="row mb-2">
-                                <div class="col-sm text-center">
-                                    <a href="{{ incident.get_absolute_url }}">{{ incident }}</a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    {% include "characters/tl/xp_history.html" %}
+    {% include "characters/werewolf/garou/tl_xp_totals.html" %}
+    {% include "characters/werewolf/garou/tl_renown_incidents.html" %}
 {% endblock xp %}

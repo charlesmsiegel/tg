@@ -1,0 +1,38 @@
+{% comment %}
+Werewolf-family Advantages: Willpower (dots over squares), then Gnosis and Rage.
+  pools="full"    Gnosis and Rage as dots over (temporary) squares — Garou
+  pools="dots"    Gnosis and Rage as permanent dots — Fera, Drones
+  pools="nonzero" Gnosis / Rage dots only when above 0 — Kinfolk, Fomori
+Drones also show Willpower per turn when above 1. span defaults to tl-span-6.
+{% endcomment %}
+<section class="tl-section {{ span|default:'tl-span-6' }}" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
+    </div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div>
+            {% include "characters/werewolf/tl/track.html" with label="Willpower" perm=object.willpower temp=object.temporary_willpower %}
+            {% if pools == "full" %}
+                {% include "characters/werewolf/tl/track.html" with label="Gnosis" perm=object.gnosis temp=object.temporary_gnosis|default:0 %}
+                {% include "characters/werewolf/tl/track.html" with label="Rage" perm=object.rage temp=object.temporary_rage|default:0 %}
+            {% elif pools == "dots" %}
+                {% include "characters/werewolf/tl/track.html" with label="Gnosis" perm=object.gnosis %}
+                {% include "characters/werewolf/tl/track.html" with label="Rage" perm=object.rage %}
+            {% else %}
+                {% if object.gnosis %}
+                    {% include "characters/werewolf/tl/track.html" with label="Gnosis" perm=object.gnosis %}
+                {% endif %}
+                {% if object.rage %}
+                    {% include "characters/werewolf/tl/track.html" with label="Rage" perm=object.rage %}
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if object.willpower_per_turn > 1 %}
+            <div class="tl-kv">
+                <span class="tl-subhead">Willpower per turn</span>
+                <span class="tl-kv__v">{{ object.willpower_per_turn }}</span>
+            </div>
+        {% endif %}
+    </div>
+</section>

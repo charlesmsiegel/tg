@@ -1,0 +1,32 @@
+{% comment %}
+Shapeshifter History: Childhood / First Change / History / Goals, then Battle Scars and
+Notes (and Public information) when present — each a mono eyebrow over prose at 68ch.
+{% endcomment %}
+{% with scars=object.battle_scars.all %}
+    {% if object.childhood or object.first_change or object.history or object.goals or scars or object.notes or object.public_info %}
+        <section class="tl-section" id="history">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">History</h2>
+            </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% include "characters/tl/prose_block.html" with label="Childhood" text=object.childhood %}
+                {% include "characters/tl/prose_block.html" with label="First Change" text=object.first_change %}
+                {% include "characters/tl/prose_block.html" with label="History" text=object.history %}
+                {% include "characters/tl/prose_block.html" with label="Goals" text=object.goals %}
+                {% if scars %}
+                    <div class="tl-stack">
+                        <span class="tl-subhead">Battle Scars</span>
+                        <div class="tl-prose">
+                            <p>
+                                {% for scar in scars %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+                {% include "characters/tl/prose_block.html" with label="Notes" text=object.notes %}
+                {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

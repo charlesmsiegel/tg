@@ -1,7 +1,22 @@
 {% extends "characters/core/character/detail.html" %}
-{% block status_row %}
+{% comment %}Spirit sheet: traits on the cover, Charms, then the description and journal.{% endcomment %}
+{% block basics %}
     {% include "characters/werewolf/spirit/display_includes/basics.html" %}
-{% endblock status_row %}
+{% endblock basics %}
 {% block statistics %}
     {% include "characters/werewolf/spirit/display_includes/spiritcharms.html" %}
 {% endblock statistics %}
+{% block flavor %}
+    {% if object.description %}
+        <section class="tl-section" id="description">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Description</h2>
+            </div>
+            <div class="tl-section__body">
+                {% include "characters/tl/prose_block.html" with label="" text=object.description %}
+            </div>
+        </section>
+    {% endif %}
+    {% include "characters/tl/journal_link.html" %}
+{% endblock flavor %}

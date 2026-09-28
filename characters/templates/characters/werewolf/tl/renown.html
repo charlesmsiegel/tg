@@ -1,0 +1,19 @@
+{% comment %}
+Renown (--acc): one track per trait from object.renown_tracks — (label, permanent,
+temporary); temporary None means dots only. span defaults to tl-span-6.
+{% endcomment %}
+{% with tracks=object.renown_tracks %}
+    {% if tracks %}
+        <section class="tl-section tl-section--power {{ span|default:'tl-span-6' }}" id="renown">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Renown</h2>
+            </div>
+            <div class="tl-section__body">
+                {% for label, perm, temp in tracks %}
+                    {% include "characters/werewolf/tl/track.html" with label=label perm=perm temp=temp variant="acc" %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

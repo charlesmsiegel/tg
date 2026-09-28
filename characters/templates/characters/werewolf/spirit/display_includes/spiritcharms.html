@@ -1,37 +1,31 @@
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-light py-2">
-                <h5 class="mb-0 wta_heading">Charms</h5>
-            </div>
-            <div class="card-body p-0">
-                {% if object.charms.all %}
-                    <table class="table table-hover mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Charm</th>
-                                <th class="text-center">Essence Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for charm in object.charms.all %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ charm.get_absolute_url }}" class="font-weight-bold">{{ charm.name }}</a>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-pill badge-wta">{{ charm.essence_cost }}</span>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="p-3">
-                        <p class="text-muted text-center mb-0">No charms.</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+{% comment %}Spirit Charms (--acc): name and Essence cost.{% endcomment %}
+<section class="tl-section tl-section--power" id="charms">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Charms</h2>
     </div>
-</div>
+    <div class="tl-section__body">
+        {% with charms=object.charms.all %}
+            {% if charms %}
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th>Charm</th>
+                            <th class="tl-num">Essence cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for charm in charms %}
+                            <tr>
+                                <td><a href="{{ charm.get_absolute_url }}">{{ charm.name }}</a></td>
+                                <td class="tl-num">{{ charm.essence_cost }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="tl-muted">No charms.</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+</section>

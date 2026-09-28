@@ -1,0 +1,17 @@
+{% comment %}Experience tab: the Renown Incidents on record (Garou), linked when known.{% endcomment %}
+<section class="tl-section" id="renown-incidents">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Renown Incidents</h2>
+        <span class="tl-section__aside tl-mono tl-muted">{{ object.num_renown_incidents }}</span>
+    </div>
+    <div class="tl-section__body tl-stack">
+        {% for name, incident in object.renown_incident_list %}
+            <div>
+                {% if incident %}<a href="{{ incident.get_absolute_url }}">{{ name }}</a>{% else %}{{ name }}{% endif %}
+            </div>
+        {% empty %}
+            <p class="tl-muted">No renown incidents yet.</p>
+        {% endfor %}
+    </div>
+</section>

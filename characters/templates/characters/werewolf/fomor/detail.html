@@ -1,30 +1,27 @@
 {% extends "characters/werewolf/wtahuman/detail.html" %}
+{% comment %}Fomor sheet: Fomori Powers (--acc) and Willpower, Rage and Gnosis.{% endcomment %}
 {% block basics %}
     {% include "characters/werewolf/fomor/basics_display_include.html" %}
 {% endblock basics %}
 {% block powers %}
-    {% if object.powers.all %}
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Fomor Powers</h5>
-                    </div>
-                    <div class="tg-card-body" style="padding: 20px;">
-                        <div class="row">
-                            {% for power in object.powers.all %}
-                                <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                                    <div class="tg-card h-100">
-                                        <div class="tg-card-body text-center" style="padding: 16px;">
-                                            <a href="{{ power.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ power.name }}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+    {% with powers=object.powers.all %}
+        {% if powers %}
+            <section class="tl-section tl-section--power tl-span-6" id="powers">
+                <div class="tl-section__head">
+                    <span class="tl-section__num"></span>
+                    <h2 class="tl-section__title">Fomor Powers</h2>
                 </div>
-            </div>
-        </div>
-    {% endif %}
+                <div class="tl-section__body tl-powergrid tl-powergrid--2">
+                    {% for power in powers %}
+                        <div class="tl-power">
+                            <span class="tl-power__name"><a href="{{ power.get_absolute_url }}">{{ power.name }}</a></span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endwith %}
 {% endblock powers %}
+{% block advantages %}
+    {% include "characters/werewolf/tl/advantages.html" with pools="nonzero" %}
+{% endblock advantages %}

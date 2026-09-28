@@ -1,0 +1,44 @@
+{% comment %}
+Gifts (--acc): one column per rank from object.gifts_by_rank (name, then the Tribe /
+Auspice / Breed it came from), then a column of Rites and Fetishes. Hidden when all three
+are empty. Reads object.rites_known and object.fetishes_owned when the model has them.
+{% endcomment %}
+{% with groups=object.gifts_by_rank rites=object.rites_known.all fetishes=object.fetishes_owned.all %}
+    {% if groups or rites or fetishes %}
+        <section class="tl-section tl-section--power tl-section--cols" id="gifts">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Gifts</h2>
+            </div>
+            <div class="tl-section__body tl-cols">
+                {% for rank, rows in groups %}
+                    <div class="tl-col tl-gifts__col">
+                        <span class="tl-col__head">Rank {{ rank }}</span>
+                        {% for gift, source in rows %}
+                            <div class="tl-gift">
+                                <a href="{{ gift.get_absolute_url }}">{{ gift.name }}</a>
+                                {% if source %}<span class="tl-gift__src">{{ source }}</span>{% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                {% if rites or fetishes %}
+                    <div class="tl-col tl-gifts__extra">
+                        {% if rites %}
+                            <span class="tl-col__head">Rites</span>
+                            {% for rite in rites %}
+                                <div class="tl-gift"><a href="{{ rite.get_absolute_url }}">{{ rite.name }}</a></div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if fetishes %}
+                            <span class="tl-col__head">Fetishes</span>
+                            {% for fetish in fetishes %}
+                                <div class="tl-gift"><a href="{{ fetish.get_absolute_url }}">{{ fetish.name }} →</a></div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

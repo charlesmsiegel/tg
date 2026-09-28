@@ -1,27 +1,15 @@
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Tribe:</span>
-                        <a href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>
-                        {% for camp in object.camps.all %} - <a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>{% endfor %}
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Rank:</span>
-                        {{ object.get_rank_name }}
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Auspice:</span>
-                        {{ object.get_auspice_display }}
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Breed:</span>
-                        {{ object.get_breed_display }}
-                    </div>
-                </div>
-            </div>
-        </div>
+{% load tl %}
+{% if object.tribe %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Tribe</span>
+        <span class="tl-facts__v">
+            <a href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>{% for camp in object.camps.all %} · <a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>{% endfor %}
+        </span>
     </div>
-</div>
+{% endif %}
+{% fact "Auspice" object.get_auspice_display %}
+{% fact "Breed" object.get_breed_display %}
+{% fact "Rank" object.get_rank_name %}
+{% fact "Pack" object.group_set.first %}
+{% fact "Nature" object.nature %}
+{% fact "Demeanor" object.demeanor %}

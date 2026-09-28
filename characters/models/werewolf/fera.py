@@ -1,6 +1,6 @@
 from django.db import models
 
-from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.wtahuman import WtAHuman
 from core.utils import add_dot
@@ -88,6 +88,53 @@ class Fera(WtAHuman):
             if permission:
                 groups[key] = Gift.objects.filter(rank=1, allowed=permission).order_by("name")
         return groups
+
+    # Breed-specific renown traits (Bastet ferocity, Kitsune chie, ...), shown on the sheet.
+    RENOWN_TRAITS = frozenset(
+        {
+            "glory", "honor", "wisdom", "ferocity", "cunning", "obligation", "obedience",
+            "curiosity", "succor", "vision", "chie", "toku", "kagayaki", "valor",
+            "harmony", "subtlety", "humor", "infamy", "innovation",
+        }
+    )  # fmt: skip
+
+    def choice_display(self, field):
+        """Display label for a breed/faction-style choice field (choices or title case)."""
+        value = getattr(self, field, "") or ""
+        if not value:
+            return ""
+        choices = dict(self._meta.get_field(field).choices or ())
+        if field == "breed":
+            choices = dict(getattr(self, "BREEDS", ())) or choices
+        return choices.get(value, str(value).replace("_", " ").title())
+
+    def sheet_choices(self):
+        """(label, value) for the breed/faction step choices, for the sheet cover."""
+        rows = []
+        for field in self.chargen_choice_fields:
+            value = self.choice_display(field)
+            if value:
+                label = str(self._meta.get_field(field).verbose_name).title()
+                rows.append((label, value))
+        return rows
+
+    def gifts_by_rank(self):
+        """Gifts grouped by rank, each labelled with the breed/faction choice it came from."""
+        sources = {getattr(self, f): self.choice_display(f) for f in self.chargen_choice_fields}
+        sources = {cond: label for cond, label in sources.items() if cond}
+        return gifts_by_rank(self.gifts.all(), sources, self.type)
+
+    def renown_tracks(self):
+        """(label, permanent, temporary) for the sheet's Renown section: the breed's own
+        renown traits (permanent only), plus the generic Renown pool when used."""
+        tracks = [
+            (str(f.verbose_name).title(), getattr(self, f.name), None)
+            for f in type(self)._meta.local_concrete_fields
+            if f.name in self.RENOWN_TRAITS
+        ]
+        if not tracks or self.renown or self.temporary_renown:
+            tracks.append(("Renown", self.renown, self.temporary_renown))
+        return tracks
 
     def starting_gift_choices(self):
         return Gift.objects.filter(rank=1, allowed__in=self.gift_permissions.all())

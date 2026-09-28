@@ -1,0 +1,11 @@
+{% comment %}Experience tab: unspent and approved-spent XP (the Garou sheet always showed both).{% endcomment %}
+<section class="tl-section" id="xp-totals">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Totals</h2>
+    </div>
+    <div class="tl-section__body tl-factrow">
+        <div><span class="tl-subhead">Experience points</span><span>{{ object.xp }}</span></div>
+        <div><span class="tl-subhead">Spent XP</span><span>{{ object.total_spent_xp }}</span></div>
+    </div>
+</section>
