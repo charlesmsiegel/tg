@@ -689,7 +689,8 @@ class XPSpendFormMixin:
             self.fields[name].widget.attrs.update(
                 {
                     "hx-get": url,
-                    "hx-trigger": "change",
+                    # Arrowing through a closed select fires change per step.
+                    "hx-trigger": "change delay:200ms",
                     "hx-target": "#xp-spend-fields",
                     "hx-swap": "innerHTML",
                     "hx-sync": "closest form:replace",

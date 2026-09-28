@@ -302,6 +302,15 @@ class SpendRoundTripTests(SpendXPTestBase):
         self.character.refresh_from_db()
         self.assertEqual(self.character.xp, 7)
 
+    def test_a_trait_from_another_type_is_refused(self):
+        # A tampered pair: Strength (an Attribute) posted as an Ability.
+        response = self.post({"category": "Ability", "example": self.strength.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Choose a trait.")
+        self.assertFalse(XPSpendingRequest.objects.exists())
+        self.character.refresh_from_db()
+        self.assertEqual((self.character.xp, self.character.strength), (20, 2))
+
     def test_non_owner_cannot_spend(self):
         response = self.post({"category": "Willpower"}, user=self.other)
         self.assertEqual(response.status_code, 403)
