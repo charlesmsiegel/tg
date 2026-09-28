@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
@@ -81,3 +82,33 @@ class ObjectWorkflowTests(TestCase):
         self.assertIn(self.client.post(submit).status_code, {403, 404})
         self.character.refresh_from_db()
         self.assertEqual(self.character.status, "Un")
+
+    def test_other_player_gets_403_whatever_the_state(self):
+        # Permission is checked before the state, so the response reveals nothing.
+        self.character.status = "Sub"
+        self.character.save()
+        other = get_user_model().objects.create_user("workflow_nosy_player")
+        submit = reverse("accounts:object_submission", args=["character", self.character.pk])
+        self.client.force_login(other)
+        self.assertEqual(self.client.post(submit).status_code, 403)
+
+    def test_invalid_transition_redirects_back_with_the_reason(self):
+        self.character.status = "Sub"
+        self.character.save()
+        submit = reverse("accounts:object_submission", args=["character", self.character.pk])
+        self.client.force_login(self.owner)
+        response = self.client.post(submit)
+        self.assertRedirects(
+            response, self.character.get_absolute_url(), fetch_redirect_response=False
+        )
+        shown = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(shown, ["Only drafts can be submitted"])
+
+    def test_refused_storyteller_action_queues_no_message(self):
+        self.character.status = "Sub"
+        self.character.save()
+        approve = reverse("accounts:object_approval", args=["character", self.character.pk])
+        self.client.force_login(self.other_st)
+        response = self.client.post(approve)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(list(get_messages(response.wsgi_request)), [])

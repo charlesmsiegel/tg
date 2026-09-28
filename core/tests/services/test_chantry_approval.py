@@ -1,6 +1,7 @@
 """Chantry submission and revision through the approval endpoints."""
 
 from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
@@ -36,11 +37,16 @@ class ChantrySubmissionFlowTests(TestCase):
     def test_submit_refused_with_reasons(self):
         self.client.force_login(self.owner)
         response = self.client.post(self.submit)
-        self.assertContains(
-            response,
-            "Finish every creation step (the chantry is on step 2 of 6).; "
-            "Allies has not been set up yet.",
-            status_code=400,
+        self.assertRedirects(
+            response, self.chantry.get_absolute_url(), fetch_redirect_response=False
+        )
+        shown = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertEqual(
+            shown,
+            [
+                "Finish every creation step (the chantry is on step 2 of 6).",
+                "Allies has not been set up yet.",
+            ],
         )
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.status, "Un")
