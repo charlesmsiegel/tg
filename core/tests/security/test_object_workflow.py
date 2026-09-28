@@ -18,12 +18,13 @@ class ObjectWorkflowTests(TestCase):
         other_chronicle = Chronicle.objects.create(name="Other chronicle")
         wod = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(user=self.st, chronicle=self.chronicle, gameline=wod)
-        STRelationship.objects.create(
-            user=self.other_st, chronicle=other_chronicle, gameline=wod
-        )
+        STRelationship.objects.create(user=self.other_st, chronicle=other_chronicle, gameline=wod)
         self.character = Human.objects.create(
-            name="Draft hero", owner=self.owner, chronicle=self.chronicle,
-            status="Un", concept="Initial concept",
+            name="Draft hero",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="Un",
+            concept="Initial concept",
         )
 
     def test_owner_cannot_self_approve_through_update_form(self):

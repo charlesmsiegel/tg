@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from characters.models.core.human import Human
 from game.forms import StoryEditForm
-from game.models import Chronicle, Gameline, STRelationship, Story
+from game.models import Chronicle, Gameline, Story, STRelationship
 
 
 class StoryChronicleTestBase(TestCase):
