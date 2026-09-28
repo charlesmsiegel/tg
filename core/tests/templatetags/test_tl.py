@@ -65,6 +65,12 @@ class QPWheelTest(SimpleTestCase):
         self.assertEqual(states[18:], ["is-p"] * 2)
         self.assertEqual(set(states[4:18]), {""})
 
+    def test_paradox_wins_where_the_two_overlap(self):
+        # 19 Quintessence and 3 Paradox claim boxes 17-18 twice: they show as Paradox.
+        states = [state.strip() for state, _, _ in self.boxes(qp_wheel(19, 3))]
+        self.assertEqual(states[:17], ["is-q"] * 17)
+        self.assertEqual(states[17:], ["is-p"] * 3)
+
     def test_first_box_sits_left_of_centre(self):
         _, left, top = self.boxes(qp_wheel(0, 0))[0]
         # 189 degrees: just above the horizontal, on the left.

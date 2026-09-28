@@ -66,6 +66,12 @@
     if (e.key !== 'Escape') return;
     var open = document.querySelector('details.tl-pop[open], details.tl-menu[open]');
     if (open) { open.open = false; open.querySelector('summary').focus(); }
+    // Legacy dropdowns (the shim below): close and return focus to their toggle.
+    document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
+      m.classList.remove('show');
+      var t = m.parentElement && m.parentElement.querySelector('[data-toggle="dropdown"], [data-bs-toggle="dropdown"]');
+      if (t) { t.setAttribute('aria-expanded', 'false'); t.focus(); }
+    });
   });
 
   // 4. Remember <details data-tl-remember="key"> open state.
