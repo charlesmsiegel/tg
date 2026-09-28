@@ -1,4 +1,3 @@
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.timezone import now
@@ -12,9 +11,16 @@ from characters.models.core import (
 )
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
+from characters.forms.core.crud_fields import (
+    COMMON_KNOWLEDGE_FIELDS,
+    COMMON_SKILL_FIELDS,
+    COMMON_TALENT_FIELDS,
+)
 from characters.tests.utils import human_setup
 from core.models import Language, Number
 from game.models import Chronicle, ObjectType
+
+COMMON_ABILITIES = COMMON_TALENT_FIELDS + COMMON_SKILL_FIELDS + COMMON_KNOWLEDGE_FIELDS
 
 
 class TestHuman(TestCase):
@@ -841,6 +847,7 @@ class TestHumanCreateView(TestCase):
             "perception": 1,
             "intelligence": 1,
             "wits": 1,
+            **dict.fromkeys(COMMON_ABILITIES, 0),
         }
         self.url = Human.get_full_creation_url()
 
@@ -890,6 +897,8 @@ class TestHumanUpdateView(TestCase):
             "perception": 1,
             "intelligence": 1,
             "wits": 1,
+            **dict.fromkeys(COMMON_ABILITIES, 0),
+            "alertness": 2,
         }
         self.url = self.human.get_full_update_url()
 
@@ -909,6 +918,7 @@ class TestHumanUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.human.refresh_from_db()
         self.assertEqual(self.human.name, "Test Human Updated")
+        self.assertEqual(self.human.alertness, 2)  # abilities are editable here
 
 
 class TestHumanBasicsView(TestCase):

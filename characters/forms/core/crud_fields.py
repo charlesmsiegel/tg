@@ -144,6 +144,9 @@ HUMAN_CREATE_FIELDS = (
     "goals",
     "notes",
     *ATTRIBUTE_FIELDS,
+    *COMMON_TALENT_FIELDS,
+    *COMMON_SKILL_FIELDS,
+    *COMMON_KNOWLEDGE_FIELDS,
 )
 
 HUMAN_UPDATE_FIELDS = HUMAN_CREATE_FIELDS
@@ -421,6 +424,9 @@ MT_A_HUMAN_UPDATE_FIELDS = (
     "goals",
     "notes",
     *ATTRIBUTE_FIELDS,
+    *COMMON_TALENT_FIELDS,
+    *COMMON_SKILL_FIELDS,
+    *COMMON_KNOWLEDGE_FIELDS,
     "awareness",
     "art",
     "leadership",
@@ -822,6 +828,9 @@ MAGE_CREATE_FIELDS = (
     "goals",
     "notes",
     *ATTRIBUTE_FIELDS,
+    *COMMON_TALENT_FIELDS,
+    *COMMON_SKILL_FIELDS,
+    *COMMON_KNOWLEDGE_FIELDS,
     "awareness",
     "art",
     "leadership",
@@ -912,6 +921,7 @@ MAGE_CREATE_FIELDS = (
     "forces",
     "matter",
     "life",
+    "prime",
     "arete",
     "affinity_sphere",
     "corr_name",
