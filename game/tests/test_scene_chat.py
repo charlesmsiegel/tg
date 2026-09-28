@@ -157,8 +157,8 @@ class PostPartialTests(SceneChatBase):
         self.assertIn('<span class="quote">"run"</span>', html)
         self.assertIn("<b>now</b>", html)
         self.assertNotIn("<script", html)
-        self.assertNotIn('class="highlight"', html)
-        self.assertNotIn('class="st"', html)
+        self.assertNotIn("tl-turn--mine", html)
+        self.assertNotIn("tl-turn--st", html)
 
     def test_display_name_is_escaped(self):
         html = self.render(self.post(self.character, "Hi", display="<i>Bob</i>"))
@@ -166,16 +166,16 @@ class PostPartialTests(SceneChatBase):
 
     def test_highlight_only_for_the_viewers_own_posts(self):
         post = self.post(self.character, "Mine")
-        self.assertIn('class="highlight"', self.render(post, self.users["owner"]))
-        self.assertNotIn('class="highlight"', self.render(post, self.users["player"]))
-        self.assertNotIn('class="highlight"', self.render(post))
+        self.assertIn("tl-turn--mine", self.render(post, self.users["owner"]))
+        self.assertNotIn("tl-turn--mine", self.render(post, self.users["player"]))
+        self.assertNotIn("tl-turn--mine", self.render(post))
 
     def test_storyteller_style_wins_for_everyone(self):
         post = self.post(self.st_character, "Rain falls.")
         for viewer in (self.users["st"], self.users["owner"], None):
             html = self.render(post, viewer)
-            self.assertIn('class="st"', html)
-            self.assertNotIn('class="highlight"', html)
+            self.assertIn("tl-turn--st", html)
+            self.assertNotIn("tl-turn--mine", html)
 
     def test_ownerless_post_has_no_link(self):
         post = Post.objects.create(scene=self.scene, character=None, display_name="Voice")

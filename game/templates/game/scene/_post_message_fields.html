@@ -1,9 +1,5 @@
 {% comment %}The post form's text fields. The socket sends a fresh copy to the sender
-only after a post succeeds, so a refused post keeps the typed text. Inputs: oob, autofocus.{% endcomment %}<div id="post-message-fields"{% if oob %} hx-swap-oob="true"{% endif %}>
-    <div class="mb-3">
-        <textarea id="display-name-input" name="display_name" placeholder="Display Name (Optional)" rows="1" cols="25" maxlength="100" class="form-control" aria-label="Display name"></textarea>
-    </div>
-    <div class="mb-3">
-        <textarea id="message-input" name="message" placeholder="Message" class="form-control" rows="4" aria-label="Message" required{% if autofocus %} autofocus{% endif %}></textarea>
-    </div>
+only after a post succeeds, so a refused post keeps the typed text. Inputs: oob, autofocus.{% endcomment %}<div id="post-message-fields"{% if oob %} hx-swap-oob="true"{% endif %} class="tl-composer__fields">
+    <input id="display-name-input" name="display_name" type="text" placeholder="Display name (optional)" maxlength="100" aria-label="Display name" class="tl-composer__display">
+    <textarea id="message-input" name="message" placeholder="Write your post…" rows="3" aria-label="Message" required{% if autofocus %} autofocus{% endif %}></textarea>
 </div>

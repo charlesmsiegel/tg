@@ -6,43 +6,23 @@ from pathlib import Path
 from django.test import SimpleTestCase
 
 
-class TestSceneDetailTemplateTgCardClasses(SimpleTestCase):
-    """Test that game/scene/detail.html uses tg-card instead of Bootstrap card classes."""
+class TestSceneDetailTemplateSpread(SimpleTestCase):
+    """game/scene/detail.html is on the Spread shell: no Bootstrap or tg-card markup."""
 
-    def test_scene_detail_template_uses_tg_card_classes(self):
-        """Verify scene detail template uses tg-card instead of Bootstrap card classes."""
+    def test_scene_detail_template_uses_the_spread_shell(self):
         template_path = Path(__file__).parent.parent.parent / "templates/game/scene/detail.html"
         content = template_path.read_text()
+        self.assertIn('{% extends "core/tl_base.html" %}', content)
 
-        # Verify tg-card classes are used
-        self.assertIn("tg-card", content)
-
-        # Remove script tags from content before checking
         content_without_scripts = re.sub(
             r"<script[\s\S]*?</script>", "", content, flags=re.IGNORECASE
         )
-
-        # Find Bootstrap card classes that are NOT tg-card
-        # Look for 'card' as a standalone class (not tg-card, header-card, card-*, etc.)
-        # Pattern: word boundary + card + word boundary, but not preceded by -
-        bootstrap_card_matches = []
-        for line in content_without_scripts.split("\n"):
-            if 'class="' in line:
-                # Extract class values
-                class_match = re.search(r'class="([^"]*)"', line)
-                if class_match:
-                    classes = class_match.group(1).split()
-                    for cls in classes:
-                        # Check for Bootstrap card classes (card, card-body, card-header, etc.)
-                        if cls == "card" or cls.startswith("card-"):
-                            bootstrap_card_matches.append(f"Line: {line.strip()}")
-
-        self.assertEqual(
-            len(bootstrap_card_matches),
-            0,
-            "Found Bootstrap card classes instead of tg-card in scene/detail.html:\n"
-            + "\n".join(bootstrap_card_matches),
-        )
+        legacy = []
+        for class_value in re.findall(r'class="([^"]*)"', content_without_scripts):
+            for cls in class_value.split():
+                if cls in {"card", "tg-card", "btn", "row"} or cls.startswith(("card-", "btn-", "col-")):
+                    legacy.append(cls)
+        self.assertEqual(legacy, [], "Legacy Bootstrap/tg-card classes in scene/detail.html")
 
 
 class TestWonderFormTemplateTgCardClasses(SimpleTestCase):
