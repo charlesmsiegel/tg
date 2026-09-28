@@ -7,6 +7,8 @@ CharacterModel (a joined row, not the polymorphic subclass), which has no URL of
 Spread turn row: data-speaker (Storyteller flag, character id and display name) lets
 scene-chat.js fold consecutive posts by the same speaker into one turn (is-cont), for
 posts on the page and live ones alike; another character or alias starts a new turn.
+A dice post with stored roll data (post.roll_strip, game.rolls) shows its prose and the
+roll strip; any other post, older rolls included, shows its message text.
 {% endcomment %}<article class="tl-turn post-item{% if post.author_is_st %} tl-turn--st{% elif viewer_id and post.character.owner_id == viewer_id %} tl-turn--mine{% endif %}"
          id="post-{{ post.pk }}"
          data-post-id="{{ post.pk }}"
@@ -15,5 +17,34 @@ posts on the page and live ones alike; another character or alias starts a new t
         <span class="tl-turn__who">{% if post.author_is_st %}† {% endif %}{% if post.character %}<a href="{% url 'characters:character' post.character_id %}">{{ post.display_name }}</a>{% else %}{{ post.display_name }}{% endif %}</span>
         <time class="tl-turn__time" datetime="{{ post.datetime_created|date:'c' }}">{{ post.datetime_created|date:"H:i" }}{% if viewer_id and post.character.owner_id == viewer_id and not post.author_is_st %} · you{% endif %}</time>
     </div>
-    <div class="tl-turn__body"><div class="tl-turn__text post">{{ post.message|safe_post }}</div></div>
+    <div class="tl-turn__body">
+        {% with strip=post.roll_strip %}
+            {% if strip %}
+                {% if strip.text %}<div class="tl-turn__text post">{{ strip.text|safe_post }}</div>{% endif %}
+                <div class="tl-roll{% if strip.multi %} tl-roll--multi{% endif %}" data-roll="{{ strip.kind }}">
+                    <div class="tl-roll__head">
+                        <span class="tl-roll__label">{{ strip.label }}</span>
+                        <span class="tl-roll__pool">{{ strip.pool }}</span>
+                        {% if strip.spent %}<span class="tl-roll__spent">Spent {{ strip.spent }}</span>{% endif %}
+                    </div>
+                    {% if strip.multi %}
+                        <ol class="tl-roll__rows">
+                            {% for row in strip.rows %}
+                                <li class="tl-roll__row">
+                                    <span class="tl-roll__n">{{ row.number }}{% if row.raised %} · diff {{ row.difficulty }}{% endif %}</span>
+                                    {% include "game/scene/_roll_dice.html" %}
+                                    <span class="tl-roll__rowresult{% if row.botch %} is-botch{% endif %}">{{ row.result }}{% if strip.kind == "extended" %} · total {{ row.total }}{% endif %}</span>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        {% include "game/scene/_roll_dice.html" with row=strip.rows.0 %}
+                    {% endif %}
+                    {% if strip.result %}<span class="tl-roll__result{% if strip.botch %} is-botch{% endif %}">{{ strip.result }}</span>{% endif %}
+                </div>
+            {% else %}
+                <div class="tl-turn__text post">{{ post.message|safe_post }}</div>
+            {% endif %}
+        {% endwith %}
+    </div>
 </article>

@@ -179,8 +179,9 @@ class StoryXPRequestAdmin(admin.ModelAdmin):
 
 @admin.register(UserSceneReadStatus)
 class UserSceneReadStatusAdmin(admin.ModelAdmin):
-    list_display = ("user", "scene", "read")
+    list_display = ("user", "scene", "read", "last_read_post")
     list_filter = ("read", "scene")
+    raw_id_fields = ("last_read_post",)
     search_fields = ("user__username", "scene__name")
 
 

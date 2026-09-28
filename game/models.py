@@ -4,7 +4,8 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Max, OuterRef, Subquery
+from django.db.models import Max, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce, Greatest
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import (  # ensure timezone-aware now if using TIME_ZONE settings
@@ -17,6 +18,7 @@ from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprov
 from core.permissions import PermissionManager
 from core.utils import dice
 from core.validators import validate_gameline, validate_non_empty_name
+from game.rolls import roll_strip as build_roll_strip
 
 
 class ObjectType(ValidatedSaveMixin, models.Model):
@@ -557,22 +559,13 @@ class Scene(models.Model):
             self.waiting_for_st = False
             self.save()
         try:
-            message = message_processing(character, message)
+            message, roll = process_message(character, message)
         except ValueError:
             return
         post = Post.objects.create(
-            character=character, message=message, display_name=display, scene=self
+            character=character, message=message, display_name=display, scene=self, roll=roll
         )
-        character_owner = character.owner if character else None
-        for user in User.objects.filter(charactermodel__scenes=self).distinct():
-            if user != character_owner:
-                status = UserSceneReadStatus.objects.get_or_create(user=user, scene=self)[0]
-                status.read = False
-                status.save()
-            else:
-                status = UserSceneReadStatus.objects.get_or_create(user=user, scene=self)[0]
-                status.read = True
-                status.save()
+        UserSceneReadStatus.objects.record_post(self, post, character.owner if character else None)
         return post
 
     def most_recent_post(self):
@@ -600,6 +593,52 @@ class Scene(models.Model):
         return award_xp_atomically(Scene, self.pk, character_xp_map)
 
 
+class UserSceneReadStatusManager(models.Manager):
+    def record_post(self, scene, post, author):
+        """A new post: unread for the scene's other players, read up to it for its author.
+
+        Every user with a character in the scene gets a row; ``author`` (the
+        post's character's owner, or ``None``) has read the scene through ``post``.
+        """
+        user_ids = set(
+            User.objects.filter(charactermodel__scenes=scene).values_list("pk", flat=True)
+        )
+        if not user_ids:
+            return
+        author_id = author.pk if author is not None and author.pk in user_ids else None
+        existing = set(
+            self.filter(scene=scene, user_id__in=user_ids).values_list("user_id", flat=True)
+        )
+        self.bulk_create(
+            self.model(
+                user_id=user_id,
+                scene=scene,
+                read=user_id == author_id,
+                last_read_post=post if user_id == author_id else None,
+            )
+            for user_id in user_ids - existing
+        )
+        others = self.filter(scene=scene, user_id__in=user_ids & existing)
+        if author_id in existing:
+            others = others.exclude(user_id=author_id)
+            self.mark_read(scene, author_id, post)
+        others.update(read=False)
+
+    def mark_read(self, scene, user_id, post=None):
+        """``user_id`` has read ``scene`` through ``post`` (by default its latest post).
+
+        Updates existing rows only, in one query; the marker never moves back
+        to an older post. Returns the number of rows updated.
+        """
+        if post is None:
+            post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
+        rows = self.filter(scene=scene, user_id=user_id)
+        if post is None:
+            return rows.update(read=True)
+        marker = Greatest(Coalesce("last_read_post", Value(post.pk)), Value(post.pk))
+        return rows.update(read=True, last_read_post=marker)
+
+
 class UserSceneReadStatus(models.Model):
     user = models.ForeignKey(
         User,
@@ -616,6 +655,17 @@ class UserSceneReadStatus(models.Model):
         db_index=True,
     )
     read = models.BooleanField(default=True)
+    # The newest post this user has seen in the scene: the unread divider sits
+    # above the first post after it. Null for rows from before it was tracked.
+    last_read_post = models.ForeignKey(
+        "game.Post",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    objects = UserSceneReadStatusManager()
 
     class Meta:
         indexes = [
@@ -646,6 +696,9 @@ class Post(models.Model):
     scene = models.ForeignKey("game.Scene", on_delete=models.SET_NULL, null=True, db_index=True)
     message = models.TextField(default="")
     datetime_created = models.DateTimeField(default=now, db_index=True)
+    # The dice command's outcome (``roll_record``) for the roll strip; the roll is
+    # also written out in ``message``. Null for other posts and older rolls.
+    roll = models.JSONField(null=True, blank=True, default=None)
 
     objects = PostManager()
 
@@ -666,6 +719,11 @@ class Post(models.Model):
         if self.display_name:
             return self.display_name + ": " + self.message
         return self.character.name + ": " + self.message
+
+    @cached_property
+    def roll_strip(self):
+        """The roll strip for this post, or ``None`` to show its message as text."""
+        return build_roll_strip(self.roll)
 
 
 class JournalEntry(models.Model):
@@ -730,6 +788,59 @@ class Journal(models.Model):
 
 
 def message_processing(character, message):
+    """The message as stored: point spends applied and any dice command rolled."""
+    return process_message(character, message)[0]
+
+
+# Version of the roll data stored on ``Post.roll``; ``game.rolls`` reads it.
+ROLL_DATA_VERSION = 1
+
+
+def roll_record(kind, text, spent, *, pool, difficulty, specialty, results, **extra):
+    """A dice command's outcome as data for ``Post.roll`` (the scene's roll strip).
+
+    ``results`` are ``roll_result`` dicts in the order rolled. ``successes`` is
+    their total (a botched roll counts as none) and ``botch`` is set when a roll
+    botched; ``extra`` carries the kind's own facts (``pool_label``,
+    ``willpower``, ``target``, ``max_rolls``, ``complete``).
+    """
+    record = {
+        "version": ROLL_DATA_VERSION,
+        "kind": kind,
+        "text": text,
+        "spent": spent,
+        "pool": pool,
+        "pool_label": "",
+        "difficulty": difficulty,
+        "specialty": specialty,
+        "willpower": False,
+        "rolls": results,
+        "roll_count": len(results),
+        "successes": sum(max(result["successes"], 0) for result in results),
+        "botch": any(result["botch"] for result in results),
+    }
+    record.update(extra)
+    return record
+
+
+def _roll_line(text, spent, description, outcome):
+    """The roll written into the message text, as posts have always stored it."""
+    line = ""
+    if text:
+        line += text + ": "
+    if spent:
+        line += spent + ": "
+    return line + description + ": " + outcome
+
+
+def process_message(character, message):
+    """Apply a message's point spends and roll its dice command.
+
+    Returns ``(message, roll)``: the text to store, with the roll written out in
+    it as before, and the roll as data (``roll_record``) for the roll strip, or
+    ``None`` when the message has no dice command. Raises ``ValueError`` when a
+    dice command is malformed.
+    """
     temporary_point_regex = re.compile(r"#WP(-?\d+)|#WP|#Q(-?\d+)|#P(-?\d+)|#(-?\d+)(B|L|A)")
     wp_spend = False
     expenditures = []
@@ -791,24 +902,27 @@ def message_processing(character, message):
             difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
-            r = extended_roll(
-                num_dice,
-                target_successes,
-                difficulty=difficulty,
-                specialty=specialty,
+            results = extended_roll_results(
+                num_dice, target_successes, difficulty=difficulty, specialty=specialty
             )
             roll_description = f"extended roll of {num_dice} dice at difficulty {difficulty} targeting {target_successes} successes"
             if specialty:
                 roll_description += " with relevant specialty"
-            m = ""
-            if text:
-                m += text + ": "
-            if expenditures:
-                m += expenditures + ": "
-            m += roll_description + ": " + r
-            message = m
-        else:
-            raise ValueError("Command does not match the expected format.")
+            outcome = format_extended_roll(results, target_successes, EXTENDED_MAX_ROLLS)
+            record = roll_record(
+                "extended",
+                text,
+                expenditures,
+                pool=num_dice,
+                difficulty=difficulty,
+                specialty=specialty,
+                results=results,
+                target=target_successes,
+                max_rolls=EXTENDED_MAX_ROLLS,
+            )
+            record["complete"] = not record["botch"] and record["successes"] >= target_successes
+            return _roll_line(text, expenditures, roll_description, outcome), record
+        raise ValueError("Command does not match the expected format.")
     elif "/rolls" in message:
         text, roll = message.split("/rolls")
         text = text.strip()
@@ -823,24 +937,22 @@ def message_processing(character, message):
             difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
-            r = rolls(
-                num_rolls,
-                num_dice,
-                difficulty=difficulty,
-                specialty=specialty,
-            )
+            results = rolls_results(num_rolls, num_dice, difficulty=difficulty, specialty=specialty)
             roll_description = f"{num_rolls} rolls of {num_dice} dice at difficulty {difficulty}"
             if specialty:
                 roll_description += " with relevant specialty"
-            m = ""
-            if text:
-                m += text + ": "
-            if expenditures:
-                m += expenditures + ": "
-            m += roll_description + ": " + r
-            message = m
-        else:
-            raise ValueError("Command does not match the expected format.")
+            record = roll_record(
+                "rolls",
+                text,
+                expenditures,
+                pool=num_dice,
+                difficulty=difficulty,
+                specialty=specialty,
+                results=results,
+                requested_rolls=num_rolls,
+            )
+            return _roll_line(text, expenditures, roll_description, format_rolls(results)), record
+        raise ValueError("Command does not match the expected format.")
     elif "/stat" in message:
         text, roll = message.split("/stat")
         text = text.strip()
@@ -879,11 +991,8 @@ def message_processing(character, message):
             if num_dice <= 0:
                 raise ValueError("Dice pool must be at least 1")
 
-            r = roll_once(
-                num_dice,
-                difficulty=difficulty,
-                specialty=specialty,
-                willpower=wp_spend,
+            result = roll_result(
+                num_dice, difficulty=difficulty, specialty=specialty, willpower=wp_spend
             )
             pool_description = " + ".join(stat_display_parts)
             roll_description = (
@@ -891,15 +1000,20 @@ def message_processing(character, message):
             )
             if specialty:
                 roll_description += " with relevant specialty"
-            m = ""
-            if text:
-                m += text + ": "
-            if expenditures:
-                m += expenditures + ": "
-            m += roll_description + ": " + r
-            message = m
-        else:
-            raise ValueError("Command does not match the expected format.")
+            record = roll_record(
+                "stat",
+                text,
+                expenditures,
+                pool=num_dice,
+                difficulty=difficulty,
+                specialty=specialty,
+                results=[result],
+                pool_label=pool_description,
+                willpower=wp_spend,
+            )
+            line = _roll_line(text, expenditures, roll_description, format_roll(result))
+            return line, record
+        raise ValueError("Command does not match the expected format.")
     elif "/roll" in message:
         text, roll = message.split("/roll")
         text = text.strip()
@@ -914,60 +1028,126 @@ def message_processing(character, message):
             difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
-            r = roll_once(
-                num_dice,
-                difficulty=difficulty,
-                specialty=specialty,
-                willpower=wp_spend,
+            result = roll_result(
+                num_dice, difficulty=difficulty, specialty=specialty, willpower=wp_spend
             )
             roll_description = f"roll of {num_dice} dice at difficulty {difficulty}"
             if specialty:
                 roll_description += " with relevant specialty"
-            m = ""
-            if text:
-                m += text + ": "
-            if expenditures:
-                m += expenditures + ": "
-            m += roll_description + ": " + r
-            message = m
-        else:
-            raise ValueError("Command does not match the expected format.")
-    return message
+            record = roll_record(
+                "roll",
+                text,
+                expenditures,
+                pool=num_dice,
+                difficulty=difficulty,
+                specialty=specialty,
+                results=[result],
+                willpower=wp_spend,
+            )
+            line = _roll_line(text, expenditures, roll_description, format_roll(result))
+            return line, record
+        raise ValueError("Command does not match the expected format.")
+    return message, None
+
+
+def roll_result(number_of_dice, difficulty=6, specialty=False, willpower=False):
+    """Roll once: ``{"dice", "difficulty", "successes", "botch"}``.
+
+    A botch is a roll with no successes and at least one 1 (``dice`` reports it
+    as negative successes). Willpower adds one success and so cancels a botch.
+    """
+    roll, success_count = dice(number_of_dice, difficulty=difficulty, specialty=specialty)
+    if willpower:
+        success_count = max(success_count + 1, 0)
+    return {
+        "dice": roll,
+        "difficulty": difficulty,
+        "successes": success_count,
+        "botch": success_count < 0,
+    }
+
+
+def format_roll(result):
+    return ", ".join(map(str, result["dice"])) + f": <b>{result['successes']}</b>"
 
 
 def roll_once(number_of_dice, difficulty=6, specialty=False, willpower=False):
-    roll, success_count = dice(number_of_dice, difficulty=difficulty, specialty=specialty)
-    if willpower:
-        success_count += 1
-        if success_count < 0:
-            success_count = 0
-    roll = ", ".join(map(str, roll))
-    return f"{roll}: <b>{success_count}</b>"
+    return format_roll(roll_result(number_of_dice, difficulty, specialty, willpower))
 
 
-def rolls(num_rolls, num_dice, difficulty, specialty):
-    roll_list = []
-    successes = []
-    difficulties = []
+def rolls_results(num_rolls, num_dice, difficulty, specialty):
+    """``num_rolls`` rolls; a failure raises the next roll's difficulty, a botch ends them."""
+    results = []
     for _ in range(num_rolls):
-        difficulties.append(difficulty)
-        roll, success_count = dice(num_dice, difficulty=difficulty, specialty=specialty)
-        roll = ", ".join(map(str, roll))
-        roll_list.append(roll)
-        successes.append(success_count)
-        if success_count == 0:
+        result = roll_result(num_dice, difficulty=difficulty, specialty=specialty)
+        results.append(result)
+        if result["successes"] == 0:
             difficulty += 1
-        if success_count < 0:
+        if result["botch"]:
             break
+    return results
+
+
+def format_rolls(results):
     join_list = []
-    for roll, suxx, diff in zip(roll_list, successes, difficulties, strict=False):
-        join_list.append(f"{roll}: <b>{suxx}</b>")
-        if suxx == 0:
-            join_list[-1] = join_list[-1] + f": difficulty increased to {diff + 1}"
+    for result in results:
+        line = format_roll(result)
+        if result["successes"] == 0:
+            line += f": difficulty increased to {result['difficulty'] + 1}"
+        join_list.append(line)
     return "Rolls:<br>" + "<br>".join(join_list)
 
 
-def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100):
+def rolls(num_rolls, num_dice, difficulty, specialty):
+    return format_rolls(rolls_results(num_rolls, num_dice, difficulty, specialty))
+
+
+EXTENDED_MAX_ROLLS = 100
+
+
+def extended_roll_results(
+    num_dice, target_successes, difficulty=6, specialty=False, max_rolls=EXTENDED_MAX_ROLLS
+):
+    """Roll until the successes reach ``target_successes``, a roll botches or ``max_rolls``."""
+    results = []
+    cumulative_successes = 0
+    for _ in range(max_rolls):
+        result = roll_result(num_dice, difficulty=difficulty, specialty=specialty)
+        results.append(result)
+        cumulative_successes += result["successes"]
+        # A botch (negative successes) is a catastrophic failure.
+        if result["botch"] or cumulative_successes >= target_successes:
+            break
+    return results
+
+
+def format_extended_roll(results, target_successes, max_rolls):
+    join_list = []
+    running_total = 0
+    for i, result in enumerate(results, 1):
+        running_total += result["successes"]
+        dice_str = ", ".join(map(str, result["dice"]))
+        join_list.append(
+            f"Roll {i}: {dice_str}: <b>{result['successes']}</b> (Total: {running_total})"
+        )
+
+    output = "Extended Roll:<br>" + "<br>".join(join_list)
+
+    # Add final status
+    if results and results[-1]["botch"]:
+        output += "<br><b>BOTCH! Extended action failed catastrophically.</b>"
+    elif running_total >= target_successes:
+        output += (
+            f"<br><b>SUCCESS! Target of {target_successes} reached in {len(results)} rolls.</b>"
+        )
+    else:
+        output += f"<br><b>INCOMPLETE: Only {running_total}/{target_successes} successes after {max_rolls} rolls.</b>"
+    return output
+
+
+def extended_roll(
+    num_dice, target_successes, difficulty=6, specialty=False, max_rolls=EXTENDED_MAX_ROLLS
+):
     """
     Perform an extended roll, accumulating successes until target is reached or botch occurs.
 
@@ -981,47 +1161,8 @@ def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max
     Returns:
         HTML string showing each roll and cumulative progress
     """
-    roll_list = []
-    successes_per_roll = []
-    cumulative_successes = 0
-    botched = False
-
-    for roll_num in range(max_rolls):
-        roll, success_count = dice(num_dice, difficulty=difficulty, specialty=specialty)
-        roll_str = ", ".join(map(str, roll))
-        roll_list.append(roll_str)
-        successes_per_roll.append(success_count)
-        cumulative_successes += success_count
-
-        # Check for botch (negative successes means catastrophic failure)
-        if success_count < 0:
-            botched = True
-            break
-
-        # Check if target reached
-        if cumulative_successes >= target_successes:
-            break
-
-    # Build output
-    join_list = []
-    running_total = 0
-    for i, (roll, suxx) in enumerate(zip(roll_list, successes_per_roll, strict=False), 1):
-        running_total += suxx
-        join_list.append(f"Roll {i}: {roll}: <b>{suxx}</b> (Total: {running_total})")
-
-    result = "Extended Roll:<br>" + "<br>".join(join_list)
-
-    # Add final status
-    if botched:
-        result += "<br><b>BOTCH! Extended action failed catastrophically.</b>"
-    elif cumulative_successes >= target_successes:
-        result += (
-            f"<br><b>SUCCESS! Target of {target_successes} reached in {len(roll_list)} rolls.</b>"
-        )
-    else:
-        result += f"<br><b>INCOMPLETE: Only {cumulative_successes}/{target_successes} successes after {max_rolls} rolls.</b>"
-
-    return result
+    results = extended_roll_results(num_dice, target_successes, difficulty, specialty, max_rolls)
+    return format_extended_roll(results, target_successes, max_rolls)
 
 
 class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
