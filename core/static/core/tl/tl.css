@@ -1210,3 +1210,6 @@ body.tl {
 /* Blood pool runs to max_blood_pool squares (up to 50 at low generations): let them wrap. */
 .tl-vtm-tracks .tl-boxes { flex-wrap: wrap; justify-content: flex-end; max-width: 100%; }
 /* ---- end vampire sheet ---- */
+/* ---- mage sorcerer sheet ---- */
+/* Sorcerers have Quintessence but no Paradox: drop the wheel's Paradox half of the centre. */
+.tl-qprow--q .tl-qp__center hr, .tl-qprow--q .tl-qp__p { display: none; }

@@ -1,25 +1,19 @@
-{% load dots %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Willpower:</span>
-                        <span class="dots">{{ object.willpower|dots:10 }}</span>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Temporary Willpower:</span>
-                        <span class="dots">{{ object.temporary_willpower|boxes:10 }}</span>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    {% include "characters/mage/sorcerer/quintessence_wheel.html" %}
-                </div>
-            </div>
-        </div>
+{% load tl %}
+<section class="tl-section tl-span-5" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div>
+            {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+        </div>
+        {% include "characters/mage/sorcerer/quintessence_wheel.html" %}
+        {% if object.backgrounds.exists %}
+            <div class="tl-stack">
+                <span class="tl-subhead">Backgrounds</span>
+                {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds bare=True %}
+            </div>
+        {% endif %}
+    </div>
+</section>

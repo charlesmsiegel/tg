@@ -5,7 +5,8 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from characters.models.core.archetype import Archetype
-from characters.models.mage.companion import Companion
+from characters.models.mage.companion import Advantage, AdvantageRating, Companion
+from characters.models.werewolf.charm import SpiritCharm
 from game.models import Chronicle
 
 
@@ -90,6 +91,71 @@ class TestCompanionDetailView(TestCase):
         self.client.login(username="owner", password="password")
         response = self.client.get(unapproved.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+
+class TestCompanionSheet(TestCase):
+    """The Spread sheet: cover facts, Special Advantages (--acc) with Charms, Advantages."""
+
+    def setUp(self):
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.companion = Companion.objects.create(
+            name="Test Familiar",
+            owner=self.owner,
+            status="App",
+            companion_type="familiar",
+            essence=12,
+            rage=3,
+        )
+        self.advantage = Advantage.objects.create(name="Bond-Sharing")
+        AdvantageRating.objects.create(character=self.companion, advantage=self.advantage, rating=4)
+        self.charm = SpiritCharm.objects.create(name="Airt Sense")
+        self.companion.charms.add(self.charm)
+        self.client.login(username="owner", password="password")
+
+    def test_cover_facts(self):
+        response = self.client.get(self.companion.get_absolute_url())
+        self.assertContains(response, '<span class="tl-facts__k">Companion type</span>')
+        self.assertContains(response, "Familiar")
+
+    def test_special_advantages_is_the_power_section(self):
+        response = self.client.get(self.companion.get_absolute_url())
+        self.assertContains(
+            response, 'class="tl-section tl-section--power tl-span-7" id="special-advantages"'
+        )
+        self.assertContains(
+            response, f'href="{self.advantage.get_absolute_url()}">Bond-Sharing</a>'
+        )
+        self.assertContains(response, '<span class="tl-kv__v">4</span>')
+        self.assertContains(response, 'id="charms"')
+        self.assertContains(response, f'href="{self.charm.get_absolute_url()}">Airt Sense</a>')
+
+    def test_no_special_advantages(self):
+        AdvantageRating.objects.filter(character=self.companion).delete()
+        self.companion.charms.clear()
+        response = self.client.get(self.companion.get_absolute_url())
+        self.assertContains(response, "No special advantages.")
+        self.assertNotContains(response, 'id="charms"')
+
+    def test_advantages_show_essence_and_rage(self):
+        response = self.client.get(self.companion.get_absolute_url())
+        self.assertContains(response, 'class="tl-section tl-span-5" id="advantages"')
+        self.assertContains(response, '<span class="tl-kv__v">12</span>')
+        self.assertContains(response, '<span class="tl-subhead">Rage</span>')
+        self.companion.essence = 0
+        self.companion.rage = 0
+        self.companion.save()
+        response = self.client.get(self.companion.get_absolute_url())
+        self.assertNotContains(response, '<span class="tl-subhead">Rage</span>')
+        self.assertNotContains(response, '<span class="tl-subhead">Essence</span>')
+
+    def test_freebies_on_experience_tab_when_submitted(self):
+        # Approved characters cannot move back to Submitted through save().
+        Companion.objects.filter(pk=self.companion.pk).update(status="Sub", freebies=5)
+        response = self.client.get(self.companion.get_absolute_url() + "?tab=experience")
+        self.assertContains(response, 'id="freebies"')
+        self.assertContains(response, "5 remaining")
+        self.assertContains(response, "<td>Charms</td>")
+        self.assertContains(response, 'id="experience"')
 
 
 class TestCompanionBasicsView(TestCase):

@@ -4,9 +4,16 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.mage.fellowship import SorcererFellowship
-from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+from characters.models.mage.focus import Practice
+from characters.models.mage.sorcerer import (
+    LinearMagicPath,
+    LinearMagicRitual,
+    PathRating,
+    Sorcerer,
+)
 from game.models import Chronicle
 
 
@@ -91,6 +98,91 @@ class TestSorcererDetailView(TestCase):
         self.client.login(username="owner", password="password")
         response = self.client.get(unapproved.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+
+class TestSorcererSheet(TestCase):
+    """The Spread sheet: cover facts, Numina (--acc), Quintessence wheel, freebies tab."""
+
+    def setUp(self):
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.fellowship = SorcererFellowship.objects.create(name="Order of the Wren")
+        self.alchemy = LinearMagicPath.objects.create(name="Alchemy")
+        self.sorcerer = Sorcerer.objects.create(
+            name="Test Sorcerer",
+            owner=self.owner,
+            status="App",
+            sorcerer_type="hedge_mage",
+            fellowship=self.fellowship,
+            affinity_path=self.alchemy,
+            quintessence=4,
+        )
+        self.practice = Practice.objects.create(name="High Ritual Magick")
+        self.occult = Ability.objects.create(name="Occult", property_name="occult")
+        PathRating.objects.create(
+            character=self.sorcerer,
+            path=self.alchemy,
+            rating=3,
+            practice=self.practice,
+            ability=self.occult,
+        )
+        self.ritual = LinearMagicRitual.objects.create(
+            name="Purify Water", path=self.alchemy, level=2
+        )
+        self.sorcerer.rituals.add(self.ritual)
+        self.client.login(username="owner", password="password")
+
+    def test_cover_facts(self):
+        response = self.client.get(self.sorcerer.get_absolute_url())
+        self.assertContains(response, '<span class="tl-facts__k">Fellowship</span>', html=False)
+        self.assertContains(response, "Order of the Wren")
+        self.assertContains(response, '<span class="tl-facts__k">Sorcerer type</span>')
+        self.assertContains(response, "Hedge Mage")
+        self.assertContains(response, '<span class="tl-facts__k">Affinity path</span>')
+
+    def test_numina_is_the_power_section(self):
+        response = self.client.get(self.sorcerer.get_absolute_url())
+        self.assertContains(response, 'class="tl-section tl-section--power tl-span-7" id="numina"')
+        self.assertContains(response, f'href="{self.alchemy.get_absolute_url()}">Alchemy</a>')
+        self.assertContains(response, f'href="{self.practice.get_absolute_url()}"')
+        self.assertContains(response, "· Occult")
+        self.assertContains(response, 'aria-label="3 of 5"')
+        self.assertContains(response, 'id="rituals"')
+        self.assertContains(response, f'href="{self.ritual.get_absolute_url()}">Purify Water</a>')
+
+    def test_psychic_hides_practice_and_rituals(self):
+        self.sorcerer.sorcerer_type = "psychic"
+        self.sorcerer.save()
+        response = self.client.get(self.sorcerer.get_absolute_url())
+        self.assertContains(response, 'id="numina"')
+        self.assertNotContains(response, 'id="rituals"')
+        self.assertNotContains(response, "· Occult")
+
+    def test_numina_hidden_when_empty(self):
+        PathRating.objects.filter(character=self.sorcerer).delete()
+        self.sorcerer.rituals.clear()
+        response = self.client.get(self.sorcerer.get_absolute_url())
+        self.assertNotContains(response, 'id="numina"')
+
+    def test_quintessence_wheel_without_paradox(self):
+        response = self.client.get(self.sorcerer.get_absolute_url())
+        self.assertContains(response, 'class="tl-qprow tl-qprow--q" id="quintessence"')
+        self.assertContains(response, "Quintessence 4, Paradox 0")
+        self.assertEqual(response.content.decode().count("tl-qp__box is-q"), 4)
+        self.assertNotContains(response, "tl-qp__box is-p")
+        self.assertNotContains(response, "<style>")
+        # No backgrounds: no empty Backgrounds label in the Advantages section.
+        self.assertNotContains(response, '<span class="tl-subhead">Backgrounds</span>')
+
+    def test_freebies_on_experience_tab_when_submitted(self):
+        # Approved characters cannot move back to Submitted through save().
+        Sorcerer.objects.filter(pk=self.sorcerer.pk).update(status="Sub", freebies=6)
+        response = self.client.get(self.sorcerer.get_absolute_url() + "?tab=experience")
+        self.assertContains(response, 'id="freebies"')
+        self.assertContains(response, "6 remaining")
+        self.assertContains(response, "<td>Rituals</td>")
+        self.assertContains(response, 'id="experience"')
+        # The spend form and its script belong to the chargen step, not the sheet.
+        self.assertNotContains(response, "sorcerer-freebies-script")
 
 
 class TestSorcererBasicsView(TestCase):
