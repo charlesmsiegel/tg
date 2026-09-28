@@ -1,28 +1,21 @@
-<div class="row">
-    <h2 class="col-sm mta_heading">Create Artifact</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Create your Artifact. It should have a single power roughly equal to the Artifact's level in some Path.
+{% comment %}
+Sorcerer chargen, Artifact step (ArtifactCreateOrSelectForm): pick an existing Artifact
+or tick "create" and describe a new one. create_or_select.js swaps the two
+[data-create-or-select-container] blocks with d-none.
+{% endcomment %}
+<p class="tl-lede">Create your Artifact. It should have a single power roughly equal to the Artifact's level in some Path.</p>
+<div class="tl-itemform">
+    {% include "core/misc/check.html" with field=form.select_or_create label="Create a new Artifact" %}
+    <div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="select">
+        <div class="tl-formgrid tl-formgrid--2">
+            {% include "core/tl/field.html" with field=form.select label="Artifact" %}
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-sm">Create New Artifact: {{ form.select_or_create }}</div>
-</div>
-<div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="select">
-    <div class="row">
-        <div class="col-sm">{{ form.select }}</div>
-    </div>
-</div>
-<div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="create" class="d-none">
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ form.rank }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
+    <div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="create" class="d-none">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.rank %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        </div>
     </div>
 </div>

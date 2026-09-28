@@ -1,49 +1,15 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit Wraith Artifact
-    {% else %}
-        Create Wraith Artifact
-    {% endif %}
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Wraith Artifact{% endblock creation_title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-            {{ form.name }}
-        </div>
-        <div class="col-md-4">
-            <label for="{{ form.level.id_for_label }}" class="form-label">Level</label>
-            {{ form.level }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-            {{ form.description }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.artifact_type.id_for_label }}" class="form-label">Artifact Type</label>
-            {{ form.artifact_type }}
-        </div>
-        <div class="col-md-6">
-            <label for="{{ form.material.id_for_label }}" class="form-label">Material</label>
-            {{ form.material }}
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="{{ form.corpus.id_for_label }}" class="form-label">Corpus</label>
-            {{ form.corpus }}
-        </div>
-        <div class="col-md-6">
-            <label for="{{ form.pathos_cost.id_for_label }}" class="form-label">Pathos Cost</label>
-            {{ form.pathos_cost }}
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.level %}
+            {% include "core/tl/field.html" with field=form.artifact_type label="Artifact type" %}
+            {% include "core/tl/field.html" with field=form.material %}
+            {% include "core/tl/field.html" with field=form.corpus %}
+            {% include "core/tl/field.html" with field=form.pathos_cost label="Pathos cost" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
     </div>
 {% endblock contents %}

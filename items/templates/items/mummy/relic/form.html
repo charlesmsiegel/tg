@@ -1,80 +1,49 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Edit{% else %}Create{% endif %} Mummy Relic
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="relicForm"
-    action=""
-    novalidate
-{% endblock formdetails %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Mummy Relic{% endblock creation_title %}
+{% block formdetails %}method="post" id="relicForm" action="" novalidate{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ form.name }}</div>
-            <div class="col-sm">Type</div>
-            <div class="col-sm">{{ form.relic_type }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.relic_type label="Type" %}
+            {% include "core/tl/field.html" with field=form.rank %}
+            {% include "core/tl/field.html" with field=form.era %}
+            {% include "core/tl/field.html" with field=form.material %}
+            {% include "core/tl/field.html" with field=form.original_owner label="Original owner" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
         </div>
-        <div class="row">
-            <div class="col-sm">Rank</div>
-            <div class="col-sm">{{ form.rank }}</div>
-            <div class="col-sm">Era</div>
-            <div class="col-sm">{{ form.era }}</div>
+        <div class="tl-formgrid">
+            {% include "core/misc/check.html" with field=form.is_cursed label="Cursed" %}
+            {% include "core/misc/check.html" with field=form.is_unique label="Unique" %}
+            {% include "core/misc/check.html" with field=form.is_sentient label="Sentient" %}
         </div>
-        <div class="row">
-            <div class="col-sm">Material</div>
-            <div class="col-sm">{{ form.material }}</div>
-            <div class="col-sm">Original Owner</div>
-            <div class="col-sm">{{ form.original_owner }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Ba Cost</div>
-            <div class="col-sm">{{ form.ba_cost }}</div>
-            <div class="col-sm">Requires Sekhem</div>
-            <div class="col-sm">{{ form.requires_sekhem }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Associated Hekau</div>
-            <div class="col-sm">{{ form.associated_hekau }}</div>
-            <div class="col-sm">Requires Ritual</div>
-            <div class="col-sm">{{ form.requires_ritual }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Cursed</div>
-            <div class="col-sm">{{ form.is_cursed }}</div>
-            <div class="col-sm">Unique</div>
-            <div class="col-sm">{{ form.is_unique }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Sentient</div>
-            <div class="col-sm">{{ form.is_sentient }}</div>
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ form.description }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Powers</div>
-            <div class="col-sm">{{ form.powers }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Hieroglyphic Inscription</div>
-            <div class="col-sm">{{ form.hieroglyphic_inscription }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">History</div>
-            <div class="col-sm">{{ form.history }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Current Location Notes</div>
-            <div class="col-sm">{{ form.current_location_notes }}</div>
-        </div>
+        <section class="tl-section" aria-labelledby="mrelic-powers-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="mrelic-powers-title">Powers</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.ba_cost label="Ba cost" %}
+                {% include "core/tl/field.html" with field=form.requires_sekhem label="Requires Sekhem" %}
+                {% include "core/tl/field.html" with field=form.associated_hekau label="Associated Hekau" %}
+                {% include "core/misc/check.html" with field=form.requires_ritual label="Requires ritual" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.powers %}</div>
+            </div>
+        </section>
+        <section class="tl-section" aria-labelledby="mrelic-lore-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="mrelic-lore-title">Lore</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                <div class="tl-field--full">
+                    {% include "core/tl/field.html" with field=form.hieroglyphic_inscription label="Hieroglyphic inscription" %}
+                </div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.history %}</div>
+                <div class="tl-field--full">
+                    {% include "core/tl/field.html" with field=form.current_location_notes label="Current location notes" %}
+                </div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

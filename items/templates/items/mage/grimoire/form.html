@@ -1,69 +1,41 @@
-{% extends "items/mage/wonder/form.html" %}
-{% block creation_title %}
-    Create Grimoire
-{% endblock creation_title %}
-{% block creation %}
-    <div class="row">
-        <div class="col-sm">Created By</div>
-        <div class="col-sm">
-            {% if form.faction.parent is not None %}
-                {% if form.faction.parent.parent is not None %}
-                    <a href="{{ form.faction.parent.parent.get_absolute_url }}">{{ form.faction.parent.parent }}</a> -
-                {% endif %}
-                <a href="{{ form.faction.parent.get_absolute_url }}">{{ form.faction.parent }}</a> -
-            {% endif %}
-            <a href="{{ form.faction.get_absolute_url }}">{{ form.faction }}</a>
-        </div>
-        <div class="col-sm">Primer</div>
-        <div class="col-sm">{{ form.is_primer }}</div>
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a Grimoire: the book (who wrote it, what it is made of) and its contents
+(focus, abilities, Spheres, rotes). Contents must fill rank + 3 slots, a primer
+counting as one.
+{% endcomment %}
+{% block creation_title %}Create Grimoire{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        {% include "items/tl/wonder_fields.html" %}
+        <section class="tl-section" aria-labelledby="grimoire-book-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="grimoire-book-title">The book</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.faction label="Written by" %}
+                {% include "core/tl/field.html" with field=form.date_written label="Date written" help="Year; negative for BC." %}
+                {% include "core/tl/field.html" with field=form.language %}
+                {% include "core/tl/field.html" with field=form.medium %}
+                {% include "core/tl/field.html" with field=form.cover_material label="Cover material" %}
+                {% include "core/tl/field.html" with field=form.inner_material label="Inner material" %}
+                {% include "core/tl/field.html" with field=form.length %}
+                {% include "core/misc/check.html" with field=form.is_primer label="Primer" %}
+            </div>
+        </section>
+        <section class="tl-section tl-section--power" aria-labelledby="grimoire-contents-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">02</span>
+                <h2 class="tl-section__title" id="grimoire-contents-title">Contents</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid tl-formgrid--2">
+                {% include "core/tl/field.html" with field=form.practices %}
+                {% include "core/tl/field.html" with field=form.instruments %}
+                {% include "core/tl/field.html" with field=form.abilities %}
+                {% include "core/tl/field.html" with field=form.spheres %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.rotes %}</div>
+            </div>
+        </section>
     </div>
-    <div class="row">
-        <div class="col-sm">Medium</div>
-        <a class="col-sm" href="{{ form.medium.get_absolute_url }}">{{ form.medium }}</a>
-        <div class="col-sm">Cover Material</div>
-        <a class="col-sm" href="{{ form.cover_material.get_absolute_url }}">{{ form.cover_material }}</a>
-        <div class="col-sm">Inner Material</div>
-        <a class="col-sm" href="{{ form.inner_material.get_absolute_url }}">{{ form.inner_material }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Length</div>
-        <div class="col-sm">{{ form.length }}</div>
-        <div class="col-sm">Date Written</div>
-        <div class="col-sm">{{ form.date_written }}</div>
-        <div class="col-sm">Language</div>
-        <a class="col-sm" href="{{ form.language.get_absolute_url }}">{{ form.language }}</a>
-    </div>
-{% endblock creation %}
-{% block powers %}
-    <h2 class="{{ form.get_heading }}">Focus</h2>
-    <div class="row">
-        <div class="col-sm">
-            <b>Paradigms</b>
-        </div>
-        <div class="col-sm">
-            <b>Practices</b>
-        </div>
-        <div class="col-sm">
-            <b>Instruments</b>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.paradigms }}</div>
-        <div class="col-sm">{{ form.practices }}</div>
-        <div class="col-sm">{{ form.instruments }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Abilities</div>
-        <div class="col-sm">{{ form.abilities }}</div>
-        <div class="col-sm">Spheres</div>
-        <div class="col-sm">{{ form.spheres }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ form.get_heading }}">Rotes</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.rotes }}</div>
-    </div>
-{% endblock powers %}
+{% endblock contents %}

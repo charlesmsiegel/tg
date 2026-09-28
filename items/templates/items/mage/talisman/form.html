@@ -1,17 +1,16 @@
-{% extends "items/mage/wonder/form.html" %}
-{% block creation_title %}
-    Create Talisman
-{% endblock creation_title %}
-{% block powers %}
-    <div class="col-sm mta_heading">
-        <h2>Powers</h2>
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Talisman{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        {% include "items/tl/wonder_fields.html" %}
+        <section class="tl-section tl-section--power" aria-labelledby="wonder-power-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="wonder-power-title">Powers</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid tl-formgrid--2">
+                {% include "core/tl/field.html" with field=form.powers label="Effects" help="Up to the Talisman's rank in powers." %}
+            </div>
+        </section>
     </div>
-    <div class="row">
-        <div class="col-sm">Arete</div>
-        <div class="col-sm">{{ form.arete }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Powers</div>
-        <div class="col-sm">{{ form.powers }}</div>
-    </div>
-{% endblock powers %}
+{% endblock contents %}

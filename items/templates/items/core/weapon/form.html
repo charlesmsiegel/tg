@@ -1,16 +1,19 @@
-{% extends "items/core/item/form.html" %}
-{% block creation_title %}
-    Create Weapon
-{% endblock creation_title %}
-{% block additional_stats %}
-    <div class="row">
-        <div class="col-sm-1">Damage</div>
-        <div class="col-sm-4">{{ form.damage }}/{{ form.damage_type }}</div>
-        <div class="col-sm-1">Difficulty</div>
-        <div class="col-sm-2">{{ form.difficulty }}</div>
-        <div class="col-sm-2">Conceal</div>
-        <div class="col-sm-2">{{ form.conceal }}</div>
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a weapon; melee, thrown and ranged weapons extend it (ranged adds its
+range, rate and clip in `ranged_details`).
+{% endcomment %}
+{% block creation_title %}Create Weapon{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.damage %}
+            {% include "core/tl/field.html" with field=form.damage_type label="Damage type" %}
+            {% include "core/tl/field.html" with field=form.difficulty %}
+            {% include "core/tl/field.html" with field=form.conceal %}
+            {% block ranged_details %}{% endblock ranged_details %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        </div>
     </div>
-    {% block ranged_details %}
-    {% endblock ranged_details %}
-{% endblock additional_stats %}
+{% endblock contents %}

@@ -1,10 +1,7 @@
-{% extends "items/core/item/form.html" %}
-{% block creation_title %}
-    Create Artifact
-{% endblock creation_title %}
-{% block additional_stats %}
-    <div class="row">
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ form.rank }}</div>
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Artifact{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        {% include "items/tl/wonder_fields.html" %}
     </div>
-{% endblock additional_stats %}
+{% endblock contents %}

@@ -1,16 +1,20 @@
-{% extends "items/mage/wonder/form.html" %}
-{% block creation_title %}
-    Create Fetish
-{% endblock creation_title %}
-{% block resonance %}
-{% endblock resonance %}
-{% block powers %}
-    <div class="row">
-        <div class="col-sm">Gnosis</div>
-        <div class="col-sm">{{ form.gnosis }}</div>
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a Fetish; the Talen form extends it with its own title.
+{% endcomment %}
+{% block creation_title %}Create Fetish{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        {% include "items/tl/wonder_fields.html" %}
+        <section class="tl-section tl-section--power" aria-labelledby="fetish-spirit-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="fetish-spirit-title">Bound spirit</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.gnosis %}
+                {% include "core/tl/field.html" with field=form.spirit %}
+            </div>
+        </section>
     </div>
-    <div class="row">
-        <div class="col-sm">Spirit</div>
-        <div class="col-sm">{{ form.spirit }}</div>
-    </div>
-{% endblock powers %}
+{% endblock contents %}

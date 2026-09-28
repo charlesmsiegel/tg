@@ -1,9 +1,5 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Wonder
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Wonder{% endblock creation_title %}
 {% block contents %}
     {% include "items/mage/wonder/form_include.html" %}
-    {% block creation %}
-    {% endblock creation %}
 {% endblock contents %}

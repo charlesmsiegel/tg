@@ -37,57 +37,36 @@ class VampireArtifactForm(forms.ModelForm):
             "name": forms.TextInput(
                 attrs={
                     "placeholder": "Enter artifact name...",
-                    "class": "form-control",
                 }
             ),
             "description": forms.Textarea(
                 attrs={
                     "rows": 4,
                     "placeholder": "Physical description and appearance...",
-                    "class": "form-control",
                 }
             ),
             "power_level": forms.NumberInput(
                 attrs={
                     "min": 1,
                     "max": 5,
-                    "class": "form-control",
                 }
             ),
             "background_cost": forms.NumberInput(
                 attrs={
                     "min": 0,
                     "max": 10,
-                    "class": "form-control",
-                }
-            ),
-            "is_cursed": forms.CheckboxInput(
-                attrs={
-                    "class": "form-check-input",
-                }
-            ),
-            "is_unique": forms.CheckboxInput(
-                attrs={
-                    "class": "form-check-input",
-                }
-            ),
-            "requires_blood": forms.CheckboxInput(
-                attrs={
-                    "class": "form-check-input",
                 }
             ),
             "powers": forms.Textarea(
                 attrs={
                     "rows": 6,
                     "placeholder": "Describe the artifact's powers and effects...",
-                    "class": "form-control",
                 }
             ),
             "history": forms.Textarea(
                 attrs={
                     "rows": 6,
                     "placeholder": "History and provenance of the artifact...",
-                    "class": "form-control",
                 }
             ),
         }
@@ -129,14 +108,12 @@ class LimitedVampireArtifactEditForm(forms.ModelForm):
                 attrs={
                     "rows": 4,
                     "placeholder": "Physical description and appearance...",
-                    "class": "form-control",
                 }
             ),
             "history": forms.Textarea(
                 attrs={
                     "rows": 6,
                     "placeholder": "History and provenance of the artifact...",
-                    "class": "form-control",
                 }
             ),
         }

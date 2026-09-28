@@ -1,0 +1,35 @@
+{% comment %}
+One power of the Wonder form: choose an existing Effect, or tick "create" and build one
+from Spheres. wonder-form.js toggles .effect-select-row / .effect-create-fields with
+d-none from the #id_<prefix>-select_or_create checkbox inside [data-prefix].
+  {% include "items/mage/wonder/effect_subform.html" with subform=... prefix="effects-0" %}
+{% endcomment %}
+{% load formset_tags %}
+<fieldset class="effect-subform tl-itemform__subform" data-prefix="{{ prefix }}" {% formset_form_wrapper %}>
+    <legend class="tl-sr">Power</legend>
+    {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+    {% if subform.non_field_errors %}
+        <ul class="tl-field__error">
+            {% for error in subform.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% include "core/misc/check.html" with field=subform.select_or_create label="Create a new Effect" %}
+    <div class="effect-select-row">
+        {% include "core/tl/field.html" with field=subform.select label="Effect" %}
+    </div>
+    <div class="effect-create-fields d-none">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=subform.name %}</div>
+            {% include "core/tl/field.html" with field=subform.correspondence %}
+            {% include "core/tl/field.html" with field=subform.life %}
+            {% include "core/tl/field.html" with field=subform.prime %}
+            {% include "core/tl/field.html" with field=subform.entropy %}
+            {% include "core/tl/field.html" with field=subform.matter %}
+            {% include "core/tl/field.html" with field=subform.spirit %}
+            {% include "core/tl/field.html" with field=subform.forces %}
+            {% include "core/tl/field.html" with field=subform.mind %}
+            {% include "core/tl/field.html" with field=subform.time %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=subform.description %}</div>
+        </div>
+    </div>
+</fieldset>

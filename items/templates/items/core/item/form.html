@@ -1,14 +1,27 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Item
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% comment %}
+Create / edit a plain item. Owners editing without full rights get LimitedItemEditForm
+(description, public info, image), so every field is optional here.
+{% endcomment %}
+{% block creation_title %}Create Item{% endblock creation_title %}
+{% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            {% if form.name %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% endif %}
+            {% if form.description %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+            {% endif %}
+            {% if form.public_info %}
+                <div class="tl-field--full">
+                    {% include "core/tl/field.html" with field=form.public_info label="Public info" help=form.public_info.help_text %}
+                </div>
+            {% endif %}
+            {% if form.image %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.image help=form.image.help_text %}</div>
+            {% endif %}
+        </div>
     </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    {% block additional_stats %}
-    {% endblock additional_stats %}
 {% endblock contents %}

@@ -837,6 +837,7 @@ body.tl {
   .tl-slot__label { display: none; }
   .tl-itemtable--index td:nth-child(3), .tl-itemtable--index td:nth-child(4) { display: none; }
   .tl-itemtable--index td:nth-child(1) { width: auto; }
+}
 /* ---- profile & approvals (accounts/detail.html, accounts/form.html) ---- */
 @media (min-width: 1101px) { .tl-cover__name--profile { font-size: 84px; line-height: .95; } }
 .tl-facts__row--stack { flex-direction: column; align-items: stretch; gap: 4px; }
@@ -909,6 +910,7 @@ body.tl {
   .tl-imagerow { flex-wrap: wrap; }
   .tl-profileform__row { grid-template-columns: 1fr; }
   .tl-facts.tl-profile-settings { display: flex; }
+}
 /* ---- locations ---- */
 /* Barriers: three columns, each on a 2px ink rule, eyebrow left, value right. */
 .tl-barriers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
@@ -974,6 +976,7 @@ body.tl {
   .tl-indent-1 { padding-left: 12px; } .tl-indent-2 { padding-left: 24px; } .tl-indent-3 { padding-left: 36px; }
   .tl-indent-4 { padding-left: 48px; } .tl-indent-5 { padding-left: 60px; } .tl-indent-6 { padding-left: 72px; }
   .tl-indent-7 { padding-left: 84px; } .tl-indent-8 { padding-left: 96px; }
+}
 /* ---- core miscellany and character groups ---- */
 /* Form error summary (M14): count in rubric mono, the messages beside it. */
 .tl-errsum { display: flex; gap: 12px; align-items: baseline; padding: 12px 0; border-top: 2px solid var(--rubric); border-bottom: 1px solid var(--rule); }
@@ -1024,6 +1027,7 @@ body.tl {
   .tl-members td { display: block; padding: 2px 0; border: 0; }
   .tl-members tr { display: block; padding: 10px 0; border-bottom: 1px solid var(--rule); }
   .tl-members__role { text-align: left; }
+}
 /* ---- game pages (chronicle, journal, week, XP requests) ---- */
 /* Page tab bar whose tabs fill the bar, so the rubric underline sits on the rule. */
 .tl-nav--game { overflow-x: auto; overflow-y: hidden; }
@@ -1114,6 +1118,7 @@ body.tl {
 .tl-pager span { color: var(--ink2); }
 @media (max-width: 720px) {
   .tl-entry { grid-template-columns: 1fr; gap: 8px; }
+}
 /* ---- reference pages: vampire, wraith, demon, hunter, mummy (characters/tl/ref2_*) ---- */
 .ref2-facts:not(:has(*)) { display: none; }
 .ref2-count { font: 400 13px var(--mono); opacity: .8; }
@@ -1351,3 +1356,15 @@ body.tl {
   .tl-chargen__next { display: none; }
   .tl-chargen__cancel { order: -1; margin-left: 0; padding: 12px 18px; border: 1px solid var(--ink); color: var(--ink); }
 }
+
+/* ---- items forms ---- */
+.tl-itemform, .tl-itemform__rows { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.tl-itemform__rows { gap: 16px; }
+.tl-itemform__subform { display: flex; flex-direction: column; gap: 14px; min-width: 0; margin: 0; padding: 14px 0 0; border: 0; border-top: 1px solid var(--rule); }
+.tl-itemform .tl-field select[multiple] { min-height: 9em; padding: 6px 8px; border: 1px solid var(--rule); background: var(--paper); font-size: 16px; }
+.tl-itemform .tl-field select[multiple]:focus { border: 1px solid var(--acc); padding-bottom: 6px; }
+.tl-itemform__rows > .tl-itemform__subform:first-child { border-top: 0; padding-top: 0; }
+.tl-itemform .tl-formgrid { align-items: start; }
+/* A checkbox beside labelled fields lines up with their inputs. */
+.tl-itemform .tl-formgrid:has(> .tl-field > .tl-field__label) > .tl-field:has(> .tl-check) { padding-top: 30px; }
+.tl-itemform .tl-field textarea { height: 7.5em; resize: vertical; }

@@ -1,54 +1,30 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}Update{% else %}Create{% endif %} Hunter Relic
-{% endblock creation_title %}
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Hunter Relic{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Power Level</div>
-        <div class="col-sm">{{ form.power_level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Background Cost</div>
-        <div class="col-sm">{{ form.background_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Blessed</div>
-        <div class="col-sm">{{ form.is_blessed }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Cursed</div>
-        <div class="col-sm">{{ form.is_cursed }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Requires Faith</div>
-        <div class="col-sm">{{ form.requires_faith }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Unique</div>
-        <div class="col-sm">{{ form.is_unique }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Powers</div>
-        <div class="col-sm">{{ form.powers }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Activation Cost</div>
-        <div class="col-sm">{{ form.activation_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Origin</div>
-        <div class="col-sm">{{ form.origin }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Limitations</div>
-        <div class="col-sm">{{ form.limitations }}</div>
+    <div class="tl-itemform">
+        <div class="tl-formgrid">
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+            {% include "core/tl/field.html" with field=form.power_level label="Power level" %}
+            {% include "core/tl/field.html" with field=form.background_cost label="Background cost" %}
+            {% include "core/tl/field.html" with field=form.activation_cost label="Activation cost" %}
+            <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+        </div>
+        <div class="tl-formgrid">
+            {% include "core/misc/check.html" with field=form.is_blessed label="Blessed" %}
+            {% include "core/misc/check.html" with field=form.is_cursed label="Cursed" %}
+            {% include "core/misc/check.html" with field=form.requires_faith label="Requires faith" %}
+            {% include "core/misc/check.html" with field=form.is_unique label="Unique" %}
+        </div>
+        <section class="tl-section" aria-labelledby="hrelic-powers-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="hrelic-powers-title">Powers</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.powers %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.limitations %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.origin %}</div>
+            </div>
+        </section>
     </div>
 {% endblock contents %}

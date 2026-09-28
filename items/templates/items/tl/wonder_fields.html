@@ -1,0 +1,20 @@
+{% comment %}
+The fields every Wonder-like item form shares (artifact, charm, talisman, periapt,
+fetish, talen, grimoire): name, rank, background cost, maximum Quintessence, Arete and
+description. Fields a form lacks are skipped (background cost is create-only on some).
+  {% include "items/tl/wonder_fields.html" %}
+{% endcomment %}
+<div class="tl-formgrid">
+    <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+    {% include "core/tl/field.html" with field=form.rank %}
+    {% if form.background_cost %}
+        {% include "core/tl/field.html" with field=form.background_cost label="Background cost" %}
+    {% endif %}
+    {% if form.quintessence_max %}
+        {% include "core/tl/field.html" with field=form.quintessence_max label="Maximum Quintessence" %}
+    {% endif %}
+    {% if form.arete %}
+        {% include "core/tl/field.html" with field=form.arete %}
+    {% endif %}
+    <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+</div>

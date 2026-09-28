@@ -1,151 +1,79 @@
-{% load static %}
-{% load formset_tags %}
-<div class="row">
-    <h2 class="col-sm mta_heading">Create Wonder</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Create your Wonder. It may be built on up to {{ points }} points...</div>
-</div>
-<div id="wonder_creation">
-    <div class="row">
-        <div class="col-sm">{{ form.wonder_type }}</div>
+{% comment %}
+The Wonder form (WonderForm): type, rank, Arete, Resonance rows and powers. Used by the
+Wonder create / edit page and as the Wonder step of Mage, MtA human and Companion
+chargen (current_background is the Wonder background being filled there).
+FormsetManager needs #resonance_formset / #empty_resonance_form and #effects_formset /
+#empty_effects_form; wonder-form.js needs #id_wonder_type, #add-power and the effect
+subforms' classes.
+{% endcomment %}
+{% load static formset_tags %}
+<p class="tl-lede">
+    Extra Resonance, Arete above the rank and the powers' Effects may together cost up to three times the Wonder's rank.
+    {% if current_background %}
+        This one is rank {{ current_background.rating }}: up to {% widthratio current_background.rating 1 3 %} points.
+    {% endif %}
+</p>
+<div id="wonder_creation" class="tl-itemform">
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.wonder_type label="Type" %}
+        {% include "core/tl/field.html" with field=form.rank label="Rank" %}
+        {% include "core/tl/field.html" with field=form.arete label="Arete" help="Charms and Talismans: at least the rank." %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ form.rank }}</div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm">Arete</div>
-        <div class="col-sm">{{ form.arete }}</div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="col-sm">
-        <h2>Resonance</h2>
-    </div>
-    {{ form.resonance_formset.management_form }}
-    <div id="resonance_formset" {% formset_container "resonance" %}>
-        {% for subform in form.resonance_formset.forms %}
-            <div class="row" {% formset_form_wrapper %}>
-                <div class="col-sm">{{ subform.resonance }}</div>
-                <div class="col-sm">{{ subform.rating }}</div>
-            </div>
-        {% endfor %}
-    </div>
-    <div id="empty_resonance_form" class="d-none">
-        <div class="row" {% formset_form_wrapper %}>
-            <div class="col-sm">{{ form.resonance_formset.empty_form.resonance }}</div>
-            <div class="col-sm">{{ form.resonance_formset.empty_form.rating }}</div>
+    <section class="tl-section" aria-labelledby="wonder-resonance-title">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title" id="wonder-resonance-title">Resonance</h2>
         </div>
-    </div>
-    {% formset_add_btn "resonance" "Add Resonance" %}
-    <div class="col-sm">
-        <h2>Powers</h2>
-    </div>
-    {{ form.effect_formset.management_form }}
-    <div id="effects_formset" {% formset_container "effects" %}>
-        {% for subform in form.effect_formset.forms %}
-            <div class="effect-subform" data-prefix="effects-{{ forloop.counter0 }}" {% formset_form_wrapper %}>
-                <div class="row form-row">
-                    <div class="col-sm">Create New Effect: {{ subform.select_or_create }}</div>
-                </div>
-                <div class="row form-row effect-select-row">
-                    <div class="col-sm">{{ subform.select }}</div>
-                </div>
-                <div class="effect-create-fields d-none">
-                    <div class="row form-row">
-                        <div class="col-sm">Name</div>
-                        <div class="col-sm">{{ subform.name }}</div>
-                    </div>
-                    <div class="row form-row">
-                        <div class="col-sm">Correspondence</div>
-                        <div class="col-sm dots">{{ subform.correspondence }}</div>
-                        <div class="col-sm">Life</div>
-                        <div class="col-sm dots">{{ subform.life }}</div>
-                        <div class="col-sm">Prime</div>
-                        <div class="col-sm dots">{{ subform.prime }}</div>
-                    </div>
-                    <div class="row form-row">
-                        <div class="col-sm">Entropy</div>
-                        <div class="col-sm dots">{{ subform.entropy }}</div>
-                        <div class="col-sm">Matter</div>
-                        <div class="col-sm dots">{{ subform.matter }}</div>
-                        <div class="col-sm">Spirit</div>
-                        <div class="col-sm dots">{{ subform.spirit }}</div>
-                    </div>
-                    <div class="row form-row">
-                        <div class="col-sm">Forces</div>
-                        <div class="col-sm dots">{{ subform.forces }}</div>
-                        <div class="col-sm">Mind</div>
-                        <div class="col-sm dots">{{ subform.mind }}</div>
-                        <div class="col-sm">Time</div>
-                        <div class="col-sm dots">{{ subform.time }}</div>
-                    </div>
-                    <div class="row form-row">
-                        <div class="col-sm">Description</div>
-                        <div class="col-sm">{{ subform.description }}</div>
-                    </div>
-                </div>
+        <div class="tl-section__body tl-itemform__rows">
+            {{ form.resonance_formset.management_form }}
+            {% if form.resonance_formset.non_form_errors %}
+                <ul class="tl-field__error">
+                    {% for error in form.resonance_formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            <div id="resonance_formset" class="tl-itemform__rows" {% formset_container "resonance" %}>
+                {% for subform in form.resonance_formset.forms %}
+                    {% include "items/mage/wonder/resonance_row.html" %}
+                {% endfor %}
             </div>
-        {% endfor %}
-    </div>
-    <!-- Empty form with updated prefix -->
-    <div id="empty_effects_form" class="d-none">
-        <div class="effect-subform" data-prefix="effects-__prefix__" {% formset_form_wrapper %}>
-            <div class="row form-row">
-                <div class="col-sm">Create New Effect: {{ form.effect_formset.empty_form.select_or_create }}</div>
+            <div id="empty_resonance_form" class="d-none">
+                {% include "items/mage/wonder/resonance_row.html" with subform=form.resonance_formset.empty_form %}
             </div>
-            <div class="row form-row effect-select-row">
-                <div class="col-sm">{{ form.effect_formset.empty_form.select }}</div>
-            </div>
-            <div class="effect-create-fields d-none">
-                <div class="row form-row">
-                    <div class="col-sm">Name</div>
-                    <div class="col-sm">{{ form.effect_formset.empty_form.name }}</div>
-                </div>
-                <div class="row form-row">
-                    <div class="col-sm">Correspondence</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.correspondence }}</div>
-                    <div class="col-sm">Life</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.life }}</div>
-                    <div class="col-sm">Prime</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.prime }}</div>
-                </div>
-                <div class="row form-row">
-                    <div class="col-sm">Entropy</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.entropy }}</div>
-                    <div class="col-sm">Matter</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.matter }}</div>
-                    <div class="col-sm">Spirit</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.spirit }}</div>
-                </div>
-                <div class="row form-row">
-                    <div class="col-sm">Forces</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.forces }}</div>
-                    <div class="col-sm">Mind</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.mind }}</div>
-                    <div class="col-sm">Time</div>
-                    <div class="col-sm dots">{{ form.effect_formset.empty_form.time }}</div>
-                </div>
-                <div class="row form-row">
-                    <div class="col-sm">Description</div>
-                    <div class="col-sm">{{ form.effect_formset.empty_form.description }}</div>
-                </div>
+            <div class="tl-actions">
+                {% formset_add_btn "resonance" "Add Resonance" class="tl-btn tl-btn--ghost tl-btn--sm" %}
             </div>
         </div>
-    </div>
-    <button type="button" class="d-none" id="add-power" data-formset-add="effects">Add Power</button>
+    </section>
+    <section class="tl-section tl-section--power" aria-labelledby="wonder-powers-title">
+        <div class="tl-section__head">
+            <span class="tl-section__num">02</span>
+            <h2 class="tl-section__title" id="wonder-powers-title">Powers</h2>
+        </div>
+        <div class="tl-section__body tl-itemform__rows">
+            {{ form.effect_formset.management_form }}
+            {% if form.effect_formset.non_form_errors %}
+                <ul class="tl-field__error">
+                    {% for error in form.effect_formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            <div id="effects_formset" class="tl-itemform__rows" {% formset_container "effects" %}>
+                {% for subform in form.effect_formset.forms %}
+                    {% include "items/mage/wonder/effect_subform.html" with prefix=subform.prefix %}
+                {% endfor %}
+            </div>
+            <div id="empty_effects_form" class="d-none">
+                {% include "items/mage/wonder/effect_subform.html" with subform=form.effect_formset.empty_form prefix="effects-__prefix__" %}
+            </div>
+            <div class="tl-actions">
+                <button type="button"
+                        class="tl-btn tl-btn--ghost tl-btn--sm d-none"
+                        id="add-power"
+                        data-formset-add="effects">Add Power</button>
+            </div>
+        </div>
+    </section>
 </div>
-
 {% formset_script %}
-
-<!-- Wonder-specific form logic -->
 <script src="{% static 'items/js/wonder-form.js' %}"></script>

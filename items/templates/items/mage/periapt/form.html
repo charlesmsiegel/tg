@@ -1,29 +1,19 @@
-{% extends "items/mage/wonder/form.html" %}
-{% block creation_title %}
-    Create Periapt
-{% endblock creation_title %}
-{% block powers %}
-    <div class="col-sm mta_heading">
-        <h2>Powers</h2>
+{% extends "items/tl/form.html" %}
+{% block creation_title %}Create Periapt{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-itemform">
+        {% include "items/tl/wonder_fields.html" %}
+        <section class="tl-section tl-section--power" aria-labelledby="wonder-power-title">
+            <div class="tl-section__head">
+                <span class="tl-section__num">01</span>
+                <h2 class="tl-section__title" id="wonder-power-title">Power</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.power label="Effect" %}
+                {% include "core/tl/field.html" with field=form.max_charges label="Maximum charges" %}
+                {% include "core/tl/field.html" with field=form.current_charges label="Current charges" %}
+                {% include "core/misc/check.html" with field=form.is_consumable label="Consumable" %}
+            </div>
+        </section>
     </div>
-    <div class="row">
-        <div class="col-sm">Arete</div>
-        <div class="col-sm">{{ form.arete }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Max Charges</div>
-        <div class="col-sm">{{ form.max_charges }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Current Charges</div>
-        <div class="col-sm">{{ form.current_charges }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Is Consumable</div>
-        <div class="col-sm">{{ form.is_consumable }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Power</div>
-        <div class="col-sm">{{ form.power }}</div>
-    </div>
-{% endblock powers %}
+{% endblock contents %}

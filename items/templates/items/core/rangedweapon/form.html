@@ -1,14 +1,7 @@
 {% extends "items/core/weapon/form.html" %}
-{% block creation_title %}
-    Create Ranged Weapon
-{% endblock creation_title %}
+{% block creation_title %}Create Ranged Weapon{% endblock creation_title %}
 {% block ranged_details %}
-    <div class="row">
-        <div class="col-sm">Range</div>
-        <div class="col-sm">{{ form.range }}</div>
-        <div class="col-sm">Rate</div>
-        <div class="col-sm">{{ form.rate }}</div>
-        <div class="col-sm">Clip</div>
-        <div class="col-sm">{{ form.clip }}</div>
-    </div>
+    {% include "core/tl/field.html" with field=form.range %}
+    {% include "core/tl/field.html" with field=form.rate %}
+    {% include "core/tl/field.html" with field=form.clip %}
 {% endblock ranged_details %}
