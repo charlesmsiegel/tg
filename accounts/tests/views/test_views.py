@@ -88,7 +88,43 @@ class TestProfileView(TestCase):
         self.client.login(username="Test Storyteller", password="testpass")
         response = self.client.get(self.storyteller.profile.get_absolute_url())
         self.assertContains(response, "Test Character 2")
-        self.assertContains(response, "To Approve")
+        self.assertContains(response, "Characters to approve")
+
+    def test_default_tab_is_needs_when_something_waits(self):
+        self.client.login(username="Test Storyteller", password="testpass")
+        response = self.client.get(self.storyteller.profile.get_absolute_url())
+        self.assertEqual(response.context["tab"], "needs")
+        self.assertEqual(response.context["needs_count"], 1)
+        self.assertEqual(list(response.context["characters_to_approve"]), [self.char2])
+        self.assertContains(
+            response,
+            reverse(
+                "accounts:object_approval", kwargs={"object_type": "character", "pk": self.char2.pk}
+            ),
+        )
+
+    def test_default_tab_is_characters_when_nothing_waits(self):
+        self.client.login(username="Test User 1", password="testpass")
+        response = self.client.get(self.user1.profile.get_absolute_url())
+        self.assertEqual(response.context["needs_count"], 0)
+        self.assertEqual(response.context["tab"], "characters")
+
+    def test_tab_query_parameter_picks_the_page(self):
+        self.client.login(username="Test Storyteller", password="testpass")
+        url = self.storyteller.profile.get_absolute_url()
+        response = self.client.get(url, {"tab": "chronicles"})
+        self.assertEqual(response.context["tab"], "chronicles")
+        self.assertContains(response, "Test Chronicle")
+        self.assertNotContains(response, "Characters to approve")
+
+    def test_storyteller_tabs_fall_back_for_players(self):
+        self.client.login(username="Test User 1", password="testpass")
+        url = self.user1.profile.get_absolute_url()
+        for tab in ("chronicles", "journals", "bogus"):
+            with self.subTest(tab=tab):
+                response = self.client.get(url, {"tab": tab})
+                self.assertEqual(response.context["tab"], "characters")
+                self.assertNotContains(response, "?tab=chronicles")
 
 
 class TestProfileApprovalWorkflow(TestCase):
@@ -341,7 +377,8 @@ class TestProfileRoteApprovalWorkflow(TestCase):
     def test_st_can_approve_rote(self):
         """Test that storytellers can approve rotes."""
         STRelationship.objects.create(
-            user=self.st_user, chronicle=self.chronicle,
+            user=self.st_user,
+            chronicle=self.chronicle,
             gameline=Gameline.objects.create(name="Mage: the Ascension"),
         )
         self.client.login(username="stuser", password="password")

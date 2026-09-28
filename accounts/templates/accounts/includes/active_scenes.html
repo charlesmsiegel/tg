@@ -1,32 +1,22 @@
-{% if object.unread_scenes %}
-    <div class="tg-card mb-4">
-        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#unread-scenes-section" aria-expanded="true">
-            <h3 class="tg-card-title {{ object.preferred_heading }}">
-                <i class="fas fa-chevron-down"></i> Unread Scenes
-            </h3>
+{% load tl %}
+{% if unread_scenes %}
+    <section class="tl-section tl-queue tl-queue--sm"
+             id="unread-scenes-section"
+             aria-labelledby="unread-scenes-title">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="unread-scenes-title">Unread scenes</h2>
+            <span class="tl-queue__count">{{ unread_scenes|length }}</span>
         </div>
-        <div id="unread-scenes-section" class="collapse show">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for scene in object.unread_scenes %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 20px;">
-                                    <h5 class="mb-3">
-                                        <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
-                                    </h5>
-                                    <form action="{% url 'accounts:mark_scene_read' scene_pk=scene.pk %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" class="tg-btn btn-primary btn-sm">
-                                            <i class="fas fa-check"></i> Mark Read
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+        <div class="tl-section__body">
+            {% for scene in unread_scenes %}
+                <div class="tl-scenerow" data-gameline="{{ scene|gameline_code }}">
+                    <span class="tl-scenerow__name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></span>
+                    <form action="{% url 'accounts:mark_scene_read' scene_pk=scene.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="tl-btn tl-btn--ghost tl-btn--sm">Mark read</button>
+                    </form>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    </div>
+    </section>
 {% endif %}

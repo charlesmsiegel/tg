@@ -1,39 +1,44 @@
-<div class="row">
-    <h2 class="col-sm {{ user.profile.preferred_heading }}">Story XP</h2>
-</div>
-<form method="post" action="">
-    {% csrf_token %}
-    <div class="row">
+{% comment %}
+Story XP awards (not wired into the profile yet: the view builds no story_xp_forms).
+{% endcomment %}
+<section class="tl-section tl-queue" aria-labelledby="xp-story-st-title">
+    <div class="tl-section__head">
+        <h2 class="tl-section__title" id="xp-story-st-title">Story XP</h2>
+    </div>
+    <form class="tl-section__body tl-stack tl-stack--lg" method="post" action="">
+        {% csrf_token %}
         {% for story_xp_form in story_xp_forms %}
-            <div class="col-12">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <h3>
-                            <a class="col-sm {{ user.profile.preferred_heading }}"
-                               href="{{ story_xp_form.scene.get_absolute_url }}">{{ story_xp_form.story.name }}</a>
-                        </h3>
-                        <div class="row">
-                            <div class="col-sm">Character</div>
-                            <div class="col-sm">Success</div>
-                            <div class="col-sm">Danger</div>
-                            <div class="col-sm">Growth</div>
-                            <div class="col-sm">Drama</div>
-                            <div class="col-sm">Duration</div>
-                        </div>
+            <div class="tl-block tl-block--tight">
+                <h3 class="tl-xpcard__name">
+                    <a href="{{ story_xp_form.scene.get_absolute_url }}">{{ story_xp_form.story.name }}</a>
+                </h3>
+                <table class="tl-table tl-table--compact">
+                    <thead>
+                        <tr>
+                            <th scope="col">Character</th>
+                            <th scope="col">Success</th>
+                            <th scope="col">Danger</th>
+                            <th scope="col">Growth</th>
+                            <th scope="col">Drama</th>
+                            <th scope="col">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for char, fields in story_xp_form.rows %}
-                            <div class="row">
-                                <a class="col-sm" href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-                                {% for bound_field in fields %}<div class="col-sm">{{ bound_field }}</div>{% endfor %}
-                            </div>
+                            <tr>
+                                <td><a href="{{ char.get_absolute_url }}">{{ char.name }}</a></td>
+                                {% for bound_field in fields %}<td>{{ bound_field }}</td>{% endfor %}
+                            </tr>
                         {% endfor %}
-                        <div class="text-center mt-3">
-                            <button type="submit"
-                                    name="submit_story"
-                                    value="{{ story_xp_form.story.pk }}">Submit {{ story_xp_form.story.name }}</button>
-                        </div>
-                    </div>
+                    </tbody>
+                </table>
+                <div class="tl-actions">
+                    <button class="tl-btn tl-btn--sm"
+                            type="submit"
+                            name="submit_story"
+                            value="{{ story_xp_form.story.pk }}">Submit {{ story_xp_form.story.name }}</button>
                 </div>
             </div>
         {% endfor %}
-    </div>
-</form>
+    </form>
+</section>

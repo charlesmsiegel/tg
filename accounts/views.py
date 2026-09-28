@@ -3,9 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
+from django.db.models import Prefetch
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DetailView, UpdateView
 
@@ -18,11 +19,12 @@ from accounts.forms import (
 )
 from accounts.models import Profile
 from characters.models.core import Character
+from core.constants import XPApprovalStatus
 from core.mixins import MessageMixin
 from core.permissions import PermissionManager
 from core.services import ApprovalService
 from game.forms import WeeklyXPRequestForm
-from game.models import Scene, UserSceneReadStatus, Week, WeeklyXPRequest
+from game.models import Scene, UserSceneReadStatus, Week, WeeklyXPRequest, XPSpendingRequest
 from game.security import can_view_scene, filter_scenes, staffed_chronicles
 from game.spending_approval import require_spending_approver
 
@@ -68,6 +70,12 @@ def verify_st_for_chronicle(request, chronicle, action_description="this action"
         raise PermissionDenied(msg)
 
 
+def profile_tab_redirect(request, tab):
+    """Redirect to the requesting user's profile, on the given ?tab= page."""
+    url = reverse("accounts:profile", kwargs={"pk": request.user.profile.pk})
+    return redirect(f"{url}?tab={tab}")
+
+
 class SceneXPAwardView(LoginRequiredMixin, View):
     """Award XP for a completed scene. ST only."""
 
@@ -87,7 +95,7 @@ class SceneXPAwardView(LoginRequiredMixin, View):
                 messages.success(request, f"XP awarded for scene '{scene.name}'!")
         else:
             messages.error(request, "Failed to award XP. Please check your input.")
-        return redirect("accounts:profile", pk=request.user.profile.pk)
+        return profile_tab_redirect(request, "experience")
 
 
 class ObjectApprovalView(LoginRequiredMixin, View):
@@ -101,9 +109,7 @@ class ObjectApprovalView(LoginRequiredMixin, View):
             raise Http404
         obj = get_object_or_404(model_class, pk=pk)
         chronicle = getattr(obj, "chronicle", None)
-        verify_st_for_chronicle(
-            request, chronicle, f"{object_type} approval", obj.get_gameline()
-        )
+        verify_st_for_chronicle(request, chronicle, f"{object_type} approval", obj.get_gameline())
         try:
             _, msg = ApprovalService.approve_object(object_type, pk, request.user)
         except ValidationError as exc:
@@ -170,9 +176,7 @@ class FreebieAwardView(LoginRequiredMixin, View):
 
     def post(self, request, character_pk):
         char = get_object_or_404(Character, pk=character_pk)
-        verify_st_for_chronicle(
-            request, char.chronicle, "freebie approval", char.get_gameline()
-        )
+        verify_st_for_chronicle(request, char.chronicle, "freebie approval", char.get_gameline())
         form = FreebieAwardForm(request.POST, character=char)
         if form.is_valid():
             form.save()
@@ -199,7 +203,7 @@ class WeeklyXPRequestView(LoginRequiredMixin, View):
             messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
         else:
             messages.error(request, "Failed to submit XP request. Please check your input.")
-        return redirect("accounts:profile", pk=request.user.profile.pk)
+        return profile_tab_redirect(request, "experience")
 
 
 class WeeklyXPApprovalView(LoginRequiredMixin, View):
@@ -225,7 +229,7 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
                 messages.success(request, f"Weekly XP request approved for '{char.name}'!")
         else:
             messages.error(request, "Failed to approve XP request. Please check your input.")
-        return redirect("accounts:profile", pk=request.user.profile.pk)
+        return profile_tab_redirect(request, "experience")
 
 
 class MarkSceneReadView(LoginRequiredMixin, View):
@@ -321,7 +325,121 @@ class ProfileView(LoginRequiredMixin, DetailView):
         ]
         # story_xp_request_forms
         # story_xp_request_forms_to_approve
+        context.update(self.get_needs_you(context))
+        context["tab"] = self.get_tab(context)
         return context
+
+    def get_needs_you(self, context):
+        """Everything waiting on this profile's owner, for the NEEDS YOU tab.
+
+        Storyteller queues (approvals, freebies, scene and weekly XP awards) only show on
+        the owner's own profile, as they always have; scenes needing attention and XP
+        spend requests show to anyone viewing a storyteller's profile. Each queue is
+        evaluated once here so the tab count and the tab body agree.
+        """
+        profile = self.object
+        is_st = profile.is_st()
+        is_own = self.request.user == profile.user
+        st_queues = is_st and is_own
+        empty = []
+
+        def st_only(build):
+            return build() if st_queues else empty
+
+        xp_spend_requests = empty
+        if is_st:
+            xp_spend_requests = list(
+                profile.xp_spend_requests()
+                .select_related("chronicle", "polymorphic_ctype")
+                .prefetch_related(
+                    Prefetch(
+                        "xp_spendings",
+                        queryset=XPSpendingRequest.objects.filter(
+                            approved=XPApprovalStatus.PENDING
+                        ),
+                        to_attr="pending_spendings",
+                    )
+                )
+            )
+        queues = {
+            "unread_scenes": list(profile.unread_scenes()),
+            "scenes_waiting": list(context["scenes_waiting"]),
+            "xp_spend_requests": xp_spend_requests,
+            "characters_to_approve": st_only(
+                lambda: list(
+                    profile.characters_to_approve().select_related(
+                        "owner", "owner__profile", "chronicle", "polymorphic_ctype"
+                    )
+                )
+            ),
+            "locations_to_approve": st_only(
+                lambda: list(profile.locations_to_approve().select_related("owner", "chronicle"))
+            ),
+            "items_to_approve": st_only(
+                lambda: list(profile.items_to_approve().select_related("owner", "chronicle"))
+            ),
+            "rotes_to_approve": st_only(lambda: list(profile.rotes_to_approve().items())),
+            "character_images_to_approve": st_only(
+                lambda: list(profile.character_images_to_approve().select_related("owner"))
+            ),
+            "location_images_to_approve": st_only(
+                lambda: list(profile.location_images_to_approve().select_related("owner"))
+            ),
+            "item_images_to_approve": st_only(
+                lambda: list(profile.item_images_to_approve().select_related("owner"))
+            ),
+        }
+        scene_xp = context["scenexp_forms"] if st_queues else empty
+        weekly_to_approve = context["weekly_xp_request_forms_to_approve"] if st_queues else empty
+        freebies = context["freebie_forms"] if st_queues else empty
+        weekly_requests = context["weekly_xp_request_forms"] if is_own else empty
+        image_count = (
+            len(queues["character_images_to_approve"])
+            + len(queues["location_images_to_approve"])
+            + len(queues["item_images_to_approve"])
+        )
+        other_queues = [
+            ("Locations", len(queues["locations_to_approve"]), "location-approval-section"),
+            ("Items", len(queues["items_to_approve"]), "item-approval-section"),
+            ("Rotes", len(queues["rotes_to_approve"]), "rote-approval-section"),
+            ("Images", image_count, "image-approval-section"),
+        ]
+        weeks = [form.week for form in (*weekly_to_approve, *weekly_requests)]
+        needs_count = (
+            len(queues["unread_scenes"])
+            + len(queues["scenes_waiting"])
+            + len(queues["xp_spend_requests"])
+            + len(queues["characters_to_approve"])
+            + len(scene_xp)
+            + len(weekly_to_approve)
+            + len(weekly_requests)
+            + len(freebies)
+            + sum(count for _label, count, _anchor in other_queues)
+        )
+        return {
+            **queues,
+            "is_st": is_st,
+            "is_own": is_own,
+            "st_queues": st_queues,
+            "other_queues": other_queues if any(c for _l, c, _a in other_queues) else empty,
+            "weekly_xp_summary": {
+                "scenes": len(scene_xp),
+                "to_approve": len(weekly_to_approve),
+                "to_file": len(weekly_requests),
+                "week": max(weeks, key=lambda week: week.end_date) if weeks else None,
+            },
+            "needs_count": needs_count,
+        }
+
+    def get_tab(self, context):
+        """The ?tab= page, falling back to NEEDS YOU when something waits, else characters."""
+        tabs = {"needs", "characters", "experience"}
+        if context["is_st"]:
+            tabs |= {"chronicles", "journals"}
+        tab = self.request.GET.get("tab")
+        if tab in tabs:
+            return tab
+        return "needs" if context["needs_count"] else "characters"
 
 
 class ProfileUpdateView(MessageMixin, LoginRequiredMixin, UpdateView):

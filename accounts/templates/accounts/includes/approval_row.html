@@ -1,0 +1,30 @@
+{% load tl %}
+{% comment %}
+One approval row: name (in the object's gameline font) over its chronicle, type and status,
+owner, then REVIEW and APPROVE (POST to accounts:object_approval).
+  {% include "accounts/includes/approval_row.html" with obj=obj object_type="character" %}
+{% endcomment %}
+<div class="tl-approvalrow" data-gameline="{{ obj|gameline_code }}">
+    <div class="tl-approvalrow__id">
+        <a class="tl-approvalrow__name" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+        <span class="tl-approvalrow__sub">{{ obj.chronicle|default:"No chronicle" }}</span>
+    </div>
+    <div class="tl-approvalrow__type">
+        <span>{{ obj|type_label }}</span>
+        <span class="tl-status">{{ obj.get_status_display }}</span>
+    </div>
+    <span class="tl-approvalrow__who">
+        {% if obj.owner is not None %}
+            <a href="{{ obj.owner.profile.get_absolute_url }}">{{ obj.owner }}</a>
+        {% else %}
+            No owner
+        {% endif %}
+    </span>
+    <div class="tl-approvalrow__actions">
+        <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{{ obj.get_absolute_url }}">Review</a>
+        <form action="{% url 'accounts:object_approval' object_type=object_type pk=obj.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="tl-btn tl-btn--sm">Approve</button>
+        </form>
+    </div>
+</div>

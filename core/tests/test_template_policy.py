@@ -18,7 +18,6 @@ from django.test import SimpleTestCase
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
 INLINE_STYLE_BUDGET = 2289
 STYLE_BLOCK_TEMPLATES = {
-    "accounts/detail.html",
     "accounts/registration/password_reset_email.html",
     "characters/core/chargen_progress.html",
     "characters/mage/mage/qp_wheel.html",

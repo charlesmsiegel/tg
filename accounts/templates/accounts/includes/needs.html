@@ -1,0 +1,39 @@
+{% comment %}
+NEEDS YOU tab: every queue ProfileView.get_needs_you collected, each hidden when empty.
+Characters to approve, then XP spend requests beside the Weekly XP summary, freebies,
+scenes, and the other approval queues as a counter row over their lists.
+{% endcomment %}
+{% if needs_count %}
+    {% include "accounts/includes/character_approval.html" %}
+    {% if xp_spend_requests or weekly_xp_summary.scenes or weekly_xp_summary.to_approve or weekly_xp_summary.to_file %}
+        <div class="tl-cols tl-cols--2 tl-queuepair">
+            {% include "accounts/includes/xp_spend_requests.html" %}
+            {% include "accounts/includes/xp_summary.html" %}
+        </div>
+    {% endif %}
+    {% include "accounts/includes/freebies.html" %}
+    {% include "accounts/includes/attention.html" %}
+    {% include "accounts/includes/active_scenes.html" %}
+    {% if other_queues %}
+        <section class="tl-section tl-queue tl-queue--sm" aria-labelledby="other-queues-title">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title" id="other-queues-title">Other queues</h2>
+            </div>
+            <div class="tl-section__body tl-counters">
+                {% for label, count, anchor in other_queues %}
+                    {% if count %}
+                        <a class="tl-counter" href="#{{ anchor }}"><span>{{ label }}</span><span class="tl-counter__n">{{ count }}</span></a>
+                    {% else %}
+                        <span class="tl-counter"><span>{{ label }}</span><span class="tl-counter__n">{{ count }}</span></span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+        {% include "accounts/includes/location_approval.html" %}
+        {% include "accounts/includes/item_approval.html" %}
+        {% include "accounts/includes/rote_approval.html" %}
+        {% include "accounts/includes/image_approval.html" %}
+    {% endif %}
+{% else %}
+    {% include "core/tl/empty.html" with text="Nothing needs you right now." %}
+{% endif %}

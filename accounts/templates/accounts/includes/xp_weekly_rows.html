@@ -1,0 +1,38 @@
+{% comment %}
+Criterion rows shared by the weekly XP request (player) and approval (storyteller) cards:
+a checkbox per criterion and the finished scene that earned it.
+  {% include "accounts/includes/xp_weekly_rows.html" with form=weekly_xp_request_form %}
+{% endcomment %}
+<table class="tl-table tl-table--compact tl-xptable">
+    <thead>
+        <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Scene</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><label class="tl-check">{{ form.learning }} Learning</label></td>
+            <td><div class="tl-field tl-field--select">{{ form.learning_scene }}</div></td>
+        </tr>
+        <tr>
+            <td><label class="tl-check">{{ form.rp }} Role-Playing</label></td>
+            <td><div class="tl-field tl-field--select">{{ form.rp_scene }}</div></td>
+        </tr>
+        <tr>
+            <td><label class="tl-check">{{ form.focus }} Focus</label></td>
+            <td><div class="tl-field tl-field--select">{{ form.focus_scene }}</div></td>
+        </tr>
+        <tr>
+            <td><label class="tl-check">{{ form.standingout }} NPCs</label></td>
+            <td><div class="tl-field tl-field--select">{{ form.standingout_scene }}</div></td>
+        </tr>
+    </tbody>
+</table>
+{% if form.non_field_errors %}
+    <div class="tl-errors" role="alert">
+        <ul>
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    </div>
+{% endif %}
