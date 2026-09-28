@@ -1,5 +1,8 @@
 {% extends "items/core/item/detail.html" %}
-{% load dots %}
+{% comment %}
+Wonder (C11) and the Mage items built on it: 01 Basics beside 02 Resonance, then the
+type's powers (the `powers` block) and the description.
+{% endcomment %}
 {% block status_row %}
     {% include "items/mage/wonder/display_includes/basics.html" %}
 {% endblock status_row %}
@@ -8,9 +11,7 @@
         {% block creation %}
         {% endblock creation %}
         {% block resonance %}
-            <div class="row mb-4">
-                <div class="col-12">{% include "characters/mage/resonance/display_includes/resonance.html" %}</div>
-            </div>
+            {% include "characters/tl/resonance.html" with span="tl-span-6" %}
         {% endblock resonance %}
         {% block powers %}
         {% endblock powers %}

@@ -1,7 +1,126 @@
-{% extends "core/object.html" %}
-{% load dots %}
-{% load sanitize_text %}
-{% block contents %}
-    {% block additional_stats %}
-    {% endblock additional_stats %}
-{% endblock contents %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Item detail shell (Spread C9–C12). Every item type extends this and overrides blocks:
+
+  cover:  cover_stamp (right of the eyebrow), cover_sub (under the name), cover_facts
+          (rule list; its rows are the owned_by / owner / chronicle / status / sources
+          blocks), cover_stats (numbers above EDIT)
+  pages:  one .tl-sheet grid of numbered sections, filled in this order by
+          status_row, model_specific, contents (additional_stats), description and
+          post_content. A section is full width unless it carries a .tl-span-N class;
+          CSS counters number the sections (01, 02...).
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name|sanitize_html }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'items:index' %}">← Items</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <div class="tl-itemhead">
+        <span class="tl-cover__eyebrow">
+            {{ object|type_label }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+        </span>
+        {% block cover_stamp %}{% endblock cover_stamp %}
+    </div>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>
+        {{ object.name|sanitize_html }}
+    </h1>
+    {% if object.rank %}
+        <span class="tl-cover__rank">
+            {% if object.rank > 5 %}
+                {% dots object.rank 10 %}
+            {% else %}
+                {% dots object.rank %}
+            {% endif %}
+        </span>
+    {% endif %}
+    {% block cover_sub %}{% endblock cover_sub %}
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% block cover_facts %}
+            {% block owned_by %}
+                {% with owners=object.owned_by_list %}
+                    {% if owners %}
+                        <div class="tl-facts__row">
+                            <span class="tl-facts__k">Owned by</span>
+                            <span class="tl-facts__v">
+                                {% for owner in owners %}<a href="{{ owner.get_absolute_url }}">{{ owner }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endblock owned_by %}
+            {% block owner %}
+                {% if object.owner %}
+                    {% url 'accounts:profile' object.owner.id as owner_url %}
+                    {% fact "Owner" object.owner.username owner_url %}
+                {% endif %}
+            {% endblock owner %}
+            {% block chronicle %}
+                {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
+            {% endblock chronicle %}
+            {% block status_fact %}
+                {% if object.get_status_display %}
+                    <div class="tl-facts__row">
+                        <span class="tl-facts__k">Status</span>
+                        <span class="tl-facts__v tl-status{% if object.status == 'Dec' %} tl-status--dec{% endif %}">{{ object.get_status_display }}</span>
+                    </div>
+                {% endif %}
+            {% endblock status_fact %}
+            {% block sources %}
+                {% for reference in object.sources.all %}
+                    {% fact "Source" reference reference.book.get_absolute_url %}
+                {% endfor %}
+            {% endblock sources %}
+        {% endblock cover_facts %}
+    </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% block cover_stats %}{% endblock cover_stats %}
+    {% if object_perms.can_edit or object_perms.can_edit_limited %}
+        {% with edit_url=object|update_url %}
+            {% if edit_url %}<a class="tl-btn tl-btn--block" href="{{ edit_url }}">Edit</a>{% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="items" %}
+{% endblock nav %}
+{% block content %}
+    {% csrf_token %}
+    {% block image %}
+        {% if object.image and object.image_status == "app" %}
+            <img class="tl-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
+        {% elif object.image %}
+            <p class="tl-note">Image pending approval.</p>
+        {% endif %}
+    {% endblock image %}
+    <div class="tl-sheet">
+        {% block status %}
+            {% block status_row %}{% endblock status_row %}
+        {% endblock status %}
+        {% block model_specific %}{% endblock model_specific %}
+        {% block contents %}
+            {% block additional_stats %}{% endblock additional_stats %}
+        {% endblock contents %}
+        {% block description %}
+            {% if object.description %}
+                <section class="tl-section tl-span-8" id="description">
+                    <div class="tl-section__head">
+                        <span class="tl-section__num"></span>
+                        <h2 class="tl-section__title">Description</h2>
+                    </div>
+                    <div class="tl-section__body tl-prose">{{ object.description|sanitize_html|linebreaks }}</div>
+                </section>
+            {% endif %}
+        {% endblock description %}
+        {% block post_content %}{% endblock post_content %}
+    </div>
+    {% tl_object_actions %}
+    {% block buttons %}{% endblock buttons %}
+{% endblock content %}

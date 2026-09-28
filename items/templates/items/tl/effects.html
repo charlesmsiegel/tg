@@ -1,0 +1,28 @@
+{% comment %}
+Mage power section (--acc): effect cards in a 3-column grid, Arete on the right.
+Hidden when there is neither an effect nor an Arete rating to show.
+  {% include "items/tl/effects.html" with title="Powers" effects=object.powers.all arete=object.arete %}
+  {% include "items/tl/effects.html" with title="Power" effect=object.power %}
+{% endcomment %}
+{% if effects or effect or arete %}
+    <section class="tl-section tl-section--power" id="powers">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">{{ title }}</h2>
+            {% if arete %}<span class="tl-section__aside tl-mono tl-muted">Arete {{ arete }}</span>{% endif %}
+        </div>
+        {% if effects or effect %}
+            <div class="tl-section__body tl-grid">
+                {% if effect %}
+                    {% include "items/tl/effect_card.html" %}
+                {% else %}
+                    {% for effect in effects %}
+                        {% include "items/tl/effect_card.html" %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="tl-section__body">{% include "core/tl/empty.html" with text="No powers available." %}</div>
+        {% endif %}
+    </section>
+{% endif %}

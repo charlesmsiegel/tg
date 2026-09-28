@@ -450,7 +450,7 @@ registry = ModelRegistry(
             },
             fields=("name", "is_hard"),
             templates={
-                "detail": "core/object.html",
+                "detail": "items/core/material/detail.html",
                 "list": "items/core/material/list.html",
                 "create": "items/core/material/form.html",
                 "update": "items/core/material/form.html",

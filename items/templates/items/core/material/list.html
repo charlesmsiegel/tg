@@ -1,17 +1,18 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Materials
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Materials</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "items/tl/list.html" %}
+{% block title %}Materials{% endblock title %}
+{% block heading %}Materials{% endblock heading %}
+{% block columns %}
+    <th scope="col">Hardness</th>
+{% endblock columns %}
+{% block row %}
+    <td class="tl-itemtable__type">
+        {% if obj.is_hard %}
+            Hard
+        {% else %}
+            Soft
+        {% endif %}
+    </td>
+{% endblock row %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No materials yet." %}
+{% endblock empty %}

@@ -1,0 +1,23 @@
+{% comment %}
+Contents strip (C14): rank + 3 slots, one cell per slot filled in the order Primer,
+Practices, Spheres, Abilities, Rotes. Reads `contents` from the grimoire view.
+{% endcomment %}
+{% with c=contents %}
+    {% if c %}
+        <div class="tl-slots" id="grimoire-contents">
+            <div class="tl-slots__head">
+                <span class="tl-eyebrow">Contents · Rank {{ c.rank }} + 3 = {{ c.total }} slots</span>
+                <span class="tl-eyebrow tl-slots__count{% if c.state == 'complete' %} is-complete{% endif %}"
+                      data-state="{{ c.state }}">{{ c.filled }} of {{ c.total }} filled</span>
+            </div>
+            <ol class="tl-slots__cells" aria-label="{{ c.filled }} of {{ c.total }} slots filled">
+                {% for cell in c.cells %}
+                    <li class="tl-slot{% if cell.filled %} is-on{% endif %}{% if cell.over %} is-over{% endif %}">
+                        <span class="tl-slot__bar"></span>
+                        <span class="tl-slot__label">{% if cell.filled %}{{ cell.label }}{% else %}Open{% endif %}</span>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endif %}
+{% endwith %}

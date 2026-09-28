@@ -1,11 +1,12 @@
-<div class="tg-card h-100">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title">Basic Information</h5>
+<section class="tl-section tl-span-6" id="basics">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Basics</h2>
     </div>
-    <div class="tg-card-body">
-        <div class="row mb-0">
-            <div class="col-sm"><strong>Length Modifier:</strong></div>
-            <div class="col-sm">{{ object.length_modifier_type }}{{ object.length_modifier }}</div>
+    <div class="tl-section__body tl-stats">
+        <div class="tl-stat">
+            <span class="tl-subhead">Length modifier</span>
+            <span class="tl-stat__value">{{ object.length_modifier_type|default_if_none:"" }}{{ object.length_modifier|default_if_none:"" }}</span>
         </div>
     </div>
-</div>
+</section>

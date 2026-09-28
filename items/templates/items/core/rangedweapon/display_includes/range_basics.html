@@ -1,21 +1,11 @@
-<div class="col">
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title {{ object.get_heading }}">Ranged Weapon Details</h5>
-        </div>
-        <div class="tg-card-body">
-            <div class="row mb-2">
-                <div class="col-sm-4"><strong>Range:</strong></div>
-                <div class="col-sm-8">{{ object.range }}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-sm-4"><strong>Rate:</strong></div>
-                <div class="col-sm-8">{{ object.rate }}</div>
-            </div>
-            <div class="row mb-0">
-                <div class="col-sm-4"><strong>Clip:</strong></div>
-                <div class="col-sm-8">{{ object.clip }}</div>
-            </div>
-        </div>
+<section class="tl-section tl-span-6" id="ranged">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Ranged</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stats">
+        {% include "items/tl/stat.html" with label="Range" value=object.range %}
+        {% include "items/tl/stat.html" with label="Rate" value=object.rate %}
+        {% include "items/tl/stat.html" with label="Clip" value=object.clip %}
+    </div>
+</section>

@@ -1,16 +1,1 @@
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title mta_heading">Power</h5>
-    </div>
-    <div class="tg-card-body text-center">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4 justify-content-center">
-        {% if object.power %}
-        <div class="col-3 mb-4">
-            {% include "characters/mage/effect/summary.html" with object=object.power %}
-        </div>
-        {% else %}
-            <div class="alert alert-info mb-0">No powers available.</div>
-        {% endif %}
-        </div>
-    </div>
-</div>
+{% include "items/tl/effects.html" with title="Power" effect=object.power %}

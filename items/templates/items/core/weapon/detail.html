@@ -1,8 +1,6 @@
 {% extends "items/core/item/detail.html" %}
 {% block additional_stats %}
-    <div class="row">
-        {% include "items/core/weapon/display_includes/basics.html" %}
-        {% block ranged_details %}
-        {% endblock ranged_details %}
-    </div>
+    {% include "items/core/weapon/display_includes/basics.html" %}
+    {% block ranged_details %}
+    {% endblock ranged_details %}
 {% endblock additional_stats %}

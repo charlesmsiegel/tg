@@ -1,18 +1,19 @@
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h5 class="tg-card-title wta_heading">Spirit Powers - {{ object.spirit }}</h5>
+{% comment %}
+Bound spirit (--acc): the spirit's name in the heading, its stats as numbers.
+Shared by fetishes and talens; each shows the stats its model has.
+{% endcomment %}
+<section class="tl-section tl-section--power tl-span-8" id="spirit">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Bound spirit{% if object.spirit %} · {{ object.spirit }}{% endif %}</h2>
     </div>
-    <div class="tg-card-body">
-        <div class="row mb-0">
-            <div class="col-sm">
-                <strong>Gnosis:</strong> {{ object.gnosis }}
-            </div>
-            <div class="col-sm">
-                <strong>Willpower:</strong> {{ object.willpower }}
-            </div>
-            <div class="col-sm">
-                <strong>Rage:</strong> {{ object.rage }}
-            </div>
-        </div>
+    <div class="tl-section__body tl-stats">
+        {% include "items/tl/stat.html" with label="Gnosis" value=object.gnosis %}
+        {% if object.willpower is not None and object.willpower != "" %}
+            {% include "items/tl/stat.html" with label="Willpower" value=object.willpower %}
+        {% endif %}
+        {% if object.rage is not None and object.rage != "" %}
+            {% include "items/tl/stat.html" with label="Rage" value=object.rage %}
+        {% endif %}
     </div>
-</div>
+</section>

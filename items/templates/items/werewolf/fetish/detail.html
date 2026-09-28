@@ -1,4 +1,19 @@
 {% extends "items/mage/wonder/detail.html" %}
+{% comment %}
+Fetish (C12): Background cost only. status_row replaces the inherited Wonder basics,
+so Maximum Quintessence is dropped (decided in the design handoff). No Resonance.
+{% endcomment %}
+{% block status_row %}
+    <section class="tl-section tl-span-4" id="basics">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Basics</h2>
+        </div>
+        <div class="tl-section__body tl-stats">
+            {% include "items/tl/stat.html" with label="Background cost" value=object.background_cost %}
+        </div>
+    </section>
+{% endblock status_row %}
 {% block resonance %}
 {% endblock resonance %}
 {% block powers %}
