@@ -394,6 +394,13 @@ Implemented as four commits matching §9. Deviations and discoveries:
 - **htmx loads on every scene page** so "Show earlier posts" works in place on
   finished scenes and history pages too; the `ws` extension loads only when
   the page is live.
+- **Review fixes (Codex review of `d65b9a1`):** `?before=²` returned 500
+  because `str.isdigit()` accepts characters `int()` rejects; a cursor past a
+  64-bit id overflowed the database parameter on both the page and `sync`.
+  Both now go through `scene_chat.post_cursor()` (bounded ASCII digits).
+  The same push takes the Claude review's optional cleanups: a binary frame is
+  a format error, not "too large"; refused connections skip `group_discard`;
+  `for_scene_optimized()` no longer re-states `Meta.ordering`.
 - **Noted, not changed:** `Scene.add_post` still writes read status with one
   `get_or_create` and `save` per participant; the "Close Scene" button is
   shown to every signed-in viewer and refused by the endpoint for non-STs

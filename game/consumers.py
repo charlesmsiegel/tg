@@ -52,6 +52,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         self.scene_id = int(self.scope["url_route"]["kwargs"]["scene_id"])
         self.room_group_name = scene_chat.group_name(self.scene_id)
         self.user = self.scope["user"]
+        self.joined = False
         query = parse_qs(self.scope.get("query_string", b"").decode())
 
         # A refused handshake reaches the browser as 1006, which clients retry;
@@ -70,11 +71,13 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             return
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        self.joined = True
         await self.accept()
         logger.info("User %s connected to scene %s", self.user, self.scene_id)
 
     async def disconnect(self, close_code):
-        # Harmless for connections that were refused before joining.
+        if not self.joined:  # refused with 4400 or 4403
+            return
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         logger.info("User %s disconnected from scene %s", self.user, self.scene_id)
 
@@ -105,8 +108,10 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         await self.deliver(reply)
 
     def decode(self, text_data):
+        if text_data is None:  # a binary frame
+            raise ValueError("Invalid message format.")
         limit = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
-        if text_data is None or (limit is not None and len(text_data) > limit):
+        if limit is not None and len(text_data) > limit:
             raise ValueError("Message too large.")
         try:
             data = json.loads(text_data)
@@ -134,7 +139,9 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def sync_reply(self, after):
-        if isinstance(after, bool) or not isinstance(after, int) or after < 0:
+        # JSON numbers only: a string cursor is a client bug, not a request.
+        after = scene_chat.post_cursor(after) if not isinstance(after, str) else None
+        if after is None:
             raise ValueError("Invalid message format.")
         scene = self.visible_scene()
         if scene is None:

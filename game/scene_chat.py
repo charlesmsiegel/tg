@@ -30,6 +30,27 @@ def group_name(scene_id):
     return f"scene_{scene_id}"
 
 
+# Post ids are 64-bit; a larger cursor would overflow the database parameter.
+MAX_POST_ID = 2**63 - 1
+
+
+def post_cursor(value):
+    """A post id cursor from a query string or JSON, or ``None`` if it is junk.
+
+    Only ASCII digits count: ``str.isdigit()`` accepts characters such as "²"
+    that ``int()`` rejects.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, str):
+        if not (value.isascii() and value.isdigit() and len(value) <= 19):
+            return None
+        value = int(value)
+    if isinstance(value, int) and 0 <= value <= MAX_POST_ID:
+        return value
+    return None
+
+
 def can_post(user, scene):
     """Players post as one of their own characters in an open scene (Step 0)."""
     return bool(
