@@ -155,12 +155,16 @@ class TestHeadStorytellerDashboard(TestCase):
         owner = User.objects.create_user("dashboard-owner")
         chronicle = Chronicle.objects.create(name="Head dashboard", head_st=head)
         character = Human.objects.create(
-            name="Submitted character", owner=owner,
-            chronicle=chronicle, status="Sub",
+            name="Submitted character",
+            owner=owner,
+            chronicle=chronicle,
+            status="Sub",
         )
         item = ItemModel.objects.create(
-            name="Submitted item", owner=owner,
-            chronicle=chronicle, status="Sub",
+            name="Submitted item",
+            owner=owner,
+            chronicle=chronicle,
+            status="Sub",
         )
 
         dashboard = head.profile.dashboard
@@ -171,7 +175,20 @@ class TestHeadStorytellerDashboard(TestCase):
     def test_staff_sees_submitted_object_without_chronicle(self):
         staff = User.objects.create_user("dashboard-staff", is_staff=True)
         owner = User.objects.create_user("dashboard-global-owner")
-        item = ItemModel.objects.create(
-            name="Global pending item", owner=owner, status="Sub"
-        )
+        item = ItemModel.objects.create(name="Global pending item", owner=owner, status="Sub")
         self.assertIn(item, staff.profile.dashboard.items_to_approve())
+
+
+class TestStoryXPQueue(TestCase):
+    def test_storyteller_sees_their_chronicles_stories_and_unassigned_ones(self):
+        from game.models import Story
+
+        head = User.objects.create_user("story-head")
+        mine = Chronicle.objects.create(name="Mine", head_st=head)
+        theirs = Chronicle.objects.create(name="Theirs")
+        own_story = Story.objects.create(name="Own", chronicle=mine)
+        legacy_story = Story.objects.create(name="Legacy")
+        Story.objects.create(name="Other chronicle", chronicle=theirs)
+        Story.objects.create(name="Done", chronicle=mine, xp_given=True)
+
+        self.assertEqual(set(head.profile.dashboard.xp_story()), {own_story, legacy_story})

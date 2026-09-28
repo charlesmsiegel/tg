@@ -71,7 +71,13 @@ class ProfileDashboard:
         return Scene.objects.awaiting_xp().for_user_chronicles(self.profile.user)
 
     def xp_story(self):
-        return Story.objects.filter(xp_given=False)
+        # Stories now belong to chronicles: the ones this storyteller runs, plus
+        # legacy stories that were never assigned to one.
+        return Story.objects.filter(
+            models.Q(chronicle__in=staffed_chronicles(self.profile.user))
+            | models.Q(chronicle__isnull=True),
+            xp_given=False,
+        )
 
     def xp_weekly(self):
         return Week.objects.filter(xp_given=False)
