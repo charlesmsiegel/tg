@@ -1,14 +1,3 @@
 {% extends "characters/werewolf/wtahuman/form.html" %}
-{% block creation_title %}
-    Create Fomor
-{% endblock creation_title %}
-{% block powers %}
-    <div class="row">
-        <h2 class="col-sm {{ form.get_heading }}">Powers</h2>
-    </div>
-    {% for power in form.powers.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ power.get_absolute_url }}">{{ power.name }}</a>
-        </div>
-    {% endfor %}
-{% endblock powers %}
+{% comment %}Fomor edit: the Werewolf-line character form (Rage, Gnosis, Fomori powers).{% endcomment %}
+{% block creation_title %}Create Fomor{% endblock creation_title %}

@@ -1,66 +1,34 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Inanimae
-{% endblock creation_title %}
+{% extends "characters/changeling/tl/form.html" %}
+{% comment %}
+Inanimae: identity, Kingdom, Season and Seeming on create; Mana and the anchor on edit.
+An owner without the storyteller's scope gets only the story fields (form_story.html).
+{% endcomment %}
+{% block creation_title %}Create Inanimae{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <div class="col-sm">{{ form.chronicle }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <div class="col-sm">{{ form.nature }}</div>
-        <div class="col-sm">Demeanor</div>
-        <div class="col-sm">{{ form.demeanor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Kingdom</div>
-        <div class="col-sm">{{ form.kingdom }}</div>
-        <div class="col-sm">Season</div>
-        <div class="col-sm">{{ form.season }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Seeming</div>
-        <div class="col-sm">{{ form.inanimae_seeming }}</div>
-    </div>
-    {% if form.mana %}
-        <div class="row">
-            <div class="col-sm">Mana</div>
-            <div class="col-sm">{{ form.mana }}</div>
+    {% if form.fields.name %}
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.name %}
+            {% include "core/tl/field.html" with field=form.chronicle %}
+            {% include "core/tl/field.html" with field=form.concept %}
+            {% include "core/tl/field.html" with field=form.nature %}
+            {% include "core/tl/field.html" with field=form.demeanor %}
+            {% include "core/tl/field.html" with field=form.kingdom %}
+            {% include "core/tl/field.html" with field=form.season %}
+            {% include "core/tl/field.html" with field=form.inanimae_seeming label="Seeming" %}
         </div>
     {% endif %}
-    {% if form.anchor_description %}
-        <div class="row">
-            <div class="col-sm">Anchor Description</div>
-            <div class="col-sm">{{ form.anchor_description }}</div>
-        </div>
+    {% if form.fields.mana %}
+        <section class="tl-section" id="anchor">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Anchor</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.mana %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.anchor_description label="Anchor description" %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.elemental_strength label="Elemental strength" %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.elemental_weakness label="Elemental weakness" %}</div>
+            </div>
+        </section>
     {% endif %}
-    {% if form.elemental_strength %}
-        <div class="row">
-            <div class="col-sm">Elemental Strength</div>
-            <div class="col-sm">{{ form.elemental_strength }}</div>
-        </div>
-    {% endif %}
-    {% if form.elemental_weakness %}
-        <div class="row">
-            <div class="col-sm">Elemental Weakness</div>
-            <div class="col-sm">{{ form.elemental_weakness }}</div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-sm">Image</div>
-        <div class="col-sm">{{ form.image }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">NPC</div>
-        <div class="col-sm">{{ form.npc }}</div>
-    </div>
+    {% include "characters/changeling/tl/form_story.html" %}
 {% endblock contents %}

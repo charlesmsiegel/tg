@@ -1,156 +1,20 @@
-{% load dots %}
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="tg-card" data-gameline="wta">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title wta_heading">Starting Gifts</h5>
-            </div>
-            <div class="tg-card-body">
-                <form method="post">
-                    {% csrf_token %}
-
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                    {% endif %}
-
-                    <p class="mb-4">
-                        {{ form.gifts.help_text|default:"Choose 3 starting Gifts appropriate to your breed and faction." }}
-                    </p>
-
-                    {% if breed_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Breed Gifts ({{ object.breed|title }})</h6>
-                            <div class="list-group">
-                                {% for gift in breed_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if aspect_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Aspect Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in aspect_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if stream_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Stream Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in stream_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if auspice_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Auspice Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in auspice_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if tribe_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Tribe Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in tribe_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if pryio_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Pryio Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in pryio_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if corax_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Corax Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in corax_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if nuwisha_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Nuwisha Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in nuwisha_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if role_gifts %}
-                        <div class="mb-4">
-                            <h6 class="wta_heading">Role Gifts</h6>
-                            <div class="list-group">
-                                {% for gift in role_gifts %}
-                                    <div class="list-group-item">
-                                        <strong>{{ gift.name }}</strong>: {{ gift.description|truncatewords:20 }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="mb-3">
-                        <label for="{{ form.gifts.id_for_label }}" class="form-label">
-                            {{ form.gifts.label }}
-                        </label>
-                        {{ form.gifts }}
-                        {% if form.gifts.errors %}
-                            <div class="text-danger">{{ form.gifts.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Continue</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+{% comment %} Fera starting Gifts step: the rank-1 Gifts each of the character's breed and
+   faction-like choices opens (Fera.starting_gift_groups), then the selection itself. {% endcomment %}
+<p class="tl-lede">{{ form.gifts.help_text|default:"Choose 3 starting Gifts appropriate to your breed and faction." }}</p>
+{% if breed_gifts or aspect_gifts or stream_gifts or auspice_gifts or tribe_gifts or pryio_gifts or corax_gifts or nuwisha_gifts or role_gifts or path_gifts %}
+    <div class="tl-cols">
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=breed_gifts title="Breed" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=aspect_gifts title="Aspect" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=stream_gifts title="Stream" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=auspice_gifts title="Auspice" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=tribe_gifts title="Tribe" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=pryio_gifts title="Pryio" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=corax_gifts title="Corax" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=nuwisha_gifts title="Nuwisha" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=role_gifts title="Role" %}
+        {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=path_gifts title="Path" %}
     </div>
+{% endif %}
+<div class="tl-chargen__form">
+    {% include "core/tl/field.html" with field=form.gifts label="Starting Gifts" help="" %}
 </div>

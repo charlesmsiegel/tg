@@ -1,72 +1,35 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Autumn Person
-{% endblock creation_title %}
+{% extends "characters/changeling/tl/form.html" %}
+{% comment %}
+Autumn Person: identity and Banality on create; the Dauntain / Autumn details on edit.
+An owner without the storyteller's scope gets only the story fields (form_story.html).
+{% endcomment %}
+{% block creation_title %}Create Autumn Person{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <div class="col-sm">{{ form.chronicle }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <div class="col-sm">{{ form.nature }}</div>
-        <div class="col-sm">Demeanor</div>
-        <div class="col-sm">{{ form.demeanor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Archetype</div>
-        <div class="col-sm">{{ form.archetype }}</div>
-        <div class="col-sm">Awareness</div>
-        <div class="col-sm">{{ form.awareness }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Banality Rating</div>
-        <div class="col-sm">{{ form.banality_rating }}</div>
-    </div>
-    {% if form.organization %}
-        <div class="row">
-            <div class="col-sm">Organization</div>
-            <div class="col-sm">{{ form.organization }}</div>
+    {% if form.fields.name %}
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.name %}
+            {% include "core/tl/field.html" with field=form.chronicle %}
+            {% include "core/tl/field.html" with field=form.concept %}
+            {% include "core/tl/field.html" with field=form.nature %}
+            {% include "core/tl/field.html" with field=form.demeanor %}
+            {% include "core/tl/field.html" with field=form.archetype %}
+            {% include "core/tl/field.html" with field=form.awareness %}
+            {% include "core/tl/field.html" with field=form.banality_rating label="Banality rating" %}
         </div>
     {% endif %}
-    {% if form.motivation %}
-        <div class="row">
-            <div class="col-sm">Motivation</div>
-            <div class="col-sm">{{ form.motivation }}</div>
-        </div>
+    {% if form.fields.organization %}
+        <section class="tl-section" id="autumn">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Autumn</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.organization %}
+                {% include "core/tl/field.html" with field=form.former_kith label="Former kith" %}
+                {% include "core/misc/check.html" with field=form.is_dauntain label="Dauntain" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.motivation %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.sphere_of_influence label="Sphere of influence" %}</div>
+            </div>
+        </section>
     {% endif %}
-    {% if form.sphere_of_influence %}
-        <div class="row">
-            <div class="col-sm">Sphere of Influence</div>
-            <div class="col-sm">{{ form.sphere_of_influence }}</div>
-        </div>
-    {% endif %}
-    {% if form.is_dauntain %}
-        <div class="row">
-            <div class="col-sm">Is Dauntain</div>
-            <div class="col-sm">{{ form.is_dauntain }}</div>
-        </div>
-    {% endif %}
-    {% if form.former_kith %}
-        <div class="row">
-            <div class="col-sm">Former Kith</div>
-            <div class="col-sm">{{ form.former_kith }}</div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-sm">Image</div>
-        <div class="col-sm">{{ form.image }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">NPC</div>
-        <div class="col-sm">{{ form.npc }}</div>
-    </div>
+    {% include "characters/changeling/tl/form_story.html" %}
 {% endblock contents %}

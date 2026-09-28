@@ -1,65 +1,17 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Kinfolk
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="mageForm"
-    action=""
-    novalidate
-    enctype="multipart/form-data"
-{% endblock formdetails %}
+{% extends "characters/werewolf/tl/form.html" %}
+{% block creation_title %}Create Kinfolk{% endblock creation_title %}
+{% block formdetails %}method="post" id="kinfolkForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-sm">Decide identity and motivation; choose concept, Tribe, Breed, Relation and Archetypes.</div>
+    <p class="tl-lede">Decide identity and motivation; choose concept, Tribe, Breed, Relation and Archetypes.</p>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.concept %}
+        {% include "core/tl/field.html" with field=form.chronicle %}
+        {% include "core/tl/field.html" with field=form.nature %}
+        {% include "core/tl/field.html" with field=form.demeanor %}
+        {% include "core/tl/field.html" with field=form.tribe %}
+        {% include "core/tl/field.html" with field=form.breed %}
+        {% include "core/tl/field.html" with field=form.relation %}
     </div>
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm"></div>
-            <div class="col-sm">Character Portrait</div>
-            <div class="col-sm">{{ form.image }}</div>
-            <div class="col-sm"></div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Name</div>
-            <div class="col-sm-2">{{ form.name }}</div>
-            <div class="col-sm-2">Nature</div>
-            <div class="col-sm-2">{{ form.nature }}</div>
-            <div class="col-sm-2">Tribe</div>
-            <div class="col-sm-2">{{ form.tribe }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Chronicle</div>
-            <div class="col-sm-2">{{ form.chronicle }}</div>
-            <div class="col-sm-2">Demeanor</div>
-            <div class="col-sm-2">{{ form.demeanor }}</div>
-            <div class="col-sm-2">Breed</div>
-            <div class="col-sm-2">{{ form.breed }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2">Concept</div>
-            <div class="col-sm-2">{{ form.concept }}</div>
-            <div class="col-sm-2">Relation</div>
-            <div class="col-sm-2">{{ form.relation }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            {% if storyteller %}
-                <div class="col-sm-2">NPC</div>
-                <div class="col-sm-2">{{ form.npc }}</div>
-            {% else %}
-                <div class="col-sm-2"></div>
-                <div class="col-sm-2"></div>
-            {% endif %}
-        </div>
-    </div>
+    {% include "characters/werewolf/tl/basics_portrait.html" %}
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

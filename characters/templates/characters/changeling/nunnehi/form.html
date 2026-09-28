@@ -1,66 +1,35 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Nunnehi
-{% endblock creation_title %}
+{% extends "characters/changeling/tl/form.html" %}
+{% comment %}
+Nunnehi: identity, Tribe, Path and Seeming on create; spirit medicine, sacred place,
+guide and duty on edit. An owner without the storyteller's scope gets only the story
+fields (form_story.html).
+{% endcomment %}
+{% block creation_title %}Create Nunnehi{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <div class="col-sm">{{ form.chronicle }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <div class="col-sm">{{ form.nature }}</div>
-        <div class="col-sm">Demeanor</div>
-        <div class="col-sm">{{ form.demeanor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ form.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Tribe</div>
-        <div class="col-sm">{{ form.tribe }}</div>
-        <div class="col-sm">Path</div>
-        <div class="col-sm">{{ form.path }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Seeming</div>
-        <div class="col-sm">{{ form.nunnehi_seeming }}</div>
-    </div>
-    {% if form.spirit_medicine %}
-        <div class="row">
-            <div class="col-sm">Spirit Medicine</div>
-            <div class="col-sm">{{ form.spirit_medicine }}</div>
+    {% if form.fields.name %}
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.name %}
+            {% include "core/tl/field.html" with field=form.chronicle %}
+            {% include "core/tl/field.html" with field=form.concept %}
+            {% include "core/tl/field.html" with field=form.nature %}
+            {% include "core/tl/field.html" with field=form.demeanor %}
+            {% include "core/tl/field.html" with field=form.tribe %}
+            {% include "core/tl/field.html" with field=form.path %}
+            {% include "core/tl/field.html" with field=form.nunnehi_seeming label="Seeming" %}
         </div>
     {% endif %}
-    {% if form.sacred_place %}
-        <div class="row">
-            <div class="col-sm">Sacred Place</div>
-            <div class="col-sm">{{ form.sacred_place }}</div>
-        </div>
+    {% if form.fields.spirit_medicine %}
+        <section class="tl-section" id="medicine">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Medicine</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.spirit_medicine label="Spirit medicine" %}
+                {% include "core/tl/field.html" with field=form.spirit_guide label="Spirit guide" %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.sacred_place label="Sacred place" %}</div>
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.tribal_duty label="Tribal duty" %}</div>
+            </div>
+        </section>
     {% endif %}
-    {% if form.spirit_guide %}
-        <div class="row">
-            <div class="col-sm">Spirit Guide</div>
-            <div class="col-sm">{{ form.spirit_guide }}</div>
-        </div>
-    {% endif %}
-    {% if form.tribal_duty %}
-        <div class="row">
-            <div class="col-sm">Tribal Duty</div>
-            <div class="col-sm">{{ form.tribal_duty }}</div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-sm">Image</div>
-        <div class="col-sm">{{ form.image }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">NPC</div>
-        <div class="col-sm">{{ form.npc }}</div>
-    </div>
+    {% include "characters/changeling/tl/form_story.html" %}
 {% endblock contents %}
