@@ -1,319 +1,125 @@
-{% extends "core/base.html" %}
-{% load field %}
-
-{% block title %}
-    Items
-{% endblock title %}
-
-{% block styling %}
-{{ block.super }}
-<style>
-    /* Enhanced tab styling */
-    .tg-nav-tabs .tg-nav-link:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    /* Enhanced table row hover */
-    .tg-table tbody tr:hover {
-        transform: translateX(4px);
-        box-shadow: -4px 0 0 var(--color-primary);
-    }
-    
-    /* Add more padding to table cells */
-    .tg-table tbody td {
-        padding: var(--spacing-3) var(--spacing-4);
-        white-space: nowrap;
-    }
-    
-    /* Allow badge columns to wrap if needed */
-    .tg-table tbody td:nth-child(3) {
-        white-space: normal;
-    }
-    
-    /* Link hover effects */
-    .tg-table a:hover {
-        opacity: 0.8;
-    }
-    
-    /* Form button hover */
-    .tg-btn.btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md) !important;
-    }
-    
-    /* Badge animations */
-    .tg-badge {
-        transition: var(--transition-fast);
-        display: inline-block;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .tg-badge:hover {
-        transform: scale(1.05);
-    }
-    
-    /* Ensure badges in table cells have proper sizing */
-    .tg-table .tg-badge {
-        font-size: var(--font-size-xs);
-        padding: 0.35em 0.75em;
-        white-space: nowrap;
-    }
-    
-    /* Gameline-specific badge colors for item types */
-    .tg-badge.badge-type-vtm {
-        background-color: var(--gameline-vtm);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-wta {
-        background-color: var(--gameline-wta);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-mta {
-        background-color: var(--gameline-mta);
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-ctd {
-        background-color: #20b2aa;
-        color: var(--color-white);
-    }
-    
-    .tg-badge.badge-type-wto {
-        background-color: var(--gameline-wto);
-        color: var(--color-white);
-    }
-    
-    /* Dark theme adjustments */
-    @media (prefers-color-scheme: dark) {
-        :root:not(.theme-light) .tg-badge.badge-type-vtm {
-            background-color: #dc143c;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-wta {
-            background-color: #32cd32;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-mta {
-            background-color: #9370db;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-ctd {
-            background-color: #48d1cc;
-        }
-        
-        :root:not(.theme-light) .tg-badge.badge-type-wto {
-            background-color: #708090;
-        }
-    }
-    
-    .theme-dark .tg-badge.badge-type-vtm {
-        background-color: #dc143c;
-    }
-    
-    .theme-dark .tg-badge.badge-type-wta {
-        background-color: #32cd32;
-    }
-    
-    .theme-dark .tg-badge.badge-type-mta {
-        background-color: #9370db;
-    }
-    
-    .theme-dark .tg-badge.badge-type-ctd {
-        background-color: #48d1cc;
-    }
-    
-    .theme-dark .tg-badge.badge-type-wto {
-        background-color: #708090;
-    }
-    
-    /* Responsive improvements */
-    @media (max-width: 768px) {
-        .tg-table tbody tr:hover {
-            transform: none;
-            box-shadow: none;
-        }
-    }
-</style>
-{% endblock %}
-
+{% extends "core/tl_base.html" %}
+{% comment %}
+Items index for staff (Spread M3). Ink cover: the chronicle (switch with ?chronicle=),
+the gameline filter (?line=) and the create form; the pages hold one table per group
+(Wonders, Grimoires, Fetishes & Talens, then the other lines). Non-staff visitors get
+core/public_object_list.html from the same view.
+{% endcomment %}
+{% load tl %}
+{% block title %}Items{% endblock title %}
+{% block cover_label %}Items{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Things in</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Items</h1>
+    <details class="tl-chronpick">
+        <summary class="tl-switch">
+            <span>
+                {% if selected_chronicle %}
+                    {{ selected_chronicle.name }}
+                {% else %}
+                    No chronicle
+                {% endif %}
+                ▾
+            </span>
+            <span>{{ item_count }} item{{ item_count|pluralize }}</span>
+        </summary>
+        {% if chronicle_switch %}
+            <nav class="tl-switch" aria-label="Other chronicles">
+                {% for entry in chronicle_switch %}
+                    <a href="?chronicle={{ entry.key }}">
+                        {% if entry.chronicle %}
+                            {{ entry.chronicle.name }}
+                        {% else %}
+                            No chronicle
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </nav>
+        {% endif %}
+    </details>
+{% endblock cover_title %}
+{% block cover_body %}
+    <nav class="tl-statuslist" aria-label="Game line">
+        {% for tab in line_tabs %}
+            <a href="?chronicle={{ chronicle_key }}&amp;line={{ tab.key }}"
+               {% if tab.key == selected_line %}aria-current="page"{% endif %}>
+                <span>{{ tab.label }}</span><span class="tl-statuslist__count">{{ tab.count }}</span>
+            </a>
+        {% endfor %}
+    </nav>
+{% endblock cover_body %}
+{% block cover_actions %}
+    <form id="itemForm"
+          class="tl-block tl-block--tight"
+          method="get"
+          action="{% url 'core:object_type_redirect' 'item' 'create' %}"
+          novalidate>
+        <span class="tl-field__label">New item</span>
+        <div class="tl-fieldrow">
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ form.gameline.id_for_label }}">Game line</label>
+                {{ form.gameline }}
+            </div>
+            <div class="tl-field tl-field--select">
+                <label class="tl-sr" for="{{ form.item_type.id_for_label }}">Item type</label>
+                {{ form.item_type }}
+            </div>
+        </div>
+        <button type="submit" class="tl-btn tl-btn--block">Create item</button>
+    </form>
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="items" %}
+{% endblock nav %}
 {% block content %}
-    <div class="container py-4">
-        <!-- Page Header -->
-        <div class="tg-card header-card mb-4">
-            <div class="tg-card-header">
-                <h1 class="tg-card-title {{ header }}">Items</h1>
-            </div>
-        </div>
-
-        <!-- Item List -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs"
-                    id="itemTabs"
-                    role="tablist"
-                    style="border-bottom: none; margin-bottom: 0;">
-                    {% for chron in chron_dict.keys %}
-                        <li class="nav-item">
-                            <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
-                               id="tab-{{ chron.id|default:'no-chronicle' }}"
-                               data-toggle="tab"
-                               href="#chron-{{ chron.id|default:'no-chronicle' }}"
-                               role="tab">
-                                {% if chron %}
-                                    {{ chron.name }}
+    {% for group in item_groups %}
+        <section class="tl-block tl-block--tight" id="items-{{ group.key }}">
+            <h2 class="tl-itemgroup">{{ group.label }} <span class="tl-grouphead__count">{{ group.items|length }}</span></h2>
+            <table class="tl-table tl-itemtable tl-itemtable--index">
+                <thead class="tl-sr">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Owner</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in group.items %}
+                        <tr data-gameline="{{ item|gameline_code }}">
+                            <td><a class="tl-itemtable__name" href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                            <td class="tl-itemtable__type">{{ item.get_type }}</td>
+                            <td>
+                                {% if item.rank > 5 %}
+                                    {% dots item.rank 10 %}
+                                {% elif item.rank %}
+                                    {% dots item.rank %}
                                 {% else %}
-                                    No Chronicle
+                                    —
                                 {% endif %}
-                            </a>
-                        </li>
+                            </td>
+                            <td>
+                                {% with owners=item.owned_by.all %}
+                                    {% if owners %}
+                                        {% for owner in owners %}<a href="{{ owner.get_absolute_url }}">{{ owner.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                                        {% if item.owner %}
+                                            <a class="tl-meta tl-muted" href="{% url 'accounts:profile' item.owner.id %}">{{ item.owner.username }}</a>
+                                        {% endif %}
+                                    {% elif item.owner %}
+                                        <a href="{% url 'accounts:profile' item.owner.id %}">{{ item.owner.username }}</a>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td class="tl-status{% if item.status == 'Dec' %} tl-status--dec{% endif %}">{{ item.get_status_display }}</td>
+                        </tr>
                     {% endfor %}
-                </ul>
-            </div>
-            <div class="tg-card-body">
-                <div class="tab-content" id="itemTabsContent">
-                    {% for chron in chron_dict.keys %}
-                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
-                             id="chron-{{ chron.id|default:'no-chronicle' }}"
-                             role="tabpanel">
-                            
-                            {% if chron_dict|field:chron %}
-                                <!-- Item Table -->
-                                <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
-                                    <table class="tg-table table-striped" style="margin-bottom: 0;">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 45%;">
-                                                    <i class="fas fa-box mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Item Name
-                                                </th>
-                                                <th style="width: 30%;">
-                                                    <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
-                                                </th>
-                                                <th style="width: 25%;">
-                                                    <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for item in chron_dict|field:chron %}
-                                                {% if item.display %}
-                                                    <tr style="transition: var(--transition-fast);">
-                                                        <td data-label="Item">
-                                                            <a href="{{ item.get_absolute_url }}" 
-                                                               class="{{ item.get_heading }}" 
-                                                               style="text-decoration: none; 
-                                                                      font-weight: 600;
-                                                                      font-size: var(--font-size-base);
-                                                                      transition: var(--transition-fast);">
-                                                                {{ item.name }}
-                                                            </a>
-                                                        </td>
-                                                        <td data-label="Owner">
-                                                            {% if item.owner %}
-                                                                <a href="{% url 'accounts:profile' item.owner.id %}" 
-                                                                   style="color: var(--theme-text-secondary); 
-                                                                          text-decoration: none;
-                                                                          transition: var(--transition-fast);">
-                                                                    <i class="fas fa-user mr-1" style="font-size: 0.85em;"></i>{{ item.owner.username }}
-                                                                </a>
-                                                            {% else %}
-                                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td data-label="Type">
-                                                            <span class="tg-badge {{ item.get_badge_class }} badge-pill">{{ item.get_type }}</span>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            {% else %}
-                                <div class="text-center py-5" 
-                                     style="color: var(--theme-text-muted);
-                                            background: var(--theme-bg-secondary);
-                                            border: 2px dashed var(--theme-border-color);">
-                                    <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
-                                    <p class="mb-0" style="font-size: var(--font-size-base);">No items found for this chronicle.</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Create Item -->
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="tg-card" style="box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary);">
-                    <div class="tg-card-body" style="padding: var(--spacing-5);">
-                        <!-- Icon - Left Aligned -->
-                        <div style="margin-bottom: var(--spacing-3);">
-                            <div style="width: 64px; 
-                                       height: 64px; 
-                                       background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
-                                       border-radius: 50%;
-                                       display: flex;
-                                       align-items: center;
-                                       justify-content: center;
-                                       box-shadow: var(--shadow-md);">
-                                <i class="fas fa-plus-circle" style="font-size: 28px; color: white;"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Title - Centered -->
-                        <h5 class="tg-card-title {{ header }}" style="text-align: center; margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
-                            Create Item
-                        </h5>
-                        
-                        <!-- Description - Left Aligned -->
-                        <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); text-align: left;">
-                            Add a new item to your chronicle
-                        </p>
-                        
-                        <!-- Form -->
-                        <form id="itemForm" method="get" action="{% url 'core:object_type_redirect' 'item' 'create' %}" novalidate>
-
-                            <!-- Game Line -->
-                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
-                                <label class="tg-form-label">
-                                    <i class="fas fa-book mr-2" style="color: var(--color-primary);"></i>Game Line
-                                </label>
-                                <select name="gameline" id="id_item_gameline" class="tg-form-control tg-form-select" required>
-                                    {% for value, label in form.gameline.field.choices %}
-                                        <option value="{{ value }}">{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- Item Type -->
-                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
-                                <label class="tg-form-label">
-                                    <i class="fas fa-box mr-2" style="color: var(--color-primary);"></i>Item Type
-                                </label>
-                                {{ form.item_type }}
-                            </div>
-
-                            <!-- Button - Full Width, Centered Text -->
-                            <button type="submit"
-                                    class="tg-btn btn-primary btn-lg"
-                                    style="width: 100%;
-                                           box-shadow: var(--shadow-sm);
-                                           transition: var(--transition-fast);
-                                           font-weight: 600;
-                                           text-align: center;">
-                                <i class="fas fa-plus-circle mr-2"></i>Create Item
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                </tbody>
+            </table>
+        </section>
+    {% empty %}
+        {% include "core/tl/empty.html" with text="No items found for this chronicle." %}
+    {% endfor %}
 {% endblock content %}

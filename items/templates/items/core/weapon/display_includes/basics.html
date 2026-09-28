@@ -1,21 +1,11 @@
-<div class="col">
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title {{ object.get_heading }}">Weapon Details</h5>
-        </div>
-        <div class="tg-card-body">
-            <div class="row mb-2">
-                <div class="col-sm-4"><strong>Damage:</strong></div>
-                <div class="col-sm-8">{{ object.damage }}/{{ object.get_damage_type_display }}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-sm-4"><strong>Difficulty:</strong></div>
-                <div class="col-sm-8">{{ object.difficulty }}</div>
-            </div>
-            <div class="row mb-0">
-                <div class="col-sm-4"><strong>Conceal:</strong></div>
-                <div class="col-sm-8">{{ object.get_conceal_display }}</div>
-            </div>
-        </div>
+<section class="tl-section tl-span-6" id="weapon">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Weapon</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stats">
+        {% include "items/tl/stat.html" with label="Damage" value=object.damage note=object.get_damage_type_display %}
+        {% include "items/tl/stat.html" with label="Difficulty" value=object.difficulty %}
+        {% include "items/tl/stat.html" with label="Conceal" value=object.get_conceal_display text=True %}
+    </div>
+</section>

@@ -785,3 +785,53 @@ body.tl {
 .tl-gifts__col .tl-gift a { color: var(--acc); }
 .tl-gift__src { font: 400 11px var(--mono); color: var(--ink2); flex: none; }
 .tl-gifts__extra .tl-gift + .tl-col__head { margin-top: 10px; }
+/* ---- items ---- */
+/* Cover eyebrow row with an optional stamp (PRIMER) on the right. */
+.tl-itemhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tl-stamp { flex: none; border: 1px solid currentColor; padding: 3px 8px; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+/* Numeric stats: mono eyebrow over Spectral 40px/1; --acc inside the power section. */
+.tl-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 16px 24px; }
+.tl-stat { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tl-stat__value { font: 400 40px/1 var(--serif); overflow-wrap: anywhere; }
+.tl-stat__value--text { font-size: 22px; line-height: 1.2; }
+.tl-stat__note { font: italic 400 15px var(--serif); color: var(--ink2); }
+.tl-section--power .tl-stat__value { color: var(--acc); }
+.tl-stats + .tl-stack, .tl-stats + .tl-rows { margin-top: 18px; }
+/* Cover numbers above EDIT (grimoire: background cost, max quintessence). */
+.tl-coverstats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tl-coverstats > div { display: flex; flex-direction: column; gap: 4px; }
+.tl-coverstats__v { font: 400 30px/1 var(--serif); }
+/* Plain lists (grimoire teachings). */
+.tl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font: 400 17px/1.5 var(--serif); }
+.tl-list a { text-decoration-color: var(--rule); }
+.tl-list--acc { color: var(--acc); }
+.tl-section__count { font: 400 13px var(--mono); color: var(--ink2); }
+/* Grimoire contents strip: one cell per slot of rank + 3. */
+.tl-slots { display: flex; flex-direction: column; gap: 10px; }
+.tl-slots__head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.tl-slots__count { color: var(--rubric); }
+.tl-slots__count.is-complete { color: var(--acc); }
+.tl-slots__cells { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+.tl-slot { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.tl-slot__bar { height: 10px; border: 1px solid var(--rule); }
+.tl-slot.is-on .tl-slot__bar { background: var(--acc); border-color: var(--acc); }
+.tl-slot.is-over .tl-slot__bar { background: var(--rubric); border-color: var(--rubric); }
+.tl-slot__label { font: 400 11px var(--mono); color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Items index: one table per group, names in their gameline's display font. */
+.tl-chronpick > summary { list-style: none; cursor: pointer; }
+.tl-chronpick > summary::-webkit-details-marker { display: none; }
+.tl-chronpick > nav { margin-top: 6px; }
+.tl-itemgroup { font: 600 18px var(--serif); padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.tl-itemtable--index { table-layout: fixed; }
+.tl-itemtable--index td:nth-child(1) { width: 40%; }
+.tl-itemtable--index td:nth-child(2) { width: 130px; }
+.tl-itemtable--index td:nth-child(3) { width: 110px; }
+.tl-itemtable--index td:nth-child(5) { width: 120px; }
+.tl-itemtable__name { font: 400 20px/1.2 var(--display); color: var(--acc); text-decoration: none; }
+.tl-itemtable__type { color: var(--ink2); }
+@media (max-width: 720px) {
+  .tl-stats { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
+  .tl-slot__label { display: none; }
+  .tl-itemtable--index td:nth-child(3), .tl-itemtable--index td:nth-child(4) { display: none; }
+  .tl-itemtable--index td:nth-child(1) { width: auto; }
+}

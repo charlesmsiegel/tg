@@ -1,0 +1,21 @@
+{% load tl %}
+{% comment %}
+Mage effect card (the rote card shell): cost, name, description, spheres above 0.
+  {% include "items/tl/effect_card.html" with effect=object.power %}
+{% endcomment %}
+<article class="tl-tile tl-rote" data-gameline="mta">
+    <span class="tl-tile__meta"><span>Effect</span><span>Cost {{ effect.rote_cost }}</span></span>
+    <h3 class="tl-tile__name"><a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a></h3>
+    {% if effect.description %}<p class="tl-tile__text">{{ effect.description|truncatewords:20 }}</p>{% endif %}
+    <div class="tl-rote__spheres">
+        {% if effect.correspondence > 0 %}{% trait "Correspondence" effect.correspondence variant="acc" %}{% endif %}
+        {% if effect.entropy > 0 %}{% trait "Entropy" effect.entropy variant="acc" %}{% endif %}
+        {% if effect.forces > 0 %}{% trait "Forces" effect.forces variant="acc" %}{% endif %}
+        {% if effect.life > 0 %}{% trait "Life" effect.life variant="acc" %}{% endif %}
+        {% if effect.matter > 0 %}{% trait "Matter" effect.matter variant="acc" %}{% endif %}
+        {% if effect.mind > 0 %}{% trait "Mind" effect.mind variant="acc" %}{% endif %}
+        {% if effect.prime > 0 %}{% trait "Prime" effect.prime variant="acc" %}{% endif %}
+        {% if effect.spirit > 0 %}{% trait "Spirit" effect.spirit variant="acc" %}{% endif %}
+        {% if effect.time > 0 %}{% trait "Time" effect.time variant="acc" %}{% endif %}
+    </div>
+</article>

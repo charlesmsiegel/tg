@@ -1,0 +1,49 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Item reference list (Spread M12, table variant). Children set the page with blocks:
+  title, gameline, eyebrow (gameline name), heading (cover title),
+  columns (<th> after Name), row (<td> after the name cell, per obj),
+  create_action (cover button), empty (text when object_list is empty).
+{% endcomment %}
+{% load tl %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}Reference list{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'items:index' %}">← Items</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Reference · {% block eyebrow %}Items{% endblock eyebrow %}</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>{% block heading %}{% endblock heading %}</h1>
+    <span class="tl-switch">{{ object_list|length }} shown</span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% block create_action %}{% endblock create_action %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="items" %}
+{% endblock nav %}
+{% block content %}
+    {% if object_list %}
+        <table class="tl-table tl-itemtable">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    {% block columns %}{% endblock columns %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in object_list %}
+                    <tr>
+                        <td><a class="tl-itemtable__name" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                        {% block row %}{% endblock row %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% block empty %}
+            {% include "core/tl/empty.html" with text="Nothing here yet." %}
+        {% endblock empty %}
+    {% endif %}
+{% endblock content %}

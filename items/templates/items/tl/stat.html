@@ -1,0 +1,11 @@
+{% comment %}
+One numeric stat: mono eyebrow over a Spectral 40px value, optional italic note.
+Put stats in a <div class="tl-stats"> so they share the row.
+  {% include "items/tl/stat.html" with label="Background cost" value=object.background_cost %}
+text=True sets a word-length value (Consumable, Lethal...) at 22px.
+{% endcomment %}
+<div class="tl-stat">
+    <span class="tl-subhead">{{ label }}</span>
+    <span class="tl-stat__value{% if text %} tl-stat__value--text{% endif %}">{{ value }}</span>
+    {% if note %}<span class="tl-stat__note">{{ note }}</span>{% endif %}
+</div>

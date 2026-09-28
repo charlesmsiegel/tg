@@ -1,56 +1,32 @@
 {% extends "items/core/item/detail.html" %}
-{% load dots %}
 {% block additional_stats %}
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <div class="tg-card h-100">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title vtm_heading">Blood Storage</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Blood Stored:</strong>
-                        </div>
-                        <div class="col-6">{{ object.blood_stored }} / {{ object.max_blood }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-6">
-                            <strong>Status:</strong>
-                        </div>
-                        <div class="col-6">
-                            {% if object.is_active %}
-                                <span class="tg-badge badge-app">Active</span>
-                            {% else %}
-                                <span class="tg-badge badge-dec">Inactive</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="tl-section tl-section--power tl-span-6" id="blood">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Blood storage</h2>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="tg-card h-100">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title vtm_heading">Properties</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Creator Generation:</strong>
-                        </div>
-                        <div class="col-6">{{ object.created_by_generation }}</div>
-                    </div>
-                    {% if object.stone_type %}
-                        <div class="row mb-0">
-                            <div class="col-6">
-                                <strong>Stone Type:</strong>
-                            </div>
-                            <div class="col-6">{{ object.stone_type }}</div>
-                        </div>
-                    {% endif %}
-                </div>
+        <div class="tl-section__body tl-stats">
+            <div class="tl-stat">
+                <span class="tl-subhead">Blood stored</span>
+                <span class="tl-stat__value">{{ object.blood_stored }} / {{ object.max_blood }}</span>
             </div>
+            {% if object.is_active %}
+                {% include "items/tl/stat.html" with label="Status" value="Active" text=True %}
+            {% else %}
+                {% include "items/tl/stat.html" with label="Status" value="Inactive" text=True %}
+            {% endif %}
         </div>
-    </div>
+    </section>
+    <section class="tl-section tl-span-6" id="properties">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Properties</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            <div class="tl-kv"><span>Creator generation</span><span class="tl-kv__v">{{ object.created_by_generation }}</span></div>
+            {% if object.stone_type %}
+                <div class="tl-kv"><span>Stone type</span><span class="tl-kv__v">{{ object.stone_type }}</span></div>
+            {% endif %}
+        </div>
+    </section>
 {% endblock additional_stats %}

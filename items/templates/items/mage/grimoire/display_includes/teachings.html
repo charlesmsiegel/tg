@@ -1,49 +1,54 @@
-<div class="tg-card-header">
-    <h5 class="tg-card-title mta_heading">Teachings</h5>
-</div>
-<div class="tg-card-body">
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="row mb-2">
-                <div class="col-12">
-                    <strong class="mta_heading">Paradigms</strong>
-                </div>
-                <div class="col-12">{{ paradigms| safe }}</div>
-            </div>
+{% comment %}
+Teachings (C14, --acc): Paradigms / Practices / Instruments, then Abilities / Spheres.
+Reads the lists the grimoire view puts in the context; empty lists are left out.
+{% endcomment %}
+{% if paradigms or practices or instruments or abilities or spheres %}
+    <section class="tl-section tl-section--power" id="teachings">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Teachings</h2>
         </div>
-        <div class="col-md-4">
-            <div class="row mb-2">
-                <div class="col-12">
-                    <strong class="mta_heading">Practices</strong>
+        <div class="tl-section__body tl-cols">
+            {% if paradigms %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Paradigms</span>
+                    <ul class="tl-list">
+                        {% for paradigm in paradigms %}<li><a href="{{ paradigm.get_absolute_url }}">{{ paradigm }}</a></li>{% endfor %}
+                    </ul>
                 </div>
-                <div class="col-12">{{ practices| safe }}</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="row mb-2">
-                <div class="col-12">
-                    <strong class="mta_heading">Instruments</strong>
+            {% endif %}
+            {% if practices %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Practices</span>
+                    <ul class="tl-list">
+                        {% for practice in practices %}<li><a href="{{ practice.get_absolute_url }}">{{ practice }}</a></li>{% endfor %}
+                    </ul>
                 </div>
-                <div class="col-12">{{ instruments| safe }}</div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="row mb-2">
-                <div class="col-12">
-                    <strong class="mta_heading">Abilities</strong>
+            {% endif %}
+            {% if instruments %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Instruments</span>
+                    <ul class="tl-list">
+                        {% for instrument in instruments %}<li><a href="{{ instrument.get_absolute_url }}">{{ instrument }}</a></li>{% endfor %}
+                    </ul>
                 </div>
-                <div class="col-12">{{ abilities| safe }}</div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="row mb-2">
-                <div class="col-12">
-                    <strong class="mta_heading">Spheres</strong>
+            {% endif %}
+            {% if abilities %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Abilities</span>
+                    <ul class="tl-list">
+                        {% for ability in abilities %}<li>{{ ability.name }}</li>{% endfor %}
+                    </ul>
                 </div>
-                <div class="col-12">{{ spheres| safe }}</div>
-            </div>
+            {% endif %}
+            {% if spheres %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Spheres</span>
+                    <ul class="tl-list tl-list--acc">
+                        {% for sphere in spheres %}<li>{{ sphere.name }}</li>{% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
         </div>
-    </div>
-</div>
+    </section>
+{% endif %}

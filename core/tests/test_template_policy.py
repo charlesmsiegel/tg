@@ -16,7 +16,7 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
-INLINE_STYLE_BUDGET = 2485
+INLINE_STYLE_BUDGET = 2289
 STYLE_BLOCK_TEMPLATES = {
     "accounts/detail.html",
     "accounts/registration/password_reset_email.html",
@@ -26,7 +26,6 @@ STYLE_BLOCK_TEMPLATES = {
     "core/base.html",
     "core/houserules/index.html",
     "game/chronicle/detail.html",
-    "items/index.html",
     "locations/index.html",
 }
 MAX_EXTENDS_DEPTH = 5

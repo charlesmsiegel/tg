@@ -1,0 +1,17 @@
+{% extends "items/core/item/detail.html" %}
+{% comment %}Material (grimoire covers and pages): a reference entry with its hardness.{% endcomment %}
+{% block status_row %}
+    <section class="tl-section tl-span-6" id="basics">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Basics</h2>
+        </div>
+        <div class="tl-section__body tl-stats">
+            {% if object.is_hard %}
+                {% include "items/tl/stat.html" with label="Hardness" value="Hard" text=True %}
+            {% else %}
+                {% include "items/tl/stat.html" with label="Hardness" value="Soft" text=True %}
+            {% endif %}
+        </div>
+    </section>
+{% endblock status_row %}

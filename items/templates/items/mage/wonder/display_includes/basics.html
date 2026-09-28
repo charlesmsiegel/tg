@@ -1,21 +1,11 @@
-<div class="col-md-6 mb-3">
-    <div class="tg-card h-100">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title {{ object.get_heading }}">Basic Information</h5>
-        </div>
-        <div class="tg-card-body">
-            <div class="row mb-2">
-                <div class="col-6">
-                    <strong>Background Cost:</strong>
-                </div>
-                <div class="col-6">{{ object.background_cost }}</div>
-            </div>
-            <div class="row mb-0">
-                <div class="col-6">
-                    <strong>Maximum Quintessence:</strong>
-                </div>
-                <div class="col-6">{{ object.quintessence_max }}</div>
-            </div>
-        </div>
+{% comment %}Wonder basics (C11): Background cost and Maximum Quintessence as numbers.{% endcomment %}
+<section class="tl-section tl-span-6" id="basics">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Basics</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stats">
+        {% include "items/tl/stat.html" with label="Background cost" value=object.background_cost %}
+        {% include "items/tl/stat.html" with label="Maximum Quintessence" value=object.quintessence_max %}
+    </div>
+</section>

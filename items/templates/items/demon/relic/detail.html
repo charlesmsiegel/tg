@@ -1,113 +1,50 @@
 {% extends "items/core/item/detail.html" %}
-{% load dots %}
+{% load tl %}
 {% block additional_stats %}
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <div class="tg-card h-100">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title dtf_heading">Properties</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Relic Type:</strong>
-                        </div>
-                        <div class="col-6">{{ object.get_relic_type_display }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Complexity:</strong>
-                        </div>
-                        <div class="col-6">{{ object.complexity|dots:10 }}</div>
-                    </div>
-                    {% if object.house %}
-                        <div class="row mb-2">
-                            <div class="col-6">
-                                <strong>House:</strong>
-                            </div>
-                            <div class="col-6">{{ object.house.name }}</div>
-                        </div>
+    <section class="tl-section tl-span-6" id="properties">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Properties</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            <div class="tl-kv"><span>Relic type</span><span class="tl-kv__v">{{ object.get_relic_type_display }}</span></div>
+            {% trait "Complexity" object.complexity total=10 %}
+            {% if object.house %}
+                <div class="tl-kv"><span>House</span><span class="tl-kv__v">{{ object.house.name }}</span></div>
+            {% endif %}
+            <div class="tl-kv">
+                <span>Permanent</span>
+                <span class="tl-kv__v">
+                    {% if object.is_permanent %}
+                        Yes
+                    {% else %}
+                        No
                     {% endif %}
-                    <div class="row mb-0">
-                        <div class="col-6">
-                            <strong>Permanent:</strong>
-                        </div>
-                        <div class="col-6">
-                            {% if object.is_permanent %}
-                                <span class="tg-badge badge-app">Yes</span>
-                            {% else %}
-                                <span class="tg-badge badge-dec">No</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+                </span>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="tg-card h-100">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title dtf_heading">Mechanics</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Difficulty:</strong>
-                        </div>
-                        <div class="col-6">{{ object.difficulty }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-6">
-                            <strong>Dice Pool:</strong>
-                        </div>
-                        <div class="col-6">{{ object.dice_pool }}</div>
-                    </div>
-                </div>
-            </div>
+    </section>
+    <section class="tl-section tl-section--power tl-span-6" id="mechanics">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Mechanics</h2>
         </div>
-    </div>
-
-    {% if object.lore_used %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Lore Used</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <p style="margin-bottom: 0;">{{ object.lore_used }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="tl-section__body tl-stats">
+            {% include "items/tl/stat.html" with label="Difficulty" value=object.difficulty %}
+            {% include "items/tl/stat.html" with label="Dice pool" value=object.dice_pool %}
         </div>
-    {% endif %}
-
-    {% if object.material %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Material</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.material }}</p>
-                    </div>
-                </div>
+    </section>
+    {% if object.lore_used or object.material or object.power %}
+        <section class="tl-section tl-span-8" id="power">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Power &amp; effects</h2>
             </div>
-        </div>
-    {% endif %}
-
-    {% if object.power %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Power & Effects</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.power }}</p>
-                    </div>
-                </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% include "characters/tl/prose_block.html" with label="Lore used" text=object.lore_used %}
+                {% include "characters/tl/prose_block.html" with label="Material" text=object.material %}
+                {% include "characters/tl/prose_block.html" with label="Power" text=object.power %}
             </div>
-        </div>
+        </section>
     {% endif %}
 {% endblock additional_stats %}
