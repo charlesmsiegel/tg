@@ -8,13 +8,13 @@ Blood pool (squares up to max_blood_pool).
         <span class="tl-section__num"></span>
         <h2 class="tl-section__title">Advantages</h2>
     </div>
-    <div class="tl-section__body tl-vtm-tracks">
+    <div class="tl-section__body">
         {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
         {% if object.path %}
             {% track "Path rating" perm=object.path_rating %}
         {% else %}
             {% track "Humanity" perm=object.humanity %}
         {% endif %}
-        {% track "Blood pool" temp=object.blood_pool total=object.max_blood_pool %}
+        {% track "Blood pool" temp=object.blood_pool total=object.max_blood_pool mod="wrap" %}
     </div>
 </section>

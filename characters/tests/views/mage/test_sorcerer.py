@@ -165,10 +165,13 @@ class TestSorcererSheet(TestCase):
 
     def test_quintessence_wheel_without_paradox(self):
         response = self.client.get(self.sorcerer.get_absolute_url())
-        self.assertContains(response, 'class="tl-qprow tl-qprow--q" id="quintessence"')
-        self.assertContains(response, "Quintessence 4, Paradox 0")
+        self.assertContains(response, 'class="tl-qprow" id="quintessence"')
+        # A Quintessence-only wheel of 10 boxes, as the old Sorcerer sheet drew it.
+        self.assertContains(response, 'aria-label="Quintessence 4 of 10"')
         self.assertEqual(response.content.decode().count("tl-qp__box is-q"), 4)
+        self.assertEqual(response.content.decode().count('class="tl-qp__box'), 10)
         self.assertNotContains(response, "tl-qp__box is-p")
+        self.assertNotContains(response, "tl-qp__p")
         self.assertNotContains(response, "<style>")
         # No backgrounds: no empty Backgrounds label in the Advantages section.
         self.assertNotContains(response, '<span class="tl-subhead">Backgrounds</span>')

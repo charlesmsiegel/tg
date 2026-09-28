@@ -77,17 +77,27 @@ def trait(label, value, specialty="", total=5, variant="ink", url=""):
     }
 
 
+TRACK_MODS = {"wide", "wrap"}
+
+
 @register.simple_tag
-def track(label, perm=None, temp=None, total=10, variant="ink"):
-    """Label on the left; permanent dots and/or temporary squares on the right."""
+def track(label, perm=None, temp=None, total=10, variant="ink", mod=""):
+    """Label on the left; permanent dots and/or temporary squares on the right.
+
+    ``temp`` of None or "" draws no squares. ``mod`` is a space-separated list of
+    modifiers: ``wide`` (92px label, rows start at the label: C13 Werewolf traits)
+    and ``wrap`` (long square rows wrap, e.g. a 50-point blood pool).
+    """
     rows = []
     if perm is not None:
         rows.append(dots(perm, total, variant))
-    if temp is not None:
+    if temp is not None and temp != "":
         rows.append(boxes(temp, total))
+    mods = "".join(f" tl-track--{m}" for m in str(mod or "").split() if m in TRACK_MODS)
     return format_html(
-        '<div class="tl-track"><span class="tl-track__label">{}</span>'
+        '<div class="tl-track{}"><span class="tl-track__label">{}</span>'
         '<div class="tl-track__rows">{}</div></div>',
+        mods,
         label,
         mark_safe("".join(rows)),
     )
@@ -116,20 +126,25 @@ def fact(label, value, url=None):
 
 
 @register.simple_tag
-def qp_wheel(quintessence, paradox, label="Quintessence"):
-    """20 boxes, index 0 at 189deg running clockwise over the top.
+def qp_wheel(quintessence, paradox=None, label="Quintessence", total=20):
+    """``total`` boxes (20 on the Mage sheet), index 0 at 189deg running clockwise over the top.
 
-    Box i is Paradox when i >= 20 - paradox, else Quintessence when i < quintessence:
+    Box i is Paradox when i >= total - paradox, else Quintessence when i < quintessence:
     Paradox wins where the two overlap, as the old Mage sheet wheel drew it.
+    ``paradox=None`` draws a Quintessence-only wheel (Sorcerers: no Paradox half in
+    the centre, no Paradox in the label).
     The positions come from trigonometry, so each box carries an inline left/top:
     the one deliberate inline style in the Spread templates.
     """
-    q, p = _int(quintessence), _int(paradox)
+    total = max(_int(total), 1)
+    q = _int(quintessence)
+    p = 0 if paradox is None else _int(paradox)
+    step = 360 / total
     parts = []
-    for i in range(20):
-        a = math.radians(189 + 18 * i)
+    for i in range(total):
+        a = math.radians(189 + step * i)
         left, top = 82 + 72 * math.cos(a) - 7.5, 82 + 72 * math.sin(a) - 7.5
-        state = " is-p" if i >= 20 - p else (" is-q" if i < q else "")
+        state = " is-p" if i >= total - p else (" is-q" if i < q else "")
         parts.append(
             format_html(
                 '<span class="tl-qp__box{}" style="left:{}px;top:{}px"></span>',
@@ -138,13 +153,24 @@ def qp_wheel(quintessence, paradox, label="Quintessence"):
                 round(top, 1),
             )
         )
+    if paradox is None:
+        return format_html(
+            '<div class="tl-qp tl-qp--q" role="img" aria-label="{} {} of {}">{}'
+            '<div class="tl-qp__center"><span class="tl-qp__q">{}</span></div></div>',
+            label,
+            q,
+            total,
+            mark_safe("".join(parts)),
+            q,
+        )
     return format_html(
-        '<div class="tl-qp" role="img" aria-label="{} {}, Paradox {}, of 20">{}'
+        '<div class="tl-qp" role="img" aria-label="{} {}, Paradox {}, of {}">{}'
         '<div class="tl-qp__center"><span class="tl-qp__q">{}</span><hr>'
         '<span class="tl-qp__p">{}</span></div></div>',
         label,
         q,
         p,
+        total,
         mark_safe("".join(parts)),
         q,
         p,

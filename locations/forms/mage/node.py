@@ -141,7 +141,7 @@ class NodeForm(forms.ModelForm):
         # Pop kwargs from GenericBackgroundView that this form doesn't use
         kwargs.pop("obj", None)
         kwargs.pop("npc_role", None)
-        super(NodeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         self.fields["quintessence_form"].widget.attrs.update(
             {"placeholder": "Enter Quintessence Form here"}
@@ -174,7 +174,7 @@ class NodeForm(forms.ModelForm):
         )
 
     def is_valid(self):
-        valid = super(NodeForm, self).is_valid()
+        valid = super().is_valid()
         valid = valid and self.resonance_formset.is_valid()
         valid = valid and self.merit_flaw_formset.is_valid()
         valid = valid and self.reality_zone_formset.is_valid()
@@ -185,7 +185,7 @@ class NodeForm(forms.ModelForm):
         if not hasattr(self, "tass_per_week"):
             self.full_clean()
 
-        node = super(NodeForm, self).save(commit=False)
+        node = super().save(commit=False)
         node.rank = self.cleaned_data.get("rank")
         # Use calculated values from clean(), or defaults if validation failed
         node.tass_per_week = getattr(self, "tass_per_week", 0)
