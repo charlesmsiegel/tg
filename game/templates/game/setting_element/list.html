@@ -1,67 +1,33 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Setting Elements
-{% endblock title %}
+{% extends "game/tl/base.html" %}
+{% comment %}Setting elements (common knowledge) as tiles, each in its gameline.{% endcomment %}
+{% load tl %}
+{% block title %}Setting Elements{% endblock title %}
+{% block cover_label %}Setting elements{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Setting elements &amp; common knowledge</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Common knowledge</h1>
+    {% if page_obj %}<span class="tl-switch">{{ page_obj.paginator.count }} element{{ page_obj.paginator.count|pluralize }}</span>{% endif %}
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn" href="{% url 'game:setting_element:create' %}">New setting element</a>
+    {% endif %}
+{% endblock cover_actions %}
 {% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">Setting Elements & Common Knowledge</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                {% if user.is_staff or user.is_superuser %}
-                    <div class="mb-4 text-center">
-                        <a href="{% url 'game:setting_element:create' %}" class="btn btn-primary">Create New Setting Element</a>
-                    </div>
-                {% endif %}
-
-                {% if object_list %}
-                    <div class="row">
-                        {% for element in object_list %}
-                            <div class="col-sm-6 col-md-4 mb-3">
-                                <div class="tg-card h-100">
-                                    <div class="tg-card-body" style="padding: 16px;">
-                                        <h6 style="font-weight: 600; margin-bottom: 8px;">
-                                            <a href="{{ element.get_absolute_url }}" style="color: var(--theme-text-primary);">{{ element.name }}</a>
-                                        </h6>
-                                        <p style="font-size: 0.875rem; color: var(--theme-text-secondary); margin: 0;">
-                                            {{ element.description|truncatewords:20 }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    {% if is_paginated %}
-                        <nav aria-label="Page navigation" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1">First</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                    </li>
-                                {% endif %}
-                                <li class="page-item active">
-                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                                </li>
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% endif %}
-                {% else %}
-                    <p class="text-center text-muted">No setting elements found.</p>
-                {% endif %}
-            </div>
+    {% if object_list %}
+        <div class="tl-grid">
+            {% for element in object_list %}
+                <article class="tl-tile" data-gameline="{{ element.gameline|gameline_code }}">
+                    <span class="tl-tile__meta"><span>{{ element.get_gameline_display }}</span></span>
+                    <h2 class="tl-tile__name">
+                        <a href="{{ element.get_absolute_url }}">{{ element.name }}</a>
+                    </h2>
+                    <p class="tl-tile__text">{{ element.description|truncatewords:20 }}</p>
+                </article>
+            {% endfor %}
         </div>
-    </div>
+        {% include "game/tl/pager.html" %}
+    {% else %}
+        {% include "core/tl/empty.html" with text="No setting elements found." %}
+    {% endif %}
 {% endblock content %}

@@ -1,0 +1,13 @@
+{% comment %}
+One checkbox field: the box and its label on a row, errors and help below.
+  {% include "game/tl/check.html" with field=form.learning %}
+{% endcomment %}
+<div class="tl-field{% if field.errors %} is-invalid{% endif %}">
+    <label class="tl-check" for="{{ field.id_for_label }}">{{ field }} {% if label %}{{ label }}{% else %}{{ field.label }}{% endif %}</label>
+    {% if field.errors %}
+        <ul class="tl-field__error" id="{{ field.auto_id }}_error">
+            {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% if field.help_text %}<div class="tl-field__help">{{ field.help_text }}</div>{% endif %}
+</div>

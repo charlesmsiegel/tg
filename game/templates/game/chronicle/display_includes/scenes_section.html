@@ -1,116 +1,107 @@
-{% load field %}
-<!-- Status Tabs (All, Active, Completed) -->
-<ul class="nav nav-tabs tg-nav-tabs mb-4 justify-content-center" id="sceneStatusTabs" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link active" id="scenes-all-tab" data-toggle="tab" href="#scenes-all" role="tab"
-           aria-controls="scenes-all" aria-selected="true">
-            All
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link" id="scenes-active-tab" data-toggle="tab" href="#scenes-active" role="tab"
-           aria-controls="scenes-active" aria-selected="false">
-            Active
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link" id="scenes-completed-tab" data-toggle="tab" href="#scenes-completed" role="tab"
-           aria-controls="scenes-completed" aria-selected="false">
-            Completed
-        </a>
-    </li>
-</ul>
-
-<div class="tab-content" id="sceneStatusTabsContent">
-    <!-- All Scenes Tab -->
-    <div class="tab-pane fade show active" id="scenes-all" role="tabpanel" aria-labelledby="scenes-all-tab">
-        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=all_scenes_by_gameline tab_prefix="all" %}
+{% comment %}
+Chronicle SCENES tab: All / Active / Completed, game-line sub-tabs when more than one
+line has scenes, one table per month, and the "New scene" form behind a ghost button
+(open when ?new=scene asks for it or a failed create re-renders the page).
+{% endcomment %}
+<section class="tl-section">
+    <div class="tl-section__head">
+        <h2 class="tl-section__title">Scenes</h2>
     </div>
-
-    <!-- Active Scenes Tab -->
-    <div class="tab-pane fade" id="scenes-active" role="tabpanel" aria-labelledby="scenes-active-tab">
-        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=active_scenes_by_gameline tab_prefix="active" %}
+    <div class="tl-section__body tl-block">
+        <nav class="tl-subtabs" aria-label="Scene status">
+            <a href="?tab=scenes&amp;status=all"{% if scene_status == "all" %} aria-current="page"{% endif %}>All</a>
+            <a href="?tab=scenes&amp;status=active"{% if scene_status == "active" %} aria-current="page"{% endif %}>Active</a>
+            <a href="?tab=scenes&amp;status=completed"{% if scene_status == "completed" %} aria-current="page"{% endif %}>Completed</a>
+        </nav>
+        {% if scene_groups|length > 2 %}
+            <nav class="tl-subtabs" aria-label="Game line">
+                {% for gl_code, gl_data in scene_groups.items %}
+                    <a href="?tab=scenes&amp;status={{ scene_status }}&amp;line={{ gl_code }}"{% if gl_code == scene_line %} aria-current="page"{% endif %}>{{ gl_data.name }} {{ gl_data.scenes.count }}</a>
+                {% endfor %}
+            </nav>
+        {% endif %}
+        {% for gl_code, gl_data in scene_groups.items %}
+            {% if gl_code == scene_line %}
+                {% for month_date, scenes in gl_data.scenes_by_month %}
+                    <div class="tl-block tl-block--tight">
+                        <div class="tl-grouphead">
+                            <h3 class="tl-grouphead__name">{{ month_date|date:"F Y" }}</h3>
+                            <span class="tl-grouphead__rule"></span>
+                            <span class="tl-grouphead__count">{{ scenes|length }}</span>
+                        </div>
+                        <div class="tl-scroll">
+                            <table class="tl-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Last post</th>
+                                        <th scope="col">Last activity</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scene in scenes %}
+                                        {% with last=scene.most_recent_post %}
+                                            <tr>
+                                                <td class="tl-name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></td>
+                                                <td class="tl-sub">
+                                                    {% if scene.location %}
+                                                        <a href="{{ scene.location.get_absolute_url }}">{{ scene.location.name }}</a>
+                                                    {% else %}
+                                                        —
+                                                    {% endif %}
+                                                </td>
+                                                <td class="tl-meta">{{ scene.date_of_scene|date:"M d" }}</td>
+                                                <td>{% if last %}{{ last.display_name }}{% else %}—{% endif %}</td>
+                                                <td class="tl-meta">{% if last %}{{ last.datetime_created|date:"M d, Y" }}{% else %}—{% endif %}</td>
+                                                <td>
+                                                    {% if scene.finished %}
+                                                        <span class="tl-status">Completed</span>
+                                                    {% else %}
+                                                        <span class="tl-status tl-rubric">● Active</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% empty %}
+                    {% include "core/tl/empty.html" with text="No scenes found for this game line." %}
+                {% endfor %}
+            {% endif %}
+        {% empty %}
+            {% include "core/tl/empty.html" with text="No scenes found." %}
+        {% endfor %}
+        {% if can_create_scene %}
+            <details class="tl-reveal" id="new-scene"{% if open_form == "scene" %} open{% endif %}>
+                <summary class="tl-btn tl-btn--ghost">+ New scene</summary>
+                <form class="tl-reveal__body tl-block"
+                      method="post"
+                      action="{% url 'game:chronicle_create_scene' object.pk %}">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="tl-errors" role="alert">
+                            <ul>
+                                {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% include "core/tl/field.html" with field=form.name label="Scene name" %}
+                    {% include "core/tl/field.html" with field=form.location label="Location" %}
+                    <div class="tl-formgrid tl-formgrid--2">
+                        {% include "core/tl/field.html" with field=form.date_of_scene label="Date" %}
+                        {% include "core/tl/field.html" with field=form.gameline label="Game line" %}
+                    </div>
+                    <div class="tl-actions">
+                        <button type="submit" class="tl-btn">Create scene</button>
+                    </div>
+                </form>
+            </details>
+        {% endif %}
     </div>
-
-    <!-- Completed Scenes Tab -->
-    <div class="tab-pane fade" id="scenes-completed" role="tabpanel" aria-labelledby="scenes-completed-tab">
-        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=completed_scenes_by_gameline tab_prefix="completed" %}
-    </div>
-</div>
-
-<!-- Scene Creation Form -->
-{% if request.user.is_authenticated %}
-    <hr class="my-4">
-    <div class="row">
-        <div class="col-12 col-md-8 col-lg-6 mx-auto">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Scene</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="{% url 'game:chronicle_create_scene' object.pk %}">
-                        {% csrf_token %}
-                        {% for error in form.non_field_errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
-                        {% for field in form %}{% for error in field.errors %}<div class="text-danger small mb-2">{{ field.label }}: {{ error }}</div>{% endfor %}{% endfor %}
-                        <div class="tg-form-group mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
-                            {{ form.name|add_class:"tg-form-control" }}
-                        </div>
-                        <div class="tg-form-group mb-3">
-                            <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
-                            {{ form.location|add_class:"tg-form-control tg-form-select" }}
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="tg-form-group mb-3">
-                                    <label for="{{ form.date_of_scene.id_for_label }}" class="tg-form-label">Date</label>
-                                    {{ form.date_of_scene|add_class:"tg-form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="tg-form-group mb-3">
-                                    <label for="{{ form.gameline.id_for_label }}" class="tg-form-label">Gameline</label>
-                                    {{ form.gameline|add_class:"tg-form-control tg-form-select" }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-2">
-                            <button type="submit" class="tg-btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create Scene
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
-<!-- Story Creation Form (ST and Admin only) -->
-{% if can_manage_chronicle %}
-    <div class="row mt-4">
-        <div class="col-12 col-md-8 col-lg-6 mx-auto">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Story</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="{% url 'game:chronicle_create_story' object.pk %}">
-                        {% csrf_token %}
-                        {% for error in story_form.non_field_errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
-                        {% for field in story_form %}{% for error in field.errors %}<div class="text-danger small mb-2">{{ field.label }}: {{ error }}</div>{% endfor %}{% endfor %}
-                        <div class="tg-form-group mb-3">
-                            <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
-                            {{ story_form.name|add_class:"tg-form-control" }}
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="tg-btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create Story
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+</section>

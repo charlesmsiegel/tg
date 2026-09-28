@@ -1,58 +1,54 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {% if object.pk %}
-        Update XP Spending Request
-    {% else %}
-        Create XP Spending Request
-    {% endif %}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">
-                    {% if object.pk %}
-                        Update XP Spending Request
-                    {% else %}
-                        Create XP Spending Request for {{ character.name }}
-                    {% endif %}
-                </h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label" style="font-weight: 600; color: var(--theme-text-secondary);">{{ field.label }}</label>
-                                {% if field.help_text %}
-                                    <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ field.help_text }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-8">
-                                {{ field }}
-                            </div>
-                        </div>
-                        {% if field.errors %}
-                            <div class="row mb-3">
-                                <div class="col-md-8 offset-md-4">
-                                    <div class="text-danger" style="font-size: 0.875rem;">{{ field.errors }}</div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <div class="row">
-                        <div class="col-md-8 offset-md-4">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            {% if object.pk %}
-                                <a href="{% url 'game:xp_spending_request:detail' object.pk %}" class="btn btn-secondary">Cancel</a>
-                            {% else %}
-                                <a href="{% url 'game:xp_spending_request:list' %}" class="btn btn-secondary">Cancel</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+{% extends "game/tl/form.html" %}
+{% comment %}
+Spend XP (Spread M8): the character's line cover with spent / unspent XP; the request
+form beside the character's request history.
+{% endcomment %}
+{% load tl %}
+{% block title %}{% if object.pk %}Update XP Spending Request{% else %}Create XP Spending Request{% endif %}{% endblock title %}
+{% block gameline %}{{ character|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{{ character.get_absolute_url }}?tab=experience">← Sheet</a>
+{% endblock cover_top %}
+{% block form_eyebrow %}{% if object.pk %}Edit · XP spending request{% else %}Spend experience{% endif %}{% endblock form_eyebrow %}
+{% block form_title %}{{ character.name }}{% endblock form_title %}
+{% block cover_body %}
+    <div class="tl-bignums">
+        <div class="tl-bignum"><span class="tl-cover__eyebrow">Spent</span><b>{{ character.total_spent_xp }}</b></div>
+        <div class="tl-bignum"><span class="tl-cover__eyebrow">Unspent</span><b>{{ character.xp }}</b></div>
     </div>
-{% endblock content %}
+{% endblock cover_body %}
+{% block form_wrap %}tl-split{% endblock form_wrap %}
+{% block form_intro %}
+    <h2 class="tl-section__title">{% if object.pk %}Update XP spending request{% else %}Spend experience{% endif %}</h2>
+{% endblock form_intro %}
+{% block fields %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "game/tl/fields.html" %}
+    </div>
+{% endblock fields %}
+{% block submit_label %}{% if object.pk %}Save{% else %}Request spend{% endif %}{% endblock submit_label %}
+{% block cancel_url %}{% if object.pk %}{% url 'game:xp_spending_request:detail' object.pk %}{% else %}{% url 'game:xp_spending_request:list' %}{% endif %}{% endblock cancel_url %}
+{% block form_aside %}
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Requests</h2>
+        </div>
+        <div class="tl-section__body tl-section__body--rows">
+            {% for request in character.get_xp_spending_history %}
+                <div class="tl-row tl-row--spend">
+                    <div class="tl-row__main">
+                        <a class="tl-row__title" href="{% url 'game:xp_spending_request:detail' request.pk %}">{{ request.trait_name }}</a>
+                        <span class="tl-meta tl-muted">{{ request.trait_type }}</span>
+                    </div>
+                    <span class="tl-meta">→ {{ request.trait_value }}</span>
+                    <span class="tl-meta">{{ request.cost }}</span>
+                    {% include "game/xp_spending_request/_status.html" with status=request.approved %}
+                </div>
+            {% empty %}
+                {% include "core/tl/empty.html" with text="No experience spent yet." %}
+            {% endfor %}
+        </div>
+    </section>
+{% endblock form_aside %}

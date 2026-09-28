@@ -1,81 +1,48 @@
-<!-- Status Tabs (Primary level) -->
-<ul class="nav nav-tabs tg-nav-tabs mb-4 justify-content-center" id="statusTabs" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link active {{ object.headings }}" id="active-tab" data-toggle="tab" href="#active" role="tab" aria-controls="active" aria-selected="true">
-            Active
-            <span class="tg-badge badge-pill badge-secondary ml-1">{{ character_list.count }}</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link {{ object.headings }}" id="retired-tab" data-toggle="tab" href="#retired" role="tab" aria-controls="retired" aria-selected="false">
-            Retired
-            <span class="tg-badge badge-pill badge-secondary ml-1">{{ retired_characters.count }}</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link {{ object.headings }}" id="deceased-tab" data-toggle="tab" href="#deceased" role="tab" aria-controls="deceased" aria-selected="false">
-            Deceased
-            <span class="tg-badge badge-pill badge-secondary ml-1">{{ deceased_characters.count }}</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link tg-nav-link {{ object.headings }}" id="npc-tab" data-toggle="tab" href="#npc" role="tab" aria-controls="npc" aria-selected="false">
-            NPC
-            <span class="tg-badge badge-pill badge-secondary ml-1">{{ npc_characters.count }}</span>
-        </a>
-    </li>
-</ul>
-
-<!-- Status Tab Content -->
-<div class="tab-content" id="statusTabsContent">
-    <!-- Active Characters -->
-    <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
-        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=active_by_gameline status_id="active" %}
+{% comment %}
+Chronicle CHARACTERS tab: status sub-tabs (Active / Retired / Deceased / NPC), game-line
+sub-tabs when more than one line has characters, the table grouped by group, and the
+"New character" form behind a ghost button.
+{% endcomment %}
+<section class="tl-section">
+    <div class="tl-section__head">
+        <h2 class="tl-section__title">Characters</h2>
     </div>
-
-    <!-- Retired Characters -->
-    <div class="tab-pane fade" id="retired" role="tabpanel" aria-labelledby="retired-tab">
-        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=retired_by_gameline status_id="retired" %}
+    <div class="tl-section__body tl-block">
+        <nav class="tl-subtabs" aria-label="Character status">
+            <a href="?tab=characters&amp;status=active"{% if character_status == "active" %} aria-current="page"{% endif %}>Active {{ character_list.count }}</a>
+            <a href="?tab=characters&amp;status=retired"{% if character_status == "retired" %} aria-current="page"{% endif %}>Retired {{ retired_characters.count }}</a>
+            <a href="?tab=characters&amp;status=deceased"{% if character_status == "deceased" %} aria-current="page"{% endif %}>Deceased {{ deceased_characters.count }}</a>
+            <a href="?tab=characters&amp;status=npc"{% if character_status == "npc" %} aria-current="page"{% endif %}>NPC {{ npc_characters.count }}</a>
+        </nav>
+        {% if character_groups|length > 2 %}
+            <nav class="tl-subtabs" aria-label="Game line">
+                {% for gl_code, gl_data in character_groups.items %}
+                    <a href="?tab=characters&amp;status={{ character_status }}&amp;line={{ gl_code }}"{% if gl_code == character_line %} aria-current="page"{% endif %}>{{ gl_data.name }} {{ gl_data.characters|length }}</a>
+                {% endfor %}
+            </nav>
+        {% endif %}
+        {% for gl_code, gl_data in character_groups.items %}
+            {% if gl_code == character_line %}
+                {% include "game/chronicle/display_includes/character_table.html" with character_queryset=gl_data.characters %}
+            {% endif %}
+        {% empty %}
+            {% include "core/tl/empty.html" with text="No characters found in this category." %}
+        {% endfor %}
+        {% if char_form.fields.gameline.choices %}
+            <details class="tl-reveal" id="new-character">
+                <summary class="tl-btn tl-btn--ghost">+ New character</summary>
+                <form class="tl-reveal__body tl-block"
+                      method="get"
+                      action="{% url 'core:object_type_redirect' 'character' 'create' %}">
+                    <div class="tl-formgrid tl-formgrid--2">
+                        {% include "core/tl/field.html" with field=char_form.gameline label="Game line" %}
+                        {% include "core/tl/field.html" with field=char_form.char_type label="Character type" %}
+                    </div>
+                    <div class="tl-actions">
+                        <button type="submit" class="tl-btn">Create character</button>
+                    </div>
+                </form>
+            </details>
+        {% endif %}
     </div>
-
-    <!-- Deceased Characters -->
-    <div class="tab-pane fade" id="deceased" role="tabpanel" aria-labelledby="deceased-tab">
-        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=deceased_by_gameline status_id="deceased" %}
-    </div>
-
-    <!-- NPC Characters -->
-    <div class="tab-pane fade" id="npc" role="tabpanel" aria-labelledby="npc-tab">
-        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=npc_by_gameline status_id="npc" %}
-    </div>
-</div>
-
-<!-- Character Creation Form -->
-{% if request.user.is_authenticated and char_form.fields.gameline.choices %}
-    <hr class="my-4">
-    <div class="row">
-        <div class="col-12 col-md-8 col-lg-6 mx-auto">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Character</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}">
-                        <div class="tg-form-group mb-3">
-                            <label for="{{ char_form.gameline.id_for_label }}" class="tg-form-label">Game Line</label>
-                            {{ char_form.gameline }}
-                        </div>
-                        <div class="tg-form-group mb-3">
-                            <label for="{{ char_form.char_type.id_for_label }}" class="tg-form-label">Character Type</label>
-                            {{ char_form.char_type }}
-                        </div>
-                        <div class="text-center mt-2">
-                            <button type="submit" class="tg-btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create Character
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+</section>

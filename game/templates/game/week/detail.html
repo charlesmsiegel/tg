@@ -1,221 +1,244 @@
-{% extends "core/base.html" %}
-{% load static %}
-{% load sanitize_text %}
-{% block title %}
-    Week: {{ object }}
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card header-card mb-4" data-gameline="wod">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title wod_heading">Week: {{ object.start_date }} - {{ object.end_date }}</h1>
-            </div>
+{% extends "game/tl/base.html" %}
+{% comment %}
+Week (Spread M7). Ink cover with the week's counts and previous / next week links. For
+global record managers: the pending weekly XP requests as a table (batch approve through
+week-detail.js, which needs #batch-approve-form, #select-all-checkbox, #select-all-btn,
+#batch-approve-btn, #selected-count and .request-checkbox; each row's APPROVE posts that
+one id to the same batch endpoint), then the approved ones. Players see their own
+requests. Then the finished scenes and the characters who played this week.
+{% endcomment %}
+{% load static tl %}
+{% block title %}Week: {{ object }}{% endblock title %}
+{% block cover_label %}Week {{ object }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'game:week:list' %}">← Weeks</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Week</span>
+    <h1 class="tl-cover__name tl-cover__name--form" data-fit-title>{{ object.start_date|date:"j M" }} – {{ object.end_date|date:"j M" }}</h1>
+    <span class="tl-meta">{{ object.start_date|date:"j M Y" }} – {{ object.end_date|date:"j M Y" }}</span>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        <div class="tl-facts__row">
+            <span class="tl-facts__k">Finished scenes</span><span class="tl-facts__v">{{ finished_scenes|length }}</span>
         </div>
-
+        <div class="tl-facts__row">
+            <span class="tl-facts__k">Active characters</span><span class="tl-facts__v">{{ weekly_characters|length }}</span>
+        </div>
         {% if can_manage_global_records %}
-            <div class="tg-card mb-4">
-                <div class="tg-card-body text-center" style="padding: 16px;">
-                    <a href="{% url 'game:week:update' object.pk %}" class="btn btn-primary">Edit Week</a>
-                </div>
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Pending requests</span><span class="tl-facts__v">{{ pending_requests|length }}</span>
             </div>
         {% endif %}
-
-        <!-- Finished Scenes -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Finished Scenes</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                {% if finished_scenes %}
-                    <div class="tg-table-responsive">
-                        <table class="tg-table">
+    </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if can_manage_global_records %}
+        <a class="tl-btn tl-btn--ghost" href="{% url 'game:week:update' object.pk %}">Edit week</a>
+    {% endif %}
+    {% if previous_week or next_week %}
+        <nav class="tl-links tl-links--split" aria-label="Weeks">
+            {% if previous_week %}
+                <a href="{{ previous_week.get_absolute_url }}">← Previous week</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            {% if next_week %}<a href="{{ next_week.get_absolute_url }}">Next week →</a>{% endif %}
+        </nav>
+    {% endif %}
+{% endblock cover_actions %}
+{% block content %}
+    {% if can_manage_global_records %}
+        {% if pending_requests %}
+            <section class="tl-section tl-section--serif">
+                <div class="tl-section__head">
+                    <h2 class="tl-section__title">Pending XP requests</h2>
+                    <span class="tl-meta tl-rubric">{{ pending_requests|length }}</span>
+                </div>
+                <form method="post" action="{% url 'game:weekly_xp_request:batch_approve' %}" id="batch-approve-form" class="tl-block tl-block--tight">
+                    {% csrf_token %}
+                    <div class="tl-actions">
+                        <button type="button" class="tl-btn tl-btn--ghost tl-btn--sm" id="select-all-btn">Select All</button>
+                        <button type="submit" class="tl-btn tl-btn--sm" id="batch-approve-btn" disabled>
+                            Approve Selected (<span id="selected-count">0</span>)
+                        </button>
+                    </div>
+                    <div class="tl-scroll">
+                        <table class="tl-table">
                             <thead>
                                 <tr>
-                                    <th>Scene Name</th>
-                                    <th>Location</th>
-                                    <th>Date</th>
-                                    <th>Characters</th>
+                                    <th scope="col">
+                                        <input type="checkbox" id="select-all-checkbox" title="Select all" aria-label="Select all">
+                                    </th>
+                                    <th scope="col">Character</th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col" class="tl-c">Finish</th>
+                                    <th scope="col" class="tl-c">Learn</th>
+                                    <th scope="col" class="tl-c">RP</th>
+                                    <th scope="col" class="tl-c">Focus</th>
+                                    <th scope="col" class="tl-c">Stand out</th>
+                                    <th scope="col" class="tl-num">Total</th>
+                                    <th scope="col"><span class="tl-sr">Actions</span></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for scene in finished_scenes %}
+                                {% for request in pending_requests %}
                                     <tr>
-                                        <td><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></td>
-                                        <td>{{ scene.location.name }}</td>
-                                        <td>{{ scene.date_of_scene }}</td>
-                                        <td>{{ scene.characters.count }}</td>
+                                        <td>
+                                            <input type="checkbox" name="request_ids" value="{{ request.pk }}" class="request-checkbox" aria-label="Select {{ request.character.name }}">
+                                        </td>
+                                        <td><a class="tl-plain" href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                                        <td class="tl-meta">{{ request.character.owner.username }}</td>
+                                        {% include "game/week/_request_marks.html" %}
+                                        <td class="tl-big">{{ request.total_xp }}</td>
+                                        <td class="tl-end">
+                                            <span class="tl-inlineforms">
+                                                <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{% url 'game:weekly_xp_request:detail' request.pk %}">Detail</a>
+                                                <button type="submit" class="tl-btn tl-btn--sm" form="approve-request-{{ request.pk }}">Approve</button>
+                                            </span>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                {% else %}
-                    <p class="text-center text-muted">No scenes finished during this week.</p>
-                {% endif %}
+                </form>
+                {% for request in pending_requests %}
+                    <form method="post" action="{% url 'game:weekly_xp_request:batch_approve' %}" id="approve-request-{{ request.pk }}" hidden>
+                        {% csrf_token %}
+                        <input type="hidden" name="request_ids" value="{{ request.pk }}">
+                    </form>
+                {% endfor %}
+            </section>
+        {% endif %}
+        {% if approved_requests %}
+            <section class="tl-section tl-section--serif">
+                <div class="tl-section__head">
+                    <h2 class="tl-section__title">Approved requests</h2>
+                    <span class="tl-meta tl-muted">{{ approved_requests|length }}</span>
+                </div>
+                <div class="tl-scroll">
+                    <table class="tl-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Character</th>
+                                <th scope="col">Player</th>
+                                <th scope="col" class="tl-c">Finish</th>
+                                <th scope="col" class="tl-c">Learn</th>
+                                <th scope="col" class="tl-c">RP</th>
+                                <th scope="col" class="tl-c">Focus</th>
+                                <th scope="col" class="tl-c">Stand out</th>
+                                <th scope="col" class="tl-num">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in approved_requests %}
+                                <tr>
+                                    <td><a class="tl-plain" href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                                    <td class="tl-meta">{{ request.character.owner.username }}</td>
+                                    {% include "game/week/_request_marks.html" %}
+                                    <td class="tl-big">{{ request.total_xp }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        {% endif %}
+    {% else %}
+        <section class="tl-section tl-section--serif">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Your XP requests</h2>
             </div>
-        </div>
-
-        <!-- Weekly Characters -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">Active Characters</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                {% if weekly_characters %}
-                    <div class="row">
-                        {% for character in weekly_characters %}
-                            <div class="col-sm-6 col-md-4 mb-3">
-                                <div class="tg-card h-100">
-                                    <div class="tg-card-body text-center" style="padding: 12px;">
-                                        <a href="{{ character.get_absolute_url }}" style="font-weight: 600;">{{ character.name }}</a>
-                                        <div style="font-size: 0.75rem; color: var(--theme-text-secondary); margin-top: 4px;">
-                                            {{ character.owner.username }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-center text-muted">No characters participated this week.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- XP Requests -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title wod_heading">XP Requests</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                {% if can_manage_global_records %}
-                    <!-- Pending Requests -->
-                    {% if pending_requests %}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 style="font-weight: 600; color: var(--theme-text-secondary); margin-bottom: 0;">Pending Requests ({{ pending_requests.count }})</h6>
-                        </div>
-                        <form method="post" action="{% url 'game:weekly_xp_request:batch_approve' %}" id="batch-approve-form">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" id="select-all-btn">Select All</button>
-                                <button type="submit" class="btn btn-sm btn-success" id="batch-approve-btn" disabled>
-                                    Approve Selected (<span id="selected-count">0</span>)
-                                </button>
-                            </div>
-                            <div class="tg-table-responsive mb-4">
-                                <table class="tg-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 40px;">
-                                                <input type="checkbox" id="select-all-checkbox" title="Select all">
-                                            </th>
-                                            <th>Character</th>
-                                            <th>Player</th>
-                                            <th>Finishing</th>
-                                            <th>Learning</th>
-                                            <th>RP</th>
-                                            <th>Focus</th>
-                                            <th>Standing Out</th>
-                                            <th>Total XP</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for request in pending_requests %}
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" name="request_ids" value="{{ request.pk }}" class="request-checkbox">
-                                                </td>
-                                                <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                                <td>{{ request.character.owner.username }}</td>
-                                                <td>{% if request.finishing %}✓{% endif %}</td>
-                                                <td>{% if request.learning %}✓{% endif %}</td>
-                                                <td>{% if request.rp %}✓{% endif %}</td>
-                                                <td>{% if request.focus %}✓{% endif %}</td>
-                                                <td>{% if request.standingout %}✓{% endif %}</td>
-                                                <td>{{ request.total_xp }}</td>
-                                                <td><a href="{% url 'game:weekly_xp_request:detail' request.pk %}" class="btn btn-sm btn-primary">Review</a></td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </form>
-                        <script src="{% static 'game/js/week-detail.js' %}"></script>
-                    {% endif %}
-
-                    <!-- Approved Requests -->
-                    {% if approved_requests %}
-                        <h6 style="font-weight: 600; color: var(--theme-text-secondary); margin-bottom: 16px;">Approved Requests ({{ approved_requests.count }})</h6>
-                        <div class="tg-table-responsive">
-                            <table class="tg-table">
-                                <thead>
-                                    <tr>
-                                        <th>Character</th>
-                                        <th>Player</th>
-                                        <th>Finishing</th>
-                                        <th>Learning</th>
-                                        <th>RP</th>
-                                        <th>Focus</th>
-                                        <th>Standing Out</th>
-                                        <th>Total XP</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for request in approved_requests %}
-                                        <tr>
-                                            <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                            <td>{{ request.character.owner.username }}</td>
-                                            <td>{% if request.finishing %}✓{% endif %}</td>
-                                            <td>{% if request.learning %}✓{% endif %}</td>
-                                            <td>{% if request.rp %}✓{% endif %}</td>
-                                            <td>{% if request.focus %}✓{% endif %}</td>
-                                            <td>{% if request.standingout %}✓{% endif %}</td>
-                                            <td>{{ request.total_xp }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <!-- Player view: show only their requests -->
-                    {% if xp_requests %}
-                        <div class="tg-table-responsive">
-                            <table class="tg-table">
-                                <thead>
-                                    <tr>
-                                        <th>Character</th>
-                                        <th>Status</th>
-                                        <th>Total XP</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for request in xp_requests %}
-                                        {% if request.character.owner == user %}
-                                            <tr>
-                                                <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                                <td>
-                                                    {% if request.approved %}
-                                                        <span class="tg-badge badge-app">Approved</span>
-                                                    {% else %}
-                                                        <span class="tg-badge badge-sub">Pending</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ request.total_xp }}</td>
-                                                <td><a href="{% url 'game:weekly_xp_request:detail' request.pk %}" class="btn btn-sm btn-primary">View</a></td>
-                                            </tr>
+            {% if xp_requests %}
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Character</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="tl-num">Total</th>
+                            <th scope="col"><span class="tl-sr">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in xp_requests %}
+                            {% if request.character.owner == user %}
+                                <tr>
+                                    <td><a class="tl-plain" href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                                    <td>
+                                        {% if request.approved %}
+                                            <span class="tl-status">Approved</span>
+                                        {% else %}
+                                            <span class="tl-status tl-status--problem">Pending</span>
                                         {% endif %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-center text-muted">No XP requests for this week.</p>
-                    {% endif %}
-                {% endif %}
-            </div>
+                                    </td>
+                                    <td class="tl-big">{{ request.total_xp }}</td>
+                                    <td class="tl-end">
+                                        <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{% url 'game:weekly_xp_request:detail' request.pk %}">View</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                {% include "core/tl/empty.html" with text="No XP requests for this week." %}
+            {% endif %}
+        </section>
+    {% endif %}
+    <section class="tl-section tl-section--serif">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Finished scenes</h2>
         </div>
-    </div>
+        {% if finished_scenes %}
+            <div class="tl-scroll">
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Scene</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="tl-num">Characters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scene in finished_scenes %}
+                            <tr data-gameline="{{ scene.gameline|gameline_code }}">
+                                <td class="tl-name"><a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a></td>
+                                <td class="tl-sub">{{ scene.location.name|default:"—" }}</td>
+                                <td class="tl-meta">{{ scene.date_of_scene|date:"j M" }}</td>
+                                <td class="tl-num">{{ scene.characters.count }} character{{ scene.characters.count|pluralize }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% include "core/tl/empty.html" with text="No scenes finished during this week." %}
+        {% endif %}
+    </section>
+    <section class="tl-section tl-section--serif">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Active characters</h2>
+        </div>
+        {% if weekly_characters %}
+            <div class="tl-section__body tl-section__body--rows">
+                {% for character in weekly_characters %}
+                    <div class="tl-row">
+                        <a class="tl-row__title" href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                        <span class="tl-row__meta">{{ character.owner.username }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% include "core/tl/empty.html" with text="No characters participated this week." %}
+        {% endif %}
+    </section>
 {% endblock content %}
+{% block extrascripts %}
+    {% if can_manage_global_records and pending_requests %}
+        <script src="{% static 'game/js/week-detail.js' %}"></script>
+    {% endif %}
+{% endblock extrascripts %}

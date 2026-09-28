@@ -1,229 +1,92 @@
-{% extends "core/base.html" %}
-
-{% block title %}
-    {{ object.name }}
-{% endblock title %}
-{% block styling %}
+{% extends "game/tl/base.html" %}
+{% comment %}
+Chronicle (Spread M1). Line cover in the chronicle's gameline with the facts and the
+NEW SCENE / NEW STORY actions; querystring tabs on the nav (ChronicleDetailView picks
+`tab`, the status and game-line sub-tabs, and which creation form is open). Every list
+comes from chronicle_overview(), already filtered to what the viewer may read.
+{% endcomment %}
+{% load tl %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
     {{ block.super }}
-    <style>
-        /* Gameline-specific badge colors for character types */
-        .tg-badge.badge-type-vtm {
-            background-color: var(--gameline-vtm);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-wta {
-            background-color: var(--gameline-wta);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-mta {
-            background-color: var(--gameline-mta);
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-ctd {
-            background-color: #20b2aa;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-wto {
-            background-color: var(--gameline-wto);
-            color: var(--color-white);
-        }
-        
-        /* Lighter variants for secondary character types */
-        .tg-badge.badge-type-vtm-light {
-            background-color: #8b0000;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-wta-light {
-            background-color: #228b22;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-mta-light {
-            background-color: #4b0082;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-ctd-light {
-            background-color: #20b2aa;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        .tg-badge.badge-type-wto-light {
-            background-color: #2f4f4f;
-            opacity: 0.7;
-            color: var(--color-white);
-        }
-        
-        /* Table styling for better alignment */
-        .tg-table tbody td {
-            padding: 16px;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-        
-        .tg-table tbody td:nth-child(4),
-        .tg-table tbody td:nth-child(5) {
-            white-space: normal;
-        }
-        
-        /* Group header row styling */
-        .group-header-row {
-            cursor: pointer;
-        }
-        
-        .group-header-row:hover {
-            box-shadow: inset 0 0 0 2px var(--color-primary);
-        }
-        
-        .group-header-row td {
-            border-bottom: 2px solid var(--theme-border-color) !important;
-        }
-        
-        /* Character rows hover effect */
-        .character-row:hover {
-            transform: translateX(4px);
-            box-shadow: -4px 0 0 var(--color-primary);
-        }
-        
-        /* Badge styling */
-        .tg-badge {
-            font-size: var(--font-size-xs);
-            padding: 0.35em 0.75em;
-            white-space: nowrap;
-        }
-    </style>
-{% endblock styling %}
-{% block content %}
-    {% load sanitize_text %}
-    {% load field %}
-    <div class="container py-4">
-        <!-- Chronicle Header -->
-        <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline }}">
-            <div class="tg-card-header text-center">
-                <h1 class="tg-card-title {{ object.headings }}">{{ object.name }}</h1>
-            </div>
-        </div>
-
-        <!-- Chronicle Details -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row text-center">
-                    <div class="col-md-6 mb-3">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Storytellers:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">
-                                {% for st in object.storytellers.distinct %}
-                                    {% if not forloop.last %}
-                                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>,
-                                    {% else %}
-                                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Year:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.year }}</span>
-                        </div>
-                    </div>
+    <a href="{% url 'game:chronicles' %}">← Chronicles</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {% with line=object|gameline_name %}{% if line %}{{ line }} chronicle{% else %}Chronicle{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% with storytellers=object.storytellers.distinct %}
+            {% if storytellers %}
+                <div class="tl-facts__row">
+                    <span class="tl-facts__k">Storyteller{{ storytellers|length|pluralize }}</span>
+                    <span class="tl-facts__v">
+                        {% for st in storytellers %}<a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </span>
                 </div>
-                <div class="row text-center">
-                    <div class="col-md-6 mb-3">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Theme:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.theme }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Mood:</span>
-                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.mood }}</span>
-                        </div>
-                    </div>
-                </div>
+            {% endif %}
+        {% endwith %}
+        {% fact "Players" object.players.count %}
+        {% fact "In-game year" object.year %}
+        {% if current_week %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Current week</span>
+                <a class="tl-facts__v" href="{{ current_week.get_absolute_url }}">{{ current_week.start_date|date:"j M" }} – {{ current_week.end_date|date:"j M" }}</a>
             </div>
-        </div>
-
-        <!-- Main Section Tabs: Common Knowledge, Characters, Locations, Items, Scenes -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs justify-content-center" id="mainSectionTabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link tg-nav-link active {{ object.headings }}"
-                           id="common-knowledge-tab" data-toggle="tab" href="#common-knowledge" role="tab"
-                           aria-controls="common-knowledge" aria-selected="true">
-                            <i class="fas fa-book-open mr-2"></i>Common Knowledge
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link tg-nav-link {{ object.headings }}"
-                           id="characters-tab" data-toggle="tab" href="#characters" role="tab"
-                           aria-controls="characters" aria-selected="false">
-                            <i class="fas fa-users mr-2"></i>Characters
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link tg-nav-link {{ object.headings }}"
-                           id="locations-tab" data-toggle="tab" href="#locations" role="tab"
-                           aria-controls="locations" aria-selected="false">
-                            <i class="fas fa-map-marker-alt mr-2"></i>Locations
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link tg-nav-link {{ object.headings }}"
-                           id="items-tab" data-toggle="tab" href="#items" role="tab"
-                           aria-controls="items" aria-selected="false">
-                            <i class="fas fa-box mr-2"></i>Items
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link tg-nav-link {{ object.headings }}"
-                           id="scenes-tab" data-toggle="tab" href="#scenes" role="tab"
-                           aria-controls="scenes" aria-selected="false">
-                            <i class="fas fa-theater-masks mr-2"></i>Scenes
-                        </a>
-                    </li>
-                </ul>
+        {% endif %}
+        {% if house_rule_count %}
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">House rules</span>
+                <a class="tl-facts__v" href="{% url 'core:houserules' %}">{{ house_rule_count }} apply</a>
             </div>
-            <div class="tg-card-body" style="padding-top: 24px;">
-                <div class="tab-content" id="mainSectionTabsContent">
-                    <!-- Common Knowledge Tab -->
-                    <div class="tab-pane fade show active" id="common-knowledge" role="tabpanel" aria-labelledby="common-knowledge-tab">
-                        {% include "game/chronicle/display_includes/common_knowledge_section.html" %}
-                    </div>
-
-                    <!-- Characters Tab -->
-                    <div class="tab-pane fade" id="characters" role="tabpanel" aria-labelledby="characters-tab">
-                        {% include "game/chronicle/display_includes/characters_section.html" %}
-                    </div>
-
-                    <!-- Locations Tab -->
-                    <div class="tab-pane fade" id="locations" role="tabpanel" aria-labelledby="locations-tab">
-                        {% include "game/chronicle/display_includes/locations_section.html" %}
-                    </div>
-
-                    <!-- Items Tab -->
-                    <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
-                        {% include "game/chronicle/display_includes/items_section.html" %}
-                    </div>
-
-                    <!-- Scenes Tab -->
-                    <div class="tab-pane fade" id="scenes" role="tabpanel" aria-labelledby="scenes-tab">
-                        {% include "game/chronicle/display_includes/scenes_section.html" %}
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endif %}
+        {% fact "Theme" object.theme %}
+        {% fact "Mood" object.mood %}
     </div>
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if can_create_scene or can_manage_chronicle %}
+        <div class="tl-btnpair">
+            {% if can_create_scene %}
+                <a class="tl-btn" href="?tab=scenes&amp;new=scene#new-scene">New scene</a>
+            {% endif %}
+            {% if can_manage_chronicle %}
+                <a class="tl-btn tl-btn--ghost" href="?tab=stories&amp;new=story#new-story">New story</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    <nav class="tl-nav tl-nav--tabs tl-nav--game" aria-label="{{ object.name }}">
+        <a href="?tab=overview"{% if tab == "overview" %} aria-current="page"{% endif %}>Overview</a>
+        <a href="?tab=characters"{% if tab == "characters" %} aria-current="page"{% endif %}>Characters {{ tab_counts.characters }}</a>
+        <a href="?tab=scenes"{% if tab == "scenes" %} aria-current="page"{% endif %}>Scenes {{ tab_counts.scenes }}</a>
+        <a href="?tab=locations"{% if tab == "locations" %} aria-current="page"{% endif %}>Locations {{ tab_counts.locations }}</a>
+        <a href="?tab=items"{% if tab == "items" %} aria-current="page"{% endif %}>Items {{ tab_counts.items }}</a>
+        <a href="?tab=common-knowledge"{% if tab == "common-knowledge" %} aria-current="page"{% endif %}>Common knowledge</a>
+        <a href="?tab=stories"{% if tab == "stories" %} aria-current="page"{% endif %}>Stories</a>
+    </nav>
+{% endblock nav %}
+{% block content %}
+    {% if tab == "characters" %}
+        {% include "game/chronicle/display_includes/characters_section.html" %}
+    {% elif tab == "scenes" %}
+        {% include "game/chronicle/display_includes/scenes_section.html" %}
+    {% elif tab == "locations" %}
+        {% include "game/chronicle/display_includes/locations_section.html" %}
+    {% elif tab == "items" %}
+        {% include "game/chronicle/display_includes/items_section.html" %}
+    {% elif tab == "common-knowledge" %}
+        {% include "game/chronicle/display_includes/common_knowledge_section.html" %}
+    {% elif tab == "stories" %}
+        {% include "game/chronicle/display_includes/stories_section.html" %}
+    {% else %}
+        {% include "game/chronicle/display_includes/overview_section.html" %}
+    {% endif %}
 {% endblock content %}

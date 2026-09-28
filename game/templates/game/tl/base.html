@@ -1,0 +1,10 @@
+{% extends "core/tl_base.html" %}
+{% comment %}
+Spread parent for the game pages (chronicles, scenes, stories, weeks, journals, XP and
+freebie records, setting elements): the global nav with Chronicles current. Children fill
+the cover blocks and `content`; pages that belong to a gameline set `gameline` and
+`cover_kind` to "line".
+{% endcomment %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="chronicles" %}
+{% endblock nav %}

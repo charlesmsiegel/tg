@@ -1,114 +1,64 @@
-{% if items_by_gameline %}
-    <!-- Gameline Sub-tabs (Pills for visual differentiation from main tabs) -->
-    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="itemsGamelineTabs" role="tablist">
+{% comment %}
+Chronicle ITEMS tab: game-line sub-tabs, the items table and the "New item" form behind
+a ghost button.
+{% endcomment %}
+<section class="tl-section">
+    <div class="tl-section__head">
+        <h2 class="tl-section__title">Items</h2>
+    </div>
+    <div class="tl-section__body tl-block">
+        {% if items_by_gameline|length > 2 %}
+            <nav class="tl-subtabs" aria-label="Game line">
+                {% for gl_code, gl_data in items_by_gameline.items %}
+                    <a href="?tab=items&amp;line={{ gl_code }}"{% if gl_code == item_line %} aria-current="page"{% endif %}>{{ gl_data.name }} {{ gl_data.items|length }}</a>
+                {% endfor %}
+            </nav>
+        {% endif %}
         {% for gl_code, gl_data in items_by_gameline.items %}
-            <li class="nav-item">
-                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
-                   id="item-{{ gl_code }}-tab" data-toggle="pill" href="#item-{{ gl_code }}" role="tab"
-                   aria-controls="item-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                    {{ gl_data.name }}
-                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.items.count }}</span>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <div class="tab-content" id="itemsGamelineTabsContent">
-        {% for gl_code, gl_data in items_by_gameline.items %}
-            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
-                 id="item-{{ gl_code }}" role="tabpanel" aria-labelledby="item-{{ gl_code }}-tab">
-                {% if gl_data.items %}
-                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
-                        <table class="tg-table table-striped" style="margin-bottom: 0;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 35%;">
-                                        <i class="fas fa-box mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Item Name
-                                    </th>
-                                    <th style="width: 25%;">
-                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
-                                    </th>
-                                    <th style="width: 20%;">
-                                        <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
-                                    </th>
-                                    <th style="width: 20%;">
-                                        <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in gl_data.items %}
-                                    <tr style="transition: var(--transition-fast);">
-                                        <td data-label="Item" style="padding: 16px;">
-                                            <a href="{{ item.get_absolute_url }}" class="{{ item.gameline }}_heading">{{ item.name }}</a>
-                                        </td>
-                                        <td data-label="Owner" style="padding: 16px;">
-                                            {% if item.owned_by.first %}
-                                                <a href="{{ item.owned_by.first.get_absolute_url }}">{{ item.owned_by.first.name }}</a>
-                                            {% else %}
-                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
-                                            {% endif %}
-                                        </td>
-                                        <td data-label="Type" style="padding: 16px;">
-                                            <span class="tg-badge badge-pill {{ item.get_badge_class }}">{{ item.get_type }}</span>
-                                        </td>
-                                        <td data-label="Status" style="padding: 16px;">
-                                            <span class="tg-badge badge-pill {% if item.status == 'App' %}badge-success{% elif item.status == 'Sub' %}badge-warning{% elif item.status == 'Dec' %}badge-danger{% elif item.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ item.get_status_display }}</span>
-                                        </td>
-                                    </tr>
-                                {% empty %}
+            {% if gl_code == item_line %}
+                <div class="tl-scroll">
+                    <table class="tl-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col">Owner</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in gl_data.items %}
+                                {% with owner=item.owned_by.first %}
                                     <tr>
-                                        <td colspan="4" class="text-center py-3" style="color: var(--theme-text-muted);">
-                                            No items found for this gameline.
-                                        </td>
+                                        <td class="tl-name"><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></td>
+                                        <td>{% if owner %}<a href="{{ owner.get_absolute_url }}">{{ owner.name }}</a>{% else %}—{% endif %}</td>
+                                        <td>{{ item.get_type }}</td>
+                                        <td><span class="tl-status{% if item.status == 'Dec' %} tl-status--dec{% endif %}">{{ item.get_status_display }}</span></td>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
-                        <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
-                        <p class="mb-0" style="font-size: var(--font-size-base);">No items found for this gameline.</p>
-                    </div>
-                {% endif %}
-            </div>
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% empty %}
+            {% include "core/tl/empty.html" with text="No items defined for this chronicle." %}
         {% endfor %}
+        {% if item_form.fields.gameline.choices %}
+            <details class="tl-reveal" id="new-item">
+                <summary class="tl-btn tl-btn--ghost">+ New item</summary>
+                <form class="tl-reveal__body tl-block"
+                      method="get"
+                      action="{% url 'core:object_type_redirect' 'item' 'create' %}">
+                    <div class="tl-formgrid tl-formgrid--2">
+                        {% include "core/tl/field.html" with field=item_form.gameline label="Game line" %}
+                        {% include "core/tl/field.html" with field=item_form.item_type label="Item type" %}
+                    </div>
+                    <div class="tl-actions">
+                        <button type="submit" class="tl-btn">Create item</button>
+                    </div>
+                </form>
+            </details>
+        {% endif %}
     </div>
-{% else %}
-    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
-        <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
-        <p class="mb-0" style="font-size: var(--font-size-base);">No items defined for this chronicle.</p>
-    </div>
-{% endif %}
-
-<!-- Item Creation Form -->
-{% if request.user.is_authenticated and item_form.fields.gameline.choices %}
-    <hr class="my-4">
-    <div class="row">
-        <div class="col-12 col-md-8 col-lg-6 mx-auto">
-            <div class="tg-card">
-                <div class="tg-card-header text-center">
-                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Item</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="get" action="{% url 'core:object_type_redirect' 'item' 'create' %}">
-                        <div class="tg-form-group mb-3">
-                            <label for="id_chronicle_item_gameline" class="tg-form-label">Game Line</label>
-                            {{ item_form.gameline }}
-                        </div>
-                        <div class="tg-form-group mb-3">
-                            <label for="id_chronicle_item_type" class="tg-form-label">Item Type</label>
-                            {{ item_form.item_type }}
-                        </div>
-                        <div class="text-center mt-2">
-                            <button type="submit" class="tg-btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Create Item
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+</section>

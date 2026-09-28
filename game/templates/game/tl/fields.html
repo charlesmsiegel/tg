@@ -1,0 +1,16 @@
+{% comment %}
+Every visible field of `form` in Spread markup; checkboxes become check rows. `skip`
+names one field to leave out (the weekly XP form never shows "finishing").
+  {% include "game/tl/fields.html" with form=approval_form skip="finishing" %}
+{% endcomment %}
+{% for field in form %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% elif field.name != skip %}
+        {% if field.field.widget.input_type == "checkbox" %}
+            {% include "game/tl/check.html" %}
+        {% else %}
+            {% include "core/tl/field.html" with field=field help=field.help_text %}
+        {% endif %}
+    {% endif %}
+{% endfor %}

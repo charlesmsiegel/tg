@@ -16,9 +16,9 @@ from game.forms import (
     StoryForm,
     STResponseForm,
 )
-from game.models import Chronicle, Journal, JournalEntry, Scene, STRelationship
+from game.models import Chronicle, Journal, JournalEntry, Scene
 from game.security import can_read_private_record, can_view_scene, readable_chronicles
-from game.views import ChronicleDetailView
+from game.views import ChronicleDetailView, can_create_scene
 
 # Scenes -------------------------------------------------------------------
 
@@ -186,10 +186,7 @@ class ChronicleSceneCreateView(ChronicleActionView):
     form_class = SceneCreationForm
 
     def has_permission(self, subject):
-        user = self.request.user
-        return PermissionManager.can_manage_chronicle(user, subject, self.request) or (
-            STRelationship.objects.filter(user=user, chronicle=subject).exists()
-        )
+        return can_create_scene(self.request.user, subject, self.request)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

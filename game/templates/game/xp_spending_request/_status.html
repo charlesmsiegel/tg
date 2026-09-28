@@ -1,0 +1,8 @@
+{% comment %}A spend's approval state as a mono word: Pending in rubric.{% endcomment %}
+{% if status == "Pending" %}
+    <span class="tl-status tl-status--problem">Pending</span>
+{% elif status == "Approved" %}
+    <span class="tl-status">Approved</span>
+{% else %}
+    <span class="tl-status">Denied</span>
+{% endif %}

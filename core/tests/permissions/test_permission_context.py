@@ -280,16 +280,25 @@ class PermissionContextTests(TestCase):
 
         from core.permission_context import get_object_permissions
 
-        source = Path("game/templates/game/xp_spending_request/detail.html").read_text(
-            encoding="utf-8"
-        )
+        def read(path):
+            return Path(path).read_text(encoding="utf-8")
+
+        source = read("game/templates/game/xp_spending_request/detail.html")
         engine = Engine(
+            libraries={"tl": "core.templatetags.tl"},
             loaders=[
                 (
                     "django.template.loaders.locmem.Loader",
-                    {"core/base.html": "{% block content %}{% endblock %}", "detail.html": source},
+                    {
+                        "game/tl/base.html": "{% block content %}{% endblock %}",
+                        "detail.html": source,
+                        "core/tl/field.html": read("core/templates/core/tl/field.html"),
+                        "game/xp_spending_request/_status.html": read(
+                            "game/templates/game/xp_spending_request/_status.html"
+                        ),
+                    },
                 )
-            ]
+            ],
         )
         record = SimpleNamespace(pk=1, character=self.character, approved="Pending")
         for user, expected in ((self.owner, False), (self.reader, False), (self.editor, True)):

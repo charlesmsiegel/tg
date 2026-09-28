@@ -1,0 +1,17 @@
+{% comment %}
+Pager for paginated game lists. `qs` is a querystring prefix kept on every link.
+  {% include "game/tl/pager.html" with qs="filter="|add:current_filter|add:"&" %}
+{% endcomment %}
+{% if is_paginated %}
+    <nav class="tl-pager" aria-label="Pages">
+        {% if page_obj.has_previous %}
+            <a href="?{{ qs }}page=1">« First</a>
+            <a href="?{{ qs }}page={{ page_obj.previous_page_number }}">← Previous</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?{{ qs }}page={{ page_obj.next_page_number }}">Next →</a>
+            <a href="?{{ qs }}page={{ page_obj.paginator.num_pages }}">Last »</a>
+        {% endif %}
+    </nav>
+{% endif %}

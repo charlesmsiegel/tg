@@ -1,94 +1,59 @@
-{% extends "core/base.html" %}
-{% block title %}
-    XP Spending Requests
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title wod_heading">XP Spending Requests</h3>
-                {% if show_owner_column and pending_count %}
-                    <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
-                        {{ pending_count }} pending request{{ pending_count|pluralize }}
-                    </div>
-                {% endif %}
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                {% if object_list %}
-                    <div class="tg-table-responsive">
-                        <table class="tg-table">
-                            <thead>
-                                <tr>
-                                    <th>Character</th>
-                                    {% if show_owner_column %}
-                                        <th>Player</th>
-                                    {% endif %}
-                                    <th>Trait</th>
-                                    <th>Type</th>
-                                    <th>Value</th>
-                                    <th>Cost</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for request in object_list %}
-                                    <tr>
-                                        <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                        {% if show_owner_column %}
-                                            <td>{{ request.character.owner.username }}</td>
-                                        {% endif %}
-                                        <td>{{ request.trait_name }}</td>
-                                        <td>{{ request.trait_type }}</td>
-                                        <td>{{ request.trait_value }}</td>
-                                        <td>{{ request.cost }} XP</td>
-                                        <td>
-                                            {% if request.approved == "Pending" %}
-                                                <span class="tg-badge badge-sub">Pending</span>
-                                            {% elif request.approved == "Approved" %}
-                                                <span class="tg-badge badge-app">Approved</span>
-                                            {% else %}
-                                                <span class="tg-badge badge-dec">Denied</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ request.created_at|date:"M d, Y" }}</td>
-                                        <td><a href="{% url 'game:xp_spending_request:detail' request.pk %}" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if is_paginated %}
-                        <nav aria-label="Page navigation" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1">First</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                    </li>
-                                {% endif %}
-                                <li class="page-item active">
-                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                                </li>
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% endif %}
-                {% else %}
-                    <p class="text-center text-muted">No XP spending requests found.</p>
-                {% endif %}
+{% extends "game/tl/base.html" %}
+{% comment %}XP spending requests the viewer may read, newest first (Pending in rubric).{% endcomment %}
+{% block title %}XP Spending Requests{% endblock title %}
+{% block cover_label %}XP spending requests{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Experience</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>XP spending requests</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    {% if show_owner_column and pending_count %}
+        <div class="tl-facts">
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Awaiting review</span>
+                <span class="tl-facts__v">{{ pending_count }} pending request{{ pending_count|pluralize }}</span>
             </div>
         </div>
-    </div>
+    {% endif %}
+{% endblock cover_body %}
+{% block content %}
+    {% if object_list %}
+        <div class="tl-scroll">
+            <table class="tl-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Character</th>
+                        {% if show_owner_column %}<th scope="col">Player</th>{% endif %}
+                        <th scope="col">Trait</th>
+                        <th scope="col">Type</th>
+                        <th scope="col" class="tl-num">Value</th>
+                        <th scope="col" class="tl-num">Cost</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Created</th>
+                        <th scope="col"><span class="tl-sr">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in object_list %}
+                        <tr>
+                            <td><a class="tl-plain" href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                            {% if show_owner_column %}<td class="tl-meta">{{ request.character.owner.username }}</td>{% endif %}
+                            <td>{{ request.trait_name }}</td>
+                            <td class="tl-meta">{{ request.trait_type }}</td>
+                            <td class="tl-num">{{ request.trait_value }}</td>
+                            <td class="tl-num">{{ request.cost }} XP</td>
+                            <td>{% include "game/xp_spending_request/_status.html" with status=request.approved %}</td>
+                            <td class="tl-meta">{{ request.created_at|date:"M d, Y" }}</td>
+                            <td class="tl-end">
+                                <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{% url 'game:xp_spending_request:detail' request.pk %}">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "game/tl/pager.html" %}
+    {% else %}
+        {% include "core/tl/empty.html" with text="No XP spending requests found." %}
+    {% endif %}
 {% endblock content %}
