@@ -1147,7 +1147,9 @@ class TestChangelingDetailViewContext(TestCase):
         self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Strength (Iron Grip)")
+        self.assertContains(
+            response, 'Strength <span class="tl-trait__spec">Iron Grip</span>', html=False
+        )
 
     def test_detail_view_context_has_merits_and_flaws(self):
         """Test that the detail view context includes merits and flaws."""

@@ -1,36 +1,10 @@
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Affiliation:</span>
-                        <a href="{{ object.affiliation.get_absolute_url }}">{{ object.affiliation }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{% if object.affiliation.name == "Technocratic Union" %}Convention{% else %}Sect{% endif %}:</span>
-                        <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{% if object.affiliation.name == "Technocratic Union" %}Eidolon{% else %}Essence{% endif %}:</span>
-                        {{ object.get_essence_display }}
-                    </div>
-                    {% if object.subfaction %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{% if object.affiliation.name == "Technocratic Union" %}Methodology{% else %}Subfaction{% endif %}:</span>
-                            <a href="{{ object.subfaction.get_absolute_url }}">{{ object.subfaction }}</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% load tl %}
+{% with tech=object.is_technocrat %}
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
+    {% fact "Affiliation" object.affiliation %}
+    {% if tech %}{% fact "Convention" object.faction %}{% else %}{% fact "Faction" object.faction %}{% endif %}
+    {% if tech %}{% fact "Methodology" object.subfaction %}{% else %}{% fact "Subfaction" object.subfaction %}{% endif %}
+    {% if tech %}{% fact "Eidolon" object.get_essence_display %}{% else %}{% fact "Essence" object.get_essence_display %}{% endif %}
+    {% fact "Group" object.group_set.first %}
+{% endwith %}

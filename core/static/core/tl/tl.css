@@ -519,6 +519,115 @@ body.tl {
 .tl-menu__label { margin-top: 24px; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
 .tl-menu__sheet :focus-visible { outline-color: var(--paper); }
 
+/* ---------- character sheet ---------- */
+/* A 12-column grid of numbered sections. Sections are full width unless they carry a
+   span class, and CSS counters number them in document order (01, 02...), so a
+   gameline that drops or adds a block never renumbers anything by hand. */
+.tl-sheet {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 40px 36px; align-items: start; counter-reset: tl-sec;
+}
+.tl-sheet > * { grid-column: 1 / -1; min-width: 0; }
+.tl-sheet > .tl-span-4 { grid-column: span 4; }
+.tl-sheet > .tl-span-5 { grid-column: span 5; }
+.tl-sheet > .tl-span-6 { grid-column: span 6; }
+.tl-sheet > .tl-span-7 { grid-column: span 7; }
+.tl-sheet > .tl-span-8 { grid-column: span 8; }
+.tl-sheet .tl-section__num:empty::before { counter-increment: tl-sec; content: counter(tl-sec, decimal-leading-zero); }
+/* Column sections (attributes, abilities): each column carries its own rule. */
+.tl-section--cols > .tl-section__body { border-top: 0; padding-top: 0; }
+.tl-subhead { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
+.tl-stack { display: flex; flex-direction: column; gap: 7px; }
+.tl-stack--lg { gap: 18px; }
+.tl-divided > * + * { border-top: 1px solid var(--rule); padding-top: 14px; margin-top: 14px; }
+
+/* Tracks inside a section use the whole width. */
+.tl-section .tl-track { grid-template-columns: 110px minmax(0, 1fr); }
+.tl-track .tl-track__rows { align-items: flex-end; }
+.tl-track + .tl-track { margin-top: 6px; }
+.tl-track--wide { grid-template-columns: 92px minmax(0, 1fr); }
+
+/* Grid of name-over-dots cells (Spheres, Arts, Disciplines...). */
+.tl-powergrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 24px; }
+.tl-powergrid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tl-power { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tl-power__name { font: 400 16px var(--serif); }
+.tl-power__name a { text-decoration: none; }
+
+/* Quintessence / Paradox row: centred, ruled above and below. */
+.tl-qprow { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+
+/* Health levels. Damage marks are drawn inside the 14px box. */
+.tl-healthlist { display: flex; flex-direction: column; gap: 6px; }
+.tl-health__box { display: flex; align-items: center; justify-content: center; font: 500 12px/1 var(--mono); }
+.tl-health__box.is-b::after { content: "/"; }
+.tl-health__box.is-l::after { content: "X"; }
+.tl-health__box.is-a::after { content: "✱"; color: var(--rubric); }
+
+/* Key / value rows (merits and flaws, focus, reality zones). */
+.tl-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 400 16px var(--serif); }
+.tl-kv__v { font: 400 13px var(--mono); flex: none; }
+.tl-kv__v.is-neg { color: var(--rubric); }
+.tl-kv a { text-decoration-color: var(--rule); }
+.tl-note { font: italic 400 13px/1.35 var(--serif); color: var(--ink2); }
+
+/* Fact row on the pages side (appearance: DOB, age...). */
+.tl-factrow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.tl-factrow > div { display: flex; flex-direction: column; gap: 4px; }
+.tl-factrow .tl-subhead + * { font: 400 17px var(--serif); }
+
+/* Cover footer on sheets: status/player + XP, then two buttons. */
+.tl-cover__stat { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.tl-cover__stat .tl-mono { letter-spacing: .1em; }
+.tl-cover__xp { font: 400 30px/1 var(--serif); }
+.tl-cover__xp .tl-mono { font-size: 11px; }
+.tl-btnpair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tl-btnpair > :only-child { grid-column: 1 / -1; }
+.tl-cover__actions form { margin: 0; }
+
+.tl-portrait { display: block; max-width: 320px; width: 100%; border: 1px solid var(--rule); }
+
+/* Journal link row closing the sheet. */
+.tl-linkrow { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.tl-linkrow__title { font: 400 24px var(--display); }
+.tl-linkrow a.tl-mono { text-decoration: none; }
+
+/* Plain tables (XP history, freebie costs, scene lists). */
+.tl-table { width: 100%; border-collapse: collapse; font: 400 16px var(--serif); }
+.tl-table th {
+  text-align: left; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink2); padding: 0 12px 8px 0; border-bottom: 2px solid var(--ink);
+}
+.tl-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.tl-table td.tl-num, .tl-table th.tl-num { text-align: right; font-family: var(--mono); font-size: 13px; }
+.tl-table tr:hover td { background: var(--inset); }
+.tl-table form { display: inline; margin: 0; }
+.tl-table--compact td { padding: 6px 10px 6px 0; font-size: 15px; }
+
+/* Scene rows (character Scenes tab, location "Scenes here"). */
+.tl-scenerow { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+.tl-scenerow__name { font: 400 18px var(--display); }
+.tl-scenerow__name a { text-decoration: none; }
+.tl-scenerow__when { font: 400 12px var(--mono); color: var(--ink2); flex: none; }
+.tl-scenerow__when.is-live { color: var(--rubric); }
+
+/* Rote card: tile shell + practice, name, description, spheres, roll. */
+.tl-rote { gap: 8px; }
+.tl-rote .tl-tile__name { font-size: 25px; }
+.tl-rote__spheres { display: flex; flex-direction: column; gap: 5px; border-top: 1px solid var(--rule); padding-top: 10px; }
+.tl-rote__roll { font: 400 12px var(--mono); color: var(--ink2); margin-top: auto; }
+
+/* Forms laid out on the pages side (XP spend, freebies, specialties). */
+.tl-formgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 24px; align-items: end; }
+.tl-formgrid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tl-formgrid > .tl-field--full { grid-column: 1 / -1; }
+.tl-field input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--acc); }
+.tl-inlineforms { display: flex; gap: 8px; flex-wrap: wrap; }
+.tl-btn--sm { min-height: 32px; padding: 6px 12px; font-size: 11px; }
+
+/* Legacy JS (the XP forms) toggles Bootstrap's d-none; keep it working. */
+.tl .d-none { display: none !important; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   .tl-spread, .tl-spread--wide { grid-template-columns: 1fr; min-height: 0; }
@@ -532,6 +641,7 @@ body.tl {
   .tl-footnotes { margin-top: 8px; }
   .tl-split { grid-template-columns: 1fr; }
   .tl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tl-sheet > [class*="tl-span-"] { grid-column: 1 / -1; }
   .tl-content--center { padding: 44px 24px; }
 }
 @media (max-width: 720px) {
@@ -552,6 +662,9 @@ body.tl {
   .tl-content { padding: 22px 22px 120px; gap: 28px; }
   .tl-content--center { padding: 32px 22px 64px; }
   .tl-cols, .tl-cols--2, .tl-grid, .tl-split { grid-template-columns: 1fr; }
+  .tl-sheet { gap: 28px; }
+  .tl-powergrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tl-factrow, .tl-formgrid, .tl-formgrid--2 { grid-template-columns: 1fr 1fr; }
   .tl-grid--2 { grid-template-columns: 1fr 1fr; }
   .tl-trait { min-height: 28px; }
   .tl-dot { width: 11px; height: 11px; }

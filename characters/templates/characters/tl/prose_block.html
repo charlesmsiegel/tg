@@ -1,0 +1,9 @@
+{% load sanitize_text %}
+{% comment %}One labelled prose block: mono eyebrow over paragraphs at 68ch. Hidden when empty.
+  {% include "characters/tl/prose_block.html" with label="Goals" text=object.goals %}{% endcomment %}
+{% if text %}
+    <div class="tl-stack">
+        {% if label %}<span class="tl-subhead">{{ label }}</span>{% endif %}
+        <div class="tl-prose">{{ text|sanitize_html|linebreaks }}</div>
+    </div>
+{% endif %}

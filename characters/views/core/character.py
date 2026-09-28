@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from characters.chargen import get_workflow
@@ -70,6 +70,10 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         context["can_retire"] = self.can_transition_to("Ret") and (
             can_edit or self.object.owner_id == self.request.user.pk
         )
+        try:
+            context["edit_url"] = self.object.get_update_url()
+        except NoReverseMatch:  # some character types have no update view
+            context["edit_url"] = None
         context["can_decease"] = self.can_transition_to("Dec") and (
             PermissionManager.user_has_scoped_editor_role(
                 self.request.user, self.object, request=self.request

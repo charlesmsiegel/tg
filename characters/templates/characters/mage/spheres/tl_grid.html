@@ -1,0 +1,13 @@
+{% load get_specialty %}
+{% comment %}The nine Spheres as a 3×3 grid of name over accent dots, in sheet order.{% endcomment %}
+<div class="tl-powergrid">
+    {% include "characters/tl/power_cell.html" with name=object.get_corr_name_display value=object.correspondence spec=object|get_specialty:'correspondence' %}
+    {% include "characters/tl/power_cell.html" with name="Life" value=object.life spec=object|get_specialty:'life' %}
+    {% include "characters/tl/power_cell.html" with name=object.get_prime_name_display value=object.prime spec=object|get_specialty:'prime' %}
+    {% include "characters/tl/power_cell.html" with name="Entropy" value=object.entropy spec=object|get_specialty:'entropy' %}
+    {% include "characters/tl/power_cell.html" with name="Matter" value=object.matter spec=object|get_specialty:'matter' %}
+    {% include "characters/tl/power_cell.html" with name=object.get_spirit_name_display value=object.spirit spec=object|get_specialty:'spirit' %}
+    {% include "characters/tl/power_cell.html" with name="Forces" value=object.forces spec=object|get_specialty:'forces' %}
+    {% include "characters/tl/power_cell.html" with name="Mind" value=object.mind spec=object|get_specialty:'mind' %}
+    {% include "characters/tl/power_cell.html" with name="Time" value=object.time spec=object|get_specialty:'time' %}
+</div>

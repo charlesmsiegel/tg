@@ -1,27 +1,19 @@
 {% extends "characters/mage/mtahuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Create Mage
-{% endblock creation_title %}
 {% block basics %}
     {% include "characters/mage/mage/basics_display_include.html" %}
 {% endblock basics %}
+{% block powers %}
+    {% include "characters/mage/mage/mage_powers_block_display.html" %}
+{% endblock powers %}
 {% block advantages %}
     {% include "characters/mage/mage/mage_advantage_display.html" %}
 {% endblock advantages %}
-{% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-{% endblock backgrounds %}
-{% block powers %}
-    {% include "characters/mage/mage/mage_powers_block_display.html" %}
-    {% block focus %}
-        {% include "characters/mage/mage/mage_focus_block_display.html" %}
-    {% endblock focus %}
-{% endblock powers %}
-{% block equipment %}
-    {% include "characters/core/human/equipment_block.html" %}
-{% endblock equipment %}
+{% block backgrounds %}{% endblock backgrounds %}
+{% block line %}
+    {% include "characters/mage/mage/mage_focus_block_display.html" %}
+    {% include "characters/tl/resonance.html" %}
+    {% include "characters/tl/rotes.html" with rote_list=object.rotes %}
+{% endblock line %}
 {% block appearance %}
     {% include "characters/mage/mage/mage_appearance_block_display.html" %}
 {% endblock appearance %}
@@ -34,31 +26,6 @@
     {% endif %}
 {% endblock freebies %}
 {% block xp %}
+    {% include "characters/tl/specialties_form.html" %}
     {% include "characters/mage/mage/mage_xp_form.html" %}
-    {% if object.needs_specialties %}
-        <div class="row">
-            <h2 class="col-sm mta_heading">Choose Specialties</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Choose specialties. Recall that we use the Well-Skilled Craftsman rules so some Abilities require specialties before the 4th dot.
-            </div>
-        </div>
-        <form action="{% url 'characters:add_specialties' object.pk %}" method="post">
-            {% csrf_token %}
-            {% for field in spec_form %}
-                <div class="row">
-                    <div class="col-sm">{{ field.label }}</div>
-                    <div class="col-sm">{{ field }}</div>
-                </div>
-            {% endfor %}
-            <div class="row">
-                <div class="col-sm">
-                    <input type="submit" value="Add Specialties" />
-                </div>
-            </div>
-        </form>
-    {% endif %}
 {% endblock xp %}
-{% block description %}
-{% endblock description %}

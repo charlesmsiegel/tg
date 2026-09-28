@@ -1,0 +1,15 @@
+{% comment %}History: History / Goals / Notes / Public information as eyebrow + prose.{% endcomment %}
+{% if object.history or object.goals or object.notes or object.public_info %}
+    <section class="tl-section" id="history">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">History</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            {% include "characters/tl/prose_block.html" with label="History" text=object.history %}
+            {% include "characters/tl/prose_block.html" with label="Goals" text=object.goals %}
+            {% include "characters/tl/prose_block.html" with label="Notes" text=object.notes %}
+            {% include "characters/tl/prose_block.html" with label="Public information" text=object.public_info %}
+        </div>
+    </section>
+{% endif %}

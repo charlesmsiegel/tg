@@ -1,0 +1,6 @@
+{% if object.journal %}
+    <div class="tl-linkrow">
+        <span class="tl-linkrow__title">{{ object.name }}'s Journal</span>
+        <a class="tl-mono" href="{{ object.journal.get_absolute_url }}">Open journal →</a>
+    </div>
+{% endif %}

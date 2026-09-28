@@ -1,20 +1,18 @@
-{% if object.get_items_owned %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Equipment</h5>
+{% with items=object.get_items_owned %}
+    {% if items %}
+        <section class="tl-section tl-span-6" id="equipment">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Equipment</h2>
             </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    {% for item in object.get_items_owned %}
-                        <div class="px-3 py-2">
-                            <a href="{{ item.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ item }}</a>
-                        </div>
-                    {% endfor %}
-                </div>
+            <div class="tl-section__body tl-stack">
+                {% for item in items %}
+                    <div class="tl-kv">
+                        <a href="{{ item.get_absolute_url }}">{{ item }}</a>
+                        <span class="tl-kv__v tl-muted">{{ item.get_type }}</span>
+                    </div>
+                {% endfor %}
             </div>
-        </div>
-    </div>
-</div>
-{% endif %}
+        </section>
+    {% endif %}
+{% endwith %}

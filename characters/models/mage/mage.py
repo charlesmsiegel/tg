@@ -224,6 +224,11 @@ class Mage(MtAHuman):
                     }
                 )
 
+    @property
+    def is_technocrat(self):
+        """True for Technocratic Union mages; the sheet swaps in Technocracy labels."""
+        return self.affiliation_id is not None and self.affiliation.name == "Technocratic Union"
+
     def get_affinity_sphere_name(self):
         if self.affinity_sphere == Sphere.objects.get(name="Correspondence"):
             return self.get_corr_name_display()

@@ -38,7 +38,7 @@ class TrackTest(SimpleTestCase):
 
     def test_either_row_can_be_omitted(self):
         self.assertNotIn("tl-boxes", track("Arete", perm=3))
-        self.assertNotIn("tl-dots", track("Blood", temp=10, max=20))
+        self.assertNotIn("tl-dots", track("Blood", temp=10, total=20))
 
 
 class TraitTagTest(SimpleTestCase):

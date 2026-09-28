@@ -1,0 +1,15 @@
+{% load tl %}
+{% comment %}Resonance as trait rows with accent dots. Reads `resonance` (ResRating queryset).{% endcomment %}
+{% if resonance %}
+    <section class="tl-section {{ span }}" id="resonance">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Resonance</h2>
+        </div>
+        <div class="tl-section__body tl-stack">
+            {% for res in resonance %}
+                {% trait res.resonance.name res.rating variant="acc" url=res.resonance.get_absolute_url %}
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

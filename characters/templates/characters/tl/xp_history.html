@@ -1,0 +1,52 @@
+{% comment %}
+Experience tab default: unspent XP and the spend request history, with approve / reject
+for Storytellers. Lines with their own XP form include this above the form.
+{% endcomment %}
+<section class="tl-section" id="experience">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Experience</h2>
+        <span class="tl-section__aside tl-mono tl-muted">{{ object.xp }} XP unspent</span>
+    </div>
+    <div class="tl-section__body">
+        {% with history=object.get_xp_spending_history %}
+            {% if history %}
+                <table class="tl-table">
+                    <thead>
+                        <tr>
+                            <th>Trait</th>
+                            <th class="tl-num">Cost</th>
+                            <th>Status</th>
+                            {% if object_perms.can_approve_spending %}<th></th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in history %}
+                            <tr>
+                                <td>{{ request.trait_name }}{% if request.trait_value %} ({{ request.trait_value }}){% endif %}</td>
+                                <td class="tl-num">{{ request.cost }} XP</td>
+                                <td><span class="tl-status{% if request.approved == 'Pending' %} tl-status--problem{% endif %}">{{ request.approved }}</span></td>
+                                {% if object_perms.can_approve_spending %}
+                                    <td class="tl-num">
+                                        {% if request.approved == "Pending" %}
+                                            <form method="post" action="{% url 'characters:xp_request_approve' object.pk request.pk %}">
+                                                {% csrf_token %}
+                                                <button class="tl-btn tl-btn--sm" type="submit">Approve</button>
+                                            </form>
+                                            <form method="post" action="{% url 'characters:xp_request_reject' object.pk request.pk %}">
+                                                {% csrf_token %}
+                                                <button class="tl-btn tl-btn--sm tl-btn--danger" type="submit">Reject</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="tl-muted">No experience spent yet.</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+</section>

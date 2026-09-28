@@ -1,22 +1,13 @@
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Languages</h5>
+{% with languages=object.languages.all %}
+    {% if languages %}
+        <section class="tl-section tl-span-6" id="languages">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Languages</h2>
             </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                {% if object.languages.all %}
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        {% for lang in object.languages.all %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; color: var(--theme-text-primary);">{{ lang }}</span>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted mb-0">No languages specified.</p>
-                {% endif %}
+            <div class="tl-section__body tl-stack">
+                {% for lang in languages %}<div>{{ lang }}</div>{% endfor %}
             </div>
-        </div>
-    </div>
-</div>
+        </section>
+    {% endif %}
+{% endwith %}
