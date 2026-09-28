@@ -1,8 +1,12 @@
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from characters.forms.core.crud_fields import (
+    COMMON_KNOWLEDGE_FIELDS,
+    COMMON_SKILL_FIELDS,
+    COMMON_TALENT_FIELDS,
+)
 from characters.models.core.archetype import Archetype
 from characters.models.core.specialty import Specialty
 from characters.models.mage.effect import Effect
@@ -16,6 +20,8 @@ from characters.tests.utils import mage_setup
 from game.models import Chronicle
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
+
+COMMON_ABILITIES = COMMON_TALENT_FIELDS + COMMON_SKILL_FIELDS + COMMON_KNOWLEDGE_FIELDS
 
 
 class TestMage(TestCase):
@@ -588,6 +594,7 @@ class TestMageCreateView(TestCase):
             "charisma": 0,
             "manipulation": 0,
             "appearance": 0,
+            **dict.fromkeys(COMMON_ABILITIES, 0),
             "awareness": 0,
             "art": 0,
             "leadership": 0,
@@ -745,6 +752,7 @@ class TestMageHumanUpdateView(TestCase):
             "charisma": 0,
             "manipulation": 0,
             "appearance": 0,
+            **dict.fromkeys(COMMON_ABILITIES, 0),
             "awareness": 0,
             "art": 0,
             "leadership": 0,
