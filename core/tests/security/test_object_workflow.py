@@ -73,3 +73,11 @@ class ObjectWorkflowTests(TestCase):
             reverse("characters:update:character", kwargs={"pk": self.character.pk})
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_other_player_cannot_submit_someone_elses_object(self):
+        other = get_user_model().objects.create_user("workflow_other_player")
+        submit = reverse("accounts:object_submission", args=["character", self.character.pk])
+        self.client.force_login(other)
+        self.assertIn(self.client.post(submit).status_code, {403, 404})
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.status, "Un")
