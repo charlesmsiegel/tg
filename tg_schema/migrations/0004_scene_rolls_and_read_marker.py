@@ -49,6 +49,12 @@ def add_scene_rolls_and_read_marker(apps, schema_editor):
         backfill_read_markers(schema_editor.connection.alias)
 
 
+# The live model describes each column (legacy databases have no migration state for
+# its app), so these fields must keep the definition they shipped with: a later
+# change to one of them needs its own migration here, not an edit to this one.
+# Reversing this migration leaves the columns in place (RunPython.noop).
+
+
 class Migration(migrations.Migration):
     dependencies = [("tg_schema", "0003_discipline_property_names")]
     operations = [migrations.RunPython(add_scene_rolls_and_read_marker, migrations.RunPython.noop)]

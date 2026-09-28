@@ -51,7 +51,8 @@
   },
   "characters.views.core.human.HumanUpdateView": {
     "fields_sha256": "073148c6032de43b526bcb60836b0de6ce9486b1e4d150caf3084ebdd3de7dc8",
-    "field_count": 43
+    "field_count": 43,
+    "limited_form": "LimitedHumanEditForm"
   },
   "characters.views.demon.demon.DemonUpdateView": {
     "fields_sha256": "b602ed48a0ef41615423957d4d53919e850df57effbc4ddb6e8d5b3c8384227c",

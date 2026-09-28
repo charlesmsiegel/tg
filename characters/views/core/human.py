@@ -6,6 +6,7 @@ from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
 from characters.forms.core.crud_fields import HUMAN_CREATE_FIELDS, HUMAN_UPDATE_FIELDS
 from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
 from characters.models.core.specialty import Specialty
@@ -21,6 +22,7 @@ from core.htmx import hx_redirect, is_fragment_request, vary_on_htmx
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     SuccessMessageMixin,
@@ -51,15 +53,17 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+class HumanUpdateView(ScopedEditFormMixin, EditPermissionMixin, MessageMixin, UpdateView):
     """
     Update view for Human characters.
-    Only STs and Admins can directly edit character fields.
-    Owners should use the character creation workflow or XP spending.
+    Only STs and Admins can directly edit character fields; an owner (who may reach
+    this page while the character is a draft) gets the limited form, and sets traits
+    through the creation workflow or XP spending, which enforce the rules.
     """
 
     model = Human
     fields = HUMAN_UPDATE_FIELDS
+    limited_form_class = LimitedHumanEditForm
     template_name = "characters/core/human/form.html"
     success_message = "Human updated successfully."
     error_message = "Error updating Human."

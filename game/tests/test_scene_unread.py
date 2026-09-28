@@ -92,6 +92,18 @@ class MarkReadTests(ReadMarkerBase):
         UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk)
         self.assertEqual(self.status().last_read_post, latest)
 
+    def test_a_newer_post_keeps_the_scene_unread(self):
+        # The page showed ``shown``; ``newer`` landed before mark_read ran (Codex).
+        shown = self.post(self.character, "Shown")
+        newer = self.post(self.st_character, "Newer")
+        self.set_status(read=False)
+        UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, shown)
+        status = self.status()
+        self.assertEqual(status.last_read_post, shown)
+        self.assertFalse(status.read)
+        UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, newer)
+        self.assertTrue(self.status().read)
+
     def test_only_updates_existing_rows(self):
         self.post(self.character, "One")
         self.assertEqual(
@@ -196,6 +208,26 @@ class ScenePageDividerTests(ReadMarkerBase):
         posts = [self.post(self.st_character, f"Post {n}") for n in range(SCENE_POST_WINDOW + 3)]
         self.set_status(read=False, marker=posts[0])
         self.assertEqual(self.divider(self.view()), (SCENE_POST_WINDOW + 2, posts[3].pk))
+
+    def test_unread_past_the_window_is_not_skipped(self):
+        # More unread posts than the page loads: the marker stays until the reader
+        # loads back to the first unread post from the live page.
+        posts = [self.post(self.st_character, f"Post {n}") for n in range(SCENE_POST_WINDOW + 3)]
+        self.set_status(read=False, marker=posts[0])
+        self.view()
+        self.assertEqual(self.status().last_read_post, posts[0])
+        self.assertFalse(self.status().read)
+
+        earlier = {"before": posts[3].pk, "reading": "1"}
+        self.client.get(self.scene.get_absolute_url(), earlier, headers={"HX-Request": "true"})
+        status = self.status()
+        self.assertTrue(status.read)
+        self.assertEqual(status.last_read_post, posts[-1])
+
+    def test_live_page_earlier_link_carries_the_reading_flag(self):
+        posts = [self.post(self.st_character, f"Post {n}") for n in range(SCENE_POST_WINDOW + 1)]
+        self.assertContains(self.view(), f"?before={posts[1].pk}&amp;reading=1")
+        self.assertNotContains(self.view(before=posts[-1].pk), "reading=1")
 
     def test_live_socket_fragment_has_no_divider(self):
         post = self.post(self.st_character, "Live")
