@@ -151,6 +151,11 @@ def with_author_roles(scene, posts):
     return posts
 
 
+def scene_cast(scene):
+    """The scene's characters with their owners joined, for the cover's cast list."""
+    return list(scene.characters.select_related("owner").order_by("name"))
+
+
 def scene_post_window(scene, *, before=None, limit=SCENE_POST_WINDOW):
     """The latest ``limit`` posts (or the ``limit`` before post id ``before``).
 

@@ -389,6 +389,9 @@ class SceneEventTests(SocketTestBase):
         seen = self.run_async(scenario)
         for text in seen.values():
             self.assertIn("Newcomer joined the scene.", text)
+            # Every viewer's cast list is refreshed with the newcomer in it.
+            self.assertIn('<div id="scene-cast" hx-swap-oob="true"', text)
+            self.assertIn(">Newcomer</a>", text)
         # The owner can now post as Newcomer too, so their choice becomes a select.
         self.assertIn(
             '<div id="post-character-field" hx-swap-oob="true" class="tl-composer__who">', seen["owner"]
@@ -415,6 +418,7 @@ class SceneEventTests(SocketTestBase):
         frames = self.run_async(scenario)
         self.assertIn('<div id="scene-actions" hx-swap-oob="true"', self.text(frames))
         self.assertIn("This scene has been closed.", self.text(frames))
+        self.assertIn('<span id="scene-live-badge" hx-swap-oob="true"', self.text(frames))
         self.assertEqual(self.close_code(frames), CLOSE_NORMAL)
 
     def test_viewer_who_loses_access_is_disconnected(self):

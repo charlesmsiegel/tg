@@ -67,6 +67,7 @@ from game.security import (
 from game.selectors import (
     annotate_week_scene_counts,
     chronicle_overview,
+    scene_cast,
     scene_post_window,
 )
 from game.spending_approval import (
@@ -160,6 +161,7 @@ class SceneDetailView(DetailView):
 
         # An older window is history: it has no live updates to append to it.
         context["live"] = not scene.finished and before is None
+        context["cast"] = scene_cast(scene)
         context["component_scripts"] = ("game/js/scene-chat.js",)
         if user.is_authenticated and not scene.finished:
             context["post_characters"] = list(PostForm(user=user, scene=scene).character_queryset)

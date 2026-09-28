@@ -16,10 +16,12 @@ import math
 
 from django import template
 from django.conf import settings
+from django.urls import NoReverseMatch
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 
 from core.templatetags.object_actions import object_actions
+from core.utils import get_gameline_name
 
 register = template.Library()
 
@@ -102,7 +104,7 @@ def fact(label, value, url=None):
     if url is None and hasattr(value, "get_absolute_url"):
         try:
             url = value.get_absolute_url()
-        except Exception:  # noqa: BLE001 - unrouted models simply render as text
+        except (NoReverseMatch, NotImplementedError):  # an unrouted model renders as text
             url = None
     inner = format_html('<a href="{}">{}</a>', url, value) if url else format_html("{}", value)
     return format_html(
@@ -213,15 +215,18 @@ def gameline_name(value):
     code = gameline_code(value)
     if code == "wod":
         return ""
-    return settings.GAMELINES[code]["name"].split(":")[0]
+    return get_gameline_name(code).split(":")[0]
 
 
 @register.filter
 def update_url(obj):
     """obj.get_update_url(), or "" when the model has no update route."""
+    get_update_url = getattr(obj, "get_update_url", None)
+    if get_update_url is None:
+        return ""
     try:
-        return obj.get_update_url()
-    except Exception:  # noqa: BLE001 - NoReverseMatch, NotImplementedError, AttributeError
+        return get_update_url()
+    except (NoReverseMatch, NotImplementedError):  # a model without an update route
         return ""
 
 
@@ -230,10 +235,7 @@ def type_label(obj):
     """The object's display type: get_type() when it has one, else its verbose name."""
     get_type = getattr(obj, "get_type", None)
     if callable(get_type):
-        try:
-            return get_type()
-        except Exception:  # noqa: BLE001
-            pass
+        return get_type()
     meta = getattr(obj, "_meta", None)
     return str(meta.verbose_name).title() if meta else ""
 
