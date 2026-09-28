@@ -40,6 +40,15 @@ class TrackTest(SimpleTestCase):
         self.assertNotIn("tl-boxes", track("Arete", perm=3))
         self.assertNotIn("tl-dots", track("Blood", temp=10, total=20))
 
+    def test_blank_temp_draws_no_squares(self):
+        self.assertNotIn("tl-boxes", track("Gnosis", perm=3, temp=""))
+
+    def test_modifiers(self):
+        self.assertIn(
+            'class="tl-track tl-track--wide tl-track--wrap"', track("Rage", 3, mod="wide wrap")
+        )
+        self.assertIn('class="tl-track"', track("Rage", 3, mod="bogus"))
+
 
 class TraitTagTest(SimpleTestCase):
     def test_renders_label_specialty_and_dots(self):
@@ -70,6 +79,12 @@ class QPWheelTest(SimpleTestCase):
         states = [state.strip() for state, _, _ in self.boxes(qp_wheel(19, 3))]
         self.assertEqual(states[:17], ["is-q"] * 17)
         self.assertEqual(states[17:], ["is-p"] * 3)
+
+    def test_quintessence_only_wheel(self):
+        html = qp_wheel(4, None, "Quintessence", 10)
+        self.assertEqual(len(self.boxes(html)), 10)
+        self.assertIn('aria-label="Quintessence 4 of 10"', html)
+        self.assertNotIn("tl-qp__p", html)
 
     def test_first_box_sits_left_of_centre(self):
         _, left, top = self.boxes(qp_wheel(0, 0))[0]

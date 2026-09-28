@@ -215,6 +215,8 @@ body.tl {
 .tl-nav__count { color: var(--rubric); }
 .tl-nav--tabs { gap: 24px; font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 .tl-nav--tabs a:not([aria-current]) { color: var(--ink2); }
+/* Tabs fill the bar's height, so the rubric underline sits on the bar's rule. */
+.tl-nav--tabs > a { display: flex; align-items: center; align-self: stretch; white-space: nowrap; text-decoration: none; }
 .tl-nav__menu { display: none; }
 
 /* Popovers built from <details> (chronicles menu, notifications, account). */
@@ -413,10 +415,14 @@ body.tl {
   background-image: linear-gradient(transparent, transparent);
 }
 .tl-field--select { position: relative; }
-.tl-field--select::after {
+.tl-field--select::after,
+.tl-field__control::after {
   content: "▾"; position: absolute; right: 2px; bottom: 11px;
   pointer-events: none; font-size: 13px;
 }
+/* core/tl/field.html wraps the select, so the ▾ stays on it whatever follows. */
+.tl-field__control { position: relative; display: block; }
+.tl-field--select:has(> .tl-field__control)::after { content: none; }
 .tl-field textarea { border: 1px solid var(--rule); background: var(--paper); padding: 12px 14px; min-height: 72px; font-size: 17px; }
 .tl-field input:focus, .tl-field select:focus { outline: 0; border-bottom: 2px solid var(--acc); padding-bottom: 7px; }
 .tl-field textarea:focus { outline: 0; border-color: var(--acc); }
@@ -433,7 +439,7 @@ body.tl {
   padding: 9px 26px 9px 10px; font-size: 15px;
 }
 .tl-cover .tl-field select option { color: var(--ink); background: var(--paper); }
-.tl-cover .tl-field--select::after { right: 10px; bottom: 12px; }
+.tl-cover .tl-field--select::after, .tl-cover .tl-field__control::after { right: 10px; bottom: 12px; }
 .tl-cover .tl-field select:focus { border-width: 1px; padding-bottom: 9px; outline: 2px solid var(--paper); outline-offset: 1px; }
 .tl-fieldrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .tl-check { display: flex; gap: 10px; align-items: center; font: 400 16px var(--serif); }
@@ -615,9 +621,12 @@ body.tl {
 
 /* Tracks inside a section use the whole width. */
 .tl-section .tl-track { grid-template-columns: 110px minmax(0, 1fr); }
-.tl-track .tl-track__rows { align-items: flex-end; }
+.tl-track .tl-track__rows { align-items: flex-start; }
 .tl-track + .tl-track { margin-top: 6px; }
-.tl-track--wide { grid-template-columns: 92px minmax(0, 1fr); }
+/* {% track … mod="wide" %}: 92px label (C13). Beats `.tl-section .tl-track` on specificity. */
+.tl-track--wide, .tl-section .tl-track--wide { grid-template-columns: 92px minmax(0, 1fr); }
+/* {% track … mod="wrap" %}: long square rows (a 50-point blood pool) wrap. */
+.tl-track--wrap .tl-boxes { flex-wrap: wrap; max-width: 100%; }
 
 /* Grid of name-over-dots cells (Spheres, Arts, Disciplines...). */
 .tl-powergrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 24px; }
@@ -776,9 +785,6 @@ body.tl {
 }
 
 /* ---- werewolf sheet ---- */
-/* 92px trait labels (C13); `.tl-section .tl-track` would otherwise win on specificity. */
-.tl-section .tl-track--wide { grid-template-columns: 92px minmax(0, 1fr); }
-.tl-track--wide .tl-track__rows { align-items: flex-start; }
 /* Renown: accent dots and squares. */
 .tl-section--power .tl-track--wide .tl-track__rows { color: var(--acc); }
 /* Gifts by rank: accent rule and names, source in mono; Rites / Fetishes column in ink. */
@@ -843,7 +849,6 @@ body.tl {
 .tl-facts__row--stack { flex-direction: column; align-items: stretch; gap: 4px; }
 .tl-facts__row--stack .tl-facts__v { text-align: left; font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
 .tl-facts__note { font: italic 400 13px var(--serif); opacity: .7; }
-.tl-nav--profile > a { display: flex; align-items: center; align-self: stretch; text-decoration: none; white-space: nowrap; }
 .tl-nav--profile .tl-nav__end { font: 400 12px var(--mono); }
 /* Queue sections: Spectral headings with a mono count, rows straight under the rule. */
 .tl-queue { gap: 12px; }
@@ -894,7 +899,7 @@ body.tl {
 .tl-xpcard > .tl-btn { align-self: flex-start; }
 .tl-xpcard .tl-check input { width: 18px; height: 18px; accent-color: var(--acc); flex: none; }
 .tl-xptable .tl-field select { font-size: 15px; padding: 4px 22px 4px 0; }
-.tl-xptable .tl-field--select::after { bottom: 6px; }
+.tl-xptable .tl-field--select::after, .tl-xptable .tl-field__control::after { bottom: 6px; }
 .tl-xptable tr:hover td { background: none; }
 .tl-profileform { align-items: start; }
 .tl-profileform__row { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
@@ -983,8 +988,6 @@ body.tl {
 .tl-errsum__count { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--rubric); flex: none; }
 .tl-errsum ul { list-style: none; padding: 0; font: 400 15px/1.5 var(--serif); }
 .tl-errsum a { text-decoration-color: var(--rubric); }
-/* A select's ▾ sits on the select, not the foot of the field, when help or errors follow it. */
-.tl-content .tl-field--select:has(> .tl-field__help, > .tl-field__error)::after { top: 31px; bottom: auto; }
 /* Image waiting for approval (M14). */
 .tl-pending { display: flex; align-items: center; justify-content: center; min-height: 170px; max-width: 420px; border: 1px dashed var(--ink2); background: var(--sheet); font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink2); }
 /* Group members table (M4): leader first, tagged in the accent. */
@@ -1031,7 +1034,6 @@ body.tl {
 /* ---- game pages (chronicle, journal, week, XP requests) ---- */
 /* Page tab bar whose tabs fill the bar, so the rubric underline sits on the rule. */
 .tl-nav--game { overflow-x: auto; overflow-y: hidden; }
-.tl-nav--game > a { align-self: stretch; display: flex; align-items: center; white-space: nowrap; text-decoration: none; }
 .tl-block--loose { gap: 34px; }
 .tl-section--serif .tl-section__title { font: 400 26px var(--serif); }
 /* Mono sub-tabs inside a tab (status, game line). */
@@ -1211,13 +1213,6 @@ body.tl {
 .tl-ref-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 400 17px var(--serif); }
 .tl-ref-links a { text-decoration-color: var(--rule); }
 .tl-cover__actions .tl-btnpair:not(:has(*)) { display: none; }
-/* ---- vampire sheet ---- */
-/* Blood pool runs to max_blood_pool squares (up to 50 at low generations): let them wrap. */
-.tl-vtm-tracks .tl-boxes { flex-wrap: wrap; justify-content: flex-end; max-width: 100%; }
-/* ---- end vampire sheet ---- */
-/* ---- mage sorcerer sheet ---- */
-/* Sorcerers have Quintessence but no Paradox: drop the wheel's Paradox half of the centre. */
-.tl-qprow--q .tl-qp__center hr, .tl-qprow--q .tl-qp__p { display: none; }
 /* ---- chargen ---- */
 /* Cover: draft name, step list (characters/core/chargen/steps.html), footnote. */
 .tl-cover__name--chargen { font-size: 52px; line-height: .95; }
@@ -1328,7 +1323,9 @@ body.tl {
   .tl-cover--chargen .tl-steps, .tl-cover--chargen .tl-cover__actions { display: none; }
   .tl-cover--chargen .tl-chargen-sheet .tl-steps { display: flex; }
   .tl-chargen-mobile { display: flex; flex-direction: column; gap: 10px; }
-  .tl-chargen__count { display: none; }
+  /* Character chargen shows the count in its segment bar; the location generators have
+     no bar, so theirs stays. */
+  .tl-spread:has(.tl-cover--chargen) .tl-chargen__count { display: none; }
 }
 @media (max-width: 720px) {
   .tl-cover--chargen .tl-cover__title, .tl-cover--chargen .tl-wordmark { display: none; }

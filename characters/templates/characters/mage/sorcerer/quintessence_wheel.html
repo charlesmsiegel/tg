@@ -1,9 +1,9 @@
 {% load tl %}
 {% comment %}
-Sorcerer Quintessence: the Mage wheel (C3, component 7b) with no Paradox segment.
-tl-qprow--q hides the wheel's Paradox half of the centre.
+Sorcerer Quintessence: the Mage wheel (C3, component 7b) with no Paradox segment and the
+10 boxes the old Sorcerer sheet drew.
 {% endcomment %}
-<div class="tl-qprow tl-qprow--q" id="quintessence">
+<div class="tl-qprow" id="quintessence">
     <span class="tl-subhead">Quintessence</span>
-    {% qp_wheel object.quintessence 0 %}
+    {% qp_wheel object.quintessence None "Quintessence" 10 %}
 </div>

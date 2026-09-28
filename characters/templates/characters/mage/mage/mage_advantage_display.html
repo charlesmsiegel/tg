@@ -28,10 +28,12 @@
                     {% qp_wheel object.quintessence object.paradox %}
                 {% endif %}
             </div>
-            <div class="tl-stack">
-                <span class="tl-subhead">Backgrounds</span>
-                {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds bare=True %}
-            </div>
+            {% if object.backgrounds.exists %}
+                <div class="tl-stack">
+                    <span class="tl-subhead">Backgrounds</span>
+                    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds bare=True %}
+                </div>
+            {% endif %}
         </div>
     </section>
 {% endwith %}

@@ -1,6 +1,5 @@
 {% load tl %}{% comment %}
 One Werewolf trait on a 92px mono label: permanent dots over temporary squares (both of
-10), the same parts as {% track %} with the tl-track--wide modifier. Omit temp (or pass
-None) for dots only; variant="acc" for accent dots.
+10). Omit temp (or pass None) for dots only; variant="acc" for accent dots.
   {% include "characters/werewolf/tl/track.html" with label="Rage" perm=object.rage temp=object.temporary_rage %}
-{% endcomment %}<div class="tl-track tl-track--wide"><span class="tl-track__label">{{ label }}</span><div class="tl-track__rows">{% dots perm 10 variant|default:"ink" %}{% if temp is not None and temp != "" %}{% boxes temp 10 %}{% endif %}</div></div>
+{% endcomment %}{% track label perm temp 10 variant|default:"ink" mod="wide" %}
