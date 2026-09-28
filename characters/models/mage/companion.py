@@ -167,6 +167,15 @@ class Companion(MtAHuman):
             return True
         return False
 
+    @property
+    def advantage_ratings(self):
+        """Special Advantage ratings with their advantage, for the sheet."""
+        return (
+            self.advantagerating_set.filter(advantage__isnull=False)
+            .select_related("advantage")
+            .order_by("advantage__name")
+        )
+
     def get_advantage_and_rating_list(self):
         return [(x.name, self.advantage_rating(x)) for x in self.advantages.all()]
 

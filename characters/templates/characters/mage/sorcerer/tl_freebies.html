@@ -1,4 +1,8 @@
-{% comment %}Freebie points left and spent (shown on the Experience tab while the companion is submitted).{% endcomment %}
+{% comment %}
+Sheet (Experience tab) freebie summary while the sorcerer is submitted: points left, what
+was spent, and the costs. The spend form itself, with sorcerer-freebies.js, lives in the
+chargen step (sorcerer_freebies_form.html).
+{% endcomment %}
 <section class="tl-section" id="freebies">
     <div class="tl-section__head">
         <span class="tl-section__num"></span>
@@ -23,11 +27,8 @@
                     <tr><td>Background</td><td class="tl-num">1</td></tr>
                     <tr><td>Willpower</td><td class="tl-num">2</td></tr>
                     <tr><td>Merits / Flaws</td><td class="tl-num">rating</td></tr>
-                    {% if object.companion_type == "familiar" %}
-                        <tr><td>Essence</td><td class="tl-num">1</td></tr>
-                        <tr><td>Charms</td><td class="tl-num">Essence cost or 5</td></tr>
-                    {% endif %}
-                    <tr><td>Advantage</td><td class="tl-num">rating</td></tr>
+                    <tr><td>Paths</td><td class="tl-num">7</td></tr>
+                    <tr><td>Rituals</td><td class="tl-num">3</td></tr>
                 </tbody>
             </table>
         </div>

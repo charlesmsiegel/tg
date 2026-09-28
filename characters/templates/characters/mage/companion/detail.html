@@ -1,28 +1,16 @@
 {% extends "characters/mage/mtahuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Create Human (Mage)
-{% endblock creation_title %}
 {% block basics %}
     {% include "characters/mage/companion/basics_display_include.html" %}
 {% endblock basics %}
+{% block powers %}
+    {% include "characters/mage/companion/advantages_display_block.html" %}
+{% endblock powers %}
 {% block advantages %}
     {% include "characters/mage/companion/companion_advantage_display.html" %}
 {% endblock advantages %}
-{% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-{% endblock backgrounds %}
-{% block powers %}
-    {% include "characters/mage/companion/advantages_display_block.html" %}
-    {% include "characters/mage/companion/charms_display_block.html" %}
-{% endblock powers %}
-
+{% block backgrounds %}{% endblock backgrounds %}
 {% block freebies %}
     {% if object.status == "Sub" %}
         {% include "characters/mage/companion/companion_freebies_form.html" %}
     {% endif %}
 {% endblock freebies %}
-{% block xp %}
-    {% include "characters/shared/mage/xp_form.html" %}
-{% endblock xp %}

@@ -1,23 +1,22 @@
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Special Advantages</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                {% if object.get_advantage_and_rating_list %}
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        {% for advantage, rating in object.get_advantage_and_rating_list %}
-                            <div class="px-3 py-2">
-                                <a href="{{ advantage.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ advantage }}:</a>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ rating }}</span>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted mb-0">No special advantages.</p>
-                {% endif %}
-            </div>
-        </div>
+{% comment %}
+Companion power section (--acc): Special Advantages as name / rating rows, then Charms.
+{% endcomment %}
+<section class="tl-section tl-section--power tl-span-7" id="special-advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Special Advantages</h2>
     </div>
-</div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div class="tl-stack">
+            {% for ar in object.advantage_ratings %}
+                <div class="tl-kv">
+                    <a href="{{ ar.advantage.get_absolute_url }}">{{ ar.advantage.name }}</a>
+                    <span class="tl-kv__v">{{ ar.rating }}</span>
+                </div>
+            {% empty %}
+                <p class="tl-muted">No special advantages.</p>
+            {% endfor %}
+        </div>
+        {% include "characters/mage/companion/charms_display_block.html" %}
+    </div>
+</section>

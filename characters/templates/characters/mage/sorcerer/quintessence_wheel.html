@@ -1,54 +1,9 @@
-<style>
-    .circle-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      height: 300px; /* Adjust based on the size you want */
-    }
-  
-    .circle {
-      position: relative;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .circle .box {
-      position: absolute;
-      font-size: 24px; /* Adjust font size for the boxes */
-      transform-origin: center;
-      text-align: center;
-      line-height: 1;
-    }
-  
-    /* Positioning the boxes around the circle, rotated to be perpendicular */
-    .box-0 { transform: rotate(189deg) translate(70px); }
-    .box-1 { transform: rotate(225deg) translate(70px); }
-    .box-2 { transform: rotate(261deg) translate(70px); }
-    .box-3 { transform: rotate(297deg) translate(70px); }
-    .box-4 { transform: rotate(333deg) translate(70px); }
-    .box-5 { transform: rotate(9deg) translate(70px); }
-    .box-6 { transform: rotate(45deg) translate(70px); }
-    .box-7 { transform: rotate(81deg) translate(70px); }
-    .box-8 { transform: rotate(117deg) translate(70px); }
-    .box-9 { transform: rotate(153deg) translate(70px); }
-</style>
-<div class="circle-container">
-    <div class="mta_heading">Quintessence</div>
-    <div class="circle">
-        {% for i in object.get_quintessence_wheel %}
-            <div class="box box-{{ i }}">
-                {% if object.quintessence > i %}
-                    ■
-                {% else %}
-                    □
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
+{% load tl %}
+{% comment %}
+Sorcerer Quintessence: the Mage wheel (C3, component 7b) with no Paradox segment.
+tl-qprow--q hides the wheel's Paradox half of the centre.
+{% endcomment %}
+<div class="tl-qprow tl-qprow--q" id="quintessence">
+    <span class="tl-subhead">Quintessence</span>
+    {% qp_wheel object.quintessence 0 %}
 </div>

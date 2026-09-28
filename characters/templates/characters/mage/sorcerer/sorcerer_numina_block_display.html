@@ -1,62 +1,56 @@
-{% load dots %}
-{% load get_specialty %}
-
-{% if object.pathrating_set.all %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Paths</h5>
+{% load tl get_specialty %}
+{% comment %}
+Sorcerer power section (--acc): Paths as name-over-dots cells (hedge mages also show the
+path's practice and ability), then Rituals for hedge mages. Hidden when both are empty.
+{% endcomment %}
+{% with paths=object.path_ratings rituals=object.ritual_list hedge=object.sorcerer_type %}
+    {% if paths or hedge == "hedge_mage" and rituals %}
+        <section class="tl-section tl-section--power tl-span-7" id="numina">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Numina</h2>
             </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    {% for pr in object.pathrating_set.all %}
-                        <div class="px-3 py-2">
-                            <a href="{{ pr.path.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">
-                                {{ pr.path }}{% if object|get_specialty:pr.path.property_name %} ({{ object|get_specialty:pr.path.property_name }}){% endif %}:
-                            </a>
-                            <span class="dots" style="font-weight: 700; color: var(--theme-text-primary);">{{ pr.rating|dots }}</span>
-                            {% if object.sorcerer_type == "hedge_mage" and pr.practice %}
-                                <br>
-                                <a href="{{ pr.practice.get_absolute_url }}" style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ pr.practice }}</a>
-                                {% if pr.ability %} - <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ pr.ability }}</span>{% endif %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% if object.sorcerer_type == "hedge_mage" and object.rituals.all %}
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Rituals</h5>
-            </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="row">
-                    {% for ritual in object.rituals.all %}
-                        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <div class="mb-2">
-                                        <a href="{{ ritual.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ ritual }}</a>
-                                    </div>
-                                    <div class="mb-1">
-                                        <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ ritual.path }}</span>
-                                    </div>
-                                    <div class="dots" style="font-size: 0.875rem;">{{ ritual.level|dots }}</div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% if paths %}
+                    <div class="tl-stack" id="paths">
+                        <span class="tl-subhead">Paths</span>
+                        <div class="tl-powergrid">
+                            {% for pr in paths %}
+                                <div class="tl-power">
+                                    <span class="tl-power__name">
+                                        <a href="{{ pr.path.get_absolute_url }}">{{ pr.path }}</a>
+                                        {% with spec=object|get_specialty:pr.path.property_name %}
+                                            {% if spec %}<span class="tl-trait__spec">{{ spec }}</span>{% endif %}
+                                        {% endwith %}
+                                    </span>
+                                    {% if pr.rating > 5 %}
+                                        {% dots pr.rating 10 "acc" %}
+                                    {% else %}
+                                        {% dots pr.rating 5 "acc" %}
+                                    {% endif %}
+                                    {% if hedge == "hedge_mage" and pr.practice %}
+                                        <span class="tl-note">
+                                            <a href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>{% if pr.ability %} · {{ pr.ability }}{% endif %}
+                                        </span>
+                                    {% endif %}
                                 </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endif %}
+                {% if hedge == "hedge_mage" and rituals %}
+                    <div class="tl-stack" id="rituals">
+                        <span class="tl-subhead">Rituals</span>
+                        {% for ritual in rituals %}
+                            {% if ritual.level > 5 %}
+                                {% trait ritual.name ritual.level ritual.path 10 "acc" ritual.get_absolute_url %}
+                            {% else %}
+                                {% trait ritual.name ritual.level ritual.path 5 "acc" ritual.get_absolute_url %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-        </div>
-    </div>
-</div>
-{% endif %}
+        </section>
+    {% endif %}
+{% endwith %}

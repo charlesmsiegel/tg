@@ -1,12 +1,13 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#charmSection"
-        aria-expanded="true"
-        aria-controls="charmSection">Charms</h2>
-</div>
-<div id="charmSection" class="collapse show multi-collapse">
-    <div class="row">
-        {% for charm in object.charms.all %}<a class="col-sm" href="{{ charm.get_absolute_url }}">{{ charm }}</a>{% endfor %}
-    </div>
-</div>
+{% comment %}Charms inside the companion's Special Advantages section; nothing when there are none.{% endcomment %}
+{% with charms=object.charms.all %}
+    {% if charms %}
+        <div class="tl-stack" id="charms">
+            <span class="tl-subhead">Charms</span>
+            <div class="tl-powergrid">
+                {% for charm in charms %}
+                    <span class="tl-power__name"><a href="{{ charm.get_absolute_url }}">{{ charm }}</a></span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}

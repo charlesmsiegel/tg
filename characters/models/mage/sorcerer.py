@@ -150,6 +150,20 @@ class Sorcerer(MtAHuman):
     def get_quintessence_wheel(self):
         return list(range(10))
 
+    @property
+    def path_ratings(self):
+        """Path ratings with their path, practice and ability, for the sheet."""
+        return (
+            self.pathrating_set.filter(path__isnull=False)
+            .select_related("path", "practice", "ability")
+            .order_by("path__name")
+        )
+
+    @property
+    def ritual_list(self):
+        """Known rituals with their path, in path / level / name order."""
+        return self.rituals.select_related("path")
+
 
 class PathRating(models.Model):
     character = models.ForeignKey(Sorcerer, on_delete=models.SET_NULL, null=True)
