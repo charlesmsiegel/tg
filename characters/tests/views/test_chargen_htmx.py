@@ -240,8 +240,17 @@ class ValidateOnlyTests(InteractiveChargenTestCase):
         self.assertContains(response, "Attributes must be distributed 7/5/3")
         self.assertContains(response, "Physical 11")
         self.assertContains(response, "need 10/8/6")
+        # One dot more than the 10/8/6 targets hold in total.
+        self.assertContains(response, '<span class="tl-chargen__tag is-over">Too many</span>')
         character.refresh_from_db()
         self.assertEqual((character.creation_status, character.strength), (1, 1))
+
+    def test_misshapen_allocation_within_budget_is_in_progress(self):
+        character = self.vampire(1)
+        response = self.validate(character, {**ATTRIBUTES_VALID, "strength": 3, "wits": 3})
+        self.assertContains(response, "Attributes must be distributed 7/5/3")
+        self.assertContains(response, '<span class="tl-chargen__tag">In progress</span>')
+        self.assertNotContains(response, "Too many")
 
     def test_valid_allocation_is_ready_but_never_saved_or_advanced(self):
         character = self.vampire(1)
@@ -249,6 +258,7 @@ class ValidateOnlyTests(InteractiveChargenTestCase):
             response = self.validate(character, ATTRIBUTES_VALID)
         self.assertEqual(writes(queries.captured_queries), [])
         self.assertContains(response, "Ready to save.")
+        self.assertContains(response, '<span class="tl-chargen__tag is-ready">Ready</span>')
         character.refresh_from_db()
         self.assertEqual((character.creation_status, character.strength), (1, 1))
 

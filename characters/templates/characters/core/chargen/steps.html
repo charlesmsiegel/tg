@@ -1,0 +1,28 @@
+{% comment %}
+The chargen step list (replaces chargen_progress.html). Expects `chargen_steps`
+(Workflow.progress or ChargenProgressMixin) and `chargen_step_rows`
+(registry.progress_rows: consecutive background-gated steps share one row).
+Desktop: a numbered list on the cover; tl.js scrolls the current row into view.
+Phones: a segment bar with the count, and the same list in a STEPS sheet.
+{% endcomment %}
+{% if chargen_steps %}
+    {% include "characters/core/chargen/step_list.html" %}
+    <div class="tl-chargen-mobile">
+        <ol class="tl-stepbar" aria-hidden="true">
+            {% for step in chargen_steps %}<li class="tl-stepbar__seg is-{{ step.status }}"></li>{% endfor %}
+        </ol>
+        <div class="tl-stepbar__line">
+            <span><span class="tl-stepbar__count">Step {{ object.creation_status|stringformat:"02d" }} of {{ chargen_steps|length|stringformat:"02d" }}</span>{% if chargen_next_step %} · next: {{ chargen_next_step.label }}{% endif %}</span>
+            <details class="tl-menu tl-chargen-sheet">
+                <summary>Steps ▾</summary>
+                <div class="tl-menu__sheet">
+                    <div class="tl-menu__top">
+                        <span class="tl-menu__label">Steps</span>
+                        <button type="button" class="tl-menu__close" data-tl-close>Close ×</button>
+                    </div>
+                    {% include "characters/core/chargen/step_list.html" %}
+                </div>
+            </details>
+        </div>
+    </div>
+{% endif %}

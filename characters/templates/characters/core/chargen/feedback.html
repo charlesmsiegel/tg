@@ -1,26 +1,36 @@
-<div class="tg-card-body" data-step="{{ step.key }}">
+{% comment %} Validate-only verdict, swapped into #chargen-feedback (role=status): a mono
+   tag (READY / TOO MANY / IN PROGRESS), what the server found, and the step's
+   running totals. `over` is set when a running total is above its target. {% endcomment %}
+<div class="tl-chargen__line" data-step="{{ step.key }}">
     {% if valid and verdict_is_final %}
-        <div class="tg-success-message"><i class="fas fa-check"></i> Ready to save.</div>
+        <span class="tl-chargen__tag is-ready">Ready</span>
+        <span>Ready to save.</span>
     {% elif valid %}
-        <div class="tg-info-message">No problems found so far; the rest is checked when you save.</div>
+        <span class="tl-chargen__tag">In progress</span>
+        <span>No problems found so far; the rest is checked when you save.</span>
     {% else %}
-        <ul class="tg-chargen-errors">
+        <span class="tl-chargen__tag{% if over %} is-over{% endif %}">{% if over %}Too many{% else %}In progress{% endif %}</span>
+        <ul class="tl-chargen__errors">
             {% for label, message in errors %}
-                <li class="tg-error-message">{% if label %}{{ label }}: {% endif %}{{ message }}</li>
+                <li>{% if label %}{{ label }}: {% endif %}{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
-    {% for total in totals %}
-        <div class="tg-chargen-total{% if total.satisfied %} is-satisfied{% endif %}">
-            <strong>{{ total.label }}:</strong>
-            {% if total.groups %}
-                {% for group in total.groups %}{{ group.label }} {{ group.current }}{% if not forloop.last %} · {% endif %}{% endfor %}
-                (need {{ total.targets|join:"/" }} in any order)
-            {% elif total.target is not None %}
-                {{ total.current }} / {{ total.target }}{% if total.comparison == "at_most" %} at most{% endif %}
-            {% else %}
-                {{ total.current }}
-            {% endif %}
-        </div>
-    {% endfor %}
+    {% if totals %}
+        <p class="tl-chargen__totals">
+            {% for total in totals %}
+                <span class="tl-chargen__total{% if total.satisfied %} is-satisfied{% endif %}">
+                    {{ total.label }}:
+                    {% if total.groups %}
+                        {% for group in total.groups %}{{ group.label }} {{ group.current }}{% if not forloop.last %} · {% endif %}{% endfor %}
+                        (need {{ total.targets|join:"/" }} in any order)
+                    {% elif total.target is not None %}
+                        {{ total.current }} / {{ total.target }}{% if total.comparison == "at_most" %} at most{% endif %}
+                    {% else %}
+                        {{ total.current }}
+                    {% endif %}
+                </span>
+            {% endfor %}
+        </p>
+    {% endif %}
 </div>

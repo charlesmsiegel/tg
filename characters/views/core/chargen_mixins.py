@@ -15,12 +15,14 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 from characters.chargen import get_workflow
+from characters.chargen.registry import progress_rows
 from core.access_policy import authorize_route
 from core.htmx import hx_redirect, is_fragment_request, mark_fragment, trigger, vary_on_htmx
 from widgets.fields.chained import ChainedChoiceField
 
 VALIDATE_PARAM = "_validate"
 OPTIONS_PARAM = "_options"
+ABILITY_GROUPS = ("talents", "skills", "knowledges")
 
 
 class ChargenStepMixin:
@@ -133,6 +135,7 @@ class ChargenStepMixin:
         valid = form.is_valid()
         if valid:
             valid = self.validate_submission(form)
+        totals = self.validation_totals(form)
         return self._partial_response(
             self.feedback_template,
             {
@@ -141,7 +144,8 @@ class ChargenStepMixin:
                 "valid": valid,
                 "verdict_is_final": self.validation_is_final,
                 "errors": form_error_messages(form),
-                "totals": self.validation_totals(form),
+                "totals": totals,
+                "over": totals_over(totals),
             },
             "chargen-feedback",
         )
@@ -231,15 +235,23 @@ class ChargenStepMixin:
         if character is not None:
             workflow = get_workflow(character.type)
             if workflow and 1 <= character.creation_status <= len(workflow.steps):
-                context["step"] = workflow.step(character.creation_status)
-                context["chargen_steps"] = workflow.progress(character.creation_status)
+                position = character.creation_status
+                context["step"] = workflow.step(position)
+                context["chargen_steps"] = workflow.progress(position)
+                context["chargen_step_rows"] = progress_rows(context["chargen_steps"])
+                context["chargen_next_step"] = (
+                    workflow.steps[position] if position < len(workflow.steps) else None
+                )
                 if context["step"].key == "abilities" and "form" in context:
                     form = context["form"]
                     groups = [
                         [form[name] for name in getattr(character, group) if name in form.fields]
-                        for group in ("talents", "skills", "knowledges")
+                        for group in ABILITY_GROUPS
                     ]
                     context["ability_rows"] = list(zip_longest(*groups))
+                    context["ability_columns"] = [
+                        (group.title(), fields) for group, fields in zip(ABILITY_GROUPS, groups)
+                    ]
                 context["chargen_formsets"] = {
                     key: value
                     for key, value in context.items()
@@ -279,6 +291,22 @@ def use_dot_widgets(form, bounds):
                 label=field.label or name,
                 attrs=field.widget.attrs,
             )
+
+
+def totals_over(totals):
+    """Whether any running total from ``validation_totals`` is above its target.
+
+    A plain total is over when ``current`` exceeds ``target``; a priority total
+    (``groups``) when its groups together exceed the sum of its targets.
+    """
+    for total in totals:
+        if total.get("groups"):
+            current = sum(group["current"] or 0 for group in total["groups"])
+            if current > sum(total.get("targets") or ()):
+                return True
+        elif total.get("target") is not None and (total.get("current") or 0) > total["target"]:
+            return True
+    return False
 
 
 def form_error_messages(form):
@@ -334,4 +362,5 @@ class ChargenProgressMixin:
                     status = "current" if current >= start else "pending"
                 steps.append({"label": label, "status": status})
             context["chargen_steps"] = steps
+            context["chargen_step_rows"] = progress_rows(steps)
         return context

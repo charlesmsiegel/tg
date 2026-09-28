@@ -147,7 +147,7 @@ class AlpineComponentTests(BrowserTestCase):
         self.assertTrue(self.page.is_hidden('input[name="strength"]'))
         self.dots("strength", 4)
         self.assertEqual(self.value("strength"), "4")
-        self.assertIn("Physical 6", self.page.inner_text(".tg-chargen-pool"))
+        self.assertIn("Physical 6", self.page.inner_text(".tl-chargen__pool"))
         self.assertEqual(
             self.page.get_attribute(
                 '.tg-dots-control:has(input[name="strength"]) .tg-dot[data-value="4"]',
@@ -167,7 +167,7 @@ class AlpineComponentTests(BrowserTestCase):
 
     def test_validator_reports_server_verdict_after_debounce(self):
         self.open(self.vampire(1))
-        self.page.wait_for_selector("#chargen-feedback .tg-card-body")
+        self.page.wait_for_selector("#chargen-feedback .tl-chargen__line")
         self.dots("strength", 5)
         self.page.wait_for_function(
             "document.querySelector('#chargen-feedback').innerText.includes('Physical 7')"
@@ -205,7 +205,7 @@ class ContractSafetyTests(BrowserTestCase):
                 route.continue_()
 
         self.open(character)
-        self.page.wait_for_selector("#chargen-feedback .tg-card-body")
+        self.page.wait_for_selector("#chargen-feedback .tl-chargen__line")
         self.page.route("**/characters/*/", hold_validation)
         for name, dots in (
             ("strength", 4),

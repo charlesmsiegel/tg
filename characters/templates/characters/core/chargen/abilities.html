@@ -1,15 +1,28 @@
-<p>Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across Talents, Skills and Knowledges.</p>
-<div class="row">
-    <h3 class="col-sm">Talents</h3>
-    <h3 class="col-sm">Skills</h3>
-    <h3 class="col-sm">Knowledges</h3>
+{% load static %}
+{% comment %} Abilities step: Talents, Skills and Knowledges as ruled columns
+   (ability_columns from ChargenStepMixin), then a status line checked by
+   ability-validation.js (non-interactive) or tgPool + the server's verdict. {% endcomment %}
+<p class="tl-lede">Distribute {{ primary }} / {{ secondary }} / {{ tertiary }} dots across Talents, Skills and Knowledges.</p>
+<div class="tl-alloc">
+    {% for title, fields in ability_columns %}
+        <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-{{ forloop.counter }}">
+            <div class="tl-alloc__head">
+                <h2 class="tl-alloc__name" id="abilities-{{ forloop.counter }}">{{ title }}</h2>
+            </div>
+            {% for field in fields %}
+                {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+            {% endfor %}
+        </section>
+    {% endfor %}
 </div>
-{% for row in ability_rows %}
-    <div class="row">
-        {% for field in row %}
-            <div class="col-sm">{% if field %}{{ field.label }}{% endif %}</div>
-            <div class="col-sm dots">{% if field %}{{ field.errors }}{{ field }}{% endif %}</div>
-        {% endfor %}
+{% if chargen_interactive %}
+    {% include "characters/core/chargen/pool.html" %}
+{% elif primary and secondary and tertiary %}
+    <div class="tl-chargen__status">
+        <div class="tl-chargen__line">
+            <span class="tl-chargen__tag" data-allocation-tag>In progress</span>
+            <span id="abilities-validation-status" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}" role="status"></span>
+        </div>
     </div>
-{% endfor %}
-{% include "characters/core/ability_block/validation.html" %}
+    <script src="{% static 'characters/js/ability-validation.js' %}"></script>
+{% endif %}

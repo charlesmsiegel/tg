@@ -1,6 +1,6 @@
 {% if object.freebies_approved %}
-    <p>Freebie points remaining: {{ object.freebies }}</p>
-    {{ form.as_p }}
+    <p class="tl-lede">Freebie points remaining: <strong>{{ object.freebies }}</strong></p>
+    {% include "characters/core/chargen/fields.html" with fields_form=form %}
 {% else %}
-    <p>Waiting on ST to Assign Freebie Total</p>
+    {% include "core/tl/empty.html" with text="Waiting on ST to assign your freebie total." %}
 {% endif %}

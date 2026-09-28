@@ -1,36 +1,58 @@
-{% extends "core/form.html" %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Character creation step (Spread). The line cover carries the draft's identity and the
+step list (chargen/progress_region.html, swapped out of band on interactive
+workflows); the pages hold one step: chargen/step_body.html inside either the htmx
+form (interactive workflows, chargen/interactive.html) or a plain POST form.
+Step templates that are still legacy markup render inside .tl-legacy in the body,
+so tl-legacy.css is loaded here.
+{% endcomment %}
+{% load static tl %}
+{% block title %}Edit {{ object.name }}{% if step %} · {{ step.label }}{% endif %}{% endblock title %}
+{% block legacy_styling %}
+    <link rel="stylesheet" href="{% static 'core/tl/tl-legacy.css' %}">
+{% endblock legacy_styling %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_mod %}tl-cover--chargen{% endblock cover_mod %}
+{% block cover_label %}New {{ object|type_label }}: {{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    <a class="tl-wordmark" href="{% url 'core:home' %}">Tellurium<span>·</span>Games</a>
+    <span class="tl-chargen-draft">Draft<span class="tl-chargen-draft__name"> · {{ object.name }}</span></span>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">New {{ object|type_label }}{% if object.chronicle %} · {{ object.chronicle }}{% endif %}</span>
+    <p class="tl-cover__name tl-cover__name--chargen {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name }}</p>
+    {% if object.concept %}<p class="tl-cover__sub">{{ object.concept }}</p>{% endif %}
+{% endblock cover_title %}
+{% block cover_body %}
+    {% if object.image and object.image_status == "app" %}
+        <img class="tl-chargen-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
+    {% elif object.image %}
+        <p class="tl-chargen-note">Image pending approval.</p>
+    {% endif %}
+    {% include "characters/core/chargen/progress_region.html" %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    <p class="tl-chargen-note">Going back discards unsaved changes on the current step.</p>
+{% endblock cover_actions %}
+{% block nav %}{% include "core/tl/nav.html" with nav_active="characters" %}{% endblock nav %}
 {% block content %}
     {% if chargen_interactive %}
         {% include "characters/core/chargen/interactive.html" %}
     {% else %}
-        {{ block.super }}
+        <form class="tl-chargen" action="" method="post">
+            {% csrf_token %}
+            {% if object_perms.can_chargen and not skip_step %}{{ form.media }}{% endif %}
+            {% include "characters/core/chargen/step_body.html" %}
+            {% comment %} Must stay inside the form, after the step: step scripts reference
+               TG.validation from DOMContentLoaded handlers, which fire after this
+               script has been parsed. {% endcomment %}
+            <script src="{% static 'core/js/validation.js' %}"></script>
+        </form>
     {% endif %}
 {% endblock content %}
-{% block progress %}
-    {% include "characters/core/chargen_progress.html" %}
-{% endblock progress %}
-{% block contents %}
-    {% if object_perms.can_chargen %}
-        <h2 class="{{ object.get_heading }}">{{ step.label }}</h2>
-        {% if skip_step %}
-            {% include "characters/core/chargen/skip.html" %}
-        {% else %}
-            {{ form.media }}
-            {% include step.template %}
-        {% endif %}
-    {% else %}
-        {% include "characters/core/character/not_owner.html" %}
-    {% endif %}
-{% endblock contents %}
-{% block buttons %}
-    {% if object_perms.can_chargen %}
-        {% if step.key != "freebies" or object.freebies_approved %}
-            {{ block.super }}
-        {% endif %}
-    {% endif %}
-{% endblock buttons %}
 {% block extrascripts %}
-    {{ block.super }}
     {% if chargen_interactive %}
         {% include "core/includes/interactive_scripts.html" %}
     {% endif %}

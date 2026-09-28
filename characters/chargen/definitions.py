@@ -70,12 +70,22 @@ SPECIALTIES = Step(
     "specialties", "Specialties", "Specialties", "characters/core/chargen/specialties.html"
 )
 ALLIES = Step(
-    "allies", "Allies", "Allies", "characters/core/chargen/form.html", skip_if=background("allies")
+    "allies",
+    "Allies",
+    "Allies",
+    "characters/core/chargen/form.html",
+    skip_if=background("allies"),
+    group="background",
 )
 DISCIPLINES = Step("disciplines", "Disciplines", "Disciplines", "characters/core/chargen/form.html")
 VIRTUES = Step("virtues", "Virtues", "Virtues", "characters/core/chargen/form.html")
 MENTOR = Step(
-    "mentor", "Mentor", "Mentor", "characters/core/chargen/form.html", skip_if=background("mentor")
+    "mentor",
+    "Mentor",
+    "Mentor",
+    "characters/core/chargen/form.html",
+    skip_if=background("mentor"),
+    group="background",
 )
 CONTACTS = Step(
     "contacts",
@@ -83,6 +93,7 @@ CONTACTS = Step(
     "Contacts",
     "characters/core/chargen/form.html",
     skip_if=background("contacts"),
+    group="background",
 )
 RETAINERS = Step(
     "retainers",
@@ -90,6 +101,7 @@ RETAINERS = Step(
     "Retainers",
     "characters/core/chargen/form.html",
     skip_if=background("retainers"),
+    group="background",
 )
 GIFTS = Step("gifts", "Gifts", "Gifts", "characters/core/chargen/form.html")
 HISTORY = Step("history", "History", "History", "characters/core/chargen/form.html")
@@ -97,16 +109,29 @@ POWERS = Step("powers", "Powers", "Powers", "characters/core/chargen/form.html")
 BREEDFACTION = Step(
     "breed_faction", "Breed Faction", "BreedFaction", "characters/core/chargen/form.html"
 )
-NODE = Step("node", "Node", "Node", "characters/core/chargen/form.html", skip_if=background("node"))
+NODE = Step(
+    "node",
+    "Node",
+    "Node",
+    "characters/core/chargen/form.html",
+    skip_if=background("node"),
+    group="background",
+)
 LIBRARY = Step(
     "library",
     "Library",
     "Library",
     "characters/core/chargen/form.html",
     skip_if=background("library"),
+    group="background",
 )
 WONDER = Step(
-    "wonder", "Wonder", "Wonder", "characters/core/chargen/form.html", skip_if=background("wonder")
+    "wonder",
+    "Wonder",
+    "Wonder",
+    "characters/core/chargen/form.html",
+    skip_if=background("wonder"),
+    group="background",
 )
 ENHANCEMENT = Step(
     "enhancement",
@@ -114,6 +139,7 @@ ENHANCEMENT = Step(
     "Enhancement",
     "characters/core/chargen/form.html",
     skip_if=background("enhancement"),
+    group="background",
 )
 SANCTUM = Step(
     "sanctum",
@@ -121,6 +147,7 @@ SANCTUM = Step(
     "Sanctum",
     "characters/core/chargen/form.html",
     skip_if=background("sanctum"),
+    group="background",
 )
 CHANTRY = Step(
     "chantry",
@@ -128,6 +155,7 @@ CHANTRY = Step(
     "Chantry",
     "characters/core/chargen/form.html",
     skip_if=background("chantry"),
+    group="background",
 )
 SPHERES = Step("spheres", "Spheres", "Spheres", "characters/core/chargen/form.html")
 FOCUS = Step("focus", "Focus", "Focus", "characters/core/chargen/form.html")
@@ -138,6 +166,7 @@ FAMILIAR = Step(
     "Familiar",
     "characters/core/chargen/form.html",
     skip_if=background("familiar"),
+    group="background",
 )
 PSYCHIC = Step(
     "psychic", "Psychic", "Psychic", "characters/core/chargen/form.html", skip_if=hedge_mage
@@ -150,6 +179,7 @@ ARTIFACT = Step(
     "Artifact",
     "characters/core/chargen/form.html",
     skip_if=background("artifact"),
+    group="background",
 )
 ARTSREALMS = Step("arts_realms", "Arts Realms", "ArtsRealms", "characters/core/chargen/form.html")
 ARCANOS = Step("arcanos", "Arcanos", "Arcanos", "characters/core/chargen/form.html")
@@ -166,6 +196,7 @@ FOLLOWERS = Step(
     "Followers",
     "characters/core/chargen/form.html",
     skip_if=background("followers"),
+    group="background",
 )
 
 STATS = (ATTRIBUTE, ABILITY, BACKGROUNDS)
