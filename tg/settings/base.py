@@ -36,8 +36,6 @@ INSTALLED_APPS = [
     "core",
     "widgets",  # Reusable form widgets
     "django.contrib.humanize",
-    "crispy_forms",
-    "crispy_bootstrap4",
 ]
 
 MIDDLEWARE = [
@@ -399,8 +397,6 @@ LOGGING = {
         },
     },
 }
-
-CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Channel Layers Configuration
 # ============================

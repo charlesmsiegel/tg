@@ -16,6 +16,8 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 APPS = ("accounts", "characters", "core", "game", "items", "locations")
+# The 3 left are in accounts/registration/password_reset_email.html: e-mail clients need
+# inline styles. Pages have none; put new styles in core/static/core/tl/tl.css.
 INLINE_STYLE_BUDGET = 3
 STYLE_BLOCK_TEMPLATES = {
     "accounts/registration/password_reset_email.html",
