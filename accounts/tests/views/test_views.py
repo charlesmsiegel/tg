@@ -90,6 +90,29 @@ class TestProfileView(TestCase):
         self.assertContains(response, "Test Character 2")
         self.assertContains(response, "Characters to approve")
 
+    def test_storyteller_queues_cost_the_same_with_more_rows(self):
+        """The NEEDS YOU queues load per queue, not per row."""
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        self.client.login(username="Test Storyteller", password="testpass")
+        url = self.storyteller.profile.get_absolute_url()
+        chronicle = self.char2.chronicle
+
+        def count():
+            cache.clear()
+            with CaptureQueriesContext(connection) as ctx:
+                self.assertEqual(self.client.get(url).status_code, 200)
+            return len(ctx)
+
+        self.client.get(url)  # warm per-process caches (content types, sessions)
+        before = count()
+        for n in range(3):
+            Human.objects.create(
+                name=f"Queued {n}", owner=self.user2, chronicle=chronicle, status="Sub"
+            )
+        self.assertEqual(count(), before)
+
     def test_default_tab_is_needs_when_something_waits(self):
         self.client.login(username="Test Storyteller", password="testpass")
         response = self.client.get(self.storyteller.profile.get_absolute_url())
