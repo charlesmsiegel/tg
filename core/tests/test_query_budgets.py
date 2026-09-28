@@ -6,7 +6,9 @@ Two kinds of check:
   model, so every gameline and splat), the scene page and the character index,
   measured on the shared fixture set. Before Step 8 a human sheet cost 73 queries,
   Changeling and Kinfolk sheets 114-115 and the scene page 82. A page that needs more
-  should get a reviewed ceiling change here, not a silent regression.
+  should get a reviewed ceiling change here, not a silent regression. (Fera and Drone
+  sheets rose by 4-7 when they moved onto Spread: they used to render only the cover
+  and now show the full human sheet plus Gifts, Rites and Fetishes.)
 * **Scaling**: a sheet costs the same with more specialties, the scene page the same
   with more posts, and the character index and chronicle page the same with more
   grouped characters. These are the N+1 patterns the old templates had
@@ -30,41 +32,41 @@ from game.models import Post
 
 # Queries per character detail page for the fixture storyteller, by model label.
 SHEET_CEILINGS = {
-    "characters.Ajaba": 49,
-    "characters.Ananasi": 32,
+    "characters.Ajaba": 56,
+    "characters.Ananasi": 39,
     "characters.AutumnPerson": 31,
-    "characters.Bastet": 28,
+    "characters.Bastet": 35,
     "characters.Changeling": 33,
     "characters.Character": 66,
     "characters.Companion": 36,
-    "characters.Corax": 28,
+    "characters.Corax": 35,
     "characters.CtDHuman": 33,
     "characters.Demon": 32,
-    "characters.Drone": 26,
+    "characters.Drone": 30,
     "characters.DtFHuman": 31,
     "characters.Earthbound": 31,
-    "characters.Fera": 28,
+    "characters.Fera": 35,
     "characters.Fomor": 34,
     "characters.Ghoul": 31,
-    "characters.Grondr": 28,
-    "characters.Gurahl": 28,
+    "characters.Grondr": 35,
+    "characters.Gurahl": 35,
     "characters.HtRHuman": 31,
     "characters.Human": 33,
     "characters.Hunter": 31,
     "characters.Inanimae": 31,
     "characters.Kinfolk": 35,
-    "characters.Kitsune": 28,
+    "characters.Kitsune": 35,
     "characters.Mage": 85,
-    "characters.Mokole": 28,
+    "characters.Mokole": 35,
     "characters.MtAHuman": 33,
     "characters.MtRHuman": 31,
     "characters.Mummy": 31,
-    "characters.Nagah": 28,
+    "characters.Nagah": 35,
     "characters.Nunnehi": 31,
-    "characters.Nuwisha": 28,
-    "characters.Ratkin": 28,
+    "characters.Nuwisha": 35,
+    "characters.Ratkin": 35,
     "characters.Revenant": 31,
-    "characters.Rokea": 28,
+    "characters.Rokea": 35,
     "characters.Sorcerer": 36,
     "characters.SpiritCharacter": 28,
     "characters.Thrall": 32,

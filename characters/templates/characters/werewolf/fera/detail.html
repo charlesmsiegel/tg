@@ -1,72 +1,35 @@
-{% extends "characters/core/character/detail.html" %}
-{% load dots %}
-
-{% block model_specific %}
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="tg-card" data-gameline="wta">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title wta_heading">Fera Information</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
-                                    Type
-                                </div>
-                                <div style="font-weight: 600; color: var(--theme-text-primary);">
-                                    {{ object.get_type }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
-                                    Breed
-                                </div>
-                                <div style="font-weight: 600; color: var(--theme-text-primary);">
-                                    {{ object.breed|title }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Gnosis:</span>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.gnosis|dots }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Rage:</span>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.rage|dots }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Willpower:</span>
-                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.willpower|dots }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% if object.gifts.all %}
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <h6 class="wta_heading">Gifts</h6>
-                                <div class="list-group">
-                                    {% for gift in object.gifts.all %}
-                                        <div class="list-group-item">
-                                            <strong>{{ gift.name }}</strong> (Rank {{ gift.rank }}): {{ gift.description }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock model_specific %}
+{% extends "characters/werewolf/wtahuman/detail.html" %}
+{% comment %}
+Fera sheet (every Changing Breed): the Garou pieces for what the breed has — breed and
+faction choices on the cover, Gifts by rank with Rites and Fetishes, Advantages beside the
+breed's Renown, Age of First Change and the First Change story.
+{% endcomment %}
+{% load tl %}
+{% block basics %}
+    {% for label, value in object.sheet_choices %}
+        {% fact label value %}
+    {% endfor %}
+    {% include "characters/shared/human/basics_display_include.html" %}
+{% endblock basics %}
+{% block powers %}
+    {% include "characters/werewolf/tl/gifts.html" %}
+{% endblock powers %}
+{% block advantages %}
+    {% include "characters/werewolf/tl/advantages.html" with pools="dots" %}
+    {% include "characters/werewolf/tl/renown.html" %}
+{% endblock advantages %}
+{% block backgrounds %}
+    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds span="tl-span-4" %}
+{% endblock backgrounds %}
+{% block health %}
+    {% include "characters/core/human/health_block_display.html" with span="tl-span-4" %}
+{% endblock health %}
+{% block mfs %}
+    {% include "characters/tl/merits.html" with span="tl-span-4" %}
+{% endblock mfs %}
+{% block appearance %}
+    {% include "characters/tl/appearance.html" with extra_label="Age of First Change" extra_value=object.age_of_first_change %}
+{% endblock appearance %}
+{% block history %}
+    {% include "characters/werewolf/tl/history.html" %}
+{% endblock history %}

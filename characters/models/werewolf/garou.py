@@ -4,7 +4,7 @@ from django.db.models import CheckConstraint, Q
 
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.werewolf.camp import Camp
-from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.renownincident import RenownIncident
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.tribe import Tribe
@@ -403,6 +403,34 @@ class Werewolf(WtAHuman):
                 self.save()
                 return True
         return False
+
+    def gifts_by_rank(self):
+        """Gifts grouped by rank, each labelled with the Tribe, Auspice, Breed or camp it
+        came from (character sheet)."""
+        sources = {}
+        if self.tribe_id:
+            sources[self.tribe.name] = self.tribe.name
+        if self.auspice:
+            sources[self.auspice] = self.get_auspice_display()
+        if self.breed:
+            sources[self.breed] = self.get_breed_display()
+        for camp in self.camps.all():
+            sources.setdefault(camp.name, camp.name)
+        return gifts_by_rank(self.gifts.all(), sources, "werewolf")
+
+    def renown_tracks(self):
+        """(label, permanent, temporary) for the sheet's Renown section."""
+        return [
+            ("Glory", self.glory, self.temporary_glory),
+            ("Honor", self.honor, self.temporary_honor),
+            ("Wisdom", self.wisdom, self.temporary_wisdom),
+        ]
+
+    def renown_incident_list(self):
+        """The recorded renown incidents in order, as (name, RenownIncident or None)."""
+        names = list(self.renown_incidents or [])
+        found = {r.name: r for r in RenownIncident.objects.filter(name__in=set(names))}
+        return [(name, found.get(name)) for name in names]
 
     def has_werewolf_history(self):
         return (self.first_change != "") and (self.age_of_first_change != 0)

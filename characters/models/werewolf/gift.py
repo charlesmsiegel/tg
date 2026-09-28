@@ -32,3 +32,19 @@ class Gift(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:gift")
+
+
+def gifts_by_rank(gifts, sources, shifter):
+    """Group a character's gifts by rank for the sheet, each with the source it came from.
+
+    ``sources`` maps a GiftPermission condition to its label, in priority order (e.g.
+    {"Uktena": "Uktena", "theurge": "Theurge", "homid": "Homid"}); a gift's source is the
+    first of those that its ``allowed`` permissions for ``shifter`` grant. Returns
+    ``[(rank, [(gift, source), ...]), ...]`` in ascending rank, gifts by name.
+    """
+    groups = {}
+    for gift in gifts.prefetch_related("allowed").order_by("rank", "name"):
+        conditions = {p.condition for p in gift.allowed.all() if p.shifter == shifter}
+        source = next((label for cond, label in sources.items() if cond in conditions), "")
+        groups.setdefault(gift.rank, []).append((gift, source))
+    return sorted(groups.items(), key=lambda item: item[0])

@@ -771,3 +771,17 @@ body.tl {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ---- werewolf sheet ---- */
+/* 92px trait labels (C13); `.tl-section .tl-track` would otherwise win on specificity. */
+.tl-section .tl-track--wide { grid-template-columns: 92px minmax(0, 1fr); }
+.tl-track--wide .tl-track__rows { align-items: flex-start; }
+/* Renown: accent dots and squares. */
+.tl-section--power .tl-track--wide .tl-track__rows { color: var(--acc); }
+/* Gifts by rank: accent rule and names, source in mono; Rites / Fetishes column in ink. */
+.tl-gifts__col { border-top-color: var(--acc); }
+.tl-gift { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font: 400 17px var(--serif); }
+.tl-gift a { text-decoration: none; }
+.tl-gifts__col .tl-gift a { color: var(--acc); }
+.tl-gift__src { font: 400 11px var(--mono); color: var(--ink2); flex: none; }
+.tl-gifts__extra .tl-gift + .tl-col__head { margin-top: 10px; }

@@ -1,7 +1,7 @@
 from django.db import models
 
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
-from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.rules.allocation import RuleViolation
@@ -95,6 +95,24 @@ class Kinfolk(WtAHuman):
                 self.derangements.add(derangement)
         self.save()
         return True
+
+    def gifts_by_rank(self):
+        """Gifts grouped by rank, each labelled with its Tribe, Breed or Kinfolk source."""
+        sources = {}
+        if self.tribe_id:
+            sources[self.tribe.name] = self.tribe.name
+        if self.breed:
+            sources[self.breed] = self.get_breed_display()
+        sources["Kinfolk"] = "Kinfolk"
+        return gifts_by_rank(self.gifts.all(), sources, "werewolf")
+
+    def renown_tracks(self):
+        """(label, permanent, temporary) for the sheet's Renown section."""
+        return [
+            ("Glory", self.glory, self.temporary_glory),
+            ("Honor", self.honor, self.temporary_honor),
+            ("Wisdom", self.wisdom, self.temporary_wisdom),
+        ]
 
     def tribe_background_limits(self):
         if self.tribe is None:
