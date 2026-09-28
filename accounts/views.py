@@ -299,39 +299,44 @@ class ProfileView(LoginRequiredMixin, DetailView):
                 self.object.user,
             )
 
-        # Optimize queries with select_related
-        scenes = self.object.xp_requests().select_related("chronicle", "location")
-        # Include polymorphic_ctype for subclass-specific method calls in templates
-        characters = self.object.freebies_to_approve().select_related(
-            "polymorphic_ctype", "owner", "owner__profile", "chronicle"
-        )
-
-        context["scenexp_forms"] = [SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in scenes]
-        context["freebie_forms"] = [
-            FreebieAwardForm(character=character) for character in characters
-        ]
+        # The storyteller forms show only on a storyteller's own profile (st_queues in
+        # get_needs_you); skip their queries for everyone else.
+        st_queues = self.request.user == self.object.user and self.object.is_st()
+        context["scenexp_forms"] = []
+        context["freebie_forms"] = []
+        context["weekly_xp_request_forms_to_approve"] = []
+        if st_queues:
+            scenes = self.object.xp_requests().select_related("chronicle", "location")
+            # Include polymorphic_ctype for subclass-specific method calls in templates
+            characters = self.object.freebies_to_approve().select_related(
+                "polymorphic_ctype", "owner", "owner__profile", "chronicle"
+            )
+            context["scenexp_forms"] = [SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in scenes]
+            context["freebie_forms"] = [
+                FreebieAwardForm(character=character) for character in characters
+            ]
+            pairs = self.object.get_unfulfilled_weekly_xp_requests_to_approve()
+            # One query for every pending request instead of one per (character, week) row.
+            pending = {
+                (r.character_id, r.week_id): r
+                for r in WeeklyXPRequest.objects.filter(
+                    character__in=[c for c, _w in pairs], week__in=[w for _c, w in pairs]
+                )
+            }
+            context["weekly_xp_request_forms_to_approve"] = [
+                WeeklyXPRequestForm(
+                    character=c,
+                    week=w,
+                    instance=pending.get((c.pk, w.pk))
+                    or get_object_or_404(WeeklyXPRequest, character=c, week=w),
+                )
+                for c, w in pairs
+            ]
         if "weekly_xp_request_forms" not in context:
             context["weekly_xp_request_forms"] = [
                 WeeklyXPRequestForm(character=c, week=w)
                 for c, w in self.object.get_unfulfilled_weekly_xp_requests()
             ]
-        pairs = self.object.get_unfulfilled_weekly_xp_requests_to_approve()
-        # One query for every pending request instead of one per (character, week) row.
-        pending = {
-            (r.character_id, r.week_id): r
-            for r in WeeklyXPRequest.objects.filter(
-                character__in=[c for c, _w in pairs], week__in=[w for _c, w in pairs]
-            )
-        }
-        context["weekly_xp_request_forms_to_approve"] = [
-            WeeklyXPRequestForm(
-                character=c,
-                week=w,
-                instance=pending.get((c.pk, w.pk))
-                or get_object_or_404(WeeklyXPRequest, character=c, week=w),
-            )
-            for c, w in pairs
-        ]
         context.update(self.get_needs_you(context))
         context["tab"] = self.get_tab(context)
         return context
