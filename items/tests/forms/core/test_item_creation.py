@@ -195,8 +195,9 @@ class TestItemCreationFormRegularUser(TestItemCreationFormSetup):
         choices_tree = form.fields["gameline"].widget.choices_tree
 
         self.assertIsNotNone(choices_tree)
-        # Should contain item_type choices keyed by parent value
-        self.assertIn("item_type:mta", choices_tree)
+        # item_type options are keyed "<parent field>:<parent value>" (widgets/chained.js).
+        mage_types = {choice["value"] for choice in choices_tree["gameline:mta"]}
+        self.assertTrue({"wonder", "talisman", "charm", "artifact"} <= mage_types)
 
 
 class TestItemCreationFormSTUser(TestItemCreationFormSetup):
