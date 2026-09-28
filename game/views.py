@@ -21,7 +21,6 @@ from django.views.generic import (
 
 from characters.models.core import CharacterModel
 from core.htmx import is_fragment_request, mark_fragment, vary_on_htmx
-from core.models import HouseRule
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
@@ -30,6 +29,7 @@ from core.mixins import (
     StorytellerRequiredMixin,
     ViewPermissionMixin,
 )
+from core.models import HouseRule
 from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
 from game import scene_chat, xp_spend
@@ -50,7 +50,7 @@ from game.forms import (
     STResponseForm,
     WeeklyXPRequestForm,
     XPSpendingRequestApprovalForm,
-    XPSpendingRequestForm,
+    XPSpendingRequestCorrectionForm,
     xp_spend_form_class,
 )
 from game.models import (
@@ -59,9 +59,9 @@ from game.models import (
     Journal,
     Scene,
     SettingElement,
-    STRelationship,
     Story,
     StoryXPRequest,
+    STRelationship,
     UserSceneReadStatus,
     Week,
     WeeklyXPRequest,
@@ -942,17 +942,18 @@ class XPSpendingRequestUpdateView(
     CharacterOwnerOrSTMixin, MessageMixin, CharacterContextMixin, UpdateView
 ):
     model = XPSpendingRequest
-    form_class = XPSpendingRequestForm
+    form_class = XPSpendingRequestCorrectionForm
     template_name = "game/xp_spending_request/form.html"
     success_message = "XP spending request updated successfully!"
     error_message = "Failed to update XP spending request. Please correct the errors below."
 
     def dispatch(self, request, *args, **kwargs):
+        # The XP was deducted when the request was filed and a denial refunds its cost,
+        # so the player must not be able to change the request afterwards. A Storyteller
+        # who could approve it may correct what it names, but never its cost.
         record = self.get_object()
-        if not PermissionManager.user_has_permission(
-            request.user, record.character, Permission.SPEND_XP, request=request
-        ):
-            raise PermissionDenied("XP spending is unavailable for this character")
+        if not get_object_permissions(request, record.character).can_approve_spending:
+            raise PermissionDenied("Only a storyteller for this character can correct a request")
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
