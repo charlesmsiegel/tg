@@ -1,24 +1,10 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Fellowship
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% block creation_title %}Create Fellowship{% endblock creation_title %}
 {% block contents %}
-    {% load sanitize_text %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Favored Attributes</div>
-        <div class="col-sm">{{ form.favored_attributes }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Favored Paths</div>
-        <div class="col-sm">{{ form.favored_paths }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.favored_attributes %}
+        {% include "characters/mage/form/field.html" with field=form.favored_paths %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
     </div>
 {% endblock contents %}

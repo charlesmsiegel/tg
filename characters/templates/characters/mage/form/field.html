@@ -1,0 +1,18 @@
+{% comment %}
+One field of a Mage form, laid out by widget: a checkbox beside its label, a textarea or
+multiple select across the whole .tl-formgrid row, anything else in one grid cell.
+Renders nothing when the form lacks the field (an owner's limited form).
+  {% include "characters/mage/form/field.html" with field=form.name %}
+  label="…" overrides the field's label.
+{% endcomment %}
+{% if field.name %}
+    {% if field.widget_type == "checkbox" or field.widget_type == "createorselect" %}
+        {% include "core/misc/check.html" with label=label|default:field.label %}
+    {% elif field.widget_type == "textarea" or field.widget_type == "selectmultiple" %}
+        <div class="tl-field--full">
+            {% include "core/tl/field.html" with label=label|default:field.label help=field.help_text %}
+        </div>
+    {% else %}
+        {% include "core/tl/field.html" with label=label|default:field.label help=field.help_text %}
+    {% endif %}
+{% endif %}

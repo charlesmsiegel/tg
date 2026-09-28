@@ -1,92 +1,61 @@
 {% load static %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Freebie Spend</h2>
-</div>
+{% comment %}
+Sorcerer freebies step (SorcererFreebiesForm + ritual_form): points left and the costs,
+the spend form, then what was spent. sorcerer-freebies.js shows the fields for the chosen
+category by toggling d-none on the *_wrap ids and #id_create_ritual_form; keep them.
+{% endcomment %}
 {% if object.freebies > 0 %}
-    <div class="row">
-        <div class="col-sm">Spend Freebie points. The costs are as follows:</div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">
-            <b>Trait</b>
+    <div class="tl-cols tl-cols--2">
+        <p class="tl-chargen__line">
+            <span class="tl-chargen__tag">Freebies remaining</span>
+            <span class="tl-chargen__pool">{{ object.freebies }}</span>
+        </p>
+        <div class="tl-stack">
+            <span class="tl-subhead">Costs</span>
+            <table class="tl-table tl-table--compact">
+                <tbody>
+                    <tr><td>Attribute</td><td class="tl-num">5</td></tr>
+                    <tr><td>Ability</td><td class="tl-num">2</td></tr>
+                    <tr><td>Background</td><td class="tl-num">1</td></tr>
+                    <tr><td>Willpower</td><td class="tl-num">2</td></tr>
+                    <tr><td>Merits / Flaws</td><td class="tl-num">rating</td></tr>
+                    <tr><td>Paths</td><td class="tl-num">7</td></tr>
+                    <tr><td>Rituals</td><td class="tl-num">3</td></tr>
+                </tbody>
+            </table>
         </div>
-        <div class="col-sm-3 border">
-            <b>Cost</b>
-        </div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Attribute</div>
-        <div class="col-sm-3 border">5</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Ability</div>
-        <div class="col-sm-3 border">2</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Background</div>
-        <div class="col-sm-3 border">1</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Willpower</div>
-        <div class="col-sm-3 border">2</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Merits/Flaws</div>
-        <div class="col-sm-3 border">Rating</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Paths</div>
-        <div class="col-sm-3 border">7</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row centertext">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Rituals</div>
-        <div class="col-sm-3 border">3</div>
-        <div class="col-sm-3"></div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Freebies Remaining</h3>
-        <h3 class="col-sm {{ object.get_heading }}">{{ object.freebies }}</h3>
     </div>
 {% endif %}
-<div class="row">
-    <div class="col-sm">{{ form.category }}</div>
-    <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
-    <div class="col-sm d-none" id="value_wrap">{{ form.value }}</div>
-    <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
-    <div class="col-sm d-none" id="practice_wrap">{{ form.practice }}</div>
-    <div class="col-sm d-none" id="ability_wrap">{{ form.ability }}</div>
-</div>
-<div id="id_create_ritual_form" class="d-none">
-    <div class="row">
-        <div class="col-sm">{{ ritual_form.name }}</div>
+<div class="tl-chargen__form">
+    {% include "characters/mage/form/field.html" with field=form.category label="Trait type" %}
+    <div class="d-none" id="example_wrap">
+        {% include "characters/mage/form/field.html" with field=form.example label="Trait" %}
     </div>
-    <div class="row">
-        <div class="col-sm">{{ ritual_form.path }}</div>
-        <div class="col-sm">{{ ritual_form.level }}</div>
+    <div class="d-none" id="value_wrap">
+        {% include "characters/mage/form/field.html" with field=form.value label="Rating" %}
     </div>
-    <div class="row">
-        <div class="col-sm">{{ ritual_form.description }}</div>
+    <div class="d-none" id="note_wrap">
+        {% include "characters/mage/form/field.html" with field=form.note label="Note" %}
+    </div>
+    <div class="d-none" id="practice_wrap">
+        {% include "characters/mage/form/field.html" with field=form.practice label="Practice" %}
+    </div>
+    <div class="d-none" id="ability_wrap">
+        {% include "characters/mage/form/field.html" with field=form.ability label="Ability" %}
     </div>
 </div>
-{% for item in object.spent_freebies %}
-    <div class="row">
-        <div class="col-sm">{{ item.trait }} {{ item.value }}</div>
-        <div class="col-sm">{{ item.cost }} freebies</div>
+<div id="id_create_ritual_form" class="tl-chargen__form d-none">
+    {% include "characters/mage/form/field.html" with field=ritual_form.name label="Ritual name" %}
+    {% include "characters/mage/form/field.html" with field=ritual_form.path label="Path" %}
+    {% include "characters/mage/form/field.html" with field=ritual_form.level label="Level" %}
+    {% include "characters/mage/form/field.html" with field=ritual_form.description label="Description" %}
+</div>
+{% if object.spent_freebies %}
+    <div class="tl-stack">
+        <span class="tl-subhead">Spent</span>
+        {% for item in object.spent_freebies %}
+            <div class="tl-kv"><span>{{ item.trait }} {{ item.value }}</span><span class="tl-kv__v">{{ item.cost }}</span></div>
+        {% endfor %}
     </div>
-{% endfor %}
+{% endif %}
 <script src="{% static 'characters/js/sorcerer-freebies.js' %}" id="sorcerer-freebies-script" data-sorcerer-type="{{ object.sorcerer_type }}"></script>

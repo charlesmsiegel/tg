@@ -1,49 +1,11 @@
-{% extends "characters/core/human/form.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Create Human (Mage)
-{% endblock creation_title %}
-{% block abilities %}
-    {% include "characters/mage/mtahuman/ability_block_form.html" %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Secondary Abilities</h2>
-    </div>
-    {% for tal, ski, kno in object.get_secondaries_for_display %}
-        <div class="row">
-            <div class="col-sm">
-                {{ tal|first }}
-                {% with talname=tal|last %}
-                    {% if object|get_specialty:talname %}({{ object|get_specialty:talname }}){% endif %}
-                {% endwith %}
-            </div>
-            {% if tal|slice:"1:"|first != 0 %}
-                <div class="col-sm dots">{{ tal|slice:"1:"|first|dots }}</div>
-            {% else %}
-                <div class="col-sm dots"></div>
-            {% endif %}
-            <div class="col-sm">
-                {{ ski|first }}
-                {% with skiname=ski|last %}
-                    {% if object|get_specialty:skiname %}({{ object|get_specialty:skiname }}){% endif %}
-                {% endwith %}
-            </div>
-            {% if ski|slice:"1:"|first != 0 %}
-                <div class="col-sm dots">{{ ski|slice:"1:"|first|dots }}</div>
-            {% else %}
-                <div class="col-sm dots"></div>
-            {% endif %}
-            <div class="col-sm">
-                {{ kno|first }}
-                {% with knoname=kno|last %}
-                    {% if object|get_specialty:knoname %}({{ object|get_specialty:knoname }}){% endif %}
-                {% endwith %}
-            </div>
-            {% if kno|slice:"1:"|first != 0 %}
-                <div class="col-sm dots">{{ kno|slice:"1:"|first|dots }}</div>
-            {% else %}
-                <div class="col-sm dots"></div>
-            {% endif %}
-        </div>
-    {% endfor %}
-{% endblock abilities %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %}
+Create / edit a Mage-family character (the ST's full form, or the owner's limited form):
+the sections come from the view's form_layout (characters/mage/form/sections.html).
+Companion and Sorcerer extend this and change only creation_title.
+{% endcomment %}
+{% block creation_title %}Create Human (Mage){% endblock creation_title %}
+{% block formdetails %}method="post" action="" enctype="multipart/form-data"{% endblock formdetails %}
+{% block contents %}
+    {% include "characters/mage/form/sections.html" %}
+{% endblock contents %}

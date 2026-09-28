@@ -1,102 +1,70 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
+{% load static %}
+{% comment %}
+Abilities step for the Mage family (MtA Human, Mage, Companion, Sorcerer): Talents,
+Skills and Knowledges as ruled columns in alphabetical order (the Mage primaries include
+Art, Awareness, Cosmology...), then the status line checked by ability-validation.js,
+or tgPool + the server's verdict on interactive workflows. Same markup as
+characters/core/chargen/abilities.html.
+{% endcomment %}
+<p class="tl-lede">Prioritize Talents, Skills and Knowledges, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
+<div class="tl-alloc">
+    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-talents">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="abilities-talents">Talents</h2>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.alertness label="Alertness" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.art label="Art" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.athletics label="Athletics" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.awareness label="Awareness" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.brawl label="Brawl" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.empathy label="Empathy" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.expression label="Expression" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.intimidation label="Intimidation" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.leadership label="Leadership" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.streetwise label="Streetwise" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.subterfuge label="Subterfuge" %}
+    </section>
+    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-skills">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="abilities-skills">Skills</h2>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.crafts label="Crafts" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.drive label="Drive" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.etiquette label="Etiquette" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.firearms label="Firearms" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.larceny label="Larceny" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.meditation label="Meditation" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.melee label="Melee" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.research label="Research" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.stealth label="Stealth" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.survival label="Survival" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.technology label="Technology" %}
+    </section>
+    <section class="tl-alloc__col" data-ability-group aria-labelledby="abilities-knowledges">
+        <div class="tl-alloc__head">
+            <h2 class="tl-alloc__name" id="abilities-knowledges">Knowledges</h2>
+        </div>
+        {% include "characters/core/chargen/alloc_row.html" with field=form.academics label="Academics" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.computer label="Computer" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.cosmology label="Cosmology" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.enigmas label="Enigmas" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.finance label="Finance" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.investigation label="Investigation" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.law label="Law" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.medicine label="Medicine" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.occult label="Occult" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.politics label="Politics" %}
+        {% include "characters/core/chargen/alloc_row.html" with field=form.science label="Science" %}
+    </section>
 </div>
-<div class="row">
-    <div class="col-sm">
-        Prioritize primary, secondary, and tertiary Ability categories and add {{ primary }}/{{ secondary }}/{{ tertiary }} dots
+{% if chargen_interactive %}
+    {% include "characters/core/chargen/pool.html" %}
+{% elif primary and secondary and tertiary %}
+    <div class="tl-chargen__status">
+        <div class="tl-chargen__line">
+            <span class="tl-chargen__tag" data-allocation-tag>In progress</span>
+            <span id="abilities-validation-status" data-primary="{{ primary }}" data-secondary="{{ secondary }}" data-tertiary="{{ tertiary }}" role="status"></span>
+        </div>
     </div>
-</div>
-<div class="row">
-    <h3 class="col-sm {{ object.get_heading }}">Talents</h3>
-    <h3 class="col-sm {{ object.get_heading }}">Skills</h3>
-    <h3 class="col-sm {{ object.get_heading }}">Knowledges</h3>
-</div>
-<div class="row">
-    <div class="col-sm">Alertness</div>
-    <div class="col-sm dots">{{ form.alertness }}</div>
-    <div class="col-sm">Crafts</div>
-    <div class="col-sm dots">{{ form.crafts }}</div>
-    <div class="col-sm">Academics</div>
-    <div class="col-sm dots">{{ form.academics }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Art</div>
-    <div class="col-sm dots">{{ form.art }}</div>
-    <div class="col-sm">Drive</div>
-    <div class="col-sm dots">{{ form.drive }}</div>
-    <div class="col-sm">Computer</div>
-    <div class="col-sm dots">{{ form.computer }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Athletics</div>
-    <div class="col-sm dots">{{ form.athletics }}</div>
-    <div class="col-sm">Etiquette</div>
-    <div class="col-sm dots">{{ form.etiquette }}</div>
-    <div class="col-sm">Cosmology</div>
-    <div class="col-sm dots">{{ form.cosmology }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Awareness</div>
-    <div class="col-sm dots">{{ form.awareness }}</div>
-    <div class="col-sm">Firearms</div>
-    <div class="col-sm dots">{{ form.firearms }}</div>
-    <div class="col-sm">Enigmas</div>
-    <div class="col-sm dots">{{ form.enigmas }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Brawl</div>
-    <div class="col-sm dots">{{ form.brawl }}</div>
-    <div class="col-sm">Larceny</div>
-    <div class="col-sm dots">{{ form.larceny }}</div>
-    <div class="col-sm">Finance</div>
-    <div class="col-sm dots">{{ form.finance }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Empathy</div>
-    <div class="col-sm dots">{{ form.empathy }}</div>
-    <div class="col-sm">Meditation</div>
-    <div class="col-sm dots">{{ form.meditation }}</div>
-    <div class="col-sm">Investigation</div>
-    <div class="col-sm dots">{{ form.investigation }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Expression</div>
-    <div class="col-sm dots">{{ form.expression }}</div>
-    <div class="col-sm">Melee</div>
-    <div class="col-sm dots">{{ form.melee }}</div>
-    <div class="col-sm">Law</div>
-    <div class="col-sm dots">{{ form.law }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Intimidation</div>
-    <div class="col-sm dots">{{ form.intimidation }}</div>
-    <div class="col-sm">Research</div>
-    <div class="col-sm dots">{{ form.research }}</div>
-    <div class="col-sm">Medicine</div>
-    <div class="col-sm dots">{{ form.medicine }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Leadership</div>
-    <div class="col-sm dots">{{ form.leadership }}</div>
-    <div class="col-sm">Stealth</div>
-    <div class="col-sm dots">{{ form.stealth }}</div>
-    <div class="col-sm">Occult</div>
-    <div class="col-sm dots">{{ form.occult }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Streetwise</div>
-    <div class="col-sm dots">{{ form.streetwise }}</div>
-    <div class="col-sm">Survival</div>
-    <div class="col-sm dots">{{ form.survival }}</div>
-    <div class="col-sm">Politics</div>
-    <div class="col-sm dots">{{ form.politics }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Subterfuge</div>
-    <div class="col-sm dots">{{ form.subterfuge }}</div>
-    <div class="col-sm">Technology</div>
-    <div class="col-sm dots">{{ form.technology }}</div>
-    <div class="col-sm">Science</div>
-    <div class="col-sm dots">{{ form.science }}</div>
-</div>
-{% include "characters/core/ability_block/validation.html" %}
+    <script src="{% static 'characters/js/ability-validation.js' %}"></script>
+{% endif %}

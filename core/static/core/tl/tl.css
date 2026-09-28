@@ -1402,3 +1402,13 @@ body.tl {
   .tl-numgrid { grid-template-columns: 1fr; }
   .tl-formgrid--auto { grid-template-columns: 1fr; }
 }
+/* ---- mage forms ---- */
+/* Fieldsets grouping part of a form (Spheres, Tenets, Practices, Powers): mono legend, no box. */
+.tl-mageform__group { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.tl-mageform__group > legend { padding: 0; margin-bottom: 14px; }
+/* A wide field (textarea, multiple select) spans a chargen step's grid, as in .tl-formgrid. */
+.tl-chargen__form > .tl-field--full { grid-column: 1 / -1; }
+/* Formset rows (Focus practices): practice and rating side by side, rows ruled apart. */
+.tl-mageform__row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px 24px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.tl-mageform__row + .tl-mageform__row { margin-top: 14px; }
+.tl-mageform__add { width: fit-content; }

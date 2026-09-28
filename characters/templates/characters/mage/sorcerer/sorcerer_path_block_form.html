@@ -1,27 +1,2 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Paths</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Select 5 levels of Numina Paths</div>
-</div>
-{{ numina_form_context.formset.management_form }}
-<div id="{{ numina_form_context.container_id }}" data-formset-container data-formset-prefix="numina_form">
-    {% for f in numina_form_context.formset %}
-        <div class="row form-row" data-formset-form>
-            <div class="col-sm">{{ f.path }}</div>
-            <div class="col-sm">{{ f.rating }}</div>
-            <div class="col-sm">{{ f.practice }}</div>
-            <div class="col-sm">{{ f.ability }}</div>
-        </div>
-    {% endfor %}
-</div>
-<!-- Hidden empty form to clone -->
-<div id="{{ numina_form_context.empty_form_id }}" class="d-none">
-    <div class="row form-row" data-formset-form>
-        <div class="col-sm">{{ numina_form_context.empty_form.path }}</div>
-        <div class="col-sm">{{ numina_form_context.empty_form.rating }}</div>
-        <div class="col-sm">{{ numina_form_context.empty_form.practice }}</div>
-        <div class="col-sm">{{ numina_form_context.empty_form.ability }}</div>
-    </div>
-</div>
-<button type="button" data-formset-add="numina_form">Add Path</button>
+{% comment %} Path step: starting hedge magic paths with rating, practice and ability (SorcererPathView). {% endcomment %}
+{% include "characters/mage/sorcerer/numina_formset.html" with with_practice=True %}

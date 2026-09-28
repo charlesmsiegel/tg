@@ -1,28 +1,19 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Choose Rituals</h2>
-</div>
-<div class="row">
-    <div class="col-sm">
-        Select a Ritual for each Path dot. You must have a ritual of each lower level before taking one of a given level. That is, a level 3 ritual requires you have a level 1 and a level 2 ritual of that Path.
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm">Create New Ritual: {{ form.select_or_create }}</div>
-</div>
+{% comment %}
+Ritual step (NuminaRitualForm): pick a known ritual, or create one. The select / create
+containers are toggled with d-none by widgets/create_or_select.js.
+{% endcomment %}
+<p class="tl-lede">
+    Select a Ritual for each Path dot. You must have a ritual of each lower level before taking one of a given level. That is, a level 3 ritual requires you have a level 1 and a level 2 ritual of that Path.
+</p>
+{% include "characters/mage/form/field.html" with field=form.select_or_create label="Create a new ritual" %}
 <div data-create-or-select-container="select_or_create" data-create-or-select-mode="select">
-    <div class="row">
-        <div class="col-sm">{{ form.select_ritual }}</div>
+    <div class="tl-chargen__form">
+        {% include "characters/mage/form/field.html" with field=form.select_ritual label="Ritual" %}
     </div>
 </div>
-<div data-create-or-select-container="select_or_create" data-create-or-select-mode="create" class="d-none">
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.path }}</div>
-        <div class="col-sm">{{ form.level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
+<div data-create-or-select-container="select_or_create" data-create-or-select-mode="create" class="tl-chargen__form d-none">
+    {% include "characters/mage/form/field.html" with field=form.name %}
+    {% include "characters/mage/form/field.html" with field=form.path %}
+    {% include "characters/mage/form/field.html" with field=form.level %}
+    {% include "characters/mage/form/field.html" with field=form.description %}
 </div>

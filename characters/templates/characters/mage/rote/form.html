@@ -1,17 +1,13 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    {% if object %}
-        Edit {{ object.name }}
-    {% else %}
-        Create Rote
-    {% endif %}
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %} Rote create / edit: the rote (name, practice, dice pool, description) and its effect. {% endcomment %}
+{% block creation_title %}Create Rote{% endblock creation_title %}
 {% block contents %}
-    {% include "characters/mage/rote/form_includes/basic.html" %}
-    {% include "characters/mage/rote/form_includes/effect.html" %}
+    <div class="tl-formgrid">
+        {% include "characters/mage/form/field.html" with field=form.name %}
+        {% include "characters/mage/form/field.html" with field=form.practice %}
+        {% include "characters/mage/form/field.html" with field=form.effect %}
+        {% include "characters/mage/form/field.html" with field=form.attribute %}
+        {% include "characters/mage/form/field.html" with field=form.ability %}
+        {% include "characters/mage/form/field.html" with field=form.description %}
+    </div>
 {% endblock contents %}
-{% block buttons %}
-    <button type="submit" class="btn btn-primary">
-        <i class="fas fa-save"></i> Save Rote
-    </button>
-{% endblock buttons %}

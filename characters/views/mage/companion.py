@@ -29,6 +29,7 @@ from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
     MtAEnhancementView,
 )
+from characters.views.mage.form_layout import COMPANION_LAYOUT, MageFamilyFormMixin
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
@@ -49,7 +50,7 @@ class CompanionDetailView(HumanDetailView):
     template_name = "characters/mage/companion/detail.html"
 
 
-class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+class CompanionCreateView(MageFamilyFormMixin, LoginRequiredMixin, MessageMixin, CreateView):
     """
     Create view for companions (Mage: The Ascension).
 
@@ -60,6 +61,7 @@ class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """
 
     model = Companion
+    form_layout = COMPANION_LAYOUT
     fields = [
         "name",
         "concept",
@@ -86,7 +88,9 @@ class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class CompanionUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
+class CompanionUpdateView(
+    MageFamilyFormMixin, ScopedEditFormMixin, EditPermissionMixin, UpdateView
+):
     """
     Update view for companions.
 
@@ -97,6 +101,7 @@ class CompanionUpdateView(ScopedEditFormMixin, EditPermissionMixin, UpdateView):
     """
 
     model = Companion
+    form_layout = COMPANION_LAYOUT
     # Fields available to STs with full edit permission
     # Note: owners get LimitedHumanEditForm via get_form_class()
     ST_EDIT_FIELDS = [

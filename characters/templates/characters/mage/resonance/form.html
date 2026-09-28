@@ -1,12 +1,20 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Resonance
-{% endblock creation_title %}
+{% extends "characters/mage/form/base.html" %}
+{% comment %} Resonance create / edit: the name, then the Spheres it is associated with. {% endcomment %}
+{% block creation_title %}Create Resonance{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    {% include "characters/mage/spheres/form.html" %}
+    {% include "characters/mage/form/field.html" with field=form.name %}
+    <fieldset class="tl-mageform__group">
+        <legend class="tl-subhead">Spheres</legend>
+        <div class="tl-formgrid">
+            {% include "characters/mage/form/field.html" with field=form.correspondence %}
+            {% include "characters/mage/form/field.html" with field=form.entropy %}
+            {% include "characters/mage/form/field.html" with field=form.forces %}
+            {% include "characters/mage/form/field.html" with field=form.life %}
+            {% include "characters/mage/form/field.html" with field=form.matter %}
+            {% include "characters/mage/form/field.html" with field=form.mind %}
+            {% include "characters/mage/form/field.html" with field=form.prime %}
+            {% include "characters/mage/form/field.html" with field=form.spirit %}
+            {% include "characters/mage/form/field.html" with field=form.time %}
+        </div>
+    </fieldset>
 {% endblock contents %}
