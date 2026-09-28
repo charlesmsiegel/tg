@@ -315,16 +315,23 @@ class ProfileView(LoginRequiredMixin, DetailView):
                 WeeklyXPRequestForm(character=c, week=w)
                 for c, w in self.object.get_unfulfilled_weekly_xp_requests()
             ]
+        pairs = self.object.get_unfulfilled_weekly_xp_requests_to_approve()
+        # One query for every pending request instead of one per (character, week) row.
+        pending = {
+            (r.character_id, r.week_id): r
+            for r in WeeklyXPRequest.objects.filter(
+                character__in=[c for c, _w in pairs], week__in=[w for _c, w in pairs]
+            )
+        }
         context["weekly_xp_request_forms_to_approve"] = [
             WeeklyXPRequestForm(
                 character=c,
                 week=w,
-                instance=get_object_or_404(WeeklyXPRequest, character=c, week=w),
+                instance=pending.get((c.pk, w.pk))
+                or get_object_or_404(WeeklyXPRequest, character=c, week=w),
             )
-            for c, w in self.object.get_unfulfilled_weekly_xp_requests_to_approve()
+            for c, w in pairs
         ]
-        # story_xp_request_forms
-        # story_xp_request_forms_to_approve
         context.update(self.get_needs_you(context))
         context["tab"] = self.get_tab(context)
         return context
