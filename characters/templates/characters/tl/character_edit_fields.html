@@ -1,0 +1,51 @@
+{% load character_edit %}
+{% comment %}
+Every field of a character create / edit form, as numbered Spread sections: Identity
+(text, selects, image, checkboxes), Attributes and Abilities (ruled columns of label +
+number rows), other Traits (pools, powers, ratings) and Details (long text and
+multi-selects). Grouping comes from character_edit_sections, so an owner's limited
+form and a Storyteller's full form both render every field they carry.
+  {% include "characters/tl/character_edit_fields.html" %}            uses `form`
+{% endcomment %}
+{% character_edit_sections form as edit %}
+{% for field in edit.hidden %}{{ field }}{% endfor %}
+{% for section in edit.sections %}
+    <section class="tl-section{% if section.kind == 'columns' %} tl-section--cols{% endif %}" aria-labelledby="edit-{{ section.num }}">
+        <div class="tl-section__head">
+            <span class="tl-section__num">{{ section.num }}</span>
+            <h2 class="tl-section__title" id="edit-{{ section.num }}">{{ section.title }}</h2>
+        </div>
+        {% if section.kind == "columns" %}
+            <div class="tl-section__body tl-alloc">
+                {% for title, fields in section.columns %}
+                    <div class="tl-alloc__col">
+                        {% if title %}
+                            <div class="tl-alloc__head">
+                                <h3 class="tl-alloc__name">{{ title }}</h3>
+                            </div>
+                        {% endif %}
+                        {% for field in fields %}
+                            {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif section.kind == "long" %}
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                {% for field in section.fields %}
+                    {% include "core/tl/field.html" with field=field label="" help=field.help_text %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tl-section__body tl-formgrid">
+                {% for field in section.fields %}
+                    {% if field.widget_type == "checkbox" %}
+                        {% include "core/misc/check.html" with field=field label="" %}
+                    {% else %}
+                        {% include "core/tl/field.html" with field=field label="" help=field.help_text %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endfor %}

@@ -1,27 +1,26 @@
-{% load dots sanitize_text %}
-<div class="row">
-                    <h2 class="col-sm {{ object.get_heading }}">Shadow</h2>
+{% load sanitize_text %}
+{% comment %} Shadow step: pick a Shadow Archetype, with the archetypes described below. {% endcomment %}
+<p class="tl-lede">
+    Your Shadow is the dark reflection of your Psyche, embodying suppressed emotions and drives. Choose a Shadow Archetype that represents your character's inner darkness.
+</p>
+{% include "characters/core/chargen/fields.html" with fields_form=form %}
+{% if shadow_archetypes %}
+    <section class="tl-section" aria-labelledby="archetypes-head">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title" id="archetypes-head">Available Shadow Archetypes</h2>
+        </div>
+        <div class="tl-section__body tl-divided">
+            {% for archetype in shadow_archetypes %}
+                <div class="tl-stack">
+                    <h3 class="tl-grouphead__name">{{ archetype.name }}</h3>
+                    {% if archetype.core_function %}
+                        <div><span class="tl-subhead">Core function</span> {{ archetype.core_function|sanitize_html }}</div>
+                    {% endif %}
+                    {% if archetype.modus_operandi %}
+                        <div><span class="tl-subhead">Modus operandi</span> {{ archetype.modus_operandi|sanitize_html }}</div>
+                    {% endif %}
                 </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <p>Your Shadow is the dark reflection of your Psyche, embodying suppressed emotions and drives. Choose a Shadow Archetype that represents your character's inner darkness.</p>
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                    </div>
-                </div>
-                {% if shadow_archetypes %}
-                    <div class="row">
-                        <div class="col-sm">
-                            <h3>Available Shadow Archetypes</h3>
-                            {% for archetype in shadow_archetypes %}
-                                <div class="tg-card mb-3">
-                                    <div class="tg-card-body">
-                                        <h5 class="tg-card-title">{{ archetype.name }}</h5>
-                                        <p><strong>Core Function:</strong> {{ archetype.core_function|sanitize_html }}</p>
-                                        <p><strong>Modus Operandi:</strong> {{ archetype.modus_operandi|sanitize_html }}</p>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

@@ -1,32 +1,14 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Pact
-{% endblock creation_title %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Pact{% endblock creation_title %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    {% load sanitize_text %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Demon</div>
-        <div class="col-sm">{{ form.demon }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Thrall</div>
-        <div class="col-sm">{{ form.thrall }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Terms</div>
-        <div class="col-sm">{{ form.terms }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Faith Payment</div>
-        <div class="col-sm">{{ form.faith_payment }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Enhancements</div>
-        <div class="col-sm">{{ form.enhancements }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Active</div>
-        <div class="col-sm">{{ form.active }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.demon %}
+        {% include "core/tl/field.html" with field=form.thrall %}
+        {% include "core/tl/field.html" with field=form.faith_payment %}
+        {% include "core/misc/check.html" with field=form.active %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.terms %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.enhancements %}</div>
     </div>
 {% endblock contents %}

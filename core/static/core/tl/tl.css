@@ -1372,3 +1372,7 @@ body.tl {
 /* Two allocation columns (Changeling Arts / Realms); one column on phones. */
 .tl-alloc--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 720px) { .tl-alloc--2 { grid-template-columns: 1fr; } }
+/* ---- vampire, demon, wraith, hunter, mummy forms ---- */
+/* Rated powers (Disciplines, Virtues, Arcanoi) as one ruled block of rows flowing into columns. */
+.tl-allocflow { columns: 3 220px; column-gap: 36px; border-top: 2px solid var(--ink); padding-top: 12px; }
+.tl-allocflow > .tl-alloc__row { break-inside: avoid; }

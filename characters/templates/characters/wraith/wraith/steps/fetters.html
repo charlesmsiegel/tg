@@ -1,23 +1,21 @@
-{% load dots sanitize_text %}
-<div class="row">
-                    <h2 class="col-sm {{ object.get_heading }}">Fetters ({{ fetter_points_spent }}/{{ fetter_points_total }})</h2>
+{% load tl %}
+{% comment %} Fetters step: add one Fetter per save until the points are spent; the
+   Fetters taken so far are listed below the form. {% endcomment %}
+<p class="tl-lede">
+    Fetters are your anchors to the mortal world - people, places, and things that tie you to existence. You have {{ fetter_points_remaining }} points remaining.
+</p>
+<p class="tl-chargen__pool">Spent {{ fetter_points_spent }} of {{ fetter_points_total }}</p>
+{% include "characters/core/chargen/fields.html" with fields_form=form %}
+{% if object.fetters.all %}
+    <section class="tl-block" aria-labelledby="fetters-head">
+        <h2 class="tl-subhead" id="fetters-head">Current Fetters</h2>
+        <div class="tl-col">
+            {% for fetter in object.fetters.all %}
+                <div class="tl-kv">
+                    <span><strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }}</span>
+                    {% dots fetter.rating %}
                 </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <p>Fetters are your anchors to the mortal world - people, places, and things that tie you to existence. You have {{ fetter_points_remaining }} points remaining.</p>
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                    </div>
-                </div>
-                {% if object.fetters.all %}
-                    <div class="row mt-3">
-                        <div class="col-sm">
-                            <h4>Current Fetters:</h4>
-                            {% for fetter in object.fetters.all %}
-                                <div class="mb-2">
-                                    <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }} ({{ fetter.rating|dots }})
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

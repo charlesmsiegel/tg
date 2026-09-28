@@ -1,57 +1,22 @@
 {% extends "core/form.html" %}
-{% block creation_title %}
-    Create Human (Vampire)
-{% endblock creation_title %}
-{% block formdetails %}
-    method="post"
-    id="vtmhumanForm"
-    action=""
-    novalidate
-    enctype="multipart/form-data"
-{% endblock formdetails %}
+{% comment %} Chargen step 0: who the character is. The Storyteller also sees NPC. {% endcomment %}
+{% block content_mod %}{% endblock content_mod %}
+{% block creation_title %}Create Human (Vampire){% endblock creation_title %}
+{% block formdetails %}method="post" id="vtmhumanForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
+{% block errors %}{% include "core/misc/form_errors.html" %}{% endblock errors %}
 {% block contents %}
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-sm">Decide identity and motivation; choose concept and Archetypes.</div>
+    <p class="tl-lede">Decide identity and motivation; choose concept and Archetypes.</p>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.concept %}
+        {% include "core/tl/field.html" with field=form.chronicle %}
+        {% include "core/tl/field.html" with field=form.nature %}
+        {% include "core/tl/field.html" with field=form.demeanor %}
     </div>
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm"></div>
-            <div class="col-sm">Character Portrait</div>
-            <div class="col-sm">{{ form.image }}</div>
-            <div class="col-sm"></div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Name</div>
-            <div class="col-sm-2">{{ form.name }}</div>
-            <div class="col-sm-2">Nature</div>
-            <div class="col-sm-2">{{ form.nature }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Chronicle</div>
-            <div class="col-sm-2">{{ form.chronicle }}</div>
-            <div class="col-sm-2">Demeanor</div>
-            <div class="col-sm-2">{{ form.demeanor }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Concept</div>
-            <div class="col-sm-2">{{ form.concept }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-2"></div>
-            {% if storyteller %}
-                <div class="col-sm-2">NPC</div>
-                <div class="col-sm-2">{{ form.npc }}</div>
-            {% else %}
-                <div class="col-sm-2"></div>
-                <div class="col-sm-2"></div>
-            {% endif %}
-        </div>
+    <div class="tl-formgrid">
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.image label="Character portrait" %}</div>
+        {% if storyteller %}
+            {% include "core/misc/check.html" with field=form.npc label="NPC" %}
+        {% endif %}
     </div>
 {% endblock contents %}
-{% block buttons %}
-    <input name="Save" type="submit" value="Save" />
-{% endblock buttons %}

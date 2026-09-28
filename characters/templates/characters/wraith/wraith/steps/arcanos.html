@@ -1,10 +1,13 @@
-{% load dots sanitize_text %}
-<div class="row">
-                    <h2 class="col-sm {{ object.get_heading }}">Arcanoi (Select 5 dots)</h2>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                    </div>
-                </div>
+{% comment %} Arcanoi step: every Arcanos as a number row, flowing into columns under one
+   ruled head. {% endcomment %}
+<p class="tl-lede">Select 5 dots of Arcanoi.</p>
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+<section class="tl-block" aria-labelledby="arcanoi-head">
+    <h2 class="tl-subhead" id="arcanoi-head">Arcanoi</h2>
+    <div class="tl-allocflow">
+        {% for field in form.visible_fields %}
+            {% include "characters/core/chargen/alloc_row.html" with field=field label="" %}
+        {% endfor %}
+    </div>
+</section>
+{% include "characters/core/chargen/pool.html" %}
