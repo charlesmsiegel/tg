@@ -1,12 +1,11 @@
 {% load sanitize_text %}
-{# Description section #}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Public Info</h5>
-            </div>
-            <div class="tg-card-body">{{ object.public_info|sanitize_html|linebreaks }}</div>
+{% comment %}Public info section of a group page; hidden when empty.{% endcomment %}
+{% if object.public_info %}
+    <section class="tl-section" id="public-info">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Public info</h2>
         </div>
-    </div>
-</div>
+        <div class="tl-section__body tl-prose">{{ object.public_info|sanitize_html|linebreaks }}</div>
+    </section>
+{% endif %}

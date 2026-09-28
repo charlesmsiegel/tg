@@ -1,34 +1,95 @@
-{% extends "core/base.html" %}
-{% block title %}
-    {{ title }}
-{% endblock title %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Retired / Deceased / NPC character lists. Ink cover with the status list (links to the
+four character lists); the pages group characters by chronicle, then by group, as
+character tiles (characters/tl/character_tile.html), like the character index.
+{% endcomment %}
+{% block title %}{{ title }}{% endblock title %}
+{% block cover_label %}{{ title }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'characters:index' %}">← Index</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Characters</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>{{ title }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    {% with current=request.resolver_match.url_name %}
+        <nav class="tl-statuslist" aria-label="Character status">
+            <a href="{% url 'characters:index' %}">
+                <span>Active</span>
+            </a>
+            <a href="{% url 'characters:retired' %}"{% if current == "retired" %} aria-current="page"{% endif %}>
+                <span>Retired</span>
+                {% if current == "retired" %}<span class="tl-statuslist__count">{{ object_list|length }}</span>{% endif %}
+            </a>
+            <a href="{% url 'characters:deceased' %}"{% if current == "deceased" %} aria-current="page"{% endif %}>
+                <span>Deceased</span>
+                {% if current == "deceased" %}<span class="tl-statuslist__count">{{ object_list|length }}</span>{% endif %}
+            </a>
+            <a href="{% url 'characters:npc' %}"{% if current == "npc" %} aria-current="page"{% endif %}>
+                <span>NPC</span>
+                {% if current == "npc" %}<span class="tl-statuslist__count">{{ object_list|length }}</span>{% endif %}
+            </a>
+        </nav>
+    {% endwith %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if button_include %}
+        {% include "characters/tl/create_forms.html" with character_form=form %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        {% include "characters/charlist_include.html" %}
-        <div class="row centertext">
-            <h4 class="col-sm {{ header }}">
-                <a href="{% url 'characters:index' %}">Active</a>
-            </h4>
-            <h4 class="col-sm {{ header }}">
-                <a href="{% url 'characters:retired' %}">Retired</a>
-            </h4>
-            <h4 class="col-sm {{ header }}">
-                <a href="{% url 'characters:deceased' %}">Deceased</a>
-            </h4>
-            <h4 class="col-sm {{ header }}  ">
-                <a href="{% url 'characters:npc' %}">NPC</a>
-            </h4>
-        </div>
-        {% if button_include %}
-            <form id="charForm" class="centertext container" method="get" action="{% url 'core:object_type_redirect' 'character' 'create' %}" novalidate>
-                <div class="row">
-                    <div class="col-sm">
-                        {{ form.char_type }}
-                        <button type="submit">Create</button>
+    {% if object_list %}
+        {% regroup object_list by chronicle as chronicles %}
+        {% for chron in chronicles %}
+            <section class="tl-block" aria-label="{{ chron.grouper|default:'No chronicle' }}">
+                <h2 class="tl-rulegroup__head">
+                    {% if chron.grouper %}
+                        <a href="{{ chron.grouper.get_absolute_url }}">{{ chron.grouper }}</a>
+                    {% else %}
+                        No chronicle
+                    {% endif %}
+                </h2>
+                {% regroup chron.list by first_group as grouplist %}
+                {% for g in grouplist %}
+                    <div class="tl-block tl-block--tight">
+                        <div class="tl-grouphead">
+                            <h3 class="tl-grouphead__name">
+                                {% if g.grouper %}
+                                    <a href="{{ g.grouper.get_absolute_url }}">{{ g.grouper }}</a>
+                                {% else %}
+                                    Solo characters
+                                {% endif %}
+                            </h3>
+                            <span class="tl-grouphead__rule"></span>
+                            <span class="tl-grouphead__count">{{ g.list|length }}</span>
+                        </div>
+                        <div class="tl-grid">
+                            {% for char in g.list %}
+                                {% if char.display %}
+                                    {% include "characters/tl/character_tile.html" %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-            </form>
-        {% endif %}
-    </div>
+                {% endfor %}
+            </section>
+        {% endfor %}
+    {% else %}
+        {% url 'characters:index' as active_url %}
+        {% with current=request.resolver_match.url_name %}
+            {% if current == "retired" %}
+                {% include "core/tl/empty.html" with text="No retired characters yet." action_url=active_url action_label="Show active" %}
+            {% elif current == "deceased" %}
+                {% include "core/tl/empty.html" with text="No deceased characters yet." action_url=active_url action_label="Show active" %}
+            {% else %}
+                {% include "core/tl/empty.html" with text="No NPCs yet." action_url=active_url action_label="Show active" %}
+            {% endif %}
+        {% endwith %}
+    {% endif %}
 {% endblock content %}

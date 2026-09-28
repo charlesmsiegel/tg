@@ -1,23 +1,75 @@
-{% extends "core/object.html" %}
-{% block contents %}
-    {% include "characters/core/group/display_includes/members.html" %}
-    {% if object.pooled_backgrounds.exists %}
-        {% include "characters/core/background_block/detail.html" with backgrounds=object.pooled_backgrounds %}
-    {% endif %}
-    {% include "characters/core/group/display_includes/public_info.html" %}
-{% endblock contents %}
-{% block update %}
-    <div class="row">
-        <div class="col-sm">
-            {% if user.is_authenticated %}
-                {% if object_perms.can_edit %}
-                    {% if object.get_full_update_url %}
-                        <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
-                    {% else %}
-                        <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Group page (Spread M4) for every group type: cabal, coterie, pack, motley, circle,
+conclave. Line cover in the group's gameline with its facts (leader, chronicle,
+member count, pooled backgrounds); the pages hold the members table (leader first),
+the description and the public info.
+
+Blocks for gameline pages: cover_facts (add rows such as a pack totem after
+block.super), contents (the numbered sections), description.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'characters:index' %}">← Characters</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {{ object.get_display_type }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_body %}
+    {% with roster=object.roster %}
+        <div class="tl-facts">
+            {% block cover_facts %}
+                {% if object.leader %}{% fact "Leader" object.leader.name object.leader.get_absolute_url %}{% endif %}
+                {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
+                {% fact "Members" roster|length|stringformat:"d" %}
+            {% endblock cover_facts %}
         </div>
+    {% endwith %}
+    {% include "characters/core/group/display_includes/pooled_backgrounds.html" with backgrounds=object.pooled_backgrounds.all %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if object_perms.can_edit or object_perms.can_edit_limited %}
+        {% with edit_url=object|update_url %}
+            {% if edit_url %}
+                <div class="tl-btnpair">
+                    <a class="tl-btn" href="{{ edit_url }}">Edit</a>
+                    {% if object.type == "cabal" or object.type == "conclave" or object.type == "circle" %}
+                        <a class="tl-btn tl-btn--ghost" href="{{ edit_url }}#id_new_character">+ Add member</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
+{% block content %}
+    {% include "core/misc/image.html" with obj=object %}
+    <div class="tl-sheet">
+        {% block contents %}
+            {% include "characters/core/group/display_includes/members.html" with roster=object.roster %}
+            {% block description %}
+                {% if object.description %}
+                    <section class="tl-section" id="description">
+                        <div class="tl-section__head">
+                            <span class="tl-section__num"></span>
+                            <h2 class="tl-section__title">Description</h2>
+                        </div>
+                        <div class="tl-section__body tl-prose">{{ object.description|sanitize_html|linebreaks }}</div>
+                    </section>
+                {% endif %}
+            {% endblock description %}
+            {% include "characters/core/group/display_includes/public_info.html" %}
+        {% endblock contents %}
     </div>
-{% endblock update %}
+    {% tl_object_actions %}
+{% endblock content %}

@@ -1,21 +1,12 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Book
-{% endblock creation_title %}
+{% extends "core/misc/form.html" %}
+{% block creation_title %}New book{% endblock creation_title %}
+{% block form_eyebrow %}{% if object %}Edit · Book{% else %}New · Book{% endif %}{% endblock form_eyebrow %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">{{ form.name }}</div>
+    {% include "core/tl/field.html" with field=form.name %}
+    {% include "core/tl/field.html" with field=form.url label="Link" %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.edition %}
+        {% include "core/tl/field.html" with field=form.gameline %}
     </div>
-    <div class="row">
-        <div class="col-sm">{{ form.url }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.edition }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.gameline }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ form.storytellers_vault }}</div>
-    </div>
+    {% include "core/misc/check.html" with field=form.storytellers_vault label="Published on Storyteller's Vault" %}
 {% endblock contents %}

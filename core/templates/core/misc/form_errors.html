@@ -1,0 +1,28 @@
+{% comment %}
+Form error summary (Spread M14): a 2px rubric rule, the error count, then each
+message; field messages link to their input. The fields themselves turn rubric
+through core/tl/field.html. Renders nothing for a valid or unbound form.
+  {% include "core/misc/form_errors.html" %}            uses `form`
+  {% include "core/misc/form_errors.html" with form=other_form %}
+{% endcomment %}
+{% if form.errors %}
+    {% with count=form.errors|length %}
+        <div class="tl-errsum" role="alert" id="form-errors">
+            <span class="tl-errsum__count">{{ count }} error{{ count|pluralize }}</span>
+            <ul>
+                {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>
+                            {% if field.is_hidden %}
+                                {{ field.label }}: {{ error }}
+                            {% else %}
+                                <a href="#{{ field.id_for_label }}">{{ field.label }}</a>: {{ error }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endwith %}
+{% endif %}

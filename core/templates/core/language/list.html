@@ -1,17 +1,27 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Languages
-{% endblock title %}
+{% extends "core/tl_base.html" %}
+{% comment %}Languages: ink cover, the names set in columns.{% endcomment %}
+{% block title %}Languages{% endblock title %}
+{% block cover_label %}Languages{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Reference</span>
+    <h1 class="tl-cover__name" data-fit-title>Languages</h1>
+    <span class="tl-switch">{{ object_list|length }} language{{ object_list|length|pluralize }}</span>
+{% endblock cover_title %}
+{% block cover_actions %}
+    {% if user.is_staff or user.is_superuser %}
+        <a class="tl-btn tl-btn--block" href="{% url 'core:create_language' %}">+ New language</a>
+    {% endif %}
+{% endblock cover_actions %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Languages</h3>
-        </div>
-        {% for language in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ language.get_absolute_url }}">{{ language.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
+    {% if object_list %}
+        <ul class="tl-namelist">
+            {% for language in object_list %}
+                <li>
+                    <a href="{{ language.get_absolute_url }}">{{ language.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No languages found." %}
+    {% endif %}
 {% endblock content %}

@@ -1,0 +1,9 @@
+{% comment %}
+An object's image: the picture once approved, the dashed pending box (M14) before.
+  {% include "core/misc/image.html" with obj=object %}
+{% endcomment %}
+{% if obj.image and obj.image_status == "app" %}
+    <img class="tl-portrait" src="{{ obj.image.url }}" alt="Image of {{ obj.name }}">
+{% elif obj.image %}
+    <div class="tl-pending">Image pending approval</div>
+{% endif %}

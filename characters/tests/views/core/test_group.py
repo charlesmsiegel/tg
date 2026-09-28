@@ -1,14 +1,10 @@
 """Group controls reflect creator authority, not a leader ownership shortcut."""
 
-from pathlib import Path
-
 from django.contrib.auth import get_user_model
-from django.template import Context, Engine
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from characters.models.core import Group, Human
-from core.permission_context import get_object_permissions
 
 
 class GroupPermissionContextTests(TestCase):
@@ -58,34 +54,11 @@ class GroupPermissionContextTests(TestCase):
         self.assertTrue(response.context["object_perms"].can_view_full)
         self.assertFalse(response.context["object_perms"].can_edit)
 
-    def test_legacy_update_block_uses_capability_even_with_different_leader(self):
+    def test_edit_action_uses_capability_even_with_different_leader(self):
         group = self.create_group()
-        # core/object.html currently has no update block. Exercise this legacy
-        # block independently so restoring it cannot restore the unsafe rule.
-        source = Path("characters/templates/characters/core/group/detail.html").read_text(
-            encoding="utf-8"
-        )
-        engine = Engine(
-            loaders=[
-                (
-                    "django.template.loaders.locmem.Loader",
-                    {
-                        "core/object.html": "{% block update %}{% endblock %}",
-                        "group.html": source,
-                    },
-                )
-            ]
-        )
+        edit_link = f'href="{group.get_update_url()}"'
         for user, allowed in ((self.creator, True), (self.leader_owner, False)):
-            request = RequestFactory().get("/")
-            request.user = user
-            output = engine.get_template("group.html").render(
-                Context(
-                    {
-                        "user": user,
-                        "object": group,
-                        "object_perms": get_object_permissions(request, group),
-                    }
-                )
-            )
-            self.assertEqual(">Update</a>" in output, allowed)
+            self.client.force_login(user)
+            response = self.client.get(group.get_absolute_url())
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(edit_link in response.content.decode(), allowed)

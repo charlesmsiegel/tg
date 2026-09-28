@@ -1,41 +1,42 @@
-{% extends "core/base.html" %}
-
-{% block heading %}Delete Template{% endblock %}
-
+{% extends "core/tl_base.html" %}
+{% comment %}Delete confirmation for a character template.{% endcomment %}
+{% load tl %}
+{% block title %}Delete Template{% endblock title %}
+{% block gameline %}{{ object.gameline|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}Delete {{ object.name }}{% endblock cover_label %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Delete · Character template</span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object.gameline }}" data-fit-title>{{ object.name }}</h1>
+{% endblock cover_title %}
+{% block cover_actions %}
+    <a class="tl-btn tl-btn--ghost" href="{% url 'core:character_template_detail' object.pk %}">← Back to {{ object.name }}</a>
+{% endblock cover_actions %}
+{% block content_mod %}tl-content--narrow{% endblock content_mod %}
 {% block content %}
-<div class="tg-card mb-4" data-gameline="{{ object.gameline }}">
-    <div class="tg-card-header">
-        <h4 class="tg-card-title {{ object.get_heading }}">Delete Template</h4>
-        <p class="tg-card-subtitle">Are you sure you want to delete "{{ object.name }}"?</p>
+    <div class="tl-errsum" role="alert">
+        <span class="tl-errsum__count">Warning</span>
+        <p>
+            Are you sure you want to delete "{{ object.name }}"? This action cannot be undone. Deleting this
+            template will permanently remove it from the system.
+        </p>
     </div>
-    <div class="tg-card-body" style="padding: 24px;">
-        <div class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-triangle"></i>
-            <strong>Warning:</strong> This action cannot be undone. Deleting this template will permanently remove it from the system.
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">Template details</h2>
         </div>
-
-        <div class="mb-4" style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px;">
-            <h6 style="margin-bottom: 12px;">Template Details:</h6>
-            <ul style="margin-bottom: 0;">
-                <li><strong>Name:</strong> {{ object.name }}</li>
-                <li><strong>Concept:</strong> {{ object.concept }}</li>
-                <li><strong>Gameline:</strong> {{ object.get_gameline_display }}</li>
-                <li><strong>Character Type:</strong> {{ object.character_type|title }}</li>
-                <li><strong>Times Used:</strong> {{ object.times_used }}</li>
-            </ul>
+        <div class="tl-section__body tl-stack">
+            <div class="tl-kv"><span>Name</span><span>{{ object.name }}</span></div>
+            <div class="tl-kv"><span>Concept</span><span>{{ object.concept }}</span></div>
+            <div class="tl-kv"><span>Gameline</span><span>{{ object.get_gameline_display }}</span></div>
+            <div class="tl-kv"><span>Character type</span><span>{{ object.character_type|title }}</span></div>
+            <div class="tl-kv"><span>Times used</span><span class="tl-kv__v">{{ object.times_used }}</span></div>
         </div>
-
-        <form method="post">
-            {% csrf_token %}
-            <div style="display: flex; gap: 12px;">
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Yes, Delete Template
-                </button>
-                <a href="{% url 'core:character_template_detail' object.pk %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
-{% endblock %}
+    </section>
+    <form method="post" class="tl-actions tl-formactions">
+        {% csrf_token %}
+        <button type="submit" class="tl-btn tl-btn--danger">Yes, delete template</button>
+        <a href="{% url 'core:character_template_detail' object.pk %}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
+    </form>
+{% endblock content %}

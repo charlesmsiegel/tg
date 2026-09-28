@@ -41,6 +41,20 @@ class Group(Model):
     def get_creation_url(cls):
         return reverse("characters:create:group")
 
+    def roster(self):
+        """The leader first, then the other members by name, owners loaded.
+
+        The leader is listed even when it is not among ``members``; members come
+        back as their concrete character types, so gameline fields are available.
+        """
+        members = list(self.members.select_related("owner").order_by("name"))
+        if self.leader_id is None:
+            return members
+        leader = next((m for m in members if m.pk == self.leader_id), None)
+        if leader is None:
+            leader = self.leader.get_real_instance()
+        return [leader] + [m for m in members if m.pk != self.leader_id]
+
     def update_pooled_backgrounds(self):
         bgs = BackgroundRating.objects.filter(char__in=self.members.all(), pooled=True)
         d = defaultdict(lambda: defaultdict(int))

@@ -1,14 +1,9 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Language
-{% endblock creation_title %}
+{% extends "core/misc/form.html" %}
+{% block creation_title %}New language{% endblock creation_title %}
+{% block form_eyebrow %}{% if object %}Edit · Language{% else %}New · Language{% endif %}{% endblock form_eyebrow %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Frequency</div>
-        <div class="col-sm">{{ form.frequency }}</div>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.frequency %}
     </div>
 {% endblock contents %}

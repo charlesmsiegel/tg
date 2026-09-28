@@ -1,401 +1,121 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create NPC Profile
-{% endblock creation_title %}
-{% block creation_title_2 %}
-    Create NPC Profile
-{% endblock creation_title_2 %}
-{% block formdetails %}
-    method="post"
-    id="npcProfileForm"
-    action=""
-    novalidate
-    enctype="multipart/form-data"
-{% endblock formdetails %}
-{% block contents %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <p style="color: var(--theme-text-secondary); line-height: 1.6;">
-                Create a basic NPC profile for mentors, contacts, allies, or other characters related to your game.
-                This creates a simplified character entry that can be expanded later if needed.
-            </p>
-        </div>
-    </div>
-
-    <!-- Basic Information Section -->
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title mb-0">Basic Information</h5>
-        </div>
-        <div class="tg-card-body" style="padding: 20px;">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.npc_type.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Character Type <span style="color: #dc3545;">*</span>
-                    </label>
-                    {{ form.npc_type }}
-                    {% if form.npc_type.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.npc_type.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.npc_role.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        NPC Role
-                    </label>
-                    {{ form.npc_role }}
-                    {% if form.npc_role.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.npc_role.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.name.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Name <span style="color: #dc3545;">*</span>
-                    </label>
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.name.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.concept.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Concept <span style="color: #dc3545;">*</span>
-                    </label>
-                    {{ form.concept }}
-                    {% if form.concept.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.concept.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.chronicle.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Chronicle
-                    </label>
-                    {{ form.chronicle }}
-                    {% if form.chronicle.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.chronicle.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.image.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Portrait Image
-                    </label>
-                    {{ form.image }}
-                    {% if form.image.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.image.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Character Type-Specific Fields Section -->
-    <div class="tg-card mb-4 d-none" id="type-specific-section">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title mb-0">Character Details</h5>
-        </div>
-        <div class="tg-card-body" style="padding: 20px;">
-
-            <!-- Mage Fields -->
-            <div id="mage-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.mage_affiliation.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Affiliation
-                        </label>
-                        {{ form.mage_affiliation }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.mage_essence.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Essence
-                        </label>
-                        {{ form.mage_essence }}
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.mage_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Faction
-                        </label>
-                        {{ form.mage_faction }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.mage_subfaction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Subfaction
-                        </label>
-                        {{ form.mage_subfaction }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Werewolf Fields -->
-            <div id="werewolf-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="{{ form.werewolf_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Tribe
-                        </label>
-                        {{ form.werewolf_tribe }}
-                    </div>
-                    <div class="col-md-4">
-                        <label for="{{ form.werewolf_breed.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Breed
-                        </label>
-                        {{ form.werewolf_breed }}
-                    </div>
-                    <div class="col-md-4">
-                        <label for="{{ form.werewolf_auspice.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Auspice
-                        </label>
-                        {{ form.werewolf_auspice }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kinfolk Fields -->
-            <div id="kinfolk-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.kinfolk_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Tribe
-                        </label>
-                        {{ form.kinfolk_tribe }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.kinfolk_breed.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Breed
-                        </label>
-                        {{ form.kinfolk_breed }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wraith Fields -->
-            <div id="wraith-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.wraith_guild.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Guild
-                        </label>
-                        {{ form.wraith_guild }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.wraith_character_type.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Wraith Type
-                        </label>
-                        {{ form.wraith_character_type }}
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.wraith_legion.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Legion
-                        </label>
-                        {{ form.wraith_legion }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.wraith_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Faction
-                        </label>
-                        {{ form.wraith_faction }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Changeling Fields -->
-            <div id="changeling-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.changeling_kith.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Kith
-                        </label>
-                        {{ form.changeling_kith }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.changeling_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            House
-                        </label>
-                        {{ form.changeling_house }}
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.changeling_court.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Court
-                        </label>
-                        {{ form.changeling_court }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.changeling_seeming.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Seeming
-                        </label>
-                        {{ form.changeling_seeming }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sorcerer Fields -->
-            <div id="sorcerer-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.sorcerer_fellowship.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Fellowship
-                        </label>
-                        {{ form.sorcerer_fellowship }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thrall Fields -->
-            <div id="thrall-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.thrall_master.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Master Demon
-                        </label>
-                        {{ form.thrall_master }}
-                        <small style="color: var(--theme-text-secondary); font-size: 0.75rem; display: block; margin-top: 4px;">
-                            The demon this thrall is bound to through a pact.
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Demon Fields -->
-            <div id="demon-fields" class="type-specific-fields d-none">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.demon_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            House
-                        </label>
-                        {{ form.demon_house }}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ form.demon_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Faction
-                        </label>
-                        {{ form.demon_faction }}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Description Section -->
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title mb-0">Description</h5>
-        </div>
-        <div class="tg-card-body" style="padding: 20px;">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="{{ form.description.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Physical Description
-                    </label>
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.description.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="{{ form.public_info.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Public Information
-                    </label>
-                    {{ form.public_info }}
-                    <small style="color: var(--theme-text-secondary); font-size: 0.75rem; display: block; margin-top: 4px;">
-                        Information that players/characters generally know about this NPC.
-                    </small>
-                    {% if form.public_info.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.public_info.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Storyteller Notes Section -->
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title mb-0">Storyteller Notes</h5>
-        </div>
-        <div class="tg-card-body" style="padding: 20px;">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="{{ form.st_notes.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        Private ST Notes
-                    </label>
-                    {{ form.st_notes }}
-                    <small style="color: var(--theme-text-secondary); font-size: 0.75rem; display: block; margin-top: 4px;">
-                        Private notes for the Storyteller (motivations, secrets, plot hooks). Not visible to players.
-                    </small>
-                    {% if form.st_notes.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.st_notes.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <label for="{{ form.notes.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                        General Notes
-                    </label>
-                    {{ form.notes }}
-                    {% if form.notes.errors %}
-                        <div style="color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
-                            {% for error in form.notes.errors %}{{ error }}{% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
+{% extends "core/misc/form.html" %}
+{% comment %}
+Create an NPC profile. The type-specific blocks keep their ids and start hidden with
+d-none: the form's conditional rules (form.conditional_js, run by
+widgets/conditional.js) show the one matching the chosen type.
+{% endcomment %}
+{% block title %}Create NPC Profile{% endblock title %}
+{% block cover_label %}Create NPC profile{% endblock cover_label %}
+{% block creation_title %}Create NPC Profile{% endblock creation_title %}
+{% block form_eyebrow %}New · NPC{% endblock form_eyebrow %}
+{% block form_lede %}
+    <p class="tl-cover__lede">
+        A basic profile for mentors, contacts, allies, or other characters related to your game.
+        It can be expanded later if needed.
+    </p>
     {% if related_character %}
-        <div class="tg-card mb-4">
-            <div class="tg-card-body" style="padding: 16px;">
-                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Related To:</span>
-                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ related_character.name }}</span>
-                </div>
+        <div class="tl-facts">
+            <div class="tl-facts__row">
+                <span class="tl-facts__k">Related to</span>
+                <span class="tl-facts__v">{{ related_character.name }}</span>
             </div>
         </div>
     {% endif %}
+{% endblock form_lede %}
+{% block cover_actions %}
+    {% if related_character %}
+        <a class="tl-btn tl-btn--ghost" href="{{ related_character.get_absolute_url }}">← Back to {{ related_character.name }}</a>
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
+{% block formdetails %}method="post" id="npcProfileForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
+{% block contents %}
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num">01</span>
+            <h2 class="tl-section__title">Basic information</h2>
+        </div>
+        <div class="tl-section__body tl-formgrid tl-formgrid--2">
+            {% include "core/tl/field.html" with field=form.npc_type label="Character type *" %}
+            {% include "core/tl/field.html" with field=form.npc_role label="NPC role" %}
+            {% include "core/tl/field.html" with field=form.name label="Name *" %}
+            {% include "core/tl/field.html" with field=form.concept label="Concept *" %}
+            {% include "core/tl/field.html" with field=form.chronicle %}
+            {% include "core/tl/field.html" with field=form.image label="Portrait image" %}
+        </div>
+    </section>
+    <section class="tl-section d-none" id="type-specific-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num">02</span>
+            <h2 class="tl-section__title">Character details</h2>
+        </div>
+        <div class="tl-section__body">
+            <div id="mage-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.mage_affiliation label="Affiliation" %}
+                {% include "core/tl/field.html" with field=form.mage_essence label="Essence" %}
+                {% include "core/tl/field.html" with field=form.mage_faction label="Faction" %}
+                {% include "core/tl/field.html" with field=form.mage_subfaction label="Subfaction" %}
+            </div>
+            <div id="werewolf-fields" class="type-specific-fields tl-formgrid d-none">
+                {% include "core/tl/field.html" with field=form.werewolf_tribe label="Tribe" %}
+                {% include "core/tl/field.html" with field=form.werewolf_breed label="Breed" %}
+                {% include "core/tl/field.html" with field=form.werewolf_auspice label="Auspice" %}
+            </div>
+            <div id="kinfolk-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.kinfolk_tribe label="Tribe" %}
+                {% include "core/tl/field.html" with field=form.kinfolk_breed label="Breed" %}
+            </div>
+            <div id="wraith-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.wraith_guild label="Guild" %}
+                {% include "core/tl/field.html" with field=form.wraith_character_type label="Wraith type" %}
+                {% include "core/tl/field.html" with field=form.wraith_legion label="Legion" %}
+                {% include "core/tl/field.html" with field=form.wraith_faction label="Faction" %}
+            </div>
+            <div id="changeling-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.changeling_kith label="Kith" %}
+                {% include "core/tl/field.html" with field=form.changeling_house label="House" %}
+                {% include "core/tl/field.html" with field=form.changeling_court label="Court" %}
+                {% include "core/tl/field.html" with field=form.changeling_seeming label="Seeming" %}
+            </div>
+            <div id="sorcerer-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.sorcerer_fellowship label="Fellowship" %}
+            </div>
+            <div id="thrall-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.thrall_master label="Master demon" help="The demon this thrall is bound to through a pact." %}
+            </div>
+            <div id="demon-fields" class="type-specific-fields tl-formgrid tl-formgrid--2 d-none">
+                {% include "core/tl/field.html" with field=form.demon_house label="House" %}
+                {% include "core/tl/field.html" with field=form.demon_faction label="Faction" %}
+            </div>
+        </div>
+    </section>
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num">03</span>
+            <h2 class="tl-section__title">Description</h2>
+        </div>
+        <div class="tl-section__body tl-form">
+            {% include "core/tl/field.html" with field=form.description label="Physical description" %}
+            {% include "core/tl/field.html" with field=form.public_info label="Public information" help="Information that players/characters generally know about this NPC." %}
+        </div>
+    </section>
+    <section class="tl-section">
+        <div class="tl-section__head">
+            <span class="tl-section__num">04</span>
+            <h2 class="tl-section__title">Storyteller notes</h2>
+        </div>
+        <div class="tl-section__body tl-form">
+            {% include "core/tl/field.html" with field=form.st_notes label="Private ST notes" help="Private notes for the Storyteller (motivations, secrets, plot hooks). Not visible to players." %}
+            {% include "core/tl/field.html" with field=form.notes label="General notes" %}
+        </div>
+    </section>
+    {{ form.conditional_js }}
 {% endblock contents %}
 {% block buttons %}
-    <div class="tg-card">
-        <div class="tg-card-body text-center">
-            <button type="submit" class="tg-btn btn-primary btn-lg">
-                Create NPC
-            </button>
-            <a href="{% url 'characters:index' %}" class="tg-btn btn-secondary btn-lg">
-                Cancel
-            </a>
-        </div>
+    <div class="tl-actions tl-formactions">
+        <button type="submit" class="tl-btn">Create NPC</button>
+        <a href="{% url 'characters:index' %}" class="tl-btn tl-btn--quiet tl-formactions__cancel">Cancel</a>
     </div>
 {% endblock buttons %}
-
-{% block extra_scripts %}
-{{ form.conditional_js }}
-{% endblock extra_scripts %}
