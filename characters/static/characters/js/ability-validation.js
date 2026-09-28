@@ -7,31 +7,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var targetsLabel = [statusEl.dataset.primary, statusEl.dataset.secondary, statusEl.dataset.tertiary].join('/');
     var TARGETS = [Number(statusEl.dataset.tertiary), Number(statusEl.dataset.secondary), Number(statusEl.dataset.primary)].sort(function(a, b) { return a - b; });
 
-    // Ability rows lay out three .dots cells per row: Talents, Skills,
-    // Knowledges. The grid is static, so grouping the inputs once here
-    // (not re-querying on each validate) is intentional. Group by column. The length-3
-    // guard is sufficient because this include renders only on the
-    // ability step, where the attribute block shows as a display (no
-    // inputs) — input-bearing three-cell rows are the ability grid.
+    // Each ability step marks its three columns (Talents, Skills, Knowledges) with
+    // [data-ability-group] (chargen/abilities.html, mtahuman/ability_block_form.html);
+    // the priority picker's radios are not traits. The grid is static, so the inputs
+    // are grouped once here.
     var groups = [[], [], []];
-    // Spread steps mark each column ([data-ability-group], chargen/abilities.html).
     var columns = form.querySelectorAll('[data-ability-group]');
-    if (columns.length === 3) {
-        Array.prototype.forEach.call(columns, function(column, i) {
-            groups[i] = Array.prototype.slice.call(
-                column.querySelectorAll('input:not([type="radio"]), select')
-            );
-        });
-    } else {
-        Array.prototype.forEach.call(form.querySelectorAll('.row'), function(row) {
-            var cells = row.querySelectorAll(':scope > .dots');
-            if (cells.length !== 3) return;
-            for (var i = 0; i < 3; i++) {
-                var input = cells[i].querySelector('input, select');
-                if (input) groups[i].push(input);
-            }
-        });
-    }
+    if (columns.length !== 3) return;
+    Array.prototype.forEach.call(columns, function(column, i) {
+        groups[i] = Array.prototype.slice.call(
+            column.querySelectorAll('input:not([type="radio"]), select')
+        );
+    });
     // Optional status tag beside the message (Spread steps): IN PROGRESS / TOO MANY / READY.
     var tag = form.querySelector('[data-allocation-tag]');
     var TARGET_SUM = TARGETS.reduce(function(a, b) { return a + b; }, 0);
