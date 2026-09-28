@@ -1,0 +1,48 @@
+{% comment %}
+Apocalyptic form (Demon, Earthbound): the Visage with its description, then the low and
+high Torment traits in two columns. Hidden when there is neither a visage nor a form.
+{% endcomment %}
+{% if object.visage or object.apocalyptic_form %}
+    <section class="tl-section" id="apocalyptic-form">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Apocalyptic Form</h2>
+            {% if object.apocalyptic_form %}
+                <span class="tl-section__aside tl-mono tl-muted">{{ object.apocalyptic_form_points_spent }}/16 points spent</span>
+            {% endif %}
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            {% if object.visage %}
+                <div class="tl-stack">
+                    <div class="tl-kv">
+                        <span class="tl-subhead">Visage</span>
+                        <a href="{{ object.visage.get_absolute_url }}">{{ object.visage.name }}</a>
+                    </div>
+                    {% include "characters/tl/prose_block.html" with label="" text=object.visage.description %}
+                </div>
+            {% endif %}
+            {% if object.apocalyptic_form %}
+                <div class="tl-cols tl-cols--2">
+                    <div class="tl-stack tl-divided">
+                        <span class="tl-col__head">Low Torment traits · {{ object.apocalyptic_form_low_torment_count }}/4</span>
+                        {% for trait in object.get_low_torment_traits %}
+                            {% include "characters/demon/display_includes/apocalyptic_trait_row.html" %}
+                        {% empty %}
+                            <p class="tl-muted">No low torment traits selected.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="tl-stack tl-divided">
+                        <span class="tl-col__head">High Torment traits · {{ object.apocalyptic_form_high_torment_count }}/4</span>
+                        {% for trait in object.get_high_torment_traits %}
+                            {% include "characters/demon/display_includes/apocalyptic_trait_row.html" %}
+                        {% empty %}
+                            <p class="tl-muted">No high torment traits selected.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <p class="tl-muted">No apocalyptic form selected.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

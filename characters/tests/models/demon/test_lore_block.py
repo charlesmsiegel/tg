@@ -241,3 +241,24 @@ class LoreBlockFieldAccessTests(TestCase):
         self.demon.save()
         self.demon.refresh_from_db()
         self.assertEqual(self.demon.lore_of_the_earth, 1)
+
+    def test_lore_label(self):
+        """lore_label keeps 'of' and 'the' lower case."""
+        self.assertEqual(Demon.lore_label("lore_of_the_beast"), "Lore of the Beast")
+        self.assertEqual(Demon.lore_label("lore_of_flame"), "Lore of Flame")
+
+    def test_lore_rows_lists_rated_lores_with_links(self):
+        """lore_rows returns rated lores only, linked to Lore records when they exist."""
+        from characters.models.demon.lore import Lore
+
+        beast = Lore.objects.create(name="Lore of the Beast", property_name="beast")
+        self.assertEqual(self.demon.lore_rows(), [])
+        self.demon.lore_of_the_beast = 2
+        self.demon.lore_of_storms = 1
+        self.assertEqual(
+            self.demon.lore_rows(),
+            [
+                ("Lore of the Beast", 2, beast.get_absolute_url()),
+                ("Lore of Storms", 1, ""),
+            ],
+        )

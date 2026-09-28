@@ -1,0 +1,13 @@
+{% load tl %}
+{% comment %}Demon / Earthbound advantages: Faith, Torment and Willpower (dots = permanent, squares = temporary).{% endcomment %}
+<section class="tl-section {{ span|default:'tl-span-5' }}" id="advantages">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Advantages</h2>
+    </div>
+    <div class="tl-section__body">
+        {% track "Faith" perm=object.faith temp=object.temporary_faith %}
+        {% track "Torment" perm=object.torment temp=object.temporary_torment %}
+        {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+    </div>
+</section>

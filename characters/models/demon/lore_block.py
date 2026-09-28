@@ -73,3 +73,35 @@ class LoreBlock(models.Model):
     def filter_lores(self, minimum=0, maximum=5):
         """Return lores within a specific rating range."""
         return {k: v for k, v in self.get_lores().items() if minimum <= v <= maximum}
+
+    @staticmethod
+    def lore_label(field):
+        """Sheet label for a lore field: lore_of_the_beast -> 'Lore of the Beast'."""
+        return " ".join(
+            word if word in ("of", "the") else word.title() for word in field.split("_")
+        )
+
+    def lore_rows(self):
+        """Rated lores for the character sheet as ``[(label, rating, url), ...]``.
+
+        Labels and links come from the matching ``Lore`` records (whose ``property_name``
+        is the field name without ``lore_of_`` / ``the_``) when those exist.
+        """
+        from characters.models.demon.lore import Lore
+
+        rated = {field: rating for field, rating in self.get_lores().items() if rating}
+        if not rated:
+            return []
+        keys = {field: field.removeprefix("lore_of_").removeprefix("the_") for field in rated}
+        lores = {
+            lore.property_name: lore
+            for lore in Lore.objects.filter(property_name__in=keys.values())
+        }
+        rows = []
+        for field, rating in rated.items():
+            lore = lores.get(keys[field])
+            if lore:
+                rows.append((lore.name, rating, lore.get_absolute_url()))
+            else:
+                rows.append((self.lore_label(field), rating, ""))
+        return rows

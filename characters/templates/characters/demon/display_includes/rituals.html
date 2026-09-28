@@ -1,0 +1,28 @@
+{% comment %}Rituals the character knows: name (linked) and XP cost, lore requirements and casting time. Hidden when none.{% endcomment %}
+{% with rituals=object.rituals.all %}
+    {% if rituals %}
+        <section class="tl-section" id="rituals">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Rituals</h2>
+            </div>
+            <div class="tl-section__body tl-stack tl-divided">
+                {% for ritual in rituals %}
+                    <div>
+                        <div class="tl-kv">
+                            <a href="{{ ritual.get_absolute_url }}">{{ ritual.name }}</a>
+                            <span class="tl-kv__v">{{ ritual.base_cost }} XP</span>
+                        </div>
+                        <div class="tl-note">
+                            Primary: {{ ritual.get_primary_lore_display }}
+                            {% with secondary=ritual.get_secondary_lore_display %}
+                                {% if secondary %}· Secondary: {{ secondary|join:", " }}{% endif %}
+                            {% endwith %}
+                            {% if ritual.minimum_casting_time %}· Casting time: {{ ritual.minimum_casting_time }} minutes{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

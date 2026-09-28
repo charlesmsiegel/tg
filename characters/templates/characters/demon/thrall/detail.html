@@ -1,133 +1,48 @@
 {% extends "characters/demon/dtfhuman/detail.html" %}
-{% load dots %}
-{% load get_specialty %}
-{% block creation_title %}
-    Create Thrall
-{% endblock creation_title %}
+{% comment %}
+Thrall sheet: Master on the cover; Enhancements (accent) beside Faith Potential, Daily
+Faith and Willpower; Backgrounds beside Virtues; then the active pacts.
+{% endcomment %}
+{% load tl %}
 {% block basics %}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-body text-center" style="padding: 20px;">
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
-                            {% if object.nature %}
-                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
-                            {% if object.demeanor %}
-                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Master:</span>
-                            {% if object.master %}
-                                <a href="{{ object.master.get_absolute_url }}">{{ object.master }}</a>
-                            {% else %}
-                                None
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% fact "Master" object.master %}
+    {% fact "Nature" object.nature %}
+    {% fact "Demeanor" object.demeanor %}
 {% endblock basics %}
-{% block advantages %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-4">
-                            <h6 class="{{ object.get_heading }}">Virtues</h6>
-                        </div>
-                        <div class="col-sm-4">
-                            <h6 class="{{ object.get_heading }}">Faith Potential</h6>
-                        </div>
-                        <div class="col-sm-4">
-                            <h6 class="{{ object.get_heading }}">Willpower</h6>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Conscience</div>
-                        <div class="col-sm dots">{{ object.conscience|dots }}</div>
-                        <div class="col-sm">Faith Potential</div>
-                        <div class="col-sm dots">{{ object.faith_potential|dots }}</div>
-                        <div class="col-sm">Willpower</div>
-                        <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Conviction</div>
-                        <div class="col-sm dots">{{ object.conviction|dots }}</div>
-                        <div class="col-sm">Daily Faith</div>
-                        <div class="col-sm">{{ object.daily_faith_offered }}</div>
-                        <div class="col-sm">Temp. Willpower</div>
-                        <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm">Courage</div>
-                        <div class="col-sm dots">{{ object.courage|dots }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock advantages %}
 {% block powers %}
     {% if object.enhancements %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Enhancements</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        {% for enhancement in object.enhancements %}
-                            <div class="row mb-1">
-                                <div class="col-sm">{{ enhancement }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
+        <section class="tl-section tl-section--power tl-span-7" id="enhancements">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Enhancements</h2>
             </div>
-        </div>
-    {% endif %}
-    {% if object.get_active_pacts %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Active Pacts</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        {% for pact in object.get_active_pacts %}
-                            <div class="row mb-1">
-                                <div class="col-sm">
-                                    <a href="{{ pact.get_absolute_url }}">{{ pact }}</a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
+            <div class="tl-section__body tl-stack">
+                {% for enhancement in object.enhancements %}
+                    <div>{{ enhancement }}</div>
+                {% endfor %}
             </div>
-        </div>
+        </section>
     {% endif %}
 {% endblock powers %}
-{% block equipment %}
-    {% include "characters/core/human/equipment_block.html" %}
-{% endblock equipment %}
+{% block advantages %}
+    <section class="tl-section tl-span-5" id="advantages">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Advantages</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div>
+                {% track "Faith Potential" perm=object.faith_potential total=5 variant="acc" %}
+                {% track "Willpower" perm=object.willpower temp=object.temporary_willpower %}
+            </div>
+            <div class="tl-kv">
+                <span class="tl-subhead">Daily Faith</span>
+                <span class="tl-kv__v">{{ object.daily_faith_offered }}</span>
+            </div>
+        </div>
+    </section>
+{% endblock advantages %}
+{% block line %}
+    {% include "characters/demon/display_includes/virtues.html" with span="tl-span-6" %}
+    {% include "characters/demon/display_includes/pacts.html" with pacts=object.get_active_pacts title="Active Pacts" %}
+{% endblock line %}
