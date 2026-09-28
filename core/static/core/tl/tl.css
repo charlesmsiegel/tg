@@ -503,6 +503,9 @@ body.tl {
 .tl-scene { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .tl-scene__scroll { flex: 1; overflow: auto; padding: 16px 44px 28px; display: flex; flex-direction: column; }
 .tl-transcript { margin-top: auto; display: flex; flex-direction: column; }
+/* The empty state goes once a post arrives; the add-character form once no one is left to add. */
+#posts-container:has(.post-item) #no-posts-message,
+#add-char-form:not(:has(option:not([value=""]))) { display: none; }
 .tl-scene__status { padding: 8px 0; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--rubric); }
 .tl-scene__back { text-align: center; padding-top: 16px; }
 .tl-chiplink {

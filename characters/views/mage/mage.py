@@ -77,6 +77,10 @@ class MageDetailView(HumanDetailView):
         context["spec_form"] = SpecialtiesForm(
             object=self.object, specialties_needed=self.object.needed_specialties()
         )
+        # rote_card.html reads each rote's practice, effect, attribute and ability.
+        context["rotes"] = self.object.rotes.select_related(
+            "practice", "effect", "attribute", "ability"
+        )
         context["resonance"] = (
             ResRating.objects.filter(mage=self.object)
             .select_related("resonance")

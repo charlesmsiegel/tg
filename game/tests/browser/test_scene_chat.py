@@ -219,9 +219,9 @@ class SceneChatBrowserTests(TransactionTestCase):
         self.wait_for_post(bob, "The door creaks open.")
         self.wait_for_post(alice, "The door creaks open.")
 
-        # Rendered per viewer: Alice's own post is highlighted only for her.
-        self.assertEqual(alice.locator("#posts-container strong.highlight").count(), 1)
-        self.assertEqual(bob.locator("#posts-container strong.highlight").count(), 0)
+        # Rendered per viewer: Alice's own post is marked as hers only for her.
+        self.assertEqual(alice.locator("#posts-container article.tl-turn--mine").count(), 1)
+        self.assertEqual(bob.locator("#posts-container article.tl-turn--mine").count(), 0)
         # The message field was reset by the server and keeps the focus.
         alice.wait_for_function("document.querySelector('#message-input').value === ''")
         self.assertEqual(alice.evaluate("document.activeElement.id"), "message-input")
@@ -231,7 +231,7 @@ class SceneChatBrowserTests(TransactionTestCase):
         # And back: Bob storytells this chronicle, so his post is styled as an ST's.
         self.say(bob, 'Rain begins. "Hurry."')
         self.wait_for_post(alice, "Rain begins.")
-        self.assertEqual(alice.locator("#posts-container strong.st").count(), 1)
+        self.assertEqual(alice.locator("#posts-container article.tl-turn--st").count(), 1)
         self.assertEqual(alice.locator("#posts-container span.quote").count(), 1)
         self.assertEqual(self.errors, [])
 
@@ -239,7 +239,7 @@ class SceneChatBrowserTests(TransactionTestCase):
         alice = self.browser_for(self.alice)
         self.open(alice)
         self.say(alice, "Leap /extended nonsense")
-        alice.wait_for_selector("#scene-chat-notice .tg-message.error")
+        alice.wait_for_selector("#scene-chat-notice .tl-message--error")
         self.assertIn("Command does not match", alice.inner_text("#scene-chat-notice"))
         self.assertEqual(alice.input_value("#message-input"), "Leap /extended nonsense")
         self.assertFalse(alice.is_disabled("#post-submit-btn"))
@@ -335,7 +335,7 @@ class SceneChatBrowserTests(TransactionTestCase):
         self.wait_until(lambda: refused)
         refused[0].close(code=4403, reason="Denied")
         alice.wait_for_selector('[data-ws-state="closed"]', state="attached")
-        self.assertIn("Live updates are unavailable", alice.inner_text("#status-indicator"))
+        self.assertIn("Live updates are unavailable", alice.text_content("#status-indicator"))
         with alice.expect_navigation():
             self.say(alice, "Sent the old way")
         self.wait_for_post(alice, "Sent the old way")
@@ -347,7 +347,7 @@ class SceneChatBrowserTests(TransactionTestCase):
         self.open(alice)
         self.open(bob)
         with bob.expect_navigation():
-            bob.click('input[value="Close Scene"]')
+            bob.click('button:has-text("Close scene")')
         alice.wait_for_selector("#scene-actions:has-text('This scene is closed.')")
         alice.wait_for_selector('[data-ws-state="closed"]', state="attached")
         self.assertEqual(alice.locator("#post-form").count(), 0)

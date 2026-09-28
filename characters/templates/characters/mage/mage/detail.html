@@ -12,7 +12,7 @@
 {% block line %}
     {% include "characters/mage/mage/mage_focus_block_display.html" %}
     {% include "characters/tl/resonance.html" %}
-    {% include "characters/tl/rotes.html" with rote_list=object.rotes %}
+    {% include "characters/tl/rotes.html" with rote_list=rotes|default:object.rotes %}
 {% endblock line %}
 {% block appearance %}
     {% include "characters/mage/mage/mage_appearance_block_display.html" %}
