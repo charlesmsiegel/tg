@@ -1,17 +1,5 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Reality Zones
-{% endblock title %}
-{% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Reality Zones</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No reality zones found." %}
+{% endblock empty %}

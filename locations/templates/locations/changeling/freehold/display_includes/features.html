@@ -1,73 +1,48 @@
-{% load dots %}
-
-<div class="col-md-6 mb-3">
-    <div class="tg-card h-100">
-        <div class="tg-card-body" style="padding: 24px;">
-            <h6 class="ctd_heading mb-3">Features</h6>
-
-            <!-- Sanctuary -->
-            <div class="mb-3">
-                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Sanctuary:</span>
-                {% if object.sanctuary > 0 %}
-                    <span class="dots colored-dots">{{ object.sanctuary|dots }}</span>
-                    <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 4px;">
-                        +{{ object.sanctuary }} defense dice, threshold against attacks
-                    </div>
-                {% else %}
-                    <span style="color: var(--theme-text-secondary);">None</span>
-                {% endif %}
-            </div>
-
-            <!-- Resources -->
-            <div class="mb-3">
-                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Resources:</span>
-                {% if object.resources > 0 %}
-                    <span class="dots colored-dots">{{ object.resources|dots }}</span>
-                    {% if object.resource_description %}
-                        <div style="margin-top: 4px; line-height: 1.6;">
-                            {{ object.resource_description|linebreaks }}
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <span style="color: var(--theme-text-secondary);">None</span>
-                {% endif %}
-            </div>
-
-            <!-- Passages -->
-            <div class="mb-3">
-                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Passages:</span>
-                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.passages }}</span>
-                <span style="font-size: 0.875rem; color: var(--theme-text-secondary);">
-                    trod{% if object.passages != 1 %}s{% endif %}/rath{% if object.passages != 1 %}s{% endif %}
-                </span>
-                {% if object.passage_description %}
-                    <div style="margin-top: 4px; line-height: 1.6;">
-                        {{ object.passage_description|linebreaks }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Archetype-Specific Details -->
-            {% if object.archetype == "academy" and object.academy_ability %}
-                <div class="mt-3" style="padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
-                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Academy Specialty:</span>
-                    <div style="margin-top: 4px;">
-                        {{ object.academy_ability }}
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if object.dual_nature_archetype %}
-                <div class="mt-3" style="padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
-                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Dual Nature:</span>
-                    <div style="margin-top: 4px;">
-                        Also functions as {{ object.get_dual_nature_archetype_display }}
-                        {% if object.dual_nature_archetype == "academy" and object.dual_nature_ability %}
-                            ({{ object.dual_nature_ability }})
-                        {% endif %}
-                    </div>
-                </div>
+{% load tl sanitize_text %}
+{% comment %}Freehold features: Sanctuary, Resources, Passages and archetype extras.{% endcomment %}
+<section class="tl-section tl-span-6" id="features">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Features</h2>
+    </div>
+    <div class="tl-section__body tl-stack tl-stack--lg">
+        <div class="tl-stack">
+            {% if object.sanctuary > 0 %}
+                {% trait "Sanctuary" object.sanctuary %}
+                <p class="tl-note">+{{ object.sanctuary }} defense dice, threshold against attacks</p>
+            {% else %}
+                {% include "locations/tl/kv.html" with label="Sanctuary" value="None" %}
             {% endif %}
         </div>
+        <div class="tl-stack">
+            {% if object.resources > 0 %}
+                {% trait "Resources" object.resources %}
+                {% if object.resource_description %}
+                    <div class="tl-note">{{ object.resource_description|sanitize_html|linebreaks }}</div>
+                {% endif %}
+            {% else %}
+                {% include "locations/tl/kv.html" with label="Resources" value="None" %}
+            {% endif %}
+        </div>
+        <div class="tl-stack">
+            <div class="tl-kv">
+                <span>Passages</span>
+                <span class="tl-kv__v">{{ object.passages }} trod{{ object.passages|pluralize }}/rath{{ object.passages|pluralize }}</span>
+            </div>
+            {% if object.passage_description %}
+                <div class="tl-note">{{ object.passage_description|sanitize_html|linebreaks }}</div>
+            {% endif %}
+        </div>
+        {% if object.archetype == "academy" and object.academy_ability %}
+            {% include "locations/tl/kv.html" with label="Academy specialty" value=object.academy_ability %}
+        {% endif %}
+        {% if object.dual_nature_archetype %}
+            <div class="tl-kv">
+                <span>Dual nature</span>
+                <span class="tl-kv__v">
+                    Also {{ object.get_dual_nature_archetype_display }}{% if object.dual_nature_archetype == "academy" and object.dual_nature_ability %} ({{ object.dual_nature_ability }}){% endif %}
+                </span>
+            </div>
+        {% endif %}
     </div>
-</div>
+</section>

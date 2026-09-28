@@ -1,45 +1,24 @@
-{% extends "core/base.html" %}
-{% load dots %}
-{% block content %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h1 class="tg-card-title vtm_heading">Tremere Chantries</h1>
-    </div>
-    <div class="tg-card-body">
-        <a href="{% url 'locations:vampire:create:chantry' %}" class="btn btn-primary mb-3">Create New Chantry</a>
-
-        {% if object_list %}
-        <div class="tg-table-responsive">
-            <table class="tg-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Location</th>
-                        <th>Regent</th>
-                        <th>Size</th>
-                        <th>Security</th>
-                        <th>Pyramid Level</th>
-                        <th>Total Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for chantry in object_list %}
-                    <tr>
-                        <td><a href="{{ chantry.get_absolute_url }}">{{ chantry.name }}</a></td>
-                        <td>{% if chantry.contained_within.exists %}{% for container in chantry.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                        <td>{{ chantry.regent_name|default:"-" }}</td>
-                        <td>{{ chantry.size|dots }}</td>
-                        <td>{{ chantry.security_level|dots }}</td>
-                        <td>{{ chantry.pyramid_level|dots }}</td>
-                        <td>{{ chantry.total_rating|dots:10 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p>No chantries found.</p>
-        {% endif %}
-    </div>
-</div>
-{% endblock content %}
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block create %}
+    <a class="tl-btn tl-btn--block" href="{% url 'locations:vampire:create:chantry' %}">Create New Chantry</a>
+{% endblock create %}
+{% block list_head %}
+    <th>Location</th>
+    <th>Regent</th>
+    <th>Size</th>
+    <th>Security</th>
+    <th>Pyramid level</th>
+    <th>Total rating</th>
+{% endblock list_head %}
+{% block list_cells %}
+    <td>{% include "locations/tl/containers_cell.html" %}</td>
+    <td>{{ obj.regent_name|default:'—' }}</td>
+    <td>{% dots obj.size %}</td>
+    <td>{% dots obj.security_level %}</td>
+    <td>{% dots obj.pyramid_level %}</td>
+    <td>{% dots obj.total_rating 10 %}</td>
+{% endblock list_cells %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No chantries found." %}
+{% endblock empty %}

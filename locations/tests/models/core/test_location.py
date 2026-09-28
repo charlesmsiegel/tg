@@ -16,6 +16,37 @@ class TestLocation(TestCase):
         self.assertIn(self.child, self.location.contains.all())
 
 
+class TestContainmentChains(TestCase):
+    """containment_chains feeds the "Located in" cover row (innermost first)."""
+
+    def test_top_level_place_has_no_chain(self):
+        self.assertEqual(LocationModel.objects.create(name="Chicago").containment_chains(), [])
+
+    def test_chain_climbs_to_the_top(self):
+        city = LocationModel.objects.create(name="Chicago")
+        hood = LocationModel.objects.create(name="Near North Side")
+        library = LocationModel.objects.create(name="Newberry Library")
+        room = LocationModel.objects.create(name="The Map Room")
+        hood.contained_within.add(city)
+        library.contained_within.add(hood)
+        room.contained_within.add(library)
+        self.assertEqual(room.containment_chains(), [[library, hood, city]])
+
+    def test_one_chain_per_direct_container(self):
+        park = LocationModel.objects.create(name="Park")
+        river = LocationModel.objects.create(name="River")
+        bridge = LocationModel.objects.create(name="Bridge")
+        bridge.contained_within.add(park, river)
+        self.assertCountEqual(bridge.containment_chains(), [[park], [river]])
+
+    def test_cycles_stop(self):
+        a = LocationModel.objects.create(name="A")
+        b = LocationModel.objects.create(name="B")
+        a.contained_within.add(b)
+        b.contained_within.add(a)
+        self.assertEqual(a.containment_chains(), [[b]])
+
+
 class TestLocationContainedWithinM2M(TestCase):
     """Tests for the contained_within ManyToManyField (Issue #1040)."""
 
@@ -142,6 +173,27 @@ class TestLocationDetailView(TestCase):
         self.assertContains(response, self.location.name)
         self.assertContains(response, self.location.description)
         self.assertContains(response, self.location.gauntlet)
+
+    def test_detail_view_is_spread_native(self):
+        """Cover with "Located in" chain, Barriers columns, Scenes here rows."""
+        from game.models import Scene
+
+        city = LocationModel.objects.create(name="Chicago")
+        hood = LocationModel.objects.create(name="Near North Side")
+        hood.contained_within.add(city)
+        self.location.contained_within.add(hood)
+        chronicle = Chronicle.objects.create(name="Chron")
+        Scene.objects.create(name="Opening Night", chronicle=chronicle, location=self.location)
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "core/tl_base.html")
+        self.assertTemplateNotUsed(response, "core/base.html")
+        self.assertContains(response, "Located in")
+        self.assertContains(response, "Near North Side</a> ›")
+        self.assertContains(response, '<span class="tl-barrier__k">Dimension barrier</span>')
+        self.assertContains(response, "Scenes here")
+        self.assertContains(response, "● LIVE")
+        self.assertNotContains(response, "tg-card")
 
 
 class TestLocationCreateView(TestCase):

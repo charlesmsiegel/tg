@@ -1,0 +1,19 @@
+{% load tl sanitize_text %}
+{% comment %}Cells of one index tree row; reads `loc`, `line`, `node` and `glyph`.{% endcomment %}
+<span class="tl-loctree__place tl-indent-{{ node.depth }}">
+    <span class="tl-loctree__glyph" aria-hidden="true">{{ glyph }}</span>
+    <a class="tl-loctree__name{% if line != 'wod' %} tl-loctree__name--line{% elif loc.type == 'city' %} tl-loctree__name--city{% endif %}"
+       href="{{ loc.get_absolute_url }}">{{ loc.name|sanitize_html }}</a>
+</span>
+<span class="tl-loctree__type">{{ loc.get_type }}</span>
+<span class="tl-loctree__owner">
+    {% if loc.owner_id %}
+        <a href="{% url 'accounts:profile' loc.owner_id %}">{{ node.owner }}</a>
+    {% else %}
+        —
+    {% endif %}
+</span>
+<span class="tl-loctree__line">{{ line }}</span>
+<span class="tl-loctree__rank">
+    {% if loc.rank %}{% dots loc.rank %}{% endif %}
+</span>

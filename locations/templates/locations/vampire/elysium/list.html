@@ -1,43 +1,22 @@
-{% extends "core/base.html" %}
-{% load dots %}
-{% block content %}
-<div class="tg-card mb-4">
-    <div class="tg-card-header">
-        <h1 class="tg-card-title vtm_heading">Elysiums</h1>
-    </div>
-    <div class="tg-card-body">
-        <a href="{% url 'locations:vampire:create:elysium' %}" class="btn btn-primary mb-3">Create New Elysium</a>
-
-        {% if object_list %}
-        <div class="tg-table-responsive">
-            <table class="tg-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Location</th>
-                        <th>Prestige</th>
-                        <th>Type</th>
-                        <th>Keeper</th>
-                        <th>Court</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for elysium in object_list %}
-                    <tr>
-                        <td><a href="{{ elysium.get_absolute_url }}">{{ elysium.name }}</a></td>
-                        <td>{% if elysium.contained_within.exists %}{% for container in elysium.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                        <td>{{ elysium.prestige|dots }}</td>
-                        <td>{{ elysium.elysium_type|default:"-" }}</td>
-                        <td>{{ elysium.keeper_name|default:"-" }}</td>
-                        <td>{{ elysium.is_court|yesno:"Yes,No" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p>No elysiums found.</p>
-        {% endif %}
-    </div>
-</div>
-{% endblock content %}
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block create %}
+    <a class="tl-btn tl-btn--block" href="{% url 'locations:vampire:create:elysium' %}">Create New Elysium</a>
+{% endblock create %}
+{% block list_head %}
+    <th>Location</th>
+    <th>Prestige</th>
+    <th>Type</th>
+    <th>Keeper</th>
+    <th>Court</th>
+{% endblock list_head %}
+{% block list_cells %}
+    <td>{% include "locations/tl/containers_cell.html" %}</td>
+    <td>{% dots obj.prestige %}</td>
+    <td>{{ obj.elysium_type|default:'—' }}</td>
+    <td>{{ obj.keeper_name|default:'—' }}</td>
+    <td>{{ obj.is_court|yesno:'Yes,No' }}</td>
+{% endblock list_cells %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No elysiums found." %}
+{% endblock empty %}

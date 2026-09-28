@@ -1,24 +1,47 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header with Demon styling -->
-    <div class="tg-card header-card mb-4" data-gameline="dtf">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title dtf_heading">
-                {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
+{% load tl %}
+{% block type_facts %}
+    {% fact "Reliquary type" object.get_reliquary_type_display %}
+    {% fact "Location size" object.location_size|default:"Not specified" %}
+{% endblock type_facts %}
+{% block model_specific %}
+    <section class="tl-section tl-section--power tl-span-7" id="reliquary">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Reliquary</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div class="tl-stats">
+                {% include "locations/tl/stat.html" with label="Health" value=object.current_health_levels of=object.max_health_levels %}
+                {% include "locations/tl/stat.html" with label="Soak" value=object.soak_rating %}
+                {% include "locations/tl/stat.html" with label="Manifestation range" value=object.manifestation_range note="yards" %}
+            </div>
+            {% if object.is_damaged %}
+                <div class="tl-damage">
+                    {% boxes object.current_health_levels object.max_health_levels %}
+                    <span class="tl-mono tl-rubric">{{ object.damage_percentage|floatformat:0 }}% damaged</span>
+                </div>
             {% endif %}
         </div>
-    </div>
-{% endblock objectname %}
-{% block model_specific %}
-    {% include "locations/demon/reliquary/display_includes/basics.html" %}
+    </section>
+    <section class="tl-section tl-span-5" id="powers">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Powers</h2>
+        </div>
+        <div class="tl-section__body tl-stack tl-stack--lg">
+            <div class="tl-stack">
+                {% include "locations/tl/kv.html" with label="Pervasiveness" value=object.has_pervasiveness|yesno:"Yes,No" %}
+                {% if object.has_pervasiveness %}
+                    <p class="tl-note">The Earthbound can sense everything within this location.</p>
+                {% endif %}
+            </div>
+            <div class="tl-stack">
+                {% include "locations/tl/kv.html" with label="Manifestation" value=object.has_manifestation|yesno:"Yes,No" %}
+                {% if object.has_manifestation %}
+                    <p class="tl-note">The demon can manifest its apocalyptic form here.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
 {% endblock model_specific %}

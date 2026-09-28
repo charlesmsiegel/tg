@@ -1,0 +1,22 @@
+{% comment %}
+Integrated effects on the Spread chantry page: effect name and its spheres. The effects
+form keeps display_includes/integrated_effects.html (chantry-effects.js swaps it).
+{% endcomment %}
+{% with effects=object.integrated_effects.all %}
+    {% if effects %}
+        <section class="tl-section tl-section--power tl-span-5" id="integrated-effects">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Integrated effects</h2>
+            </div>
+            <div class="tl-section__body">
+                {% for effect in effects %}
+                    <div class="tl-scenerow">
+                        <span class="tl-scenerow__name"><a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a></span>
+                        <span class="tl-scenerow__when">{{ effect.spheres }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

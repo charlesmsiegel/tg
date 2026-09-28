@@ -1,38 +1,20 @@
-{% load dots %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title {{ object.get_heading }}">Applied To</h5>
-            </div>
-            <div class="tg-card-body">
-                <div class="row">
-                    {% for loc in applied_locations %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-header py-2">
-                                    <h6 class="tg-card-title mb-0">
-                                        <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
-                                    </h6>
-                                </div>
-                                <div class="tg-card-body">
-                                    <small class="text-muted">{{ loc.get_type }}</small>
-                                    {% if loc.rank %}
-                                        <div class="mt-2">
-                                            <strong>Rank:</strong>
-                                            <span class="dots colored-dots">{{ loc.rank|dots }}</span>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 centertext py-4">
-                            <p class="text-muted mb-0">This Reality Zone is not applied to any locations.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+{% load tl %}
+{% comment %}Places this zone applies to (the view filters them to what the viewer may see).{% endcomment %}
+<section class="tl-section tl-span-6" id="applied-to">
+    <div class="tl-section__head">
+        <span class="tl-section__num"></span>
+        <h2 class="tl-section__title">Applied to</h2>
+        {% if applied_locations %}<span class="tl-section__aside tl-mono tl-muted">{{ applied_locations|length }}</span>{% endif %}
     </div>
-</div>
+    <div class="tl-section__body">
+        {% for loc in applied_locations %}
+            <div class="tl-scenerow">
+                <span class="tl-scenerow__name"><a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a></span>
+                <span class="tl-scenerow__when">{{ loc.get_type }}</span>
+                {% if loc.rank %}{% dots loc.rank %}{% endif %}
+            </div>
+        {% empty %}
+            {% include "core/tl/empty.html" with text="This Reality Zone is not applied to any locations." %}
+        {% endfor %}
+    </div>
+</section>

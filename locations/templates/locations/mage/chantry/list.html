@@ -1,38 +1,13 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Chantries
-{% endblock title %}
-{% block content %}
-    <div class="container">
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title mta_heading">Chantries</h3>
-            </div>
-            <div class="tg-card-body" style="padding: 24px;">
-                {% if user.is_authenticated %}
-                    <p class="text-center">
-                        <a href="{% url 'locations:mage:create:chantry' %}" class="tg-btn btn-primary">Create Chantry</a>
-                        {% if can_create_directly %}
-                            <a href="{% url 'locations:mage:create:chantry_direct' %}" class="tg-btn btn-secondary">Create directly</a>
-                        {% endif %}
-                    </p>
-                {% endif %}
-                <div class="row">
-                    {% for obj in object_list %}
-                        <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 text-center">
-                            <p class="text-muted">No chantries found.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
+{% extends "locations/core/tl_list.html" %}
+{% load tl %}
+{% block create %}
+    {% if user.is_authenticated %}
+        <a class="tl-btn tl-btn--block" href="{% url 'locations:mage:create:chantry' %}">Create Chantry</a>
+    {% endif %}
+    {% if user.is_authenticated and can_create_directly %}
+        <a class="tl-btn tl-btn--ghost tl-btn--block" href="{% url 'locations:mage:create:chantry_direct' %}">Create directly</a>
+    {% endif %}
+{% endblock create %}
+{% block empty %}
+    {% include "core/tl/empty.html" with text="No chantries found." %}
+{% endblock empty %}

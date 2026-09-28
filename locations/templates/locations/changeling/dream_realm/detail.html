@@ -1,49 +1,19 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text %}
-
-{% block objectname %}
-    <div class="tg-card header-card mb-4" data-gameline="ctd">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title ctd_heading">{{ object.name }}</h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-            {% if object.realm_type %}
-                <p class="tg-card-subtitle mb-0">
-                    <strong>{{ object.get_realm_type_display }}</strong>
-                </p>
-            {% endif %}
-        </div>
-    </div>
-{% endblock objectname %}
-
+{% load tl %}
+{% block type_facts %}
+    {% if object.realm_type %}{% fact "Realm type" object.get_realm_type_display %}{% endif %}
+{% endblock type_facts %}
 {% block model_specific %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title ctd_heading">Dream Realm Details</h5>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    {% if object.stability %}
-                        <div class="row mb-2">
-                            <div class="col-sm-3"><strong>Stability:</strong></div>
-                            <div class="col-sm-9">{{ object.stability }}</div>
-                        </div>
-                    {% endif %}
-                    {% if object.accessibility %}
-                        <div class="row mb-2">
-                            <div class="col-sm-3"><strong>Accessibility:</strong></div>
-                            <div class="col-sm-9">{{ object.accessibility }}</div>
-                        </div>
-                    {% endif %}
-                </div>
+    {% if object.stability or object.accessibility %}
+        <section class="tl-section tl-span-6" id="realm">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Dream realm</h2>
             </div>
-        </div>
-    </div>
+            <div class="tl-section__body tl-stack">
+                {% if object.stability %}{% trait "Stability" object.stability variant="acc" %}{% endif %}
+                {% if object.accessibility %}{% trait "Accessibility" object.accessibility variant="acc" %}{% endif %}
+            </div>
+        </section>
+    {% endif %}
 {% endblock model_specific %}

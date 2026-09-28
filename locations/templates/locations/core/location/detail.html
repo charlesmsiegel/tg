@@ -1,35 +1,127 @@
-{% extends "core/object.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header -->
-    <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline|default:'' }}">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title {{ object.get_heading }}">
-                {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
+{% extends "core/tl_base.html" %}
+{% comment %}
+Location detail shell (Spread C9–C12). Every location type extends this.
+
+  cover:  cover_rank (dots under the name), cover_sub (line under the name),
+          type_facts (rule-list rows between "Located in" and "Owner")
+  pages:  a 12-column .tl-sheet of auto-numbered sections, in this order:
+          barriers, model_specific, reality_zone, additional_content, description,
+          post_content (Scenes here). Each block renders zero or more
+          <section class="tl-section [tl-span-N]"> with an empty .tl-section__num.
+
+Section markup, for children:
+  <section class="tl-section tl-span-6">
+      <div class="tl-section__head"><span class="tl-section__num"></span>
+          <h2 class="tl-section__title">Title</h2></div>
+      <div class="tl-section__body">...</div>
+  </section>
+Rows: {% trait %} for dots, .tl-kv for key/value, locations/tl/stat.html for big numbers,
+locations/tl/flag.html for yes/no features.
+{% endcomment %}
+{% load tl sanitize_text %}
+{% block title %}{{ object.name|sanitize_html }}{% endblock title %}
+{% block gameline %}{{ object|gameline_code }}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}{{ object.name }}{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'locations:index' %}">← Locations</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">
+        {{ object|type_label }}{% with line=object|gameline_name %}{% if line %} · {{ line }}{% endif %}{% endwith %}
+    </span>
+    <h1 class="tl-cover__name {{ object.name|cover_title_class:object }}" data-fit-title>
+        {{ object.name|sanitize_html }}
+    </h1>
+    {% block cover_rank %}
+        {% if object.rank %}<span class="tl-cover__rank">{% dots object.rank %}</span>{% endif %}
+    {% endblock cover_rank %}
+    {% block cover_sub %}{% endblock cover_sub %}
+{% endblock cover_title %}
+{% block cover_body %}
+    <div class="tl-facts">
+        {% block cover_facts %}
+            {% with chains=object.containment_chains %}
+                {% if chains %}
+                    <div class="tl-facts__row tl-facts__row--wide">
+                        <span class="tl-facts__k">Located in</span>
+                        <span class="tl-facts__v">
+                            {% for chain in chains %}
+                                {% for place in chain %}
+                                    <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %} ›{% endif %}
+                                {% endfor %}
+                                {% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% block type_facts %}{% endblock type_facts %}
+            {% if object.owner %}
+                {% url 'accounts:profile' object.owner.id as owner_url %}
+                {% fact "Owner" object.owner.username owner_url %}
             {% endif %}
-        </div>
+            {% if object.owned_by %}{% fact "Owned by" object.owned_by %}{% endif %}
+            {% if object.chronicle %}{% fact "Chronicle" object.chronicle %}{% endif %}
+            {% if object.get_status_display %}
+                <div class="tl-facts__row">
+                    <span class="tl-facts__k">Status</span>
+                    <span class="tl-facts__v tl-status">{{ object.get_status_display }}</span>
+                </div>
+            {% endif %}
+            {% for reference in object.sources.all %}
+                {% fact "Source" reference reference.book.get_absolute_url %}
+            {% endfor %}
+        {% endblock cover_facts %}
     </div>
-{% endblock objectname %}
-{% block status_row %}
-    {% include "locations/core/location/display_includes/boundaries.html" %}
-{% endblock status_row %}
-{% block contents %}
-    {% block model_specific %}
-    {% endblock model_specific %}
-    {% block reality_zone %}
-    {% endblock reality_zone %}
-    {% block additional_content %}
-    {% endblock additional_content %}
-{% endblock contents %}
-{% block post_content %}
-    {% include "locations/core/location/display_includes/scenes.html" %}
-{% endblock post_content %}
+{% endblock cover_body %}
+{% block cover_actions %}
+    {% if object_perms.can_edit or object_perms.can_edit_limited %}
+        {% with edit_url=object|update_url %}
+            {% if edit_url %}
+                <div class="tl-btnpair">
+                    <a class="tl-btn" href="{{ edit_url }}">Edit</a>
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+{% endblock cover_actions %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="locations" %}
+{% endblock nav %}
+{% block content %}
+    {% csrf_token %}
+    {% block image %}
+        {% if object.image and object.image_status == "app" %}
+            <img class="tl-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
+        {% elif object.image %}
+            <p class="tl-note">Image pending approval.</p>
+        {% endif %}
+    {% endblock image %}
+    <div class="tl-sheet">
+        {% block barriers %}
+            {% include "locations/core/location/display_includes/barriers.html" %}
+        {% endblock barriers %}
+        {% block contents %}
+            {% block model_specific %}{% endblock model_specific %}
+            {% block reality_zone %}{% endblock reality_zone %}
+            {% block additional_content %}{% endblock additional_content %}
+        {% endblock contents %}
+        {% block description %}
+            {% if object.description %}
+                <section class="tl-section tl-span-7" id="description">
+                    <div class="tl-section__head">
+                        <span class="tl-section__num"></span>
+                        <h2 class="tl-section__title">Description</h2>
+                    </div>
+                    <div class="tl-section__body tl-prose">{{ object.description|sanitize_html|linebreaks }}</div>
+                </section>
+            {% endif %}
+        {% endblock description %}
+        {% block post_content %}
+            {% include "locations/core/location/display_includes/scenes.html" %}
+        {% endblock post_content %}
+    </div>
+    {% tl_object_actions %}
+{% endblock content %}

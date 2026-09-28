@@ -1,32 +1,39 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-{% block objectname %}
-    <!-- Page Header with Mage styling -->
-    <div class="tg-card header-card mb-4" data-gameline="mta">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title mta_heading">
-                {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
+{% comment %}
+Mage chantry (Spread). The generator (locgen.html) keeps the display_includes/* partials;
+this page uses the Spread ones under tl/.
+{% endcomment %}
+{% block type_facts %}
+    {% include "locations/tl/faction_fact.html" %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Season</span>
+        <span class="tl-facts__v">{{ object.get_season_display|default:"Not specified" }}</span>
     </div>
-{% endblock objectname %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Type</span>
+        <span class="tl-facts__v">{{ object.get_chantry_type_display|default:"Not specified" }}</span>
+    </div>
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Leadership</span>
+        <span class="tl-facts__v">{{ object.get_leadership_type_display|default:"Not specified" }}</span>
+    </div>
+{% endblock type_facts %}
 {% block model_specific %}
-    {% include "locations/mage/chantry/display_includes/basics.html" %}
     {% if object.creation_status == 1 %}
-        {% include "locations/mage/chantry/display_includes/resources_remaining.html" %}
+        <section class="tl-section tl-section--power tl-span-5" id="resources">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Resources</h2>
+            </div>
+            <div class="tl-section__body tl-stats">
+                {% include "locations/tl/stat.html" with label="Available points" value=object.points of=object.total_points %}
+                {% include "locations/tl/stat.html" with label="Integrated effects points" value=object.current_ie_points of=object.integrated_effects_number %}
+            </div>
+        </section>
     {% endif %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
-    {% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
+    {% include "characters/tl/backgrounds.html" with backgrounds=object.backgrounds span="tl-span-7" %}
+    {% include "locations/mage/chantry/tl/integrated_effects.html" %}
 {% endblock model_specific %}
 {% block additional_content %}
-    {% include "locations/mage/chantry/display_includes/members.html" %}
+    {% include "locations/mage/chantry/tl/members.html" %}
 {% endblock additional_content %}

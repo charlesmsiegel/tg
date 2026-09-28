@@ -1,125 +1,64 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
-
-{% block objectname %}
-    <!-- Page Header with Mage styling -->
-    <div class="tg-card header-card mb-4" data-gameline="mta">
-        <div class="tg-card-header">
-            <h1 class="tg-card-title mta_heading">
-                {{ object.name }}
-            </h1>
-            {% if object.contained_within.exists %}
-                <p class="tg-card-subtitle mb-0">
-                    Located in:
-                    {% for container in object.contained_within.all %}
-                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
+{% block type_facts %}
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Sphere</span>
+        <span class="tl-facts__v">
+            {{ object.get_primary_sphere_display }}{% if object.secondary_sphere %} + {{ object.get_secondary_sphere_display }}{% endif %}
+        </span>
     </div>
-{% endblock objectname %}
-
+    <div class="tl-facts__row">
+        <span class="tl-facts__k">Paradigm</span>
+        <span class="tl-facts__v">
+            {{ object.get_paradigm_display }}{% if object.secondary_paradigm %} + {{ object.get_secondary_paradigm_display }}{% endif %}
+        </span>
+    </div>
+{% endblock type_facts %}
 {% block model_specific %}
-    <!-- Realm Basics -->
-    <div class="tg-card mb-4">
-        <div class="tg-card-header">
-            <h6 class="mta_heading">Paradox Realm Basics</h6>
+    <section class="tl-section tl-section--power" id="realm">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Paradox realm</h2>
         </div>
-        <div class="tg-card-body" style="padding: 24px;">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Primary Sphere:</span>
-                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_primary_sphere_display }}</span>
-                        {% if object.secondary_sphere %}
-                            + <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_secondary_sphere_display }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Paradigm:</span>
-                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_paradigm_display }}</span>
-                        {% if object.secondary_paradigm %}
-                            + <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_secondary_paradigm_display }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Primary Sphere Obstacles:</span>
-                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.num_primary_obstacles }}</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Random Obstacles:</span>
-                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.num_random_obstacles }}</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Final Obstacle:</span>
-                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_final_obstacle_type_display }}</span>
-                    </div>
-                </div>
-            </div>
+        <div class="tl-section__body tl-stats">
+            {% include "locations/tl/stat.html" with label="Primary sphere obstacles" value=object.num_primary_obstacles %}
+            {% include "locations/tl/stat.html" with label="Random obstacles" value=object.num_random_obstacles %}
+            {% include "locations/tl/stat.html" with label="Final obstacle" value=object.get_final_obstacle_type_display text=True %}
         </div>
-    </div>
-
-    <!-- Atmosphere Elements -->
+    </section>
     {% if atmospheres %}
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <h6 class="mta_heading">Atmosphere</h6>
+        <section class="tl-section tl-span-6" id="atmosphere">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Atmosphere</h2>
             </div>
-            <div class="tg-card-body" style="padding: 24px;">
+            <div class="tl-section__body tl-stack tl-stack--lg">
                 {% for atmosphere in atmospheres %}
-                    <div class="mb-3" style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--theme-text-primary);">
-                            {{ atmosphere.get_paradigm_display }} #{{ atmosphere.atmosphere_number }}
-                        </div>
-                        <div style="line-height: 1.6; color: var(--theme-text-primary);">
-                            {{ atmosphere.description }}
-                        </div>
+                    <div class="tl-stack">
+                        <span class="tl-subhead">{{ atmosphere.get_paradigm_display }} #{{ atmosphere.atmosphere_number }}</span>
+                        <p>{{ atmosphere.description }}</p>
                     </div>
                 {% endfor %}
             </div>
-        </div>
+        </section>
     {% endif %}
-
-    <!-- Obstacles -->
     {% if obstacles %}
-        <div class="tg-card mb-4">
-            <div class="tg-card-header">
-                <h6 class="mta_heading">Obstacles</h6>
+        <section class="tl-section tl-span-6" id="obstacles">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Obstacles</h2>
             </div>
-            <div class="tg-card-body" style="padding: 24px;">
+            <div class="tl-section__body tl-stack tl-stack--lg">
                 {% for obstacle in obstacles %}
-                    <div class="mb-3" style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                        <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--theme-text-primary);">
-                            Obstacle {{ forloop.counter }}: {{ obstacle.name }}
-                        </div>
-                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">
-                            {{ obstacle.get_sphere_display }} - #{{ obstacle.obstacle_number }}
-                        </div>
-                        {% if obstacle.description %}
-                            <div style="line-height: 1.6; color: var(--theme-text-primary);">
-                                {{ obstacle.description }}
-                            </div>
-                        {% endif %}
+                    <div class="tl-stack">
+                        <span class="tl-subhead">Obstacle {{ forloop.counter }} · {{ obstacle.get_sphere_display }} #{{ obstacle.obstacle_number }}</span>
+                        <span class="tl-grouphead__name">{{ obstacle.name }}</span>
+                        {% if obstacle.description %}<p>{{ obstacle.description }}</p>{% endif %}
                     </div>
                 {% endfor %}
             </div>
-        </div>
+        </section>
     {% endif %}
 {% endblock model_specific %}
-
 {% block reality_zone %}
-    {% if object.reality_zone %}
-        {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with object=object.reality_zone %}
-    {% endif %}
+    {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with zone=object.reality_zone span="tl-span-6" %}
 {% endblock reality_zone %}

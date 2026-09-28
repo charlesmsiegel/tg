@@ -1,7 +1,12 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots humanize %}
+{% load tl humanize %}
+{% block type_facts %}
+    {% fact "Population" object.population|intcomma %}
+    {% fact "Mood" object.mood|default:"Not specified" %}
+    {% fact "Theme" object.theme|default:"Not specified" %}
+    {% fact "Media" object.media|default:"Not specified" %}
+    {% fact "Politicians" object.politicians|default:"Not specified" %}
+{% endblock type_facts %}
 {% block model_specific %}
     {% include "locations/core/city/display_includes/population.html" %}
 {% endblock model_specific %}
-{% block additional_content %}
-{% endblock additional_content %}

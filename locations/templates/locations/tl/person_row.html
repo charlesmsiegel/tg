@@ -1,0 +1,7 @@
+{% comment %}One character row: name on the left; type, NPC and status in mono on the right. Reads `person`.{% endcomment %}
+<div class="tl-scenerow">
+    <span class="tl-scenerow__name"><a href="{{ person.get_absolute_url }}">{{ person.name }}</a></span>
+    <span class="tl-scenerow__when">
+        {{ person.get_type }}{% if person.npc %} · NPC{% endif %}{% if person.get_status_display %} · <span class="tl-status{% if person.status == 'Dec' %} tl-status--dec{% endif %}">{{ person.get_status_display }}</span>{% endif %}
+    </span>
+</div>

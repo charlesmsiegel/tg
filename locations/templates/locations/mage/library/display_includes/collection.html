@@ -1,95 +1,79 @@
-{% load sanitize_text dots %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header d-flex justify-content-between align-items-center">
-                <h5 class="tg-card-title mta_heading">Library Collection</h5>
-                <span class="tg-badge badge-light">{{ object.books.count }} Books</span>
-            </div>
-            <div class="tg-card-body">
-                <div class="row">
-                    {% for book in object.books.all|dictsort:"rank" %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="tg-card card-compact mb-3 h-100">
-                                <div class="tg-card-header py-2">
-                                    <h6 class="tg-card-title mb-0">
-                                        <a href="{{ book.get_absolute_url }}">{{ book.name }}</a>
-                                        {% if book.is_primer %}<span class="tg-badge badge-warning float-right">Primer</span>{% endif %}
-                                    </h6>
-                                </div>
-                                <div class="tg-card-body py-2">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <strong class="mr-2">Rank:</strong>
-                                        <span class="dots colored-dots">{{ book.rank|dots }}</span>
-                                    </div>
-                                    <div class="small text-muted">
-                                        {% if book.date_written != -5000 %}
-                                            <div class="mb-1">
-                                                <strong>Written:</strong> {{ book.date_written }}
-                                                {% if book.date_written < 0 %}
-                                                    BC
-                                                {% else %}
-                                                    AD
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                        {% if book.language %}
-                                            <div class="mb-1">
-                                                <strong>Language:</strong>
-                                                <a href="{{ book.language.get_absolute_url }}">{{ book.language }}</a>
-                                            </div>
-                                        {% endif %}
-                                        {% if book.faction %}
-                                            <div class="mb-1">
-                                                <strong>Faction:</strong>
-                                                <a href="{{ book.faction.get_absolute_url }}">{{ book.faction }}</a>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% if book.spheres.exists or book.practices.exists or book.abilities.exists %}
-                                    <div class="tg-card-footer py-1 px-2 small">
-                                        {% if book.spheres.exists %}
-                                            <div class="mt-1">
-                                                <strong>Spheres:</strong>
-                                                {% for sphere in book.spheres.all %}
-                                                    <span class="tg-badge badge-info">
-                                                        <a href="{{ sphere.get_absolute_url }}" class="text-white">{{ sphere }}</a>
-                                                    </span>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                        {% if book.practices.exists %}
-                                            <div class="mt-1">
-                                                <strong>Practices:</strong>
-                                                {% for practice in book.practices.all %}
-                                                    <span class="tg-badge badge-secondary">
-                                                        <a href="{{ practice.get_absolute_url }}" class="text-white">{{ practice }}</a>
-                                                    </span>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                        {% if book.abilities.exists %}
-                                            <div class="mt-1">
-                                                <strong>Abilities:</strong>
-                                                {% for ability in book.abilities.all %}
-                                                    <span class="tg-badge badge-primary">
-                                                        <a href="{{ ability.get_absolute_url }}" class="text-white">{{ ability }}</a>
-                                                    </span>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
+{% load tl %}
+{% comment %}The library's books as tiles: rank, date, language, faction, then what each teaches.{% endcomment %}
+{% with books=object.books.all %}
+    <section class="tl-section" id="collection">
+        <div class="tl-section__head">
+            <span class="tl-section__num"></span>
+            <h2 class="tl-section__title">Collection</h2>
+            <span class="tl-section__aside tl-mono tl-muted">{{ books|length }} book{{ books|length|pluralize }}</span>
+        </div>
+        <div class="tl-section__body">
+            {% if books %}
+                <div class="tl-grid">
+                    {% for book in books|dictsort:"rank" %}
+                        <article class="tl-tile tl-booktile">
+                            <div class="tl-tile__meta">
+                                <span>Rank {{ book.rank }}</span>
+                                {% if book.is_primer %}<span>Primer</span>{% endif %}
                             </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12 centertext py-4">
-                            <p class="text-muted mb-0">This library has no books in its collection yet.</p>
-                        </div>
+                            <h3 class="tl-tile__name">
+                                <a href="{{ book.get_absolute_url }}">{{ book.name }}</a>
+                            </h3>
+                            {% dots book.rank 5 "acc" %}
+                            {% if book.date_written != -5000 %}
+                                <p class="tl-tile__sub">
+                                    Written
+                                    {% if book.date_written < 0 %}
+                                        {{ book.date_written|stringformat:"d"|cut:"-" }} BC
+                                    {% else %}
+                                        {{ book.date_written }} AD
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                            {% if book.language %}
+                                <p class="tl-tile__who">
+                                    <a href="{{ book.language.get_absolute_url }}">{{ book.language }}</a>
+                                </p>
+                            {% endif %}
+                            {% if book.faction %}
+                                <p class="tl-tile__who">
+                                    <a href="{{ book.faction.get_absolute_url }}">{{ book.faction }}</a>
+                                </p>
+                            {% endif %}
+                            {% if book.spheres.exists or book.practices.exists or book.abilities.exists %}
+                                <div class="tl-rote__spheres">
+                                    {% if book.spheres.exists %}
+                                        <div class="tl-kv">
+                                            <span class="tl-subhead">Spheres</span>
+                                            <span class="tl-tile__text">
+                                                {% for sphere in book.spheres.all %}<a href="{{ sphere.get_absolute_url }}">{{ sphere }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                    {% if book.practices.exists %}
+                                        <div class="tl-kv">
+                                            <span class="tl-subhead">Practices</span>
+                                            <span class="tl-tile__text">
+                                                {% for practice in book.practices.all %}<a href="{{ practice.get_absolute_url }}">{{ practice }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                    {% if book.abilities.exists %}
+                                        <div class="tl-kv">
+                                            <span class="tl-subhead">Abilities</span>
+                                            <span class="tl-tile__text">
+                                                {% for ability in book.abilities.all %}<a href="{{ ability.get_absolute_url }}">{{ ability }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </article>
                     {% endfor %}
                 </div>
-            </div>
+            {% else %}
+                {% include "core/tl/empty.html" with text="This library has no books in its collection yet." %}
+            {% endif %}
         </div>
-    </div>
-</div>
+    </section>
+{% endwith %}

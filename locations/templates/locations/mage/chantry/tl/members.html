@@ -1,0 +1,87 @@
+{% comment %}
+Chantry personnel on the Spread detail page: leaders, officers, the three rosters, cabals
+and independent members as character rows under group heads. The chantry generator
+(locgen.html) still uses display_includes/members.html.
+{% endcomment %}
+{% with leaders=object.leaders.all investigators=object.investigator.all guardians=object.guardian.all teachers=object.teacher.all cabals=object.cabals.all independent=object.get_independent_members %}
+    {% if leaders or object.ambassador or object.node_tender or investigators or guardians or teachers or cabals or independent %}
+        <section class="tl-section" id="personnel">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">Personnel</h2>
+            </div>
+            <div class="tl-section__body tl-cols tl-cols--2">
+                <div class="tl-stack tl-stack--lg">
+                    {% if leaders %}
+                        <div>
+                            <span class="tl-subhead">Leaders</span>
+                            {% for person in leaders %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if object.ambassador %}
+                        <div>
+                            <span class="tl-subhead">Ambassador</span>
+                            {% include "locations/tl/person_row.html" with person=object.ambassador %}
+                        </div>
+                    {% endif %}
+                    {% if object.node_tender %}
+                        <div>
+                            <span class="tl-subhead">Node tender</span>
+                            {% include "locations/tl/person_row.html" with person=object.node_tender %}
+                        </div>
+                    {% endif %}
+                    {% if investigators %}
+                        <div>
+                            <span class="tl-subhead">Investigators</span>
+                            {% for person in investigators %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if guardians %}
+                        <div>
+                            <span class="tl-subhead">Guardians</span>
+                            {% for person in guardians %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if teachers %}
+                        <div>
+                            <span class="tl-subhead">Teachers</span>
+                            {% for person in teachers %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="tl-stack tl-stack--lg">
+                    {% for cabal in cabals %}
+                        <details open>
+                            <summary class="tl-grouphead">
+                                <span class="tl-grouphead__name"><a href="{{ cabal.get_absolute_url }}">{{ cabal.name }}</a></span>
+                                <span class="tl-grouphead__rule"></span>
+                                <span class="tl-grouphead__count">{{ cabal.members.count }}</span>
+                            </summary>
+                            {% for person in cabal.members.all %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% empty %}
+                                <p class="tl-note">No members in this cabal.</p>
+                            {% endfor %}
+                        </details>
+                    {% endfor %}
+                    {% if independent %}
+                        <div>
+                            <span class="tl-subhead">Independent members</span>
+                            {% for person in independent %}
+                                {% include "locations/tl/person_row.html" %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endwith %}

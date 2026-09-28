@@ -1,62 +1,33 @@
-{% load dots %}
-{% if object %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Reality Zone</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="enhanced-heading {{ object.get_heading }}">Enhanced Practices</h6>
-                            <div class="table-responsive">
-                                <table class="tg-table node-table mb-0">
-                                    <tbody>
-                                        {% for pr in object.get_positive_practices %}
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ pr.practice.get_absolute_url }}" class="node-link">{{ pr.practice }}</a>
-                                                </td>
-                                                <td class="text-right">
-                                                    <span class="dots colored-dots">{{ pr.rating|dots }}</span>
-                                                </td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr>
-                                                <td colspan="2" class="centertext text-muted py-3">No enhanced practices.</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="hindered-heading {{ object.get_heading }}">Hindered Practices</h6>
-                            <div class="table-responsive">
-                                <table class="tg-table node-table mb-0">
-                                    <tbody>
-                                        {% for pr in object.get_negative_practices %}
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ pr.practice.get_absolute_url }}" class="node-link">{{ pr.practice }}</a>
-                                                </td>
-                                                <td class="text-right">
-                                                    <span class="dots colored-dots reversed">{{ pr.rating|abs|dots }}</span>
-                                                </td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr>
-                                                <td colspan="2" class="centertext text-muted py-3">No hindered practices.</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{% comment %}
+Reality zone practice ratings as key/value rows (Spread C9), enhanced first, then
+hindered (negative, in rubric). Hidden when there is no zone.
+  {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with zone=object.reality_zone span="tl-span-6" %}
+{% endcomment %}
+{% if zone %}
+    {% with positive=zone.get_positive_practices negative=zone.get_negative_practices %}
+        <section class="tl-section {{ span }}" id="reality-zone">
+            <div class="tl-section__head">
+                <span class="tl-section__num"></span>
+                <h2 class="tl-section__title">{{ title|default:"Reality zone" }}</h2>
+                {% if zone != object %}
+                    <a class="tl-section__aside tl-mono tl-muted" href="{{ zone.get_absolute_url }}">{{ zone.name }}</a>
+                {% endif %}
             </div>
-        </div>
-    </div>
+            <div class="tl-section__body tl-stack">
+                {% for pr in positive %}
+                    <div class="tl-kv">
+                        <a href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>
+                        <span class="tl-kv__v">+{{ pr.rating }}</span>
+                    </div>
+                {% endfor %}
+                {% for pr in negative %}
+                    <div class="tl-kv">
+                        <a href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>
+                        <span class="tl-kv__v is-neg">−{{ pr.rating|stringformat:"d"|cut:"-" }}</span>
+                    </div>
+                {% endfor %}
+                {% if not positive and not negative %}<p class="tl-note">No practices enhanced or hindered.</p>{% endif %}
+            </div>
+        </section>
+    {% endwith %}
 {% endif %}
