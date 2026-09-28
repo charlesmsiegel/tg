@@ -1,49 +1,50 @@
-{% extends "core/base.html" %}
-{% block title %}
-    Packs
-{% endblock title %}
+{% extends "core/tl_base.html" %}
+{% comment %}
+Packs: line cover in the Werewolf accent, one table row per pack with its totem,
+leader and member count (as characters/shared/group/list.html, plus the totem).
+{% endcomment %}
+{% load tl %}
+{% block title %}Packs{% endblock title %}
+{% block gameline %}wta{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block cover_label %}Packs{% endblock cover_label %}
+{% block cover_top %}
+    {{ block.super }}
+    <a href="{% url 'characters:index' %}">← Characters</a>
+{% endblock cover_top %}
+{% block cover_title %}
+    <span class="tl-cover__eyebrow">Werewolf · Groups</span>
+    <h1 class="tl-cover__name tl-cover__name--index" data-fit-title>Packs</h1>
+    <span class="tl-switch">{{ object_list|length }} shown</span>
+{% endblock cover_title %}
+{% block nav %}
+    {% include "core/tl/nav.html" with nav_active="characters" %}
+{% endblock nav %}
 {% block content %}
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header text-center">
-                        <h3 class="tg-card-title wta_heading">Packs</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% for obj in object_list %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <div class="tg-card">
-                        <div class="tg-card-body" style="padding: 16px;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
-                                <div class="d-flex gap-3">
-                                    {% if obj.totem %}
-                                        <span style="font-size: 0.9rem; color: var(--theme-text-secondary);">
-                                            Totem: {{ obj.totem.name }}
-                                        </span>
-                                    {% endif %}
-                                    {% if obj.leader %}
-                                        <span style="font-size: 0.9rem; color: var(--theme-text-secondary);">
-                                            Leader: {{ obj.leader.name }}
-                                        </span>
-                                    {% endif %}
-                                    <span class="tg-badge badge-pill badge-secondary">{{ obj.members.count }} member{{ obj.members.count|pluralize }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center" style="color: var(--theme-text-secondary);">No packs found.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+    {% if object_list %}
+        <table class="tl-table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Totem</th>
+                    <th scope="col">Leader</th>
+                    <th scope="col" class="tl-num">Members</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in object_list %}
+                    <tr>
+                        <td class="tl-members__name">
+                            <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                        </td>
+                        <td class="tl-members__type">{{ obj.totem.name|default:"—" }}</td>
+                        <td class="tl-members__type">{{ obj.leader.name|default:"—" }}</td>
+                        <td class="tl-num">{{ obj.members.count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% include "core/tl/empty.html" with text="No packs found." %}
+    {% endif %}
 {% endblock content %}

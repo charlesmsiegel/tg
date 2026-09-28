@@ -1,0 +1,41 @@
+{% comment %}
+Arts and Realms as two allocation columns (one number input per trait), inside a
+.tl-alloc.tl-alloc--2. arts_note / realms_note put a mono note beside the heading.
+  {% include "characters/changeling/tl/arts_realms_columns.html" with arts_note="3 dots" %}
+{% endcomment %}
+<section class="tl-alloc__col" aria-labelledby="ctd-arts">
+    <div class="tl-alloc__head">
+        <h3 class="tl-alloc__name" id="ctd-arts">Arts</h3>
+        {% if arts_note %}<span class="tl-alloc__left">{{ arts_note }}</span>{% endif %}
+    </div>
+    {% include "characters/core/chargen/alloc_row.html" with field=form.autumn label="Autumn" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.chicanery label="Chicanery" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.chronos label="Chronos" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.contract label="Contract" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.dragons_ire label="Dragon's Ire" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.legerdemain label="Legerdemain" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.metamorphosis label="Metamorphosis" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.naming label="Naming" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.oneiromancy label="Oneiromancy" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.primal label="Primal" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.pyretics label="Pyretics" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.skycraft label="Skycraft" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.soothsay label="Soothsay" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.sovereign label="Sovereign" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.spring label="Spring" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.summer label="Summer" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.wayfare label="Wayfare" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.winter label="Winter" %}
+</section>
+<section class="tl-alloc__col" aria-labelledby="ctd-realms">
+    <div class="tl-alloc__head">
+        <h3 class="tl-alloc__name" id="ctd-realms">Realms</h3>
+        {% if realms_note %}<span class="tl-alloc__left">{{ realms_note }}</span>{% endif %}
+    </div>
+    {% include "characters/core/chargen/alloc_row.html" with field=form.actor label="Actor" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.fae label="Fae" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.nature_realm label="Nature" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.prop label="Prop" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.scene label="Scene" %}
+    {% include "characters/core/chargen/alloc_row.html" with field=form.time label="Time" %}
+</section>

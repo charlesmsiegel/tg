@@ -1,0 +1,40 @@
+{% comment %}
+Character form tail: the prose fields, the portrait and the NPC flag, each only when the
+form has it (the full form, or the owner's LimitedHumanEditForm: description, public
+info, history, goals, notes, image).
+  {% include "characters/werewolf/tl/form_story.html" %}
+{% endcomment %}
+{% if form.fields.description or form.fields.public_info or form.fields.history or form.fields.goals or form.fields.notes %}
+    <section class="tl-section" id="story">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Story</h2>
+        </div>
+        <div class="tl-section__body tl-formgrid tl-formgrid--2">
+            {% if form.fields.description %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
+            {% endif %}
+            {% if form.fields.public_info %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.public_info label="Public info" %}</div>
+            {% endif %}
+            {% if form.fields.history %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.history %}</div>
+            {% endif %}
+            {% if form.fields.goals %}
+                {% include "core/tl/field.html" with field=form.goals %}
+            {% endif %}
+            {% if form.fields.notes %}
+                {% include "core/tl/field.html" with field=form.notes %}
+            {% endif %}
+        </div>
+    </section>
+{% endif %}
+{% if form.fields.image or form.fields.npc %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% if form.fields.image %}
+            {% include "core/tl/field.html" with field=form.image label="Portrait" %}
+        {% endif %}
+        {% if form.fields.npc %}
+            {% include "core/misc/check.html" with field=form.npc label="NPC" %}
+        {% endif %}
+    </div>
+{% endif %}

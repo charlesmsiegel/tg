@@ -1,19 +1,9 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Battle Scar
-{% endblock creation_title %}
+{% extends "characters/werewolf/tl/form.html" %}
+{% block creation_title %}Create Battle Scar{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Temporary Glory</div>
-        <div class="col-sm">{{ form.glory }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.glory label="Temporary Glory" %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

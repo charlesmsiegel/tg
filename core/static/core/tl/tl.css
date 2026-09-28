@@ -1368,3 +1368,7 @@ body.tl {
 /* A checkbox beside labelled fields lines up with their inputs. */
 .tl-itemform .tl-formgrid:has(> .tl-field > .tl-field__label) > .tl-field:has(> .tl-check) { padding-top: 30px; }
 .tl-itemform .tl-field textarea { height: 7.5em; resize: vertical; }
+/* ---- werewolf and changeling forms ---- */
+/* Two allocation columns (Changeling Arts / Realms); one column on phones. */
+.tl-alloc--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 720px) { .tl-alloc--2 { grid-template-columns: 1fr; } }

@@ -1,207 +1,138 @@
-{% extends "characters/core/human/form.html" %}
-{% load get_specialty %}
-{% load dots %}
-{% block creation_title %}
-    Create Human (Werewolf)
-{% endblock creation_title %}
-{% block abilities %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Talents</h3>
-        <h3 class="col-sm {{ object.get_heading }}">Skills</h3>
-        <h3 class="col-sm {{ object.get_heading }}">Knowledges</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Alertness
-            {% with spec=object|get_specialty:'alertness' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
+{% extends "characters/werewolf/tl/form.html" %}
+{% comment %}
+Edit form for every Werewolf-line character (Human, Garou, Kinfolk, Fomor, Fera, Drone:
+their templates only rename the page). Each field renders only when the view's form has
+it: a storyteller gets the full form, an owner without that scope only the story fields
+(LimitedHumanEditForm).
+{% endcomment %}
+{% block creation_title %}Create Human (Werewolf){% endblock creation_title %}
+{% block contents %}
+    {% if form.fields.name %}
+        <div class="tl-formgrid">
+            {% include "core/tl/field.html" with field=form.name %}
+            {% if form.fields.owner %}
+                {% include "core/tl/field.html" with field=form.owner label="Player" %}
+            {% endif %}
+            {% include "core/tl/field.html" with field=form.concept %}
+            {% include "core/tl/field.html" with field=form.nature %}
+            {% include "core/tl/field.html" with field=form.demeanor %}
+            {% if form.fields.tribe %}
+                {% include "core/tl/field.html" with field=form.tribe %}
+            {% endif %}
+            {% if form.fields.breed %}
+                {% include "core/tl/field.html" with field=form.breed %}
+            {% endif %}
+            {% if form.fields.auspice %}
+                {% include "core/tl/field.html" with field=form.auspice %}
+            {% endif %}
+            {% if form.fields.faction %}
+                {% include "core/tl/field.html" with field=form.faction %}
+            {% endif %}
+            {% if form.fields.rank %}
+                {% include "core/tl/field.html" with field=form.rank %}
+            {% endif %}
+            {% if form.fields.relation %}
+                {% include "core/tl/field.html" with field=form.relation %}
+            {% endif %}
+            {% if form.fields.bane_name %}
+                {% include "core/tl/field.html" with field=form.bane_name label="Possessing Bane" %}
+                {% include "core/tl/field.html" with field=form.bane_type label="Bane type" %}
+            {% endif %}
+            {% if form.fields.camps %}
+                <div class="tl-field--full">{% include "core/tl/field.html" with field=form.camps %}</div>
+            {% endif %}
         </div>
-        <div class="col-sm dots">{{ form.alertness|dots }}</div>
-        <div class="col-sm">
-            Animal Ken
-            {% with spec=object|get_specialty:'animal_ken' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.animal_ken|dots }}</div>
-        <div class="col-sm">
-            Academics
-            {% with spec=object|get_specialty:'academics' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.academics|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Athletics
-            {% with spec=object|get_specialty:'athletics' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.athletics|dots }}</div>
-        <div class="col-sm">
-            Crafts
-            {% with spec=object|get_specialty:'crafts' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.crafts|dots }}</div>
-        <div class="col-sm">
-            Computer
-            {% with spec=object|get_specialty:'computer' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.computer|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Brawl
-            {% with spec=object|get_specialty:'brawl' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.brawl|dots }}</div>
-        <div class="col-sm">
-            Drive
-            {% with spec=object|get_specialty:'drive' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.drive|dots }}</div>
-        <div class="col-sm">
-            Enigmas
-            {% with spec=object|get_specialty:'enigmas' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.enigmas|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Empathy
-            {% with spec=object|get_specialty:'empathy' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.empathy|dots }}</div>
-        <div class="col-sm">
-            Etiquette
-            {% with spec=object|get_specialty:'etiquette' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.etiquette|dots }}</div>
-        <div class="col-sm">
-            Investigation
-            {% with spec=object|get_specialty:'investigation' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.investigation|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Expression
-            {% with spec=object|get_specialty:'expression' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.expression|dots }}</div>
-        <div class="col-sm">
-            Firearms
-            {% with spec=object|get_specialty:'firearms' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.firearms|dots }}</div>
-        <div class="col-sm">
-            Law
-            {% with spec=object|get_specialty:'law' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.law|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Intimidation
-            {% with spec=object|get_specialty:'intimidation' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.intimidation|dots }}</div>
-        <div class="col-sm">
-            Larceny
-            {% with spec=object|get_specialty:'larceny' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.larceny|dots }}</div>
-        <div class="col-sm">
-            Medicine
-            {% with spec=object|get_specialty:'medicine' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.medicine|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Leadership
-            {% with spec=object|get_specialty:'leadership' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.leadership|dots }}</div>
-        <div class="col-sm">
-            Melee
-            {% with spec=object|get_specialty:'melee' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.melee|dots }}</div>
-        <div class="col-sm">
-            Occult
-            {% with spec=object|get_specialty:'occult' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.occult|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Primal-Urge
-            {% with spec=object|get_specialty:'primal_urge' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.primal_urge|dots }}</div>
-        <div class="col-sm">
-            Performance
-            {% with spec=object|get_specialty:'performance' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.performance|dots }}</div>
-        <div class="col-sm">
-            Rituals
-            {% with spec=object|get_specialty:'rituals' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.rituals|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Streetwise
-            {% with spec=object|get_specialty:'streetwise' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.streetwise|dots }}</div>
-        <div class="col-sm">
-            Stealth
-            {% with spec=object|get_specialty:'stealth' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.stealth|dots }}</div>
-        <div class="col-sm">
-            Science
-            {% with spec=object|get_specialty:'science' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.science|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            Subterfuge
-            {% with spec=object|get_specialty:'subterfuge' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.subterfuge|dots }}</div>
-        <div class="col-sm">
-            Survival
-            {% with spec=object|get_specialty:'survival' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.survival|dots }}</div>
-        <div class="col-sm">
-            Technology
-            {% with spec=object|get_specialty:'technology' %}{% if spec %}({{ spec }}){% endif %}{% endwith %}
-        </div>
-        <div class="col-sm dots">{{ form.technology|dots }}</div>
-    </div>
-{% endblock abilities %}
-{% block backgrounds %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Backgrounds</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm">Allies</div>
-        <div class="col-sm dots">{{ form.allies|dots }}</div>
-        <div class="col-sm">Contacts</div>
-        <div class="col-sm dots">{{ form.contacts|dots }}</div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm">Mentor</div>
-        <div class="col-sm dots">{{ form.mentor|dots }}</div>
-        <div class="col-sm">Resources</div>
-        <div class="col-sm dots">{{ form.resources|dots }}</div>
-        <div class="col-sm"></div>
-    </div>
-{% endblock backgrounds %}
+    {% endif %}
+    {% include "characters/werewolf/tl/form_traits.html" %}
+    {% if form.fields.willpower %}
+        <section class="tl-section" id="advantages">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Advantages</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% include "core/tl/field.html" with field=form.willpower %}
+                {% if form.fields.willpower_per_turn %}
+                    {% include "core/tl/field.html" with field=form.willpower_per_turn label="Willpower per turn" %}
+                {% endif %}
+                {% if form.fields.rage %}
+                    {% include "core/tl/field.html" with field=form.rage %}
+                {% endif %}
+                {% if form.fields.gnosis %}
+                    {% include "core/tl/field.html" with field=form.gnosis %}
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+    {% if form.fields.glory or form.fields.renown %}
+        <section class="tl-section tl-section--power" id="renown">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Renown</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid">
+                {% if form.fields.glory %}
+                    {% include "core/tl/field.html" with field=form.glory %}
+                    {% include "core/tl/field.html" with field=form.honor %}
+                    {% include "core/tl/field.html" with field=form.wisdom %}
+                    {% include "core/tl/field.html" with field=form.temporary_glory label="Temporary Glory" %}
+                    {% include "core/tl/field.html" with field=form.temporary_honor label="Temporary Honor" %}
+                    {% include "core/tl/field.html" with field=form.temporary_wisdom label="Temporary Wisdom" %}
+                {% endif %}
+                {% if form.fields.renown %}
+                    {% include "core/tl/field.html" with field=form.renown %}
+                    {% include "core/tl/field.html" with field=form.temporary_renown label="Temporary Renown" %}
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+    {% if form.fields.gifts or form.fields.rites_known or form.fields.fetishes_owned or form.fields.powers or form.fields.battle_scars %}
+        <section class="tl-section tl-section--power" id="powers">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">{% if form.fields.powers %}Powers{% else %}Gifts &amp; Rites{% endif %}</h2>
+            </div>
+            <div class="tl-section__body tl-formgrid tl-formgrid--2">
+                {% if form.fields.gifts %}
+                    {% include "core/tl/field.html" with field=form.gifts %}
+                {% endif %}
+                {% if form.fields.rites_known %}
+                    {% include "core/tl/field.html" with field=form.rites_known label="Rites" %}
+                {% endif %}
+                {% if form.fields.fetishes_owned %}
+                    {% include "core/tl/field.html" with field=form.fetishes_owned label="Fetishes" %}
+                {% endif %}
+                {% if form.fields.battle_scars %}
+                    {% include "core/tl/field.html" with field=form.battle_scars label="Battle scars" %}
+                {% endif %}
+                {% if form.fields.powers %}
+                    {% include "core/tl/field.html" with field=form.powers label="Fomori powers" %}
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+    {% if form.fields.specialties %}
+        <section class="tl-section" id="biography">
+            <div class="tl-section__head">
+                <h2 class="tl-section__title">Biography</h2>
+            </div>
+            <div class="tl-section__body tl-stack tl-stack--lg">
+                <div class="tl-formgrid">
+                    {% include "core/tl/field.html" with field=form.date_of_birth label="Date of birth" %}
+                    {% include "core/tl/field.html" with field=form.age %}
+                    {% include "core/tl/field.html" with field=form.apparent_age label="Apparent age" %}
+                    {% if form.fields.age_of_first_change %}
+                        {% include "core/tl/field.html" with field=form.age_of_first_change label="Age of First Change" %}
+                    {% endif %}
+                    {% if form.fields.first_change %}
+                        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.first_change label="First Change" %}</div>
+                    {% endif %}
+                </div>
+                <div class="tl-formgrid tl-formgrid--2">
+                    {% include "core/tl/field.html" with field=form.merits_and_flaws label="Merits & flaws" %}
+                    {% include "core/tl/field.html" with field=form.specialties %}
+                    {% include "core/tl/field.html" with field=form.languages %}
+                    {% include "core/tl/field.html" with field=form.derangements %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    {% include "characters/werewolf/tl/form_story.html" %}
+{% endblock contents %}

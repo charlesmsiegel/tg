@@ -1,0 +1,16 @@
+{% comment %}
+One list of rank-1 Gifts open to a Fera (the gifts chargen step): accent-ruled column,
+name then a short description per Gift.
+  {% include "characters/werewolf/tl/fera_gift_group.html" with gifts=breed_gifts title="Breed" %}
+{% endcomment %}
+{% if gifts %}
+    <section class="tl-col tl-gifts__col">
+        <h2 class="tl-col__head">{{ title }} Gifts</h2>
+        {% for gift in gifts %}
+            <div>
+                <p class="tl-gift">{{ gift.name }}</p>
+                {% if gift.description %}<p class="tl-note">{{ gift.description|striptags|truncatewords:20 }}</p>{% endif %}
+            </div>
+        {% endfor %}
+    </section>
+{% endif %}

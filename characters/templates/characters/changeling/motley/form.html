@@ -1,26 +1,9 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Motley
-{% endblock creation_title %}
+{% extends "characters/core/group/form.html" %}
+{% comment %}Create / edit a motley: the group form plus its member list.{% endcomment %}
+{% block creation_title %}Create Motley{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm {{ form.get_heading }}">
-            <h1>{{ form.name }}</h1>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <a class="col-sm" href={{ form.leader.get_absolute_url }}>{{ form.leader }}</a>
-    </div>
-    {% for member in form.members.all %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href={{ member.get_absolute_url }}>{{ member }}</a>
-            <div class="col-sm"></div>
-        </div>
-    {% endfor %}
+    {% include "core/tl/field.html" with field=form.name %}
+    {% include "core/tl/field.html" with field=form.leader %}
+    {% include "core/tl/field.html" with field=form.members %}
+    {% include "core/tl/field.html" with field=form.description %}
 {% endblock contents %}

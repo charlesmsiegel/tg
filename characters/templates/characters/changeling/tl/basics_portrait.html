@@ -1,0 +1,11 @@
+{% comment %}
+Basics (first chargen page) tail: the portrait upload, and the NPC flag for a
+storyteller (`storyteller` from the basics view).
+  {% include "characters/changeling/tl/basics_portrait.html" %}
+{% endcomment %}
+<div class="tl-formgrid tl-formgrid--2">
+    {% include "core/tl/field.html" with field=form.image label="Character portrait" %}
+    {% if storyteller %}
+        {% include "core/misc/check.html" with field=form.npc label="NPC" %}
+    {% endif %}
+</div>

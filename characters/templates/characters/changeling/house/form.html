@@ -1,31 +1,11 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create House
-{% endblock creation_title %}
+{% extends "characters/changeling/tl/form.html" %}
+{% block creation_title %}Create House{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Court</div>
-        <div class="col-sm">{{ form.get_court_display }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Boon</div>
-        <div class="col-sm">{{ form.boon }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Flaw</div>
-        <div class="col-sm">{{ form.flaw }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Factions</div>
-        <div class="col-sm">{{ form.factions }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.court %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.boon %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.flaw %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

@@ -1,0 +1,73 @@
+{% load field %}
+{% comment %}
+Character form: Attributes and Abilities as ruled allocation columns (one number input
+per trait), only when the form has them (the storyteller's full form). The ability
+columns follow the character's own talents / skills / knowledges lists.
+  {% include "characters/werewolf/tl/form_traits.html" %}
+{% endcomment %}
+{% if form.fields.strength %}
+    <section class="tl-section tl-section--cols" id="attributes">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Attributes</h2>
+        </div>
+        <div class="tl-section__body tl-alloc">
+            <section class="tl-alloc__col" aria-labelledby="attr-physical">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="attr-physical">Physical</h3>
+                </div>
+                {% include "characters/core/chargen/alloc_row.html" with field=form.strength label="Strength" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.dexterity label="Dexterity" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.stamina label="Stamina" %}
+            </section>
+            <section class="tl-alloc__col" aria-labelledby="attr-social">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="attr-social">Social</h3>
+                </div>
+                {% include "characters/core/chargen/alloc_row.html" with field=form.charisma label="Charisma" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.manipulation label="Manipulation" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.appearance label="Appearance" %}
+            </section>
+            <section class="tl-alloc__col" aria-labelledby="attr-mental">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="attr-mental">Mental</h3>
+                </div>
+                {% include "characters/core/chargen/alloc_row.html" with field=form.perception label="Perception" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.intelligence label="Intelligence" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.wits label="Wits" %}
+            </section>
+        </div>
+    </section>
+{% endif %}
+{% if form.fields.alertness %}
+    <section class="tl-section tl-section--cols" id="abilities">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Abilities</h2>
+        </div>
+        <div class="tl-section__body tl-alloc">
+            <section class="tl-alloc__col" aria-labelledby="abil-talents">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="abil-talents">Talents</h3>
+                </div>
+                {% for name in object.talents %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form|field:name label="" %}
+                {% endfor %}
+            </section>
+            <section class="tl-alloc__col" aria-labelledby="abil-skills">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="abil-skills">Skills</h3>
+                </div>
+                {% for name in object.skills %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form|field:name label="" %}
+                {% endfor %}
+            </section>
+            <section class="tl-alloc__col" aria-labelledby="abil-knowledges">
+                <div class="tl-alloc__head">
+                    <h3 class="tl-alloc__name" id="abil-knowledges">Knowledges</h3>
+                </div>
+                {% for name in object.knowledges %}
+                    {% include "characters/core/chargen/alloc_row.html" with field=form|field:name label="" %}
+                {% endfor %}
+            </section>
+        </div>
+    </section>
+{% endif %}

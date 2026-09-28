@@ -1,35 +1,20 @@
-{% extends "characters/core/character/form.html" %}
-{% block creation_title %}
-    Create Spirit
-{% endblock creation_title %}
-{% block statistics %}
-    <div class="row">
-        <div class="col-sm">Willpower</div>
-        <div class="col-sm">{{ form.willpower }}</div>
+{% extends "characters/werewolf/tl/form.html" %}
+{% block creation_title %}Create Spirit{% endblock creation_title %}
+{% block contents %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.owner label="Player" %}
     </div>
-    <div class="row">
-        <div class="col-sm">Rage</div>
-        <div class="col-sm">{{ form.rage }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Gnosis</div>
-        <div class="col-sm">{{ form.gnosis }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Essence</div>
-        <div class="col-sm">{{ form.essence }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm">Charms</h2>
-    </div>
-    {% for charm in form.charms.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ charm.get_absolute_url }}">{{ charm.name }}</a>
+    <section class="tl-section" id="traits">
+        <div class="tl-section__head">
+            <h2 class="tl-section__title">Traits</h2>
         </div>
-    {% endfor %}
-{% endblock statistics %}
-{% block flavor %}
-    <div class="row">
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-{% endblock flavor %}
+        <div class="tl-section__body tl-formgrid">
+            {% include "core/tl/field.html" with field=form.willpower %}
+            {% include "core/tl/field.html" with field=form.rage %}
+            {% include "core/tl/field.html" with field=form.gnosis %}
+            {% include "core/tl/field.html" with field=form.essence %}
+        </div>
+    </section>
+    {% include "core/tl/field.html" with field=form.description %}
+{% endblock contents %}

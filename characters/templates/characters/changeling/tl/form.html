@@ -1,0 +1,16 @@
+{% extends "core/form.html" %}
+{% comment %}
+Create / edit shell for the Changeling forms (characters and reference objects): a line
+cover in the Changeling accent even before the object exists. The children write
+Spread markup only (core/tl/field.html rows in .tl-formgrid / .tl-section), so the
+pages render outside the legacy wrapper, with the M14 error summary. multipart: the
+character forms carry a portrait.
+{% endcomment %}
+{% load tl %}
+{% block gameline %}{% if object %}{{ object|gameline_code }}{% else %}ctd{% endif %}{% endblock gameline %}
+{% block cover_kind %}line{% endblock cover_kind %}
+{% block formdetails %}action="" method="post" enctype="multipart/form-data"{% endblock formdetails %}
+{% block content_mod %}{% endblock content_mod %}
+{% block errors %}
+    {% include "core/misc/form_errors.html" %}
+{% endblock errors %}

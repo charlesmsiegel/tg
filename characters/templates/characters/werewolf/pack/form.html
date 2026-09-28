@@ -1,30 +1,12 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Pack
-{% endblock creation_title %}
+{% extends "characters/core/group/form.html" %}
+{% comment %}Create / edit a pack: the group form plus its totem and member list.{% endcomment %}
+{% block creation_title %}Create Pack{% endblock creation_title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm {{ form.get_heading }}">
-            <h1>{{ form.name }}</h1>
-        </div>
+    {% include "core/tl/field.html" with field=form.name %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.leader %}
+        {% include "core/tl/field.html" with field=form.totem %}
     </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Totem</div>
-        <div class="col-sm">{{ form.totem }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <a class="col-sm" href={{ form.leader.get_absolute_url }}>{{ form.leader }}</a>
-    </div>
-    {% for member in form.members.all %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href={{ member.get_absolute_url }}>{{ member }}</a>
-            <div class="col-sm"></div>
-        </div>
-    {% endfor %}
+    {% include "core/tl/field.html" with field=form.members %}
+    {% include "core/tl/field.html" with field=form.description %}
 {% endblock contents %}

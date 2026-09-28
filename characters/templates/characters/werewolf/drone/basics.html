@@ -1,27 +1,18 @@
-{% extends "characters/core/character/chargen.html" %}
-{% load crispy_forms_tags %}
-
-{% block title %}Create Drone{% endblock %}
-
-{% block step_title %}
-    <h2 class="wta_heading">Create Drone</h2>
-    <p class="text-muted">Bane-possessed humans who serve the Wyrm.</p>
-{% endblock %}
-
-{% block content %}
-    <div class="tg-card" data-gameline="wta">
-        <div class="tg-card-header">
-            <h5 class="tg-card-title wta_heading">Basic Information</h5>
-        </div>
-        <div class="tg-card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <div class="mt-3">
-                    <button type="submit" class="btn btn-primary">Create Character</button>
-                    <a href="{% url 'characters:index' %}" class="btn btn-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
+{% extends "characters/werewolf/tl/form.html" %}
+{% block creation_title %}Create Drone{% endblock creation_title %}
+{% block formdetails %}method="post" id="droneForm" action="" novalidate enctype="multipart/form-data"{% endblock formdetails %}
+{% block contents %}
+    <p class="tl-lede">Bane-possessed humans who serve the Wyrm. Decide identity and motivation, then name the Bane.</p>
+    <div class="tl-formgrid">
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.concept %}
+        {% include "core/tl/field.html" with field=form.chronicle %}
+        {% include "core/tl/field.html" with field=form.nature %}
+        {% include "core/tl/field.html" with field=form.demeanor %}
     </div>
-{% endblock %}
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.bane_name label="Possessing Bane" %}
+        {% include "core/tl/field.html" with field=form.bane_type label="Bane type" %}
+    </div>
+    {% include "characters/werewolf/tl/basics_portrait.html" %}
+{% endblock contents %}

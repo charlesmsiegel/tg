@@ -1,19 +1,9 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create House Faction
-{% endblock creation_title %}
+{% extends "characters/changeling/tl/form.html" %}
+{% block creation_title %}Create House Faction{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Houses</div>
-        <div class="col-sm">{{ form.houses }}</div>
+    <div class="tl-formgrid tl-formgrid--2">
+        {% include "core/tl/field.html" with field=form.name %}
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.houses help=form.houses.help_text %}</div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

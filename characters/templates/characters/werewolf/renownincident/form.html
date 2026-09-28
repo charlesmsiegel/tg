@@ -1,43 +1,17 @@
-{% extends "core/form.html" %}
-{% block creation_title %}
-    Create Renown Incident
-{% endblock creation_title %}
+{% extends "characters/werewolf/tl/form.html" %}
+{% block creation_title %}Create Renown Incident{% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Glory</div>
-        <div class="col-sm">{{ form.glory }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Honor</div>
-        <div class="col-sm">{{ form.honor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Wisdom</div>
-        <div class="col-sm">{{ form.wisdom }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Posthumous?</div>
-        <div class="col-sm">{{ form.posthumous }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Only Once?</div>
-        <div class="col-sm">{{ form.only_once }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Breed Restriction</div>
-        <div class="col-sm">{{ form.breed }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rite Required</div>
-        <div class="col-sm">{{ form.rite.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
+    <div class="tl-formgrid">
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.name %}</div>
+        {% include "core/tl/field.html" with field=form.glory %}
+        {% include "core/tl/field.html" with field=form.honor %}
+        {% include "core/tl/field.html" with field=form.wisdom %}
+        {% include "core/tl/field.html" with field=form.breed label="Breed restriction" %}
+        {% include "core/tl/field.html" with field=form.rite label="Rite required" %}
+        <div class="tl-stack">
+            {% include "core/misc/check.html" with field=form.posthumous label="Posthumous" %}
+            {% include "core/misc/check.html" with field=form.only_once label="Only once" %}
+        </div>
+        <div class="tl-field--full">{% include "core/tl/field.html" with field=form.description %}</div>
     </div>
 {% endblock contents %}

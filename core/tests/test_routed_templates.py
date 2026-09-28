@@ -26,10 +26,6 @@ from core.access_policy import PROJECT_PREFIXES, route_name
 from scripts.inventory_authorization_routes import descendants
 
 KNOWN_MISSING = {
-    "characters/core/character/chargen.html": (
-        "characters.views.werewolf.drone.DroneBasicsView",
-        "Step 2",
-    ),
     "characters/wraith/wraith/form.html": (
         "characters.views.wraith.wraith.WraithUpdateView",
         "Step 7",
