@@ -1,64 +1,92 @@
-# Tellurium Games (TG)
+# Tellurium Games
 
-TG is a Django application for running *World of Darkness* tabletop chronicles. Players can create and advance characters; Storytellers can organize chronicles, scenes, stories, journals, items, and locations in the same place. The site is in beta, and the depth of support varies by game line.
+Tellurium Games (TG) is a Django web application for running *World of Darkness* tabletop
+chronicles. Players build and advance characters; Storytellers run chronicles, scenes and
+stories, review characters and advancement, and keep the chronicle's items, locations and
+reference material in one place.
 
-## What is here
+## Features
 
-- Character sheets and creation flows with game-specific traits, plus experience and freebie spending.
-- Chronicles with player and Storyteller roles, scenes, stories, journals, and house rules.
-- Review and approval workflows for characters and advancement.
-- Reference data for abilities, powers, factions, and other game material, loaded from `populate_db/`.
-- Scene chat over Django Channels.
+- **Characters for eight game lines**: *Vampire: the Masquerade*, *Werewolf: the Apocalypse*
+  (with the Fera and Kinfolk), *Mage: the Ascension* (with Sorcerers and Companions), *Wraith:
+  the Oblivion*, *Changeling: the Dreaming*, *Demon: the Fallen*, *Mummy: the Resurrection* and
+  *Hunter: the Reckoning*, plus mortals. Game lines are at different levels of completeness.
+- **Guided character creation**: step-by-step workflows per character type with trait
+  allocation, priority ranks and freebie spending, then submission for Storyteller approval.
+- **Advancement**: XP earned per week, scene and story; XP and freebie spending requests that
+  a Storyteller approves or denies.
+- **Chronicles and play**: chronicles with head and gameline Storytellers, stories, weeks,
+  journals, and scenes with live chat over WebSockets, dice rolls and unread tracking.
+- **Items and locations**: equipment, artifacts, havens, nodes, caerns and more, per game line.
+- **Reference data**: clans, tribes, traditions, disciplines, gifts, spheres, merits and
+  flaws, and other game material, loaded from scripts and browsable without an account.
+- **Access control**: every route has a declared policy, checked by middleware before any view
+  runs; object access follows ownership, chronicle roles and visibility.
 
-The character code includes **Vampire: the Masquerade**, **Werewolf: the Apocalypse**, **Mage: the Ascension**, **Wraith: the Oblivion**, **Changeling: the Dreaming**, **Demon: the Fallen**, **Mummy: the Resurrection**, and **Hunter: the Reckoning**. These game lines are at different stages of development.
+## Quick start
 
-## Run locally
-
-You need Python 3.10 or newer and Git. The commands below use a macOS or Linux shell. Local development uses SQLite and an in-memory channel layer, so it does not require PostgreSQL or Redis.
+You need Python 3.10 and Git. Local development uses SQLite, an in-memory cache and an
+in-memory channel layer, so no database server or Redis is required.
 
 ```bash
 git clone https://github.com/charlesmsiegel/tg.git
 cd tg
-python3 -m venv .venv
+python3.10 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
+python manage.py makemigrations   # local apps commit no migrations
 python manage.py migrate
 python manage.py createsuperuser
+python manage.py populate_gamedata   # load the game reference data
 python manage.py runserver 7000
 ```
 
-Open <http://127.0.0.1:7000/>. You can sign in with the superuser you created or make a player account at `/accounts/signup/`.
+Open <http://127.0.0.1:7000/>. The local apps keep no migration files in git, so
+`makemigrations` generates them for your database first; the full setup is in
+[Installation](docs/getting-started/installation.md).
 
-Development settings are selected by default. You can copy [`.env.example`](.env.example) to `.env` to change local settings; the app reads it with `python-dotenv`. In particular, `SECRET_KEY` and `DJANGO_ALLOWED_HOSTS` are recognized. The database defaults to `db.sqlite3` in the project root.
-
-### Load game data
-
-To populate a **fresh local database** with the bundled game data, run this from the repository root:
-
-```bash
-python manage.py populate_gamedata --dry-run  # Preview the scripts
-python manage.py populate_gamedata            # Load them
-```
-
-Check the command's final success and failure counts. It executes the Python files in `populate_db/` and reports errors per file. The `setup_db.sh` script is for a full reset: it calls `reset_db --yes`, deleting the existing local database and app migration files. Do not use it to add data to a database you want to keep.
-
-## Work on the project
+Run the checks and the tests:
 
 ```bash
 python manage.py check
 python manage.py test
 ```
 
-The main areas of the codebase are:
+## Documentation
 
-| Path | Purpose |
-| --- | --- |
-| `characters/` | Character models, sheets, creation flows, and game-specific rules |
-| `game/` | Chronicles, scenes, stories, journals, XP requests, and scene chat |
-| `accounts/` | Sign-up, profiles, and player/Storyteller relationships |
-| `items/`, `locations/` | Chronicle equipment and places |
-| `core/` | Shared models, permissions, views, and template components |
-| `populate_db/` | Scripts that load game reference data |
-| `tg/settings/` | Development and production Django settings |
+The documentation lives in [`docs/`](docs/README.md), with a detailed reference for each app
+in its own folder.
 
-For implementation conventions, see [`CLAUDE.md`](CLAUDE.md). The [`characters/`](characters/README.md), [`game/`](game/README.md), and [`core/`](core/README.md) guides describe the main apps. Bugs and feature requests go in [GitHub Issues](https://github.com/charlesmsiegel/tg/issues).
+| Start here | For |
+|------------|-----|
+| [Installation](docs/getting-started/installation.md), [Local development](docs/getting-started/local-development.md) | Setting up a working copy |
+| [Architecture overview](docs/architecture/overview.md) | How the system fits together |
+| [Guides](docs/README.md#guides) | Adding character types, views, reference data, schema changes |
+| [Testing](docs/development/testing.md), [Code style](docs/development/code-style.md) | Working on the code |
+| [Deployment](docs/operations/deployment.md) | Running it in production |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to propose a change |
+| [`AGENTS.md`](AGENTS.md) | Instructions for coding agents |
+
+| App | Purpose |
+|-----|---------|
+| [`accounts`](accounts/README.md) | Sign-up, profiles, the player and Storyteller dashboard |
+| [`characters`](characters/README.md) | Character models, sheets, creation workflows, XP and freebie rules |
+| [`core`](core/README.md) | Base models, permissions and route policies, view mixins, templates, shared tools |
+| [`game`](game/README.md) | Chronicles, scenes and chat, stories, weeks, journals, XP requests |
+| [`items`](items/README.md), [`locations`](locations/README.md) | Equipment and places |
+| [`widgets`](widgets/README.md) | Reusable form widgets |
+| [`tg`](tg/README.md), [`tg_schema`](tg_schema/README.md) | Project settings and URLs; schema patches for existing databases |
+| [`populate_db`](populate_db/README.md) | Game reference data scripts |
+
+## Technology
+
+Django 5.2 with [django-polymorphic](https://django-polymorphic.readthedocs.io/) model trees,
+Django Channels and Daphne for WebSockets, Redis for the production cache and channel layer,
+server-rendered templates in the project's "Spread" design system with htmx and Alpine.js,
+black and ruff through pre-commit.
+
+## Contributing and security
+
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Report security
+problems privately as described in [`SECURITY.md`](SECURITY.md). Bugs and feature requests go
+to [GitHub Issues](https://github.com/charlesmsiegel/tg/issues).
