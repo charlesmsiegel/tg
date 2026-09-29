@@ -15,6 +15,7 @@ from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     ViewPermissionMixin,
+    launch_chronicle,
 )
 from core.permissions import PermissionManager
 from core.views.generic import DictView
@@ -107,9 +108,11 @@ class _ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        chronicle_id = self.request.GET.get("chronicle")
-        if chronicle_id and direct_create_chronicles(self.request.user).filter(pk=chronicle_id).exists():
-            initial["chronicle"] = chronicle_id
+        if self.request.GET.get("chronicle"):
+            initial.pop("chronicle", None)
+            chronicle = launch_chronicle(self.request)
+            if chronicle and direct_create_chronicles(self.request.user).filter(pk=chronicle.pk).exists():
+                initial["chronicle"] = chronicle
         return initial
 
     def dispatch(self, request, *args, **kwargs):

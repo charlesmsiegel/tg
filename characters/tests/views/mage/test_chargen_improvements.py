@@ -40,6 +40,18 @@ class MageCreationControlsTests(TestCase):
         self.assertContains(response, 'data-dot-rating')
         self.assertContains(response, 'name="resonance"')
 
+    def test_sphere_names_replace_the_labels_beside_their_dots(self):
+        mage = Mage.objects.create(name="Named Sphere Mage", owner=self.user, creation_status=4)
+        response = self.wizard(mage)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        for field in ("corr_name", "prime_name", "spirit_name"):
+            with self.subTest(field=field):
+                self.assertRegex(
+                    html,
+                    rf'<div class="tl-alloc__row[^>]*>\s*<label class="tl-sr"[^>]*>[^<]+</label>\s*<select[^>]*name="{field}"',
+                )
+
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):
         Attribute.objects.create(name="Strength", property_name="strength")
         mage = Mage.objects.create(

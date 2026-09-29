@@ -37,6 +37,6 @@ class ObjectTypeRedirectView(View):
         type_name = request.GET.get(field) or request.GET.get("type")
         gameline = request.GET.get("gameline") or None
         target = resolve_object_type_url(category, type_name, action, gameline)
-        if kind == "location" and action == "create" and request.GET.get("chronicle"):
+        if action == "create" and request.GET.get("chronicle"):
             target += "?" + urlencode({"chronicle": request.GET["chronicle"]})
         return redirect(target)

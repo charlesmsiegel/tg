@@ -68,6 +68,13 @@ class HomeCacheIsolationTest(TestCase):
         self.assertNotContains(response, "secondvisitor")
         self.assertContains(response, "Log in to see your scenes.")
 
+    def test_spread_cover_has_collapse_and_keyboard_resize_controls(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, 'data-cover-toggle')
+        self.assertContains(response, 'aria-controls="tl-cover-panel"')
+        self.assertContains(response, 'data-cover-resize')
+        self.assertContains(response, 'role="separator"')
+
 
 class CharacterIndexSelectionTest(TestCase):
     def setUp(self):

@@ -393,11 +393,41 @@ class ErrorMessageMixin:
 class ScopedCreationFormMixin:
     """Limit creation forms to chronicles the current user can access."""
 
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.request.method == "GET":
+            chronicle = launch_chronicle(self.request)
+            if chronicle is not None:
+                initial["chronicle"] = chronicle
+        return initial
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         if "chronicle" in form.fields:
             form.fields["chronicle"].queryset = readable_chronicles(self.request.user)
         return form
+
+
+def launch_chronicle(request, *, required=False):
+    """Resolve a create link's Chronicle against the reader's permitted scope.
+
+    GET uses it as a form default; a submitted Chronicle field remains the
+    user's choice. Forms without that field bind it at save time instead.
+    """
+    value = request.GET.get("chronicle")
+    if not value:
+        return None
+    if not value.isascii() or not value.isdecimal() or len(value) > 20:
+        if required:
+            raise Http404("Chronicle not found")
+        return None
+    try:
+        chronicle = readable_chronicles(request.user).filter(pk=int(value)).first()
+    except (OverflowError, ValueError):
+        chronicle = None
+    if chronicle is None and required:
+        raise Http404("Chronicle not found")
+    return chronicle
 
 
 def prepare_created_object(form, request):
@@ -408,20 +438,12 @@ def prepare_created_object(form, request):
     user = request.user
     if not user.is_authenticated:
         raise PermissionDenied("Login required to create objects")
-    # The Chronicle's location picker redirects through a type selector. Most
-    # location create forms do not expose a chronicle field, so retain that
-    # scoped destination when the selected create form is submitted.
-    from locations.models.core.location import LocationModel
-
     if (
-        isinstance(obj, LocationModel)
-        and "chronicle" not in form.fields
+        "chronicle" not in form.fields
         and obj.chronicle_id is None
         and request.GET.get("chronicle")
     ):
-        obj.chronicle = get_object_or_404(
-            readable_chronicles(user), pk=request.GET["chronicle"]
-        )
+        obj.chronicle = launch_chronicle(request, required=True)
     chronicle = getattr(obj, "chronicle", None)
     if chronicle is not None:
         if not readable_chronicles(user).filter(pk=chronicle.pk).exists():
@@ -438,7 +460,7 @@ def prepare_created_object(form, request):
 
 class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
     """
-    Combined mixin for both success and error messages.
+    Combined success/error messages and shared CreateView setup.
 
     Usage:
         class MyCreateView(MessageMixin, CreateView):
@@ -446,6 +468,14 @@ class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
             success_message = "{name} created successfully!"
             error_message = "Failed to create {model_name}. Please check the form."
     """
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if isinstance(self, CreateView) and self.request.method == "GET":
+            chronicle = launch_chronicle(self.request)
+            if chronicle is not None:
+                initial["chronicle"] = chronicle
+        return initial
 
     def form_valid(self, form):
         if isinstance(self, CreateView):

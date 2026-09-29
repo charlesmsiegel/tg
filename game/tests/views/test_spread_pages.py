@@ -13,6 +13,7 @@ from game.models import (
     Chronicle,
     Gameline,
     Journal,
+    ObjectType,
     Story,
     STRelationship,
     Week,
@@ -58,6 +59,17 @@ class ChronicleTabsTest(TestCase):
             with self.subTest(status=status):
                 response = self.get(self.player, f"?tab=characters&status={status}")
                 self.assertNotContains(response, "Theirs")
+
+    def test_creation_selectors_keep_this_chronicle(self):
+        ObjectType.objects.get_or_create(name="mage", type="char", gameline="mta")
+        ObjectType.objects.get_or_create(name="item", type="obj", gameline="wod")
+        ObjectType.objects.get_or_create(name="location", type="loc", gameline="wod")
+        for tab in ("characters", "items", "locations"):
+            with self.subTest(tab=tab):
+                response = self.get(self.st, f"?tab={tab}")
+                self.assertContains(
+                    response, f'name="chronicle" value="{self.chronicle.pk}"'
+                )
 
     def test_unknown_line_falls_back_to_the_first_group(self):
         response = self.get(self.st, "?tab=characters&line=zzz")

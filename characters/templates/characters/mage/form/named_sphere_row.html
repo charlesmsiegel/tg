@@ -1,0 +1,13 @@
+{% comment %}The selected Sphere name takes the label's place beside its rating dots.{% endcomment %}
+<div class="tl-alloc__row{% if name_field.errors or rating_field.errors %} is-invalid{% endif %}">
+    <label class="tl-sr" for="{{ name_field.id_for_label }}">{{ sphere }} name</label>
+    {{ name_field }}
+    <label class="tl-sr" for="{{ rating_field.id_for_label }}">{{ sphere }} rating</label>
+    {{ rating_field }}
+    {% if name_field.errors or rating_field.errors %}
+        <ul class="tl-field__error">
+            {% for error in name_field.errors %}<li>{{ error }}</li>{% endfor %}
+            {% for error in rating_field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+</div>

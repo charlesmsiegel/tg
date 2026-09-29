@@ -50,6 +50,7 @@ a ghost button.
                 <form class="tl-reveal__body tl-block"
                       method="get"
                       action="{% url 'core:object_type_redirect' 'item' 'create' %}">
+                    <input type="hidden" name="chronicle" value="{{ object.pk }}">
                     <div class="tl-formgrid tl-formgrid--2">
                         {% include "core/tl/field.html" with field=item_form.gameline label="Game line" %}
                         {% include "core/tl/field.html" with field=item_form.item_type label="Item type" %}

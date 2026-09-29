@@ -23,7 +23,9 @@
         <div class="tl-spread {% block spread_mod %}{% endblock spread_mod %}">
             <aside class="tl-cover tl-cover--{% block cover_kind %}ink{% endblock cover_kind %} {% block cover_mod %}{% endblock cover_mod %}"
                    aria-label="{% block cover_label %}Page summary{% endblock cover_label %}">
-                <div class="tl-cover__inner">
+                <button type="button" class="tl-cover__toggle" data-cover-toggle aria-controls="tl-cover-panel" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar"><span aria-hidden="true">&lsaquo;</span></button>
+                <div class="tl-cover__resize" data-cover-resize role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize sidebar" aria-valuemin="240" aria-valuemax="720" aria-valuenow="440"></div>
+                <div class="tl-cover__inner" id="tl-cover-panel">
                     <header class="tl-cover__top">
                         {% block cover_top %}
                             <a class="tl-wordmark" href="{% url 'core:home' %}">Tellurium<span>·</span>Games</a>

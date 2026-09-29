@@ -10,6 +10,7 @@ from characters.models.core import Character
 from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
 from core.mixins import (
     EditPermissionMixin,
+    ScopedCreationFormMixin,
     ScopedEditFormMixin,
     ViewPermissionMixin,
     prepare_created_object,
@@ -82,7 +83,7 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class CharacterCreateView(LoginRequiredMixin, CreateView):
+class CharacterCreateView(ScopedCreationFormMixin, LoginRequiredMixin, CreateView):
     """
     Create view for characters.
     Automatically sets the owner to the current user.

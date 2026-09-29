@@ -6,8 +6,11 @@ label + number rows, in sheet order. Used by the effect form and the rote steps.
     <legend class="tl-subhead">Spheres</legend>
     <div class="tl-alloc">
         <div class="tl-alloc__col">
-            {% include "characters/core/chargen/alloc_row.html" with field=form.correspondence label="Correspondence" %}
-            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.corr_name label="Correspondence name" %}{% endif %}
+            {% if show_sphere_names %}
+                {% include "characters/mage/form/named_sphere_row.html" with name_field=form.corr_name rating_field=form.correspondence sphere="Correspondence" %}
+            {% else %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.correspondence label="Correspondence" %}
+            {% endif %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.entropy label="Entropy" %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.forces label="Forces" %}
         </div>
@@ -17,10 +20,13 @@ label + number rows, in sheet order. Used by the effect form and the rote steps.
             {% include "characters/core/chargen/alloc_row.html" with field=form.mind label="Mind" %}
         </div>
         <div class="tl-alloc__col">
-            {% include "characters/core/chargen/alloc_row.html" with field=form.prime label="Prime" %}
-            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.prime_name label="Prime name" %}{% endif %}
-            {% include "characters/core/chargen/alloc_row.html" with field=form.spirit label="Spirit" %}
-            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.spirit_name label="Spirit name" %}{% endif %}
+            {% if show_sphere_names %}
+                {% include "characters/mage/form/named_sphere_row.html" with name_field=form.prime_name rating_field=form.prime sphere="Prime" %}
+                {% include "characters/mage/form/named_sphere_row.html" with name_field=form.spirit_name rating_field=form.spirit sphere="Spirit" %}
+            {% else %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.prime label="Prime" %}
+                {% include "characters/core/chargen/alloc_row.html" with field=form.spirit label="Spirit" %}
+            {% endif %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.time label="Time" %}
         </div>
     </div>

@@ -82,7 +82,81 @@
     });
   }
 
-  // 5. Scroll the current chargen step into view inside the cover.
+  // 5. Let readers reclaim page width without losing the cover on other pages.
+  function setupCoverLayout() {
+    var spread = document.querySelector('.tl-spread');
+    if (!spread) return;
+    var toggle = spread.querySelector('[data-cover-toggle]');
+    var handle = spread.querySelector('[data-cover-resize]');
+    if (!toggle || !handle) return;
+    var width = spread.classList.contains('tl-spread--wide') ? 560 : 440;
+    var preferredWidth = width;
+    var savedWidth;
+    var collapsed = false;
+    try {
+      savedWidth = Number(localStorage.getItem('tl-cover-width'));
+      collapsed = localStorage.getItem('tl-cover-collapsed') === '1';
+    } catch (err) { /* storage blocked: use the defaults */ }
+
+    function maximum() { return Math.max(240, Math.min(720, window.innerWidth - 460)); }
+    function setWidth(value, save) {
+      preferredWidth = Math.max(240, Math.min(720, Math.round(value)));
+      width = Math.max(240, Math.min(maximum(), preferredWidth));
+      spread.style.setProperty('--tl-cover-width', width + 'px');
+      handle.setAttribute('aria-valuenow', String(width));
+      handle.setAttribute('aria-valuemax', String(maximum()));
+      if (save) {
+        try { localStorage.setItem('tl-cover-width', String(width)); } catch (err) { /* ignore */ }
+      }
+      refitTitles();
+    }
+    function setCollapsed(value) {
+      collapsed = value;
+      spread.classList.toggle('is-cover-collapsed', collapsed);
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+      toggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      toggle.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+      toggle.querySelector('span').textContent = collapsed ? '›' : '‹';
+      try { localStorage.setItem('tl-cover-collapsed', collapsed ? '1' : '0'); } catch (err) { /* ignore */ }
+      refitTitles();
+      if (!collapsed) showCurrentStep();
+    }
+    setWidth(savedWidth >= 240 ? savedWidth : width, false);
+    setCollapsed(collapsed);
+    toggle.addEventListener('click', function () { setCollapsed(!collapsed); });
+
+    var drag = null;
+    handle.addEventListener('pointerdown', function (event) {
+      if (event.button !== 0 || collapsed) return;
+      drag = { x: event.clientX, width: width };
+      handle.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+    handle.addEventListener('pointermove', function (event) {
+      if (drag) setWidth(drag.width + event.clientX - drag.x, false);
+    });
+    function finishDrag() {
+      if (!drag) return;
+      drag = null;
+      setWidth(width, true);
+    }
+    handle.addEventListener('pointerup', finishDrag);
+    handle.addEventListener('pointercancel', finishDrag);
+    handle.addEventListener('lostpointercapture', finishDrag);
+    handle.addEventListener('keydown', function (event) {
+      var next = width;
+      if (event.key === 'ArrowLeft') next -= 20;
+      else if (event.key === 'ArrowRight') next += 20;
+      else if (event.key === 'Home') next = 240;
+      else if (event.key === 'End') next = maximum();
+      else return;
+      event.preventDefault();
+      setWidth(next, true);
+    });
+    window.addEventListener('resize', function () { setWidth(preferredWidth, false); });
+  }
+
+  // 6. Scroll the current chargen step into view inside the cover.
   //    Uses scrollTop, never scrollIntoView (which would move the page too).
   function showCurrentStep() {
     var cur = document.querySelector('.tl-steps [aria-current="step"]');
@@ -99,6 +173,7 @@
   function init() {
     fitTitles();
     restoreDetails();
+    setupCoverLayout();
     showCurrentStep();
   }
   if (document.readyState === 'loading') {

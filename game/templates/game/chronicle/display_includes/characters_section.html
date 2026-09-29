@@ -34,6 +34,7 @@ sub-tabs when more than one line has characters, the table grouped by group, and
                 <form class="tl-reveal__body tl-block"
                       method="get"
                       action="{% url 'core:object_type_redirect' 'character' 'create' %}">
+                    <input type="hidden" name="chronicle" value="{{ object.pk }}">
                     <div class="tl-formgrid tl-formgrid--2">
                         {% include "core/tl/field.html" with field=char_form.gameline label="Game line" %}
                         {% include "core/tl/field.html" with field=char_form.char_type label="Character type" %}
