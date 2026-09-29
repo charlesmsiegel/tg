@@ -1,333 +1,101 @@
-# Characters App
-
-The `characters` app manages player and NPC characters across all World of Darkness gamelines. It uses polymorphic inheritance to support gameline-specific character types while sharing common functionality.
-
-## Purpose
-
-The characters app provides:
-- Character creation and management for all WoD gamelines
-- Polymorphic character models (VtM, WtA, MtA, WtO, CtD, DtF)
-- Character sheets with gameline-specific traits
-- XP tracking and spending approval workflows
-- Character status management (Unfinished → Submitted → Approved)
-- Gameline-specific forms, views, and templates
-
-## Supported Gamelines
-
-- **Vampire: The Masquerade (VtM)** - Vampires with Disciplines, blood pools, clans
-- **Werewolf: The Apocalypse (WtA)** - Garou with Gifts, Rage, Gnosis
-- **Mage: The Ascension (MtA)** - Mages with Spheres, Arete, Traditions/Conventions
-- **Wraith: The Oblivion (WtO)** - Wraiths with Arcanoi, Corpus, Passions/Fetters
-- **Changeling: The Dreaming (CtD)** - Changelings with Arts, Glamour, seemings
-- **Demon: The Fallen (DtF)** - Demons with Lores, Torment, Houses
-
-## Directory Structure
-
-```
-characters/
-├── __init__.py
-├── admin.py                    # Admin configuration
-├── apps.py                     # App configuration
-├── forms/                      # Character creation/edit forms
-│   ├── __init__.py
-│   ├── core/                   # Shared form components
-│   ├── vampire/                # VtM-specific forms
-│   ├── werewolf/               # WtA-specific forms
-│   ├── mage/                   # MtA-specific forms
-│   ├── wraith/                 # WtO-specific forms
-│   ├── changeling/             # CtD-specific forms
-│   └── demon/                  # DtF-specific forms
-├── models/                     # Character models
-│   ├── __init__.py
-│   ├── core/                   # Base Character class
-│   │   ├── character.py        # Main Character model
-│   │   ├── ability_block.py    # Talents, Skills, Knowledges
-│   │   ├── attribute_block.py  # Physical, Social, Mental
-│   │   └── ...
-│   ├── vampire/                # VtM character types
-│   │   ├── vtm.py             # VtMHuman base
-│   │   ├── vampire.py         # Vampire-specific model
-│   │   └── ...
-│   ├── werewolf/               # WtA character types
-│   ├── mage/                   # MtA character types
-│   ├── wraith/                 # WtO character types
-│   ├── changeling/             # CtD character types
-│   └── demon/                  # DtF character types
-├── templates/
-│   └── characters/
-│       ├── core/               # Base character templates
-│       ├── vampire/            # VtM templates
-│       ├── werewolf/           # WtA templates
-│       ├── mage/               # MtA templates
-│       ├── wraith/             # WtO templates
-│       ├── changeling/         # CtD templates
-│       └── demon/              # DtF templates
-├── templatetags/               # Custom template tags
-├── tests/                      # Tests by gameline
-│   ├── vampire/
-│   ├── werewolf/
-│   ├── mage/
-│   └── ...
-├── urls/                       # URL routing by gameline
-│   ├── __init__.py
-│   ├── vampire/
-│   ├── werewolf/
-│   └── ...
-└── views/                      # Views by gameline
-    ├── __init__.py
-    ├── core/                   # Shared view logic
-    ├── vampire/
-    ├── werewolf/
-    └── ...
-```
-
-## Key Components
-
-### Base Character Model
-
-All characters inherit from `Character` in `models/core/character.py`:
-
-```python
-from core.models import Model
-
-class Character(Model):
-    # Core fields shared across all gamelines
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    chronicle = models.ForeignKey('game.Chronicle', on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=3, choices=STATUS_CHOICES, default='Un')
-
-    # XP tracking
-    xp = models.IntegerField(default=0)
-    spent_xp = models.JSONField(default=dict)
-
-    # Character creation
-    freebies = models.IntegerField(default=15)
-    concept = models.CharField(max_length=100)
-
-    # Methods
-    def add_xp(self, amount):
-        """Add XP to character."""
-
-    def spend_xp(self, trait, cost):
-        """Spend XP on trait (requires ST approval)."""
-```
-
-### Gameline-Specific Models
-
-Each gameline has specific character implementations:
-
-**Vampire (VtM):**
-```python
-class VtMHuman(Character):
-    # Vampire-specific fields
-    clan = models.ForeignKey('Clan', on_delete=models.SET_NULL, null=True)
-    sire = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
-    generation = models.IntegerField(default=13)
-
-class Vampire(VtMHuman):
-    # Blood and disciplines
-    blood_pool = models.IntegerField(default=10)
-    blood_max = models.IntegerField(default=10)
-    disciplines = models.JSONField(default=dict)
-```
-
-**Werewolf (WtA):**
-```python
-class Werewolf(Character):
-    # Garou-specific fields
-    breed = models.CharField(max_length=20)
-    auspice = models.CharField(max_length=20)
-    tribe = models.ForeignKey('Tribe', on_delete=models.SET_NULL, null=True)
-
-    # Werewolf resources
-    rage = models.IntegerField(default=0)
-    gnosis = models.IntegerField(default=0)
-    gifts = models.JSONField(default=dict)
-```
-
-**Mage (MtA):**
-```python
-class Mage(Character):
-    # Mage-specific fields
-    essence = models.CharField(max_length=20)
-    affiliation = models.CharField(max_length=20)  # Tradition/Convention
-
-    # Mage resources
-    arete = models.IntegerField(default=0)
-    quintessence = models.IntegerField(default=0)
-    spheres = models.JSONField(default=dict)
-```
-
-### Forms
-
-Forms are organized by gameline in `forms/`:
-
-- **Core forms** - Shared form components and mixins
-- **Gameline forms** - Character creation/editing for specific gamelines
-
-Example:
-```python
-# forms/vampire/vampire.py
-class VampireForm(forms.ModelForm):
-    class Meta:
-        model = Vampire
-        fields = ['name', 'clan', 'generation', 'disciplines', ...]
-```
-
-### Views
-
-Views follow Django's class-based view pattern:
-
-```python
-# views/vampire/vampire.py
-class VampireDetailView(DetailView):
-    model = Vampire
-    template_name = 'characters/vampire/vampire/detail.html'
-
-# views/vampire/vampire_chargen.py - creation starts at the Basics step
-class VampireBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
-    form_class = VampireCreationForm
-    template_name = 'characters/vampire/vampire/basics.html'
-```
-
-## Character Creation Workflow
-
-1. **Create Character** - User selects gameline and character type
-2. **Fill Details** - Enter character concept, attributes, abilities
-3. **Spend Points** - Allocate creation points (Attributes, Abilities, Backgrounds)
-4. **Spend Freebies** - Use freebie points for final customization
-5. **Submit** - Change status from 'Unfinished' to 'Submitted'
-6. **ST Review** - Storyteller reviews and approves/rejects
-7. **Approved** - Character ready for play
-
-## XP System
-
-### Earning XP
-- Awarded by Storyteller after sessions
-- Tracked in `character.xp` field
-
-### Spending XP
-- Player records XP expenditure in `character.spent_xp` JSONField
-- Requires Storyteller approval
-- Format: `{"trait_name": cost, "approved": False}`
-
-Example:
-```python
-character.spend_xp("Celerity 2", 10)
-# spent_xp = {"Celerity 2": 10, "approved": False}
-```
-
-## Character Status
-
-Characters progress through status stages:
-
-- **Un (Unfinished)** - Character in creation
-- **Sub (Submitted)** - Awaiting ST approval
-- **App (Approved)** - Ready for play
-- **Ret (Retired)** - No longer active
-- **Dec (Deceased)** - Character died
-
-## Usage Examples
-
-### Creating a Vampire
-
-```python
-from characters.models.vampire import Vampire
-from accounts.models import Profile
-
-vampire = Vampire.objects.create(
-    owner=user,
-    name="Lucian Drake",
-    concept="Street Tough",
-    clan=clan_brujah,
-    generation=13,
-    status='Un'
-)
-```
-
-### Querying Characters
-
-```python
-# Get all characters for a user
-my_characters = Character.objects.filter(owner=request.user)
-
-# Get all vampires in a chronicle
-vampires = Vampire.objects.filter(chronicle=chronicle)
-
-# Get approved mages
-mages = Mage.objects.filter(status='App')
-```
-
-### Character Sheet URL
-
-```python
-# In template
-<a href="{{ character.get_absolute_url }}">View Character</a>
-
-# In views
-return redirect(character.get_absolute_url())
-```
-
-## Testing
-
-Run character tests:
-```bash
-# All character tests
-pytest characters/tests/
-
-# Gameline-specific tests
-pytest characters/tests/vampire/
-pytest characters/tests/mage/
-
-# Specific test file
-pytest -v characters/tests/vampire/test_vampire.py
-```
-
-## Permissions
-
-Characters use these permission checks:
-
-- **Owner** - Can edit their own characters
-- **Storyteller** - Can edit characters in their chronicles
-- **Approved Status** - Only STs can approve characters
-
-Example:
-```python
-if character.owner == request.user or request.user.profile.is_st():
-    # Allow editing
-    pass
-```
-
-## Related Apps
-
-- **core** - Base models and utilities
-- **game** - Chronicles, Scenes, XP awards
-- **accounts** - User profiles, ST relationships
-
-## Common Tasks
-
-### Adding a New Character Type
-
-1. Create model in appropriate gameline folder
-2. Create form in `forms/{gameline}/`
-3. Create views in `views/{gameline}/`
-4. Add URL patterns in `urls/{gameline}/`
-5. Create templates in `templates/characters/{gameline}/`
-6. Add tests in `tests/{gameline}/`
-
-### Adding a New Trait
-
-1. Add field to appropriate model
-2. Create migration: `python manage.py makemigrations`
-3. Update form to include new field
-4. Update template to display trait
-5. Add tests for the new trait
-
-## Related Documentation
-
-- See `docs/CODE_STYLE.md` for coding standards
-- See `docs/MODELS.md` for model patterns
-- See `docs/FORMS.md` for form guidelines
-- See `docs/VIEWS.md` for view patterns
-- See `docs/TEMPLATES.md` for template structure
-- See `/CLAUDE.md` for project-wide conventions
+# characters
+
+The `characters` app owns every character in the project, for all eight World of Darkness
+gamelines, plus the groups they belong to and the game-reference catalogues their sheets
+point at (clans, Disciplines, tribes, Gifts, Spheres, Arcanoi, kiths, Lores, creeds,
+dynasties and more). It also owns character creation ("chargen"), freebie and XP
+spending, and the character sheet. This page is the entry point for developers and agents
+working in the app; the pages under [`docs/`](docs/) are the detailed reference.
+
+## Main concepts
+
+- **Polymorphic character tree.** Every character is a `django-polymorphic` row under
+  `core.models.Model`: `CharacterModel` → `Character` → `Human` → a gameline mortal
+  (`VtMHuman`, `WtAHuman`, `MtAHuman`, `WtOHuman`, `CtDHuman`, `DtFHuman`, `HtRHuman`,
+  `MtRHuman`) → the supernatural types (`Vampire`, `Werewolf`, `Mage`, `Wraith`,
+  `Changeling`, `Demon`, `Hunter`, `Mummy` and their relatives). `SpiritCharacter` extends
+  `Character` directly. Each class sets a `type` string (`"vampire"`, `"wta_human"`) and a
+  `gameline` code (`"vtm"`, `"wta"`) that drive URLs, chargen and services.
+- **Traits as columns.** Attributes, Abilities and gameline powers (Disciplines, Spheres,
+  Arcanoi, Arts, Lores, Edges, Hekau) are integer fields on the model. Backgrounds are
+  `BackgroundRating` rows; merits and flaws are `MeritFlawRating` rows.
+- **Status machine.** `Un` (unapproved) → `Sub` (submitted) → `App` (approved), with `Rev`
+  (returned for revisions), `Ret` (retired) and `Dec` (deceased); allowed moves are in
+  `Character.STATUS_TRANSITIONS`.
+- **Chargen workflows.** Each type with a wizard has an ordered `Workflow` of steps;
+  `creation_status` stores the current 1-based position. The canonical URL
+  `characters:character` shows the wizard while a character is `Un` or `Rev` and the sheet
+  afterwards.
+- **Spending services.** Freebies (at creation) and XP (in play) are spent through one
+  service class per character type, selected by `character.type`. XP spends wait for
+  storyteller approval; freebie spends apply at once and can be reversed.
+- **Reference data.** Catalogue models are public to read and staff-only to edit.
+
+Terms such as ST, freebies, Disciplines and Spheres are defined in the
+[glossary](../docs/reference/glossary.md).
+
+## Key modules
+
+| Path | Responsibility |
+|------|----------------|
+| [`models/core/`](models/core/) | `Character`, `Human`, the attribute / ability / health blocks, backgrounds, merits and flaws, `Group`, core catalogues |
+| `models/<gameline>/` | Gameline character types, groups and catalogues (`vampire`, `werewolf`, `mage`, `wraith`, `changeling`, `demon`, `hunter`, `mummy`) |
+| [`managers/`](managers/) | `BackgroundManager`, `MeritFlawManager` (plain helper classes behind `Human`) |
+| [`chargen/`](chargen/) | Workflow registry, workflow definitions, skip predicates, transitions |
+| [`rules/`](rules/) | Pure allocation rules and chargen point pools |
+| [`costs.py`](costs.py) | Freebie and XP cost tables |
+| [`services/`](services/) | XP and freebie spending services and single-purpose services (status, specialties, rotes, gameline chargen writes) |
+| [`forms/`](forms/) | Update allowlists (`forms/core/crud_fields.py`), limited owner forms, chargen, freebie, XP and NPC forms |
+| [`views/`](views/) | Routers, sheet and chargen views per gameline, sheet actions, the "Known by" mixin |
+| [`urls/`](urls/) | URLconf under `/characters/`, one package per gameline |
+| [`templates/characters/`](templates/characters/) | Sheet shell, form shells, chargen templates, reference shells, `tl/` partials |
+| [`templatetags/`](templatetags/) | `character_edit`, `startswith` |
+| [`static/characters/js/`](static/characters/js/) | Chargen and sheet scripts |
+| [`admin.py`](admin.py) | Admin registrations |
+| [`utils.py`](utils.py) | `get_character_object_type()` |
+| [`tests/`](tests/) | Tests, helpers and golden files |
+
+The app has no migration files: tables come from the current models, and the `tg_schema`
+app brings older databases up to date (see
+[Schema migrations](../docs/architecture/schema-migrations.md)).
+
+## How it connects to other apps
+
+| App | Relationship |
+|-----|--------------|
+| `core` | Base `Model` (owner, chronicle, status, visibility), `PermissionManager`, view mixins, `DictView` routers, route policies, `linked_stat`, `CharacterTemplate`, the `tl` template tags |
+| `game` | `Chronicle` and `Scene` (characters appear in scenes), `ObjectType` (merit/flaw eligibility and creation pickers), `XPSpendingRequest`, `FreebieSpendingRecord`, spending approval, weekly XP |
+| `accounts` | Profile queues of characters to approve and freebies to award; the freebie award calls `Human.award_backstory_freebies()` |
+| `items` | Fetishes, Wonders, artifacts, materials and media referenced by characters and Mage chargen steps |
+| `locations` | Nodes, libraries, sanctums and chantries created by Mage background steps; the Hunter `safehouse`; chantries register their own cleanup for retired characters |
+| `widgets` | Chained selects, conditional fields and dot-rating inputs used by chargen forms |
+| `populate_db` | Seed scripts for the reference catalogues |
+
+## Documentation
+
+| Page | Contents |
+|------|----------|
+| [Character models](docs/models.md) | Core tree, blocks, backgrounds, merits and flaws, groups, core catalogues; index of gameline pages |
+| [Vampire](docs/models-vampire.md), [Werewolf](docs/models-werewolf.md), [Mage](docs/models-mage.md), [Wraith](docs/models-wraith.md), [Changeling](docs/models-changeling.md), [Demon](docs/models-demon.md), [Hunter](docs/models-hunter.md), [Mummy](docs/models-mummy.md) | Character types per gameline |
+| [Reference data](docs/reference-data.md) | Every catalogue model, by gameline |
+| [Forms](docs/forms.md) | Allowlists, limited forms, chargen, freebie, XP and NPC forms |
+| [Views and URLs](docs/views-and-urls.md) | URLconf, routers, view families, sheet actions, Known by, routes per gameline |
+| [Chargen](docs/chargen.md) | Workflow of every type, point values, gameline steps |
+| [Services](docs/services.md) | Spending services, factories, single-purpose services |
+| [Costs and rules](docs/costs-and-rules.md) | Cost tables, allocation rules, point pools |
+| [Templates](docs/templates.md) | Sheet and form shells, chargen and reference templates, tags, scripts |
+| [Admin](docs/admin.md) | Admin registrations |
+| [Testing](docs/testing.md) | Test layout, helpers, golden files |
+
+Project-wide context: [Data model](../docs/architecture/data-model.md),
+[Character creation](../docs/architecture/character-creation.md),
+[XP, freebies and approvals](../docs/architecture/xp-and-approvals.md),
+[Authorization](../docs/architecture/authorization.md),
+[Adding a character type](../docs/guides/adding-a-character-type.md).
+
+## See also
+
+- [Documentation index](../docs/README.md)
+- [`core` app](../core/README.md)
+- [`game` app](../game/README.md)
+- [Adding reference data](../docs/guides/adding-reference-data.md)

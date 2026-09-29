@@ -1,132 +1,103 @@
-# Core App
+# core
 
-The `core` app provides foundational components used throughout the TG project. It contains base models, shared utilities, permissions, constants, and template tags used by all other apps.
+The `core` app holds what every other app builds on: the polymorphic base model and its
+queryset, the permission model and the request-time access policy, the shared view mixins
+and generic views, the Spread page shell (templates, `tl.css`, `tl.js`), template tag
+libraries, caching helpers and a set of operational management commands. This page is the
+map; the pages under [`docs/`](docs/) are the detailed reference.
 
-## Purpose
+Read it before you add a model, a view, a URL or a template anywhere in the project: most
+of the rules those follow are enforced here.
 
-Core serves as the foundation layer for the entire application, providing:
-- Base polymorphic models for Characters, Items, and Locations
-- Shared utilities and helper functions
-- Permission system
-- Template tags and filters
-- Common constants and enumerations
-- Context processors for global template data
+## Main concepts
 
-## Key Components
+- **`core.models.Model`**: the abstract polymorphic base of every player-facing object
+  (characters, items, locations, character templates). It carries `name`, `owner`,
+  `chronicle`, `status`, `visibility`, `image` and sources, and runs `full_clean()` on
+  every save. See [models](docs/models.md).
+- **`PermissionManager`**: turns a user and an object into roles (owner, chronicle
+  storyteller, player, observer, admin...) and roles into permissions (`VIEW_FULL`,
+  `EDIT_FULL`, `SPEND_XP`...), with status-based restrictions. See
+  [permissions and policies](docs/permissions-and-policies.md).
+- **Route policies**: every project view is listed in
+  [`route_policy_manifest.py`](route_policy_manifest.py) under one policy name
+  (`PUBLIC_READ`, `OBJECT_DETAIL`, `OBJECT_WRITE`, `ACTION`...).
+  [`AuthorizationMiddleware`](middleware/authorization.py) evaluates it before the view
+  runs; a view without a policy is refused.
+- **Spread**: the site's design system. Pages extend
+  [`core/tl_base.html`](templates/core/tl_base.html) (or a shell built on it) and use
+  the `tl` tag library. See [templates and static files](docs/templates-and-static.md).
+- **Action endpoints**: one POST URL per state change, built on
+  [`ObjectActionView`](actions.py). Detail views render pages and never handle POST. See
+  [views](docs/views.md#action-endpoints).
 
-### Models (`models.py`)
-- **Model**: Base polymorphic model extending Django Polymorphic
-- **Book**: Source book references for game content
-- **HouseRule**: Custom rules for chronicles
-- **Language**: Language system for character creation
-- **MeritFlaw**: Character advantages and disadvantages (shared across gamelines)
-- **Specialty**: Ability specializations
-- **ArchetypeModel**: Base for Natures and Demeanors
+## Key modules
 
-### Utilities (`utils.py`)
-Helper functions for common operations across the project.
+| Path | Responsibility |
+|------|----------------|
+| [`models.py`](models.py) | `Model` base, `ModelQuerySet`/`ModelManager`, `Book`, `BookReference`, `Observer`, `NewsItem`, `Language`, `HouseRule`, `CharacterTemplate`, rating base classes |
+| [`base.py`](base.py) | `ValidatedSaveMixin` (full_clean on save for non-polymorphic models) |
+| [`constants.py`](constants.py) | `GameLine`, `CharacterStatus`, `ImageStatus`, `AbilityFields`, `XPApprovalStatus` and other choice sets |
+| [`permissions.py`](permissions.py) | `Role`, `Permission`, `VisibilityTier`, `PermissionManager` |
+| [`permission_context.py`](permission_context.py) | `ObjectPermissions` snapshot exposed to templates as `object_perms` |
+| [`access_policy.py`](access_policy.py) | `authorize_route()`: evaluates a view's declared policy |
+| [`route_policy_manifest.py`](route_policy_manifest.py) | `POLICIES` / `VIEW_POLICIES`: the reviewed view-to-policy list |
+| [`middleware/`](middleware/) | `AuthorizationMiddleware`, `AuthErrorHandlerMiddleware` |
+| [`mixins.py`](mixins.py) | All class-based-view mixins (permission, message, template, creation scoping) |
+| [`model_registry.py`](model_registry.py), [`registry_urls.py`](registry_urls.py) | Declarative CRUD views and URLs for item and location types |
+| [`views/`](views/) | Home, books, languages, news, house rules, character templates, public projections, type selection, `DictView`, cached and reference views, registry router, error handlers |
+| [`urls.py`](urls.py) | The `core:` URL namespace, mounted at the site root |
+| [`create_redirects.py`](create_redirects.py) | `resolve_object_type_url()`: from a chosen object type to its create or list page |
+| [`actions.py`](actions.py) | `ObjectActionView`: load, authorize, validate, perform, redirect |
+| [`services/`](services/) | `ApprovalService`, `ChronicleDataService` |
+| [`cache.py`](cache.py) | Cache keys, `cache_function`, `get_cached_reference_list`, `cache_page_per_visitor` |
+| [`htmx.py`](htmx.py), [`ajax.py`](ajax.py) | htmx request/response helpers, JSON dropdown responses |
+| [`context_processors.py`](context_processors.py) | `all_chronicles`: readable chronicles and their open scenes for the nav |
+| [`template_resolution.py`](template_resolution.py) | `shared_template_names()`: specific template first, shared fallback after |
+| [`forms/`](forms/), [`widgets/`](widgets/) | `HumanLanguageForm`, character template forms, `AutocompleteTextInput` |
+| [`admin.py`](admin.py) | Django admin registrations for the core models |
+| [`linked_stat.py`](linked_stat.py) | Permanent/temporary stat pairs (Willpower, Blood Pool...) |
+| [`xp_utils.py`](xp_utils.py), [`utils.py`](utils.py), [`validators.py`](validators.py) | XP awarding, dice and misc helpers, shared validators |
+| [`templatetags/`](templatetags/) | `tl`, `tl_forms`, `sanitize_text`, `permissions`, `dots`, `field` and smaller libraries |
+| [`templates/core/`](templates/core/) | `tl_base.html`, `form.html`, `misc/form.html`, `object.html`, `tl_auth.html`, error pages, registry fallbacks, `tl/` and `misc/` partials |
+| [`static/core/`](static/core/) | `tl/tl.css`, `tl/tl.js`, `js/validation.js` |
+| [`management/commands/`](management/commands/) | Data audits, cleanup, export/import, game data loading, resets |
+| [`tests/`](tests/) | Unit tests plus project-wide guards (route policies, template policy, query budgets, action endpoints) and shared fixtures (`template_fixtures`, `action_audience`) |
 
-### Permissions (`permissions.py`)
-- Object-level permissions
-- Storyteller verification
-- Approval workflows
+## How it connects to other apps
 
-### Constants (`constants.py`)
-Shared enumerations and constant values:
-- `ATTRIBUTES`: Physical/Social/Mental attribute lists
-- `ABILITIES`: Talents, Skills, Knowledges
-- `STATUS_CHOICES`: Character/Item/Location status options
+- `characters`, `items` and `locations` subclass `core.models.Model`; their views use the
+  mixins from [`mixins.py`](mixins.py) and list themselves in the route manifest.
+  `items` and `locations` declare their CRUD views through
+  [`model_registry.py`](model_registry.py) (`items/registry.py`, `locations/registry.py`).
+- `game` supplies `Chronicle`, `STRelationship` and the visibility helpers in
+  `game/security.py` (`readable_chronicles`, `staffed_chronicles`, `filter_scenes`...)
+  that the permission code and the context processor call.
+- `accounts` uses `ApprovalService` for submit, return and approve actions and supplies
+  two of the template context processors.
+- `widgets` provides the form widgets; its `page_media` tag is rendered by
+  `tl_base.html`.
+- `tg` wires the middleware, context processor and error handlers in its settings and
+  URLs.
 
-### Template Tags (`templatetags/`)
-- `dots`: Display WoD-style ratings (●●●○○)
-- `sanitize_text`: Safe HTML rendering
-- Custom filters for common data transformations
+## Documentation
 
-### Context Processors (`context_processors.py`)
-Global context data available in all templates.
+| Page | Covers |
+|------|--------|
+| [models.md](docs/models.md) | Base model, queryset, concrete core models, rating bases, constants |
+| [permissions-and-policies.md](docs/permissions-and-policies.md) | Roles, permissions, status rules, route policies, middleware, template capabilities |
+| [mixins.md](docs/mixins.md) | Every view mixin: what it checks and when to use it |
+| [views.md](docs/views.md) | Core URLs and views, `DictView`, cached views, registry views, action endpoints, error views |
+| [services.md](docs/services.md) | `ApprovalService`, `ChronicleDataService`, XP helpers |
+| [templates-and-static.md](docs/templates-and-static.md) | Spread shells and partials, tag libraries, `tl.css`, `tl.js` |
+| [utilities.md](docs/utilities.md) | Cache, htmx, AJAX, linked stats, forms, widgets, validators, context processor, admin, helpers |
+| [management-commands.md](docs/management-commands.md) | The commands in `core/management/commands/` |
+| [testing.md](docs/testing.md) | Core tests and the project-wide guard tests |
 
-## Directory Structure
+## See also
 
-```
-core/
-├── __init__.py
-├── admin.py                    # Admin configuration
-├── apps.py                     # App configuration
-├── constants.py                # Shared constants and enumerations
-├── context_processors.py       # Global template context
-├── migrations/                 # Database migrations
-├── mixins.py                   # Reusable model/view mixins
-├── models.py                   # Base polymorphic models
-├── permissions.py              # Permission system
-├── templates/
-│   └── core/
-│       ├── base.html          # Base template for entire site
-│       └── ...
-├── templatetags/              # Custom template filters/tags
-│   ├── __init__.py
-│   ├── dots.py               # WoD rating display (●●●○○)
-│   └── sanitize_text.py      # Safe HTML rendering
-├── tests/                     # Unit and integration tests
-├── urls.py                    # URL routing
-├── utils.py                   # Helper functions
-└── views.py                   # Core views
-```
-
-## Usage Examples
-
-### Using Base Models
-
-```python
-from core.models import Model
-
-class MyCustomModel(Model):
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name = "My Custom Model"
-        verbose_name_plural = "My Custom Models"
-```
-
-### Using Template Tags
-
-```html
-{% load dots sanitize_text %}
-
-<!-- Display WoD-style ratings -->
-{{ character.strength|dots }}  <!-- Output: ●●●○○ -->
-
-<!-- Safe HTML rendering -->
-{{ user_content|sanitize_html }}
-```
-
-### Using Permissions
-
-```python
-from core.permissions import user_can_edit_object
-
-def edit_view(request, pk):
-    obj = MyModel.objects.get(pk=pk)
-    if not user_can_edit_object(request.user, obj):
-        raise PermissionDenied
-    # ... editing logic
-```
-
-## Testing
-
-Run core app tests:
-```bash
-pytest core/tests/
-pytest -v core/test_permissions.py
-```
-
-## Dependencies
-
-- Django 5.1.7
-- django-polymorphic (for model inheritance)
-
-## Related Documentation
-
-- See `docs/CODE_STYLE.md` for coding standards
-- See `docs/MODELS.md` for model design patterns
-- See `docs/TEMPLATE_TAGS.md` for template tag usage
-- See `/CLAUDE.md` for project-wide conventions
+- [Architecture overview](../docs/architecture/overview.md)
+- [Authorization](../docs/architecture/authorization.md)
+- [Frontend](../docs/architecture/frontend.md)
+- [Adding a view](../docs/guides/adding-a-view.md)
+- [Template tag reference](../docs/reference/template-tags.md)

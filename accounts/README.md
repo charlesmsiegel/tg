@@ -1,379 +1,105 @@
-# Accounts App
-
-The `accounts` app manages user profiles, authentication, storyteller relationships, and user preferences. It extends Django's built-in User model with additional World of Darkness-specific functionality.
-
-## Purpose
-
-The accounts app provides:
-- User registration and authentication
-- User profiles with preferences (theme, display settings)
-- Storyteller status and relationships
-- Approval queues for STs
-- User dashboard
-- Profile management
-
-## Key Components
-
-### Profile Model
-
-Extends Django's User model with a one-to-one relationship:
-
-```python
-class Profile(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='profile'
-    )
-
-    # Theme preferences
-    theme = models.CharField(max_length=20, default='dark')
-
-    # Storyteller status
-    is_storyteller = models.BooleanField(default=False)
-
-    # Other preferences
-    display_name = models.CharField(max_length=100, blank=True)
-    bio = models.TextField(blank=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-
-    def is_st(self):
-        """Check if user is a storyteller."""
-        return self.is_storyteller
-
-    def st_relations(self):
-        """Get all chronicles where user is ST."""
-        return self.user.st_chronicles.all()
-
-    def objects_to_approve(self):
-        """Get all objects requiring ST approval."""
-        # Characters, items, locations, XP requests
-        pass
-```
-
-### Key Methods
-
-**Profile Methods:**
-- `is_st()` - Check if user is a storyteller
-- `st_relations()` - Get chronicles where user is ST
-- `objects_to_approve()` - Get approval queue for ST
-- `get_characters()` - Get user's characters
-- `get_chronicles()` - Get chronicles user is involved in
-
-## Directory Structure
-
-```
-accounts/
-├── __init__.py
-├── admin.py                    # Admin configuration
-├── apps.py                     # App configuration
-├── context_processors.py       # Global context (user profile, theme)
-├── forms.py                    # Registration, profile edit forms
-├── models.py                   # Profile model
-├── signals.py                  # Auto-create profile on user creation
-├── templates/
-│   └── accounts/
-│       ├── login.html
-│       ├── register.html
-│       ├── profile.html
-│       ├── dashboard.html
-│       └── approval_queue.html
-├── tests.py                    # Unit tests
-├── tests_integration.py        # Integration tests
-├── urls.py                     # URL routing
-└── views.py                    # Authentication and profile views
-```
-
-## Usage Examples
-
-### User Registration
-
-```python
-from django.contrib.auth.models import User
-from accounts.models import Profile
-
-# User created via registration form
-user = User.objects.create_user(
-    username='player1',
-    email='player1@example.com',
-    password='securepassword'
-)
-
-# Profile automatically created via signal
-profile = user.profile
-profile.display_name = "Player One"
-profile.theme = 'dark'
-profile.save()
-```
-
-### Checking ST Status
-
-```python
-# In views
-if request.user.profile.is_st():
-    # Show ST controls
-    pass
-
-# In templates
-{% if request.user.profile.is_st %}
-    <a href="{% url 'accounts:approval_queue' %}">Approval Queue</a>
-{% endif %}
-```
-
-### Approval Queue
-
-```python
-# Get all objects requiring approval
-def approval_queue(request):
-    if not request.user.profile.is_st():
-        raise PermissionDenied
-
-    # Characters needing approval
-    characters = Character.objects.filter(
-        chronicle__storytellers=request.user,
-        status='Sub'
-    )
-
-    # XP requests needing approval
-    xp_requests = WeeklyXPRequest.objects.filter(
-        character__chronicle__storytellers=request.user,
-        approved=False
-    )
-
-    return render(request, 'accounts/approval_queue.html', {
-        'characters': characters,
-        'xp_requests': xp_requests,
-    })
-```
-
-## Authentication Flow
-
-### Registration
-
-1. User fills out registration form
-2. User account created
-3. Profile automatically created via signal
-4. User logged in automatically
-5. Redirected to dashboard
-
-### Login
-
-1. User enters username/password
-2. Django authenticates user
-3. Session created
-4. Redirected to dashboard or previous page
-
-## Context Processors
-
-The accounts app provides global context available in all templates:
-
-```python
-# context_processors.py
-def user_context(request):
-    """Add user profile and preferences to all templates."""
-    context = {}
-
-    if request.user.is_authenticated:
-        context['user_profile'] = request.user.profile
-        context['user_theme'] = request.user.profile.theme
-        context['is_st'] = request.user.profile.is_st()
-
-    return context
-```
-
-## Signals
-
-```python
-# signals.py
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import Profile
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    """Create profile when user is created."""
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Save profile when user is saved."""
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
-```
-
-## Testing
-
-Run accounts tests:
-```bash
-# All accounts tests
-pytest accounts/tests.py
-
-# Integration tests
-pytest accounts/tests_integration.py
-
-# Specific test
-pytest -v accounts/tests.py::ProfileTestCase
-```
-
-## Permissions
-
-### User Levels
-
-1. **Anonymous** - Can view public content only
-2. **Player** - Can create characters, join chronicles
-3. **Storyteller** - Can create chronicles, approve characters/XP
-4. **Superuser** - Full access to all content
-
-### Permission Helpers
-
-```python
-def user_can_edit_object(user, obj):
-    """Check if user can edit an object."""
-    if user.is_superuser:
-        return True
-    if hasattr(obj, 'owner') and obj.owner == user:
-        return True
-    if hasattr(obj, 'chronicle') and obj.chronicle:
-        if obj.chronicle.storytellers.filter(id=user.id).exists():
-            return True
-    return False
-```
-
-## Dashboard
-
-The user dashboard shows:
-
-- **For All Users:**
-  - My characters
-  - My chronicles (as player)
-  - Recent activity
-
-- **For Storytellers:**
-  - Chronicles I run
-  - Approval queue (characters, XP requests)
-  - Player statistics
-
-## Forms
-
-### Registration Form
-
-```python
-# forms.py
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-
-class RegistrationForm(UserCreationForm):
-    """Extended registration form."""
-    email = forms.EmailField(required=True)
-    display_name = forms.CharField(max_length=100, required=False)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-            # Profile auto-created via signal
-            user.profile.display_name = self.cleaned_data.get('display_name', '')
-            user.profile.save()
-        return user
-```
-
-### Profile Edit Form
-
-```python
-class ProfileForm(forms.ModelForm):
-    """Form for editing user profile."""
-
-    class Meta:
-        model = Profile
-        fields = ['display_name', 'bio', 'avatar', 'theme']
-        widgets = {
-            'bio': forms.Textarea(attrs={'rows': 4}),
-        }
-```
-
-## Views
-
-### Dashboard View
-
-```python
-# views.py
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
-@login_required
-def dashboard(request):
-    """User dashboard."""
-    profile = request.user.profile
-
-    context = {
-        'my_characters': Character.objects.filter(owner=request.user),
-        'my_chronicles': Chronicle.objects.filter(players=request.user),
-    }
-
-    if profile.is_st():
-        context['st_chronicles'] = Chronicle.objects.filter(storytellers=request.user)
-        context['pending_approvals'] = profile.objects_to_approve()
-
-    return render(request, 'accounts/dashboard.html', context)
-```
-
-## Theme System
-
-Users can select from multiple themes:
-
-- **Dark** - Dark theme (default)
-- **Light** - Light theme
-- **VtM** - Vampire-themed
-- **WtA** - Werewolf-themed
-- **MtA** - Mage-themed
-
-Theme preference is stored in profile and applied via CSS classes.
-
-## Related Apps
-
-- **core** - Base models and utilities
-- **game** - Chronicles and storyteller relationships
-- **characters** - Character ownership
-
-## Common Tasks
-
-### Making a User a Storyteller
-
-```python
-user.profile.is_storyteller = True
-user.profile.save()
-```
-
-### Changing User Theme
-
-```python
-user.profile.theme = 'vtm'
-user.profile.save()
-```
-
-### Getting User's Approval Queue
-
-```python
-pending_items = user.profile.objects_to_approve()
-```
-
-## Security Considerations
-
-- Passwords are hashed using Django's default PBKDF2 algorithm
-- Sessions expire after inactivity
-- Profile data is validated before saving
-- ST status cannot be self-assigned (requires admin)
-
-## Related Documentation
-
-- See `docs/CODE_STYLE.md` for coding standards
-- See `docs/PERMISSIONS.md` for permission system details
-- See `/CLAUDE.md` for project-wide conventions
+# accounts
+
+The `accounts` app owns everything tied to a signed-in person rather than to a game
+object: the `Profile` that extends Django's `User`, sign-up and the login and
+password-reset pages, the profile page with its approval and experience queues, and the
+POST endpoints storytellers use to approve objects and award experience. This page is the
+entry point for developers and agents working in the app; the pages under
+[`docs/`](docs/) are the detailed reference.
+
+## Main concepts
+
+- **Profile**: a one-to-one extension of `django.contrib.auth.models.User` holding display
+  preferences (theme, heading font, text highlighting) and the player's safety settings
+  (Discord ID, lines and veils, each with a visibility toggle). A `post_save` signal
+  creates one for every new user.
+- **Dashboard**: `accounts.dashboard.ProfileDashboard` computes the per-user queues
+  (objects to approve, scenes awaiting XP, unread scenes, weekly XP requests) that the
+  profile page and the navigation's notification badge show.
+- **Profile page**: a tabbed page (`?tab=needs|characters|chronicles|experience|journals`)
+  that opens on NEEDS YOU when something waits on the user.
+- **Profile actions**: one POST-only view per action (approve, submit, return for
+  revision, approve an image, award scene XP, award backstory freebies, file or approve a
+  weekly XP request, mark a scene read). Each authorizes the caller, performs one service
+  or model call and redirects with a flash message.
+
+Terms such as ST (Storyteller), freebies and chronicle are defined in the
+[glossary](../docs/reference/glossary.md).
+
+## Key modules
+
+| Path | Responsibility |
+|------|----------------|
+| [`models.py`](models.py) | `Profile` model: preferences, `is_st` / `is_st_for`, and thin wrappers around the dashboard selectors |
+| [`dashboard.py`](dashboard.py) | `ProfileDashboard`: queue selectors and notification counts for one profile |
+| [`views.py`](views.py) | Sign-up, login, password reset, the profile page and its update form, and the profile action endpoints |
+| [`forms.py`](forms.py) | Login and sign-up forms, `ProfileUpdateForm`, `SceneXP`, `StoryXP`, `FreebieAwardForm` |
+| [`urls.py`](urls.py) | URL patterns under `/accounts/` in the `accounts` namespace |
+| [`context_processors.py`](context_processors.py) | `theme_context` and `notification_count` (cached per user for 60 seconds) |
+| [`signals.py`](signals.py) | Creates a `Profile` when a `User` is created |
+| [`admin.py`](admin.py) | Registers `Profile` in the Django admin |
+| [`apps.py`](apps.py) | `AccountsConfig`; imports `signals` in `ready()` |
+| [`templates/accounts/`](templates/accounts/) | Profile page, profile form, sign-up and password-reset pages, the reset email |
+| [`templates/registration/`](templates/registration/) | The login page and a password-reset subject template |
+| [`tests/`](tests/) | Model, dashboard, form, view, context-processor and integration tests |
+
+`accounts/migrations/` contains no migration files: a fresh database gets the tables from
+the current models, and changes for older databases are applied by the `tg_schema` app
+(see [schema migrations](../docs/architecture/schema-migrations.md)).
+
+## How it connects to other apps
+
+- **game**: `Profile.is_st` and `is_st_for` read `game.models.STRelationship` and
+  `Chronicle.head_st`. The dashboard reads `Scene`, `Story`, `Week`, `WeeklyXPRequest`,
+  `Journal` and `XPSpendingRequest`, and filters them with the read audiences in
+  [`game/security.py`](../game/security.py). The weekly XP endpoints use
+  `game.forms.WeeklyXPRequestForm` and `game.spending_approval.require_spending_approver`.
+- **core**: approval, submission and revision go through
+  `core.services.ApprovalService` ([`core/services/approval.py`](../core/services/approval.py));
+  storyteller checks use `core.permissions.PermissionManager`. Route-level access for
+  every view is declared in [`core/route_policy_manifest.py`](../core/route_policy_manifest.py)
+  (`ACCOUNT` for the profile views and actions, `PUBLIC_READ` for sign-up, login and
+  password reset). Pages extend `core/tl_base.html` or `core/tl_auth.html`.
+- **characters, items, locations**: the dashboard lists owned and pending objects
+  through the shared queryset helpers `owned_by`, `pending_approval_for_user`,
+  `with_pending_images` and `for_user_chronicles` defined in
+  [`core/models.py`](../core/models.py) and
+  [`characters/models/core/character.py`](../characters/models/core/character.py).
+- **tg**: [`tg/urls.py`](../tg/urls.py) mounts this app at `/accounts/`, adds the
+  password-reset done/confirm/complete views with this app's templates, and includes
+  `django.contrib.auth.urls` after them.
+
+## Documentation
+
+| Page | Contents |
+|------|----------|
+| [docs/models.md](docs/models.md) | `Profile` fields, validation, methods; the signal, admin and context processors |
+| [docs/dashboard.md](docs/dashboard.md) | `ProfileDashboard` selectors, notification counts, the profile page tabs and NEEDS YOU |
+| [docs/views-and-urls.md](docs/views-and-urls.md) | Every URL, view, permission check and redirect |
+| [docs/authentication.md](docs/authentication.md) | Sign-up, login, logout, password reset and change |
+| [docs/forms.md](docs/forms.md) | Every form in `forms.py` |
+| [docs/templates.md](docs/templates.md) | Template inventory, includes and the password-reset email |
+
+## Tests
+
+Tests live in [`tests/`](tests/) and run with `python manage.py test accounts`. See
+[testing](../docs/development/testing.md) for the runner and conventions.
+
+| Path | Covers |
+|------|--------|
+| `tests/models/test_models.py` | Profile creation, ST helpers, queues, preferences, `__str__` |
+| `tests/test_dashboard.py` | `ProfileDashboard` notifications and selectors, head-ST and staff scope, story XP queue |
+| `tests/forms/test_forms.py` | Sign-up, login, profile, `SceneXP`, `StoryXP`, `FreebieAwardForm` |
+| `tests/views/test_views.py` | Profile page, update view, IDOR protection, approval and XP workflows, login |
+| `tests/views/test_profile_actions.py` | Each profile action endpoint |
+| `tests/views/test_auth_redirects.py` | Login and logout redirect settings |
+| `tests/views/test_password_reset.py` | Plain-text and HTML reset email |
+| `tests/context_processors/test_context_processors.py` | `theme_context`, `notification_count` |
+| `tests/integration/test_integration.py` | The profile-creation signal |
+
+## See also
+
+- [Authorization](../docs/architecture/authorization.md)
+- [XP and approvals](../docs/architecture/xp-and-approvals.md)
+- [game app](../game/README.md)
+- [core app](../core/README.md)
