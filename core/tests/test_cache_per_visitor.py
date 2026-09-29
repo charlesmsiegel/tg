@@ -70,9 +70,9 @@ class SharedAnonymousPageTest(TestCase):
 
         return View.as_view()
 
-    def get(self, view, cookies=None, **headers):
+    def get(self, view, cookies=None, query="", **headers):
         cookie = "; ".join(f"{name}={value}" for name, value in (cookies or {}).items())
-        request = self.factory.get("/reference/", headers=headers, HTTP_COOKIE=cookie)
+        request = self.factory.get(f"/reference/{query}", headers=headers, HTTP_COOKIE=cookie)
         request.user = AnonymousUser()
         return view(request)
 
@@ -101,6 +101,18 @@ class SharedAnonymousPageTest(TestCase):
                 calls = self.calls
                 self.get(view, cookies={cookie: "x"})
                 self.assertEqual(self.calls, calls + 1)
+
+    def test_a_query_string_is_never_cached(self):
+        # Otherwise ?x=1, ?x=2... would each take a cache entry.
+        view = self.view()
+        for cookies in ({}, {settings.SESSION_COOKIE_NAME: "signed-in"}):
+            with self.subTest(cookies=cookies):
+                cache.clear()
+                self.calls = 0
+                for _ in range(2):
+                    self.get(view, cookies=cookies, query="?x=1")
+                self.assertEqual(self.calls, 2)
+                self.assertFalse(cache._cache)
 
     def test_htmx_fragments_are_cached_apart_from_pages(self):
         view = self.view()
