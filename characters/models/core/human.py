@@ -1,4 +1,3 @@
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q, prefetch_related_objects

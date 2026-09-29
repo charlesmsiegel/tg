@@ -80,7 +80,9 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             document.body.appendChild(result);
         });
         </script>
-        """.replace("ASSERTIONS", assertions)
+        """.replace(
+            "ASSERTIONS", assertions
+        )
         page = (
             '<!doctype html><html><head><meta charset="utf-8">'
             "<style>.d-none {display:none}</style>"
@@ -220,7 +222,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             """
             <div id="existing" data-create-or-select-container="item" data-create-or-select-mode="select">Existing</div>
             <div id="new" data-create-or-select-container="item" data-create-or-select-mode="create">New</div>
-            """ + widget.render("create", False, {"id": "create"}),
+            """
+            + widget.render("create", False, {"id": "create"}),
             """
             check(visible('existing') && !visible('new'), 'initial select mode');
             get('create').click();
@@ -260,7 +263,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
               <input name="items-__prefix__-title" id="id_items-__prefix__-title">
               <button data-formset-remove="items">Remove</button></div></template>
             <button id="add" data-formset-add="items">Add</button>
-            """ + render_formset_manager_script(),
+            """
+            + render_formset_manager_script(),
             """
             get('add').click();
             get('add').click();
@@ -282,7 +286,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             <span id="count" data-filter-count></span><div id="empty" data-filter-no-results>No results</div>
             <div data-filterable-list="names"><div id="alpha" data-filterable-item data-name="Alpha">Alpha</div>
             <div id="beta" data-filterable-item data-name="Beta">Beta</div></div>
-            """ + render_filterable_list_script(),
+            """
+            + render_filterable_list_script(),
             """
             check(visible('alpha') && visible('beta'), 'initial items visible');
             change('search', 'ALP');
@@ -308,7 +313,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
               <tr id="both" data-filterable-item data-lines="mta wta" data-kind="merit"><td>A</td></tr>
               <tr id="mage" data-filterable-item data-lines="mta" data-kind="flaw"><td>B</td></tr>
             </tbody></table>
-            """ + render_filterable_list_script(),
+            """
+            + render_filterable_list_script(),
             """
             check(get('count').textContent === '2 of 2 shown', 'initial count');
             check(!visible('empty'), 'hidden empty state stays hidden');
@@ -401,13 +407,15 @@ class StaticAssetsBrowserTests(SimpleTestCase):
                 "pooled": {"visible_when": {"example": {"metadata_truthy": "poolable"}}}
             }
 
-        page = Template("""
+        page = Template(
+            """
             {% load widget_media %}
             {{ form.category }}{{ form.example }}{{ form.rating }}
             <div id="pooled_wrap">{{ form.pooled }}</div>
             {{ form.conditional_js }}
             {% page_media %}
-        """).render(Context({"form": CombinedForm()}))
+        """
+        ).render(Context({"form": CombinedForm()}))
         self.run_browser(
             page,
             """
@@ -435,7 +443,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
             create = forms.BooleanField(required=False, widget=CreateOrSelectWidget)
 
         formset = forms.formset_factory(RowForm, extra=0)(prefix="rows")
-        page = Template("""
+        page = Template(
+            """
             {% load formset_tags widget_media %}
             {% formset formset %}
                 {{ subform.choice }}{{ subform.create }}
@@ -447,7 +456,8 @@ class StaticAssetsBrowserTests(SimpleTestCase):
                      data-create-or-select-mode="create">New</div>
             {% endformset %}
             {% page_media %}
-        """).render(Context({"formset": formset}))
+        """
+        ).render(Context({"formset": formset}))
         self.run_browser(
             page,
             """

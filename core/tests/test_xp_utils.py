@@ -15,25 +15,29 @@ class CalculateStoryXPTests(TestCase):
 
     def test_all_categories_true(self):
         """All boolean categories true should sum correctly."""
-        result = calculate_story_xp({
-            "success": True,
-            "danger": True,
-            "growth": True,
-            "drama": True,
-            "duration": 2,
-        })
+        result = calculate_story_xp(
+            {
+                "success": True,
+                "danger": True,
+                "growth": True,
+                "drama": True,
+                "duration": 2,
+            }
+        )
         # 1 + 1 + 1 + 1 + 2 = 6
         self.assertEqual(result, 6)
 
     def test_all_categories_false(self):
         """All boolean categories false should return only duration."""
-        result = calculate_story_xp({
-            "success": False,
-            "danger": False,
-            "growth": False,
-            "drama": False,
-            "duration": 3,
-        })
+        result = calculate_story_xp(
+            {
+                "success": False,
+                "danger": False,
+                "growth": False,
+                "drama": False,
+                "duration": 3,
+            }
+        )
         self.assertEqual(result, 3)
 
     def test_empty_dict(self):
@@ -49,23 +53,27 @@ class CalculateStoryXPTests(TestCase):
 
     def test_partial_categories(self):
         """Partial category dict should calculate correctly."""
-        result = calculate_story_xp({
-            "success": True,
-            "danger": False,
-            "duration": 1,
-        })
+        result = calculate_story_xp(
+            {
+                "success": True,
+                "danger": False,
+                "duration": 1,
+            }
+        )
         # success (1) + duration (1) = 2
         self.assertEqual(result, 2)
 
     def test_zero_duration(self):
         """Zero duration should work correctly."""
-        result = calculate_story_xp({
-            "success": True,
-            "danger": True,
-            "growth": False,
-            "drama": False,
-            "duration": 0,
-        })
+        result = calculate_story_xp(
+            {
+                "success": True,
+                "danger": True,
+                "growth": False,
+                "drama": False,
+                "duration": 0,
+            }
+        )
         # success (1) + danger (1) = 2
         self.assertEqual(result, 2)
 
@@ -93,9 +101,7 @@ class AwardXPAtomicallyTests(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_award_xp_to_single_character_via_story(self):
         """Test awarding XP to a single character via Story."""
@@ -135,11 +141,15 @@ class AwardXPAtomicallyTests(TestCase):
             chronicle=self.chronicle,
         )
 
-        count = award_xp_atomically(Story, story.pk, {
-            char1: 3,
-            char2: 5,
-            char3: 1,
-        })
+        count = award_xp_atomically(
+            Story,
+            story.pk,
+            {
+                char1: 3,
+                char2: 5,
+                char3: 1,
+            },
+        )
 
         char1.refresh_from_db()
         char2.refresh_from_db()
@@ -164,10 +174,14 @@ class AwardXPAtomicallyTests(TestCase):
             chronicle=self.chronicle,
         )
 
-        count = award_xp_atomically(Story, story.pk, {
-            char1: 3,
-            char2: 0,  # Should not be counted
-        })
+        count = award_xp_atomically(
+            Story,
+            story.pk,
+            {
+                char1: 3,
+                char2: 0,  # Should not be counted
+            },
+        )
 
         char1.refresh_from_db()
         char2.refresh_from_db()
@@ -262,10 +276,14 @@ class AwardXPAtomicallyTests(TestCase):
             chronicle=self.chronicle,
         )
 
-        count = award_xp_atomically(Story, story.pk, {
-            char1: 0,
-            char2: 0,
-        })
+        count = award_xp_atomically(
+            Story,
+            story.pk,
+            {
+                char1: 0,
+                char2: 0,
+            },
+        )
 
         story.refresh_from_db()
 

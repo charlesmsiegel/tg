@@ -20,12 +20,13 @@ class CityAuthorizationTests(TestCase):
         wod = Gameline.objects.create(name="World of Darkness")
         vtm = Gameline.objects.create(name="Vampire: the Masquerade")
         STRelationship.objects.create(user=self.st, chronicle=self.chronicle, gameline=wod)
-        STRelationship.objects.create(
-            user=self.wrong_st, chronicle=self.chronicle, gameline=vtm
-        )
+        STRelationship.objects.create(user=self.wrong_st, chronicle=self.chronicle, gameline=vtm)
         self.city = City.objects.create(
-            name="Draft city", owner=self.owner, chronicle=self.chronicle,
-            status="Un", st_notes="PRIVATE ST NOTES",
+            name="Draft city",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="Un",
+            st_notes="PRIVATE ST NOTES",
         )
 
     def test_public_card_hides_private_fields(self):
@@ -80,8 +81,14 @@ class CityAuthorizationTests(TestCase):
         self.client.force_login(self.owner)
         response = self.client.post(
             reverse("locations:create:city"),
-            {"name": "Owned city", "description": "A settlement", "gauntlet": 7,
-             "shroud": 7, "dimension_barrier": 6, "population": 100},
+            {
+                "name": "Owned city",
+                "description": "A settlement",
+                "gauntlet": 7,
+                "shroud": 7,
+                "dimension_barrier": 6,
+                "population": 100,
+            },
         )
         self.assertEqual(response.status_code, 302)
         city = City.objects.get(name="Owned city")

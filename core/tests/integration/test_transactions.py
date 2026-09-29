@@ -5,7 +5,6 @@ These tests verify that atomic transactions properly protect data consistency
 when operations span multiple models or require multiple database saves.
 """
 
-
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TransactionTestCase

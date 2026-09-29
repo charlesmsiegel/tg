@@ -164,7 +164,9 @@ MageFaction.objects.get_or_create(name="Ka'a Klubwerks", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Khlysty Flagellants", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Studiosi", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Umilyenye", parent=cox)[0]
-dissidents_against_ananda = MageFaction.objects.get_or_create(name="Dissidents Against Ananda", parent=cox)[0]
+dissidents_against_ananda = MageFaction.objects.get_or_create(
+    name="Dissidents Against Ananda", parent=cox
+)[0]
 
 ds = MageFaction.objects.get_or_create(
     name="Dreamspeakers",
@@ -288,7 +290,9 @@ soe.languages.add(french, latin)
 soe.materials.add(leather, cloth, wood, steel, bone)
 soe.media.add(book, flash_drive, ebook, software)
 soe.save()
-royal_ethernautical = MageFaction.objects.get_or_create(name="The Royal Ethernautical Society", parent=soe)[0]
+royal_ethernautical = MageFaction.objects.get_or_create(
+    name="The Royal Ethernautical Society", parent=soe
+)[0]
 MageFaction.objects.get_or_create(name="The Cybernetic Research Institute", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Progressivists", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Utopians", parent=soe)[0]

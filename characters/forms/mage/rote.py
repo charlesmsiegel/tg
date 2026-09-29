@@ -129,9 +129,11 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
             .filter(selectable)
             .exclude(id__in=self.instance.rotes.all())
         )
-        self.fields["effect_options"].queryset = Effect.objects.filter(
-            **effect_filter_dict
-        ).filter(selectable).exclude(id__in=effects_known)
+        self.fields["effect_options"].queryset = (
+            Effect.objects.filter(**effect_filter_dict)
+            .filter(selectable)
+            .exclude(id__in=effects_known)
+        )
 
         # Re-run chain setup after choices are configured
         self._setup_chains()

@@ -23,13 +23,17 @@ class PrivateVisibilityTests(TestCase):
             name="Private character", owner=self.owner, chronicle=self.chronicle
         )
         self.other_character = Human.objects.create(
-            name="Other character", owner=self.same_chronicle_player,
+            name="Other character",
+            owner=self.same_chronicle_player,
             chronicle=self.chronicle,
         )
         self.journal = Journal.objects.get(character=self.character)
         self.record = FreebieSpendingRecord.objects.create(
-            character=self.character, trait_name="Secret spend",
-            trait_type="custom", trait_value=1, cost=1,
+            character=self.character,
+            trait_name="Secret spend",
+            trait_type="custom",
+            trait_value=1,
+            cost=1,
         )
         self.scene = Scene.objects.create(name="Hidden scene", chronicle=self.chronicle)
 
@@ -37,16 +41,18 @@ class PrivateVisibilityTests(TestCase):
         self.client.force_login(self.other)
         existing = self.client.get(f"/game/journal/{self.journal.pk}/")
         missing = self.client.get("/game/journal/999999/")
-        self.assertEqual((existing.status_code, existing.content),
-                         (missing.status_code, missing.content))
+        self.assertEqual(
+            (existing.status_code, existing.content), (missing.status_code, missing.content)
+        )
         self.assertEqual(existing.status_code, 404)
 
     def test_private_spending_record_existing_and_missing_ids_look_identical(self):
         self.client.force_login(self.other)
         existing = self.client.get(f"/game/freebie-spending-record/{self.record.pk}/")
         missing = self.client.get("/game/freebie-spending-record/999999/")
-        self.assertEqual((existing.status_code, existing.content),
-                         (missing.status_code, missing.content))
+        self.assertEqual(
+            (existing.status_code, existing.content), (missing.status_code, missing.content)
+        )
         self.assertEqual(existing.status_code, 404)
 
     def test_outside_player_cannot_discover_scene(self):
@@ -57,9 +63,7 @@ class PrivateVisibilityTests(TestCase):
 
     def test_same_chronicle_player_cannot_list_another_players_private_records(self):
         self.client.force_login(self.same_chronicle_player)
-        self.assertEqual(
-            self.client.get(f"/game/journal/{self.journal.pk}/").status_code, 404
-        )
+        self.assertEqual(self.client.get(f"/game/journal/{self.journal.pk}/").status_code, 404)
         self.assertNotContains(self.client.get("/game/journals/"), "Private character")
         self.assertNotContains(
             self.client.get("/game/freebie-spending-record/list/"), "Secret spend"

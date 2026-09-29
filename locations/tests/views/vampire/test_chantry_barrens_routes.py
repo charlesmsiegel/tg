@@ -44,9 +44,7 @@ class TestSeededVampireLocationRoutes(TestCase):
         user = User.objects.create_user("player", "p@test.com", "password")
         self.client.force_login(user)
         response = self.client.get(
-            reverse(
-                "core:object_type_redirect", kwargs={"kind": "location", "action": "create"}
-            ),
+            reverse("core:object_type_redirect", kwargs={"kind": "location", "action": "create"}),
             {"loc_type": "tremere_chantry", "gameline": "vtm"},
         )
         self.assertRedirects(

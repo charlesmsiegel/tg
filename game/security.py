@@ -15,10 +15,7 @@ def readable_chronicles(user):
     played = CharacterModel.objects.filter(owner=user).values("chronicle_id")
     staffed = STRelationship.objects.filter(user=user).values("chronicle_id")
     return Chronicle.objects.filter(
-        Q(head_st=user)
-        | Q(game_storytellers=user)
-        | Q(pk__in=played)
-        | Q(pk__in=staffed)
+        Q(head_st=user) | Q(game_storytellers=user) | Q(pk__in=played) | Q(pk__in=staffed)
     ).distinct()
 
 
@@ -38,8 +35,7 @@ def can_read_private_record(user, record):
     if character is None and hasattr(record, "journal"):
         character = getattr(record.journal, "character", None)
     return bool(
-        character
-        and PermissionManager.user_has_permission(user, character, Permission.VIEW_FULL)
+        character and PermissionManager.user_has_permission(user, character, Permission.VIEW_FULL)
     )
 
 
@@ -64,8 +60,7 @@ def filter_scenes(queryset, user):
             chronicle_id__in=readable_chronicles(user).values("pk"),
         )
         visible |= Q(visibility=Scene.Visibility.PARTICIPANTS) & (
-            Q(chronicle_id__in=staffed_chronicles(user).values("pk"))
-            | Q(characters__owner=user)
+            Q(chronicle_id__in=staffed_chronicles(user).values("pk")) | Q(characters__owner=user)
         )
     return queryset.filter(visible).distinct()
 

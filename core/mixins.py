@@ -7,7 +7,6 @@ This module consolidates all view mixins used throughout the application:
 - User verification mixins: For checking special user status
 """
 
-
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404

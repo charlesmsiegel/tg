@@ -151,7 +151,8 @@ class TestObjectApprovalView(TestCase):
         from characters.models.mage.rote import Rote
 
         STRelationship.objects.create(
-            user=self.st_user, chronicle=self.chronicle,
+            user=self.st_user,
+            chronicle=self.chronicle,
             gameline=Gameline.objects.create(name="Mage: the Ascension"),
         )
 
@@ -167,9 +168,7 @@ class TestObjectApprovalView(TestCase):
             ability=ability,
         )
         self.client.login(username="stuser", password="password")
-        url = reverse(
-            "accounts:object_approval", kwargs={"object_type": "rote", "pk": rote.pk}
-        )
+        url = reverse("accounts:object_approval", kwargs={"object_type": "rote", "pk": rote.pk})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         rote.refresh_from_db()
@@ -186,9 +185,7 @@ class TestObjectApprovalView(TestCase):
 
     def test_invalid_object_type_404(self):
         self.client.login(username="stuser", password="password")
-        url = reverse(
-            "accounts:object_approval", kwargs={"object_type": "bogus", "pk": 1}
-        )
+        url = reverse("accounts:object_approval", kwargs={"object_type": "bogus", "pk": 1})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
@@ -265,9 +262,7 @@ class TestImageApprovalView(TestCase):
 
     def test_invalid_type_404(self):
         self.client.login(username="stuser", password="password")
-        url = reverse(
-            "accounts:image_approval", kwargs={"object_type": "bogus", "pk": 1}
-        )
+        url = reverse("accounts:image_approval", kwargs={"object_type": "bogus", "pk": 1})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
@@ -517,9 +512,7 @@ class TestMarkSceneReadView(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
-            UserSceneReadStatus.objects.filter(
-                scene=self.scene, user=self.user, read=True
-            ).exists()
+            UserSceneReadStatus.objects.filter(scene=self.scene, user=self.user, read=True).exists()
         )
 
     def test_not_logged_in_redirects(self):

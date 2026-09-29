@@ -1,15 +1,15 @@
 """Template tags for the Tellurium "Spread" design (core/templates/core/tl_base.html).
 
-    {% load tl %}
-    {% dots 3 %}                      filled/empty circles, ink or gameline accent
-    {% boxes 4 10 %}                  squares (current Willpower, pools)
-    {% trait "Strength" 3 "Wiry" %}   label + specialty + dots on one row
-    {% track "Willpower" perm=6 temp=4 %}   label + permanent dots over current boxes
-    {% fact "Nature" object.nature %}       cover fact row, linked when the value has a URL
-    {% qp_wheel 4 2 %}                Mage Quintessence / Paradox wheel
-    {{ name|cover_title_class }}      size step for large cover titles
-    {{ object|gameline_code }}        "mta", "vtm", ... or "wod"
-    {% tl_object_actions %}           submit / approve actions, Spread-styled
+{% load tl %}
+{% dots 3 %}                      filled/empty circles, ink or gameline accent
+{% boxes 4 10 %}                  squares (current Willpower, pools)
+{% trait "Strength" 3 "Wiry" %}   label + specialty + dots on one row
+{% track "Willpower" perm=6 temp=4 %}   label + permanent dots over current boxes
+{% fact "Nature" object.nature %}       cover fact row, linked when the value has a URL
+{% qp_wheel 4 2 %}                Mage Quintessence / Paradox wheel
+{{ name|cover_title_class }}      size step for large cover titles
+{{ object|gameline_code }}        "mta", "vtm", ... or "wod"
+{% tl_object_actions %}           submit / approve actions, Spread-styled
 """
 
 import math

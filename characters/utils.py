@@ -33,7 +33,6 @@ def get_character_object_type(character_type, gameline="wod"):
         character_type = "human"
 
     obj_type, _ = ObjectType.objects.get_or_create(
-        name=character_type,
-        defaults={"type": "char", "gameline": gameline}
+        name=character_type, defaults={"type": "char", "gameline": gameline}
     )
     return obj_type

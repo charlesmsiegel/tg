@@ -27,9 +27,7 @@ class TestChargenBackView(TestCase):
         # The redirect goes through the generic character router (not
         # get_absolute_url, which gameline subclasses override to a detail
         # route), so unfinished characters land on their creation step view.
-        self.assertEqual(
-            response.url, reverse("characters:character", kwargs={"pk": self.char.pk})
-        )
+        self.assertEqual(response.url, reverse("characters:character", kwargs={"pk": self.char.pk}))
         follow = self.client.get(response.url)
         self.assertEqual(follow.status_code, 200)
 
@@ -43,9 +41,7 @@ class TestChargenBackView(TestCase):
         url = reverse("characters:chargen_back", kwargs={"pk": char.pk})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.url, reverse("characters:character", kwargs={"pk": char.pk})
-        )
+        self.assertEqual(response.url, reverse("characters:character", kwargs={"pk": char.pk}))
 
     def test_cannot_go_back_past_step_1(self):
         self.char.creation_status = 1
@@ -176,24 +172,18 @@ class TestChargenBackUrlProperty(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
 
     def test_present_mid_chargen(self):
-        char = Human.objects.create(
-            name="C", owner=self.user, status="Un", creation_status=3
-        )
+        char = Human.objects.create(name="C", owner=self.user, status="Un", creation_status=3)
         self.assertEqual(
             char.chargen_back_url,
             reverse("characters:chargen_back", kwargs={"pk": char.pk}),
         )
 
     def test_empty_on_step_1(self):
-        char = Human.objects.create(
-            name="C", owner=self.user, status="Un", creation_status=1
-        )
+        char = Human.objects.create(name="C", owner=self.user, status="Un", creation_status=1)
         self.assertEqual(char.chargen_back_url, "")
 
     def test_empty_when_submitted(self):
-        char = Human.objects.create(
-            name="C", owner=self.user, status="Un", creation_status=3
-        )
+        char = Human.objects.create(name="C", owner=self.user, status="Un", creation_status=3)
         char.status = "Sub"
         char.save()
         self.assertEqual(char.chargen_back_url, "")
@@ -227,21 +217,15 @@ class TestChargenBackButtonRendering(TestCase):
         self.client.login(username="player", password="password")
 
     def _get(self, char):
-        return self.client.get(
-            reverse("characters:character", kwargs={"pk": char.pk})
-        )
+        return self.client.get(reverse("characters:character", kwargs={"pk": char.pk}))
 
     def test_button_present_mid_chargen(self):
-        char = Human.objects.create(
-            name="C", owner=self.user, status="Un", creation_status=2
-        )
+        char = Human.objects.create(name="C", owner=self.user, status="Un", creation_status=2)
         response = self._get(char)
         self.assertContains(response, "chargen/back/")
 
     def test_button_absent_on_step_1(self):
-        char = Human.objects.create(
-            name="C", owner=self.user, status="Un", creation_status=1
-        )
+        char = Human.objects.create(name="C", owner=self.user, status="Un", creation_status=1)
         response = self._get(char)
         self.assertNotContains(response, "chargen/back/")
 

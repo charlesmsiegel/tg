@@ -151,12 +151,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders management form."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -168,12 +170,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders container with data attributes."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -186,12 +190,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders hidden empty form template."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -203,12 +209,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders add button."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" add_label="Add Item" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -221,11 +229,13 @@ class TestFormsetBlockTag(TestCase):
         formset1 = self._create_formset(prefix="items1")
         formset2 = self._create_formset(prefix="items2")
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs1 prefix="items1" %}{{ subform.name }}{% endformset %}
         {% formset fs2 prefix="items2" %}{{ subform.name }}{% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs1": formset1, "fs2": formset2})
@@ -237,12 +247,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders remove buttons by default."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -253,12 +265,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag can hide remove buttons."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" show_remove=False %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -269,12 +283,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag uses custom wrapper class."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" wrapper_class="custom-row" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -285,12 +301,14 @@ class TestFormsetBlockTag(TestCase):
         """Test block tag renders form fields correctly."""
         formset = self._create_formset()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             <div class="field">{{ subform.name }}</div>
         {% endformset %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"fs": formset})
@@ -342,7 +360,8 @@ class TestFormsetManagerIntegration(TestCase):
         ItemFormSet = forms.formset_factory(ItemForm, extra=1)
         formset = ItemFormSet(prefix="items")
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {{ formset.management_form }}
         <div id="items_formset" {% formset_container "items" %}>
@@ -359,7 +378,8 @@ class TestFormsetManagerIntegration(TestCase):
         </div>
         {% formset_add_btn "items" "Add Item" %}
         {% formset_script %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({"formset": formset})
@@ -375,12 +395,14 @@ class TestFormsetManagerIntegration(TestCase):
 
     def test_script_only_rendered_once_across_formsets(self):
         """Test script is only rendered once even with multiple formsets."""
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset_script %}
         {% formset_script %}
         {% formset_script %}
-        """)
+        """
+        )
 
         result = (Template(template.source + "{% load widget_media %}{% page_media %}")).render(
             Context({})

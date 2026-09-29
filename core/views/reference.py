@@ -177,16 +177,12 @@ class ReferenceViewSetMeta(type):
         # Validate app_prefix is set
         app_prefix = getattr(cls, "app_prefix", "")
         if not app_prefix:
-            raise ValueError(
-                f"{name} must define 'app_prefix' (e.g., 'characters/mage')"
-            )
+            raise ValueError(f"{name} must define 'app_prefix' (e.g., 'characters/mage')")
 
         # Validate fields is set and non-empty
         fields = getattr(cls, "fields", [])
         if not fields:
-            raise ValueError(
-                f"{name} must define 'fields' list for create/update forms"
-            )
+            raise ValueError(f"{name} must define 'fields' list for create/update forms")
 
         # Generate views
         views = create_reference_views(

@@ -6,7 +6,6 @@ This module provides XP spending services for Mummy: The Resurrection characters
 - MummyXPSpendingService - Reborn mummies with Hekau, Sekhem, Balance
 """
 
-
 from characters.costs import get_xp_cost
 
 from .base import (
