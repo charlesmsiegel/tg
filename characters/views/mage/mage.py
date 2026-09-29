@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Any
 
@@ -279,6 +280,9 @@ class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
         affinity.label_from_instance = (
             lambda sphere: f"{sphere.name} (preferred)" if sphere.pk in preferred else sphere.name
         )
+        affinity.widget.attrs["data-sphere-map"] = json.dumps(
+            {str(sphere.pk): sphere.property_name for sphere in affinity.queryset}
+        )
         form.fields["affinity_sphere"].empty_label = "Choose an Affinity"
         form.fields["resonance"].widget = AutocompleteTextInput(
             suggestions=[x.name.title() for x in Resonance.objects.order_by("name")]
@@ -288,7 +292,7 @@ class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
 
     def get_initial(self) -> dict[str, Any]:
         initial = super().get_initial()
-        initial["arete"] = 1
+        initial["arete"] = self.object.arete
         initial["resonance"] = ""
         return initial
 

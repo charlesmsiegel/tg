@@ -1,5 +1,7 @@
 """Player-facing Mage creation rules and controls."""
 
+import json
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -51,6 +53,12 @@ class MageCreationControlsTests(TestCase):
                     html,
                     rf'<div class="tl-alloc__row[^>]*>\s*<label class="tl-sr"[^>]*>[^<]+</label>\s*<select[^>]*name="{field}"',
                 )
+
+    def test_returning_to_spheres_keeps_saved_arete(self):
+        mage = Mage.objects.create(name="Returning Mage", owner=self.user, creation_status=4, arete=3)
+        response = self.wizard(mage)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["form"]["arete"].value(), 3)
 
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):
         Attribute.objects.create(name="Strength", property_name="strength")
@@ -126,6 +134,11 @@ class MageSphereRulesTests(TestCase):
         choices = list(response.context["form"].fields["affinity_sphere"].choices)
         self.assertIn((self.other.pk, "Mind"), choices)
         self.assertIn((self.preferred.pk, "Forces (preferred)"), choices)
+        sphere_map = json.loads(
+            response.context["form"].fields["affinity_sphere"].widget.attrs["data-sphere-map"]
+        )
+        self.assertEqual(sphere_map[str(self.other.pk)], "mind")
+        self.assertEqual(sphere_map[str(self.preferred.pk)], "forces")
 
     def test_resonance_is_required_and_non_npc_arete_is_capped(self):
         self.assertIn("resonance", MageSpheresForm(data=self.data(resonance=""), instance=self.mage).errors)

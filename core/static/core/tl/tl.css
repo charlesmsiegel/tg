@@ -1316,12 +1316,14 @@ body.tl {
 /* Clickable dots (widgets/dot_rating.html + Alpine tgDots): 18px, 2px ring. */
 .tg-dots-control { display: inline-flex; flex: none; }
 .tg-dot-buttons { display: inline-flex; gap: 6px; flex: none; }
+.tg-dot-buttons[hidden] { display: none; }
 .tg-dot {
   width: 18px; height: 18px; padding: 0; flex: none; cursor: pointer;
   border: 2px solid var(--ink); border-radius: 50%; background: transparent;
   transition: background-color .12s ease, border-color .12s ease;
 }
 .tg-dot.is-filled { background: var(--ink); }
+.tg-dot[hidden] { display: none; }
 .tg-dot:hover { border-color: var(--acc); }
 .tg-dot:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 .tl-alloc__row.is-invalid .tg-dot { border-color: var(--rubric); }
