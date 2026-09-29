@@ -635,8 +635,10 @@ class UserSceneReadStatusManager(models.Manager):
             # A concurrent post may have created the row since ``existing`` was read.
             ignore_conflicts=True,
         )
-        others = self.filter(scene=scene, user_id__in=user_ids & existing)
-        if author_id in existing:
+        # Every participant's row, not just those in ``existing``: a row a concurrent
+        # post created in between holds that post's state and needs this one's.
+        others = self.filter(scene=scene, user_id__in=user_ids)
+        if author_id is not None:
             others = others.exclude(user_id=author_id)
             self.mark_read(scene, author_id, post)
         others.update(read=False)
