@@ -90,6 +90,7 @@ class MageCreationControlsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["step"].key, "allies")
         self.assertContains(response, "data-linked-npc-form")
+        self.assertContains(response, 'data-npc-except="werewolf changeling fera spirit"')
         self.assertContains(response, 'data-npc-types="vampire"')
         self.assertContains(response, 'name="clan"')
         self.assertContains(response, 'name="sect"')

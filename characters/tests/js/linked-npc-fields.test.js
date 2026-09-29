@@ -27,7 +27,7 @@ function page() {
         const input = { disabled: false };
         return { dataset, hidden: false, input, querySelectorAll: () => [input] };
     }
-    const archetypes = group({ npcExcept: 'werewolf changeling fera' });
+    const archetypes = group({ npcExcept: 'werewolf changeling fera spirit' });
     const vampire = group({ npcTypes: 'vampire' });
     const werewolf = group({ npcTypes: 'werewolf fera' });
     const groups = [archetypes, vampire, werewolf];
@@ -69,6 +69,10 @@ test('Allies details follow the selected character type', () => {
     assert.equal(archetypes.hidden, true);
     assert.equal(werewolf.hidden, false);
     assert.equal(werewolf.input.disabled, false);
+    select.value = 'spirit';
+    select.onChange();
+    assert.equal(archetypes.hidden, true);
+    assert.equal(archetypes.input.disabled, true);
 });
 
 test('Fera breed and Mage faction choices follow their parent selectors', () => {

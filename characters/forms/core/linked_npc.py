@@ -327,8 +327,8 @@ class LinkedNPCForm(forms.Form):
         }
 
         # Add archetypes for types that use them
-        # Werewolves, Changelings, and Fera don't use nature/demeanor
-        if npc_type not in ["werewolf", "changeling", "fera"]:
+        # These character types do not use nature/demeanor.
+        if npc_type not in ["werewolf", "changeling", "fera", "spirit"]:
             if self.cleaned_data.get("nature"):
                 char_data["nature"] = self.cleaned_data["nature"]
             if self.cleaned_data.get("demeanor"):

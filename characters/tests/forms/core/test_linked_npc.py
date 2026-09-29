@@ -345,6 +345,21 @@ class LinkedNPCFormSaveTestCase(TestCase):
         npc = form.save()
         self.assertIsInstance(npc, SpiritCharacter)
 
+    def test_spirit_ignores_nature_and_demeanor(self):
+        form = LinkedNPCForm(
+            data={
+                "npc_type": "spirit",
+                "name": "Spirit Ally",
+                "rank": 2,
+                "nature": self.archetype.pk,
+                "demeanor": self.archetype.pk,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        spirit = form.save()
+        self.assertFalse(hasattr(spirit, "nature"))
+        self.assertFalse(hasattr(spirit, "demeanor"))
+
     def test_save_creates_kinfolk(self):
         """Test saving form creates a Kinfolk NPC."""
         data = {
