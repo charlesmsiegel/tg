@@ -2,26 +2,14 @@
 
 from django.db import migrations
 
-from game.models import Scene
+from tg_schema.schema import add_missing_columns
 
 
 def add_scene_visibility(apps, schema_editor):
-    # ``game`` has no migration state on legacy installations, so its models
-    # are intentionally absent from this migration's historical app registry.
-    # Use the live model solely to describe the column being added.
-    scene = Scene
-    table = scene._meta.db_table
-    with schema_editor.connection.cursor() as cursor:
-        columns = {
-            column.name
-            for column in schema_editor.connection.introspection.get_table_description(
-                cursor, table
-            )
-        }
-    # Test syncdb already creates this column from the current model. Existing
-    # deployments need the DDL exactly once.
-    if "visibility" not in columns:
-        schema_editor.add_field(scene, scene._meta.get_field("visibility"))
+    # ``game`` has no migration state on legacy installations, so its models are
+    # absent from this migration's historical registry: the live model describes
+    # the column (see tg_schema.schema).
+    add_missing_columns(schema_editor, "game.Scene", ("visibility",))
 
 
 class Migration(migrations.Migration):

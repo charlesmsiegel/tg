@@ -2,32 +2,16 @@
 
 from django.db import migrations
 
-from game.models import Story
+from tg_schema.schema import add_missing_columns
 
 
 def add_story_chronicle(apps, schema_editor):
-    # ``game`` has no migration state on legacy installations, so its models
-    # are intentionally absent from this migration's historical app registry.
-    # Use the live model solely to describe the column being added.
-    story = Story
-    field = story._meta.get_field("chronicle")
-    with schema_editor.connection.cursor() as cursor:
-        columns = {
-            column.name
-            for column in schema_editor.connection.introspection.get_table_description(
-                cursor, story._meta.db_table
-            )
-        }
-    # Test syncdb already creates this column from the current model. Existing
-    # deployments need the DDL exactly once; their stories keep no chronicle.
-    if field.column not in columns:
-        schema_editor.add_field(story, field)
+    # ``game`` has no migration state on legacy installations: the live model
+    # describes the column (see tg_schema.schema). 0007 assigns existing stories.
+    add_missing_columns(schema_editor, "game.Story", ("chronicle",))
 
 
-# The live model describes each column (legacy databases have no migration state for
-# its app), so these fields must keep the definition they shipped with: a later
-# change to one of them needs its own migration here, not an edit to this one.
-# Reversing this migration leaves the columns in place (RunPython.noop).
+# Reversing this migration leaves the column in place (RunPython.noop).
 
 
 class Migration(migrations.Migration):

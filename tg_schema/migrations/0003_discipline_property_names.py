@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from characters.models.vampire.discipline import Discipline
+from tg_schema.schema import live_field, live_model
 
 DISCIPLINE_FIELDS = (
     "celerity",
@@ -34,6 +34,10 @@ DISCIPLINE_FIELDS = (
 
 
 def backfill_discipline_property_names(apps, schema_editor):
+    # Looked up when it runs, so a later rename can't break it (see tg_schema.schema).
+    Discipline = live_model("characters.Discipline")
+    if live_field(Discipline, "property_name") is None:
+        return
     disciplines = Discipline.objects.using(schema_editor.connection.alias)
     for field_name in DISCIPLINE_FIELDS:
         disciplines.filter(name__iexact=field_name, property_name="").update(

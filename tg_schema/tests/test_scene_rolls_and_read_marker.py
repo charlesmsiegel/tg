@@ -2,6 +2,7 @@
 
 import importlib
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import connection
 from django.test import TransactionTestCase
@@ -24,7 +25,12 @@ def columns(model):
 
 class SceneRollsAndReadMarkerMigrationTests(TransactionTestCase):
     def fields(self):
-        return [(model, model._meta.get_field(name)) for model, name in migration.NEW_FIELDS]
+        return [
+            (model, model._meta.get_field(name))
+            for model, name in (
+                (apps.get_model(label), name) for label, name in migration.NEW_FIELDS
+            )
+        ]
 
     def restore_columns(self):
         with connection.schema_editor() as editor:

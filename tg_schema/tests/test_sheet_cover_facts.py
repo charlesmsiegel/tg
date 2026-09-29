@@ -2,6 +2,7 @@
 
 import importlib
 
+from django.apps import apps
 from django.db import connection
 from django.test import TransactionTestCase
 
@@ -22,7 +23,9 @@ class SheetCoverFactsMigrationTests(TransactionTestCase):
     def fields(self):
         return [
             (model, model._meta.get_field(name))
-            for model, names in migration.SHEET_FIELDS
+            for model, names in (
+                (apps.get_model(label), names) for label, names in migration.SHEET_FIELDS
+            )
             for name in names
         ]
 
