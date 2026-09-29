@@ -1,108 +1,107 @@
-# Data Validation Patterns
+# Validation, constraints and transactions
 
-## Priority Guidelines
+Where each kind of rule lives and how to write it: `clean()`, field validators, database
+constraints, the status state machine, locking and transactions. Read it before you add a
+rule that rejects data or a code path that changes points (XP, freebies, pools).
 
-| Priority | What to Validate | Pattern |
-|----------|-----------------|---------|
-| CRITICAL | XP/freebie operations | `@transaction.atomic` + `select_for_update()` |
-| HIGH | Numeric ranges (1-10, 0-5) | `CheckConstraint` + Field validators |
-| MEDIUM | Cross-field rules | `clean()` method |
-| LOW | JSON structure | JSON schema validation |
+## Layers
 
-## Transaction Pattern (XP/Freebie Operations)
+| Rule | Put it in | Why |
+|------|-----------|-----|
+| Range of one value (rating 0 to 5) | Field validators and a named `CheckConstraint` | Forms show the validator message; the constraint stops raw SQL and `update()` |
+| Relation between fields of one row (temporary <= permanent) | `clean()`, plus a `CheckConstraint` using `F()` when it is simple | `clean()` runs on every save |
+| Uniqueness | Named `UniqueConstraint` with `violation_error_message` | `full_clean()` reports it as a field error |
+| Allowed status transition | `Character.STATUS_TRANSITIONS`, checked in `Character.clean()` | One state machine for every character |
+| Game rules across rows (point totals, prerequisites, costs) | A service in `characters/services/` or `game/`, or a chargen step form | Views stay thin; the same rule serves every entry point |
+| Who may do it | `PermissionManager` (see [permissions.md](permissions.md)) | Not a validation concern |
 
-```python
-from django.db import transaction
-from django.core.exceptions import ValidationError
+## `clean()` and `save()`
 
-class Character(Model):
-    @transaction.atomic
-    def spend_xp(self, trait_name, cost, category):
-        # Lock row for concurrent access
-        char = Character.objects.select_for_update().get(pk=self.pk)
-        
-        if char.xp < cost:
-            raise ValidationError(f"Insufficient XP: need {cost}, have {char.xp}")
-        
-        char.xp -= cost
-        char.spent_xp.append({...})
-        char.save(update_fields=['xp', 'spent_xp'])
-```
+- `core.models.Model.save()` and `core.base.ValidatedSaveMixin.save()` call
+  `full_clean()` unless you pass `skip_validation=True`. Every save, including
+  `save(update_fields=[...])`, runs `clean()`.
+- Call `super().clean()` first, collect errors in a dict keyed by field name, and raise one
+  `ValidationError(errors)` at the end. Use `NON_FIELD_ERRORS` only when no field fits.
+- Do not query other rows in `clean()` unless the rule needs it; `Character.clean()` loads
+  the stored row once to compare statuses.
+- `skip_validation=True` also skips the status state machine. Use it only in migrations,
+  fixtures (`core/tests/template_fixtures.py`), bulk jobs and tests that build invalid
+  states on purpose.
+- `QuerySet.update()` skips `clean()` and `save()` entirely; constraints still apply.
 
-## Database Constraint Pattern
+## Constraints
 
-```python
-from django.db.models import CheckConstraint, Q
-
-class Character(Model):
-    class Meta:
-        constraints = [
-            CheckConstraint(
-                check=Q(xp__gte=0),
-                name='%(app_label)s_%(class)s_xp_non_negative',
-                violation_error_message="XP cannot be negative"
-            ),
-        ]
-```
-
-## Model Validation Pattern
+- Name every constraint with an app and model prefix and give it a
+  `violation_error_message`:
 
 ```python
-class Human(Character):
-    def clean(self):
-        super().clean()
-        if self.temporary_willpower > self.willpower:
-            raise ValidationError({
-                'temporary_willpower': f"Cannot exceed permanent willpower ({self.willpower})"
-            })
+class Meta:
+    constraints = [
+        CheckConstraint(
+            check=Q(xp__gte=0),
+            name="characters_character_xp_non_negative",
+            violation_error_message="XP cannot be negative",
+        ),
+    ]
 ```
 
-## Field Validator Pattern
+- A constraint may only reference the model's own columns. In multi-table inheritance,
+  `status` lives on the tree root's table, so a subclass cannot constrain it (the reason
+  `Character` validates status transitions in `clean()`).
+- Paired permanent/temporary stats: build both fields and their constraints with
+  `core.linked_stat.linked_stat_fields(name, default=..., min_permanent=...)` and spread
+  its `constraints(prefix)` into `Meta.constraints`.
+- An existing database gets a new constraint only through a `tg_schema` migration that
+  first repairs violating rows ([schema-changes.md](schema-changes.md), 0008).
 
-```python
-from django.core.validators import MinValueValidator, MaxValueValidator
+## Status changes
 
-class AttributeBlock(models.Model):
-    strength = models.IntegerField(
-        default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
-```
+- `core.constants.CharacterStatus`: `Un` (Unapproved, the default), `Rev` (Returned for
+  revisions), `Sub`, `App`, `Ret`, `Dec`.
+- Characters follow `Character.STATUS_TRANSITIONS`
+  ([`characters/models/core/character.py`](../../../../characters/models/core/character.py));
+  other `Model` subclasses only check that the value is a valid choice.
+- Change status only through its owners: `core.services.approval.ApprovalService`
+  (submit, return, approve) and `characters.services.status.change_character_status`
+  (retire, decease). Views and forms never set `status` directly; the route policy's field
+  guard rejects non-staff attempts.
+- Moving a character into `Ret` or `Dec` runs `Character.remove_from_organizations()`.
 
-## Status State Machine
+## Transactions and locking
 
-```python
-STATUS_TRANSITIONS = {
-    'Un': ['Sub', 'Ret'],      # Unfinished -> Submitted or Retired
-    'Sub': ['Un', 'App', 'Ret'],  # Submitted -> back, Approved, or Retired
-    'App': ['Ret', 'Dec'],     # Approved -> Retired or Deceased
-    'Ret': ['App'],            # Retired -> back to Approved
-    'Dec': [],                 # Deceased -> no transitions
-}
+- `DATABASES["default"]["ATOMIC_REQUESTS"] = True` wraps every request in a transaction
+  (`core/tests/test_settings.py` asserts it). Management commands and Channels consumers
+  are not requests: open `transaction.atomic()` yourself.
+- Anything that reads and then writes points (XP, freebies, pools, counters) locks the
+  row: `Model.objects.select_for_update().get(pk=...)` inside `transaction.atomic()`, then
+  saves with `update_fields`. Follow `Character.add_xp` / `Character.spend_xp`.
+- `core.actions.ObjectActionView` runs `perform()` inside `transaction.atomic()`; set
+  `lock = True` to re-read the subject with `select_for_update()` first.
+- A service reports refusal by raising `ValidationError` or returning a result object
+  with `success=False` and `error` (`characters/services/result.py`); `ObjectActionView`
+  turns either into a flashed error.
 
-def clean(self):
-    if self.pk:
-        old = Character.objects.get(pk=self.pk)
-        if old.status != self.status:
-            if self.status not in self.STATUS_TRANSITIONS.get(old.status, []):
-                raise ValidationError({'status': f"Cannot transition from {old.status} to {self.status}"})
-```
+## Testing validation
 
-## Testing Validation
+- Model rule: `with self.assertRaises(ValidationError): obj.full_clean()` (or `save()`).
+- Constraint: `QuerySet.update()` or `save(skip_validation=True)` inside
+  `self.assertRaises(IntegrityError)` wrapped in `transaction.atomic()`.
+- Service rule: call the service; assert the refusal and that nothing changed.
+- Concurrency-sensitive code: `core/tests/integration/test_transactions.py` shows the
+  pattern.
 
-```python
-from django.test import TestCase
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+## Checklist
 
-class TestCharacterValidation(TestCase):
-    def test_xp_cannot_be_negative_db_constraint(self):
-        character.xp = -100
-        with self.assertRaises(IntegrityError):
-            character.save()
+- [ ] Single-value ranges have validators and a named constraint.
+- [ ] Cross-field rules in `clean()`; one `ValidationError` with a field-keyed dict.
+- [ ] Status changes go through `ApprovalService` or `change_character_status`.
+- [ ] Point changes lock the row inside `transaction.atomic()`.
+- [ ] `skip_validation` and `update()` only in migrations, fixtures, bulk jobs, tests.
+- [ ] Tests for each rejection and for the success case.
 
-    def test_xp_cannot_be_negative_model_validation(self):
-        character.xp = -100
-        with self.assertRaises(ValidationError):
-            character.full_clean()
-```
+## See also
+
+- [docs/architecture/data-model.md](../../../../docs/architecture/data-model.md) (status lifecycle)
+- [docs/architecture/xp-and-approvals.md](../../../../docs/architecture/xp-and-approvals.md)
+- [`core/services/approval.py`](../../../../core/services/approval.py)
+- [models.md](models.md), [schema-changes.md](schema-changes.md)

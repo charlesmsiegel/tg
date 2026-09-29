@@ -1,101 +1,100 @@
-# Model Inventory
+# Model inventory
 
-Complete inventory of models with implementation status.
+Where each model family lives and which base it extends, so a new model lands next to its
+relatives with the right base. Generated from the installed models; re-check with the
+snippet at the end before relying on a count. Per-model detail is in the app docs
+([characters/docs/models.md](../../../../characters/docs/models.md),
+[core/docs/models.md](../../../../core/docs/models.md),
+[game/docs/models.md](../../../../game/docs/models.md)).
 
-**Legend:** ✅ Fully implemented | ⚠️ Partial | ❌ Not implemented | N/A Not applicable
+Legend: **Human** = `characters.models.core.human.Human` subclass; **CharacterModel** =
+other character; **Group** = `characters.models.core.group.Group`; **Model** =
+`core.models.Model` (owned, approvable, often reference data); **plain** = ordinary
+`models.Model` (often with `ValidatedSaveMixin`) or `Statistic`.
 
-## Characters App
+## characters (`characters/models/<gameline>/`)
 
-### Core Models
-| Model | List | Detail | Create | Update |
-|-------|:----:|:------:|:------:|:------:|
-| Character | ✅ | ✅ | ✅ | ✅ |
-| Human | ✅ | ✅ | ✅ | ✅ |
-| Group | ✅ | ✅ | ✅ | ✅ |
-| Archetype | ✅ | ✅ | ✅ | ✅ |
-| MeritFlaw | ✅ | ✅ | ✅ | ✅ |
-| Specialty | ✅ | ✅ | ✅ | ✅ |
-| Derangement | ✅ | ✅ | ✅ | ✅ |
-| Background | ✅ | ✅ | ✅ | ✅ |
+| Gameline | Human | Group | Model | plain |
+|----------|-------|-------|-------|-------|
+| core | Human (plus `Character`, `CharacterModel` roots) | Group | Archetype, Derangement, MeritFlaw, Specialty | Ability, Attribute, Background, BackgroundRating, MeritFlawRating, PooledBackgroundRating, Statistic |
+| vampire | VtMHuman, Vampire, Ghoul, Revenant | Coterie | VampireClan, VampireSect, VampireTitle, Path | Discipline, RevenantFamily |
+| werewolf | WtAHuman, Werewolf, Kinfolk, Fomor, Drone, Fera and the Fera breeds (Ajaba, Ananasi, Bastet, Corax, Grondr, Gurahl, Kitsune, Mokole, Nagah, Nuwisha, Ratkin, Rokea); CharacterModel: SpiritCharacter | Pack | Tribe, Camp, Gift, Rite, Totem, SpiritCharm, FomoriPower, BattleScar, RenownIncident, SeptPosition | GiftPermission |
+| mage | MtAHuman, Mage, Sorcerer, Companion | Cabal | MageFaction, Paradigm, Practice, SpecializedPractice, CorruptedPractice, Instrument, Tenet, Resonance, Rote, Effect, Advantage, LinearMagicPath, LinearMagicRitual, SorcererFellowship | Sphere, PracticeRating, ResRating, AdvantageRating, PathRating |
+| wraith | WtOHuman, Wraith | Circle | WraithFaction, Guild, Arcanos, Thorn, ShadowArchetype | Fetter, Passion, ThornRating |
+| changeling | CtDHuman, Changeling, AutumnPerson, Inanimae, Nunnehi | Motley | Kith, House, HouseFaction, Legacy, Cantrip, Chimera | |
+| demon | DtFHuman, Demon, Thrall, Earthbound | Conclave | DemonHouse, DemonFaction, Lore, Ritual, Visage, ApocalypticForm, ApocalypticFormTrait | LoreRating, Pact |
+| hunter | HtRHuman, Hunter | | | Creed, Edge, HunterOrganization |
+| mummy | MtRHuman, Mummy | | | Dynasty, MummyTitle |
 
-### Vampire (VtM)
-| Model | List | Detail | Create | Update | Chargen |
-|-------|:----:|:------:|:------:|:------:|:-------:|
-| Vampire | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Ghoul | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Revenant | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| VampireClan | ✅ | ✅ | ✅ | ✅ | N/A |
-| Discipline | ✅ | ✅ | ✅ | ✅ | N/A |
+Character types route through `characters.views.core.GenericCharacterDetailView`
+(`view_mapping` by `type`) and, when they have a chargen wizard, a workflow in
+`characters/chargen/definitions.py`.
 
-### Werewolf (WtA)
-| Model | List | Detail | Create | Update | Chargen |
-|-------|:----:|:------:|:------:|:------:|:-------:|
-| Werewolf | ❌ | ✅ | ⚠️ | ✅ | ✅ |
-| Kinfolk | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Fera | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Tribe | ✅ | ✅ | ✅ | ✅ | N/A |
-| Gift | ✅ | ✅ | ✅ | ✅ | N/A |
-| Totem | ✅ | ✅ | ✅ | ✅ | N/A |
+## items (`items/models/<gameline>/`, all `ItemModel` unless noted)
 
-### Mage (MtA)
-| Model | List | Detail | Create | Update | Chargen |
-|-------|:----:|:------:|:------:|:------:|:-------:|
-| Mage | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Companion | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Sorcerer | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Resonance | ✅ | ✅ | ✅ | ✅ | N/A |
-| Rote | ✅ | ✅ | ✅ | ✅ | N/A |
-| Effect | ✅ | ✅ | ✅ | ✅ | N/A |
-
-### Other Gamelines
-| Gameline | Status |
+| Gameline | Models |
 |----------|--------|
-| Wraith (WtO) | Detail/Create/Update ✅, List ❌ |
-| Changeling (CtD) | Detail/Create/Update ✅, List ❌ |
-| Demon (DtF) | Detail/Create/Update ✅, List ❌ |
-| Hunter (HtR) | ✅ Full implementation |
-| Mummy (MtR) | ⚠️ Detail only |
+| core | ItemModel, Weapon, MeleeWeapon, RangedWeapon, ThrownWeapon; plain: Material, Medium |
+| vampire | VampireArtifact, Bloodstone |
+| werewolf | Fetish, Talen |
+| mage | Wonder, Artifact, Charm, Talisman, Periapt, Grimoire, SorcererArtifact; plain: WonderResonanceRating |
+| wraith | WraithArtifact, WraithRelic |
+| changeling | Treasure, Dross |
+| demon | Relic |
+| hunter | HunterGear, HunterRelic |
+| mummy | MummyRelic, Vessel, Ushabti; plain: RelicResonanceRating |
 
-## Items App
+Every concrete `ItemModel` has a `ModelSpec` in `items/registry.py` ([registry.md](registry.md)).
 
-| Category | Models | Status |
-|----------|--------|--------|
-| Core | ItemModel, Weapon, MeleeWeapon, RangedWeapon | ✅ |
-| Vampire | VampireArtifact, Bloodstone | ✅ |
-| Werewolf | Fetish, Talen | ✅ |
-| Mage | Wonder, Artifact, Charm, Grimoire, Periapt, Talisman | ✅ |
-| Wraith | WraithArtifact, WraithRelic | ✅ |
-| Changeling | Treasure, Dross | ✅ |
-| Demon | Relic | ✅ |
-| Hunter | HunterGear, HunterRelic | ✅ |
-| Mummy | Ushabti, Vessel, MummyRelic | ❌ |
+## locations (`locations/models/<gameline>/`, all `LocationModel` unless noted)
 
-## Locations App
+| Gameline | Models |
+|----------|--------|
+| core | LocationModel, City |
+| vampire | Haven, Domain, Elysium, Rack, Barrens, TremereChantry; plain: HavenMeritFlawRating |
+| werewolf | Caern |
+| mage | Node, Sanctum, Chantry, Library, Demesne, HorizonRealm, ParadoxRealm, Sector; plain: RealityZone, ZoneRating, ChantryBackgroundRating, NodeMeritFlawRating, NodeResonanceRating, HorizonRealmMeritFlawRating, HorizonRealmResonanceRating, ParadoxAtmosphere, ParadoxObstacle |
+| wraith | Citadel, Haunt, Necropolis, Nihil, Byway, WraithFreehold |
+| changeling | Freehold, Holding, Trod, DreamRealm |
+| demon | Bastion, Reliquary |
+| hunter | Safehouse, HuntingGround |
+| mummy | Tomb, CultTemple, UndergroundSanctuary; plain: TombMeritFlawRating |
 
-| Gameline | Models | Status |
-|----------|--------|--------|
-| Core | LocationModel, City | ✅ |
-| Vampire | Haven, Domain, Elysium, TremereChantry, Rack, Barrens | ✅ |
-| Werewolf | Caern | ✅ |
-| Mage | Node, Sanctum, Chantry, Demesne, HorizonRealm, Library, RealityZone, Sector, ParadoxRealm | ✅ |
-| Wraith | Citadel, Haunt, WraithFreehold, Byway, Nihil, Necropolis | ✅ |
-| Changeling | Freehold ✅, Holding/Trod/DreamRealm ⚠️ | Mixed |
-| Demon | Bastion, Reliquary | ✅ |
-| Hunter | Safehouse, HuntingGround | ✅ |
-| Mummy | Tomb, UndergroundSanctuary, CultTemple | ❌ |
+Every concrete `LocationModel` has a `ModelSpec` in `locations/registry.py`.
 
-## Game App
+## core, game, accounts
 
-| Model | List | Detail | Create | Update |
-|-------|:----:|:------:|:------:|:------:|
-| Chronicle | ✅ | ✅ | ⚠️ | ❌ |
-| Story | ✅ | ✅ | ✅ | ✅ |
-| Week | ✅ | ✅ | ✅ | ✅ |
-| Scene | ✅ | ✅ | ⚠️ | ❌ |
-| Journal | ✅ | ✅ | ❌ | ⚠️ |
+| App | Base | Models |
+|-----|------|--------|
+| core | `Model` | CharacterTemplate |
+| core | plain | Book, BookReference, Language, NewsItem, HouseRule, Noun, Number, Observer, TemplateApplication |
+| game | plain | Chronicle, Gameline, STRelationship, ObjectType, SettingElement, Story, Week, Scene, Post, UserSceneReadStatus, Journal, JournalEntry, WeeklyXPRequest, StoryXPRequest, XPSpendingRequest, FreebieSpendingRecord |
+| accounts | plain | Profile |
 
-## Implementation Gaps
+`widgets` and `tg_schema` have no models.
 
-- **Missing List Views:** Most character types use generic index only
-- **Mummy (MtR):** Detail views only, no create/update/forms
-- **Missing Reference Views:** Sphere, MageFaction, Fellowship, Instrument, Practice, Paradigm (Mage); WraithFaction, Guild, Arcanos (Wraith)
+## Duplicate `type` values
+
+These pairs share a `type` string today: `House` / `DemonHouse` (`"house"`),
+`LinearMagicPath` / `LinearMagicRitual` (`"linear_magic_path"`), `Relic` / `WraithRelic`
+(`"relic"`), `Artifact` / `WraithArtifact` (`"artifact"`). None of them is dispatched by
+`type` through `GenericCharacterDetailView`, but do not add more: give every new model its
+own `type`.
+
+## Re-generating
+
+```bash
+DJANGO_SETTINGS_MODULE=tg.settings python -c "
+import django; django.setup()
+from django.apps import apps
+from core.models import Model
+for m in sorted(apps.get_models(), key=lambda m: (m._meta.app_label, m.__module__)):
+    if m._meta.app_label in {'characters', 'items', 'locations', 'core', 'game', 'accounts'}:
+        print(m._meta.label, m.__module__, getattr(m, 'type', ''), issubclass(m, Model))
+"
+```
+
+## See also
+
+- [docs/architecture/data-model.md](../../../../docs/architecture/data-model.md)
+- [models.md](models.md), [registry.md](registry.md), [domain.md](domain.md)

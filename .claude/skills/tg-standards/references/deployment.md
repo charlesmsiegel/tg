@@ -1,94 +1,71 @@
-# Deployment Patterns
+# Deployability
 
-## Required Environment Variables
+What a change must do so it deploys cleanly: settings, static files, templates, schema,
+caching and real-time pieces. How to run a server is in
+[docs/operations/deployment.md](../../../../docs/operations/deployment.md); every setting is
+in [docs/reference/settings.md](../../../../docs/reference/settings.md).
 
-```bash
-DJANGO_ENVIRONMENT=production
-SECRET_KEY=<generated-secret-key>
-DJANGO_ALLOWED_HOSTS=example.com,www.example.com
-CSRF_TRUSTED_ORIGINS=https://example.com
-DB_NAME=tg_db
-DB_USER=tg_user
-DB_PASSWORD=<secure-password>
-DB_HOST=localhost
-DB_PORT=5432
-REDIS_URL=redis://127.0.0.1:6379/1
-```
+## How production differs from development
 
-## Security Settings (Production)
+| Aspect | Development (`tg/settings/development.py`) | Production (`tg/settings/production.py`) |
+|--------|--------------------------------------------|-------------------------------------------|
+| Selection | `DJANGO_ENVIRONMENT` unset or `development` | `DJANGO_ENVIRONMENT=production`; any other value raises `ValueError` |
+| `DEBUG` | `True` | `False` |
+| Secrets | `SECRET_KEY` has a dev default | `SECRET_KEY` and `DJANGO_ALLOWED_HOSTS` required (import fails without them) |
+| Database | SQLite `db.sqlite3`, `ATOMIC_REQUESTS=True` | Same SQLite database with `CONN_MAX_AGE` (`DB_CONN_MAX_AGE`, default 600) |
+| Cache | `LocMemCache` | Redis (`REDIS_URL`), key prefix `tg`, `IGNORE_EXCEPTIONS=True` |
+| Sessions | Database | Cache (`SESSION_ENGINE = ...backends.cache`) |
+| Channel layer | In memory | Redis (`channels_redis`) |
+| Static files | `STATICFILES_DIRS = [source_static]` plus app `static/` | `ManifestStaticFilesStorage` (content-hashed names) |
+| Security | | HTTPS redirect, secure cookies, HSTS, `X_FRAME_OPTIONS="DENY"`, `CSRF_COOKIE_SAMESITE="Strict"` |
 
-```python
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
-```
+The app is served as ASGI (`tg.asgi.application`, `daphne` first in `INSTALLED_APPS`):
+HTTP through Django, WebSockets through `game.routing` behind
+`AllowedHostsOriginValidator` and `AuthMiddlewareStack`.
 
-Verify: `python manage.py check --deploy`
+## Rules for a change
 
-## Deployment Steps
-
-```bash
-# 1. Backup database
-pg_dump production_db > backup_$(date +%Y%m%d_%H%M%S).sql
-
-# 2. Enable maintenance mode
-touch /var/www/tg/maintenance.flag
-
-# 3. Pull code
-git fetch origin && git checkout <branch> && git pull
-
-# 4. Install dependencies
-pip install -r requirements.txt --upgrade
-
-# 5. Validate data
-python manage.py validate_data_integrity --verbose
-
-# 6. Run migrations
-python manage.py showmigrations
-python manage.py migrate
-
-# 7. Collect static
-python manage.py collectstatic --noinput
-
-# 8. Restart services
-sudo systemctl restart gunicorn nginx
-
-# 9. Disable maintenance mode
-rm /var/www/tg/maintenance.flag
-
-# 10. Health check
-curl -I https://your-domain.com/
-python manage.py monitor_validation
-```
-
-## Rollback
-
-### Code-only
-```bash
-git log --oneline
-git checkout <previous-commit>
-sudo systemctl restart gunicorn
-```
-
-### Full Rollback
-```bash
-sudo systemctl stop gunicorn
-pg_restore -d production_db backup_TIMESTAMP.sql
-git checkout <previous-commit>
-python manage.py migrate <app> <previous-migration>
-sudo systemctl start gunicorn
-```
+- **New setting or environment variable**: read it in `tg/settings/base.py` (or the
+  environment module) with `os.environ.get("NAME", <safe default>)`, parse types
+  explicitly (`int(...)`, `== "True"`), and add it to `.env.example` and
+  `docs/reference/settings.md`. Never read `os.environ` outside the settings package.
+  Production-only secrets have no default and fail loudly.
+- **Static files**: reference every asset with `{% static %}`. With
+  `ManifestStaticFilesStorage` a path missing from the manifest raises at render time
+  when `DEBUG` is off, so a typo that works in development breaks production pages. Put
+  app assets in `<app>/static/<app>/` and shared ones in `source_static/`; vendored
+  libraries go in `source_static/vendor/` with their hashes in `VENDOR.md`.
+- **Restart after deploy**: Python changes take effect only in a restarted server
+  process.
+- **Schema**: an existing database gets new columns, tables, constraints and data fixes
+  only from `tg_schema` migrations; `update.sh` runs `git pull`, `makemigrations`,
+  `migrate`, `collectstatic`. A change that needs anything else on deploy is not
+  deployable as is ([schema-changes.md](schema-changes.md)).
+- **Game data**: new reference rows ship as idempotent `populate_db` scripts loaded with
+  `python manage.py populate_gamedata`, never as a migration that imports app models.
+- **Caching**: pages are shared between anonymous visitors in Redis; follow
+  [caching.md](caching.md) so nothing per-user is served from the cache. Redis errors are
+  swallowed (`IGNORE_EXCEPTIONS`), so the cache must never be the only copy of data.
+- **Real time**: code that broadcasts to scenes goes through `game.scene_chat`; it must
+  work with the Redis channel layer (messages are JSON-serializable, no in-process state).
+- **Logging**: use the app's logger; files go to `logs/` (`app.log`, `error.log`,
+  `warning.log` rotate in production). Never log secrets or passwords.
+- **Management commands** that run on a schedule take `--dry-run` and run in a
+  transaction ([commands.md](commands.md)).
 
 ## Checklist
 
-- [ ] All tests passing
-- [ ] Database backup created
-- [ ] Rollback plan documented
-- [ ] Data validation passed
-- [ ] Migrations applied
-- [ ] Health check passed
-- [ ] Monitor for 30 minutes
+- [ ] `DJANGO_ENVIRONMENT=production python manage.py check --deploy` passes with the
+  required variables set.
+- [ ] New settings documented, with safe defaults or a loud failure for secrets.
+- [ ] Assets through `{% static %}`; `collectstatic` succeeds.
+- [ ] Schema and data changes reach existing databases through `tg_schema` or
+  `populate_gamedata`.
+- [ ] Nothing per-user cached; Channels messages serializable.
+
+## See also
+
+- [docs/operations/deployment.md](../../../../docs/operations/deployment.md)
+- [docs/reference/settings.md](../../../../docs/reference/settings.md)
+- [`tg/settings/production.py`](../../../../tg/settings/production.py), [`update.sh`](../../../../update.sh)
+- [schema-changes.md](schema-changes.md), [caching.md](caching.md)
