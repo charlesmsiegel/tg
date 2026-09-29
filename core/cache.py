@@ -285,9 +285,11 @@ def cache_page_per_visitor(timeout: int) -> list[Callable]:
     for ``cache_page``'s key, so a plain ``cache_page`` serves the first visitor's
     page to everyone.
 
-    - Anonymous visitors (see ``shares_anonymous_page``) share one copy per URL.
-      A page is stored only if it holds nothing per-visitor: it rendered no CSRF
-      token, set no cookie and is a 200.
+    - A request with a query string is never cached: these views read none, and
+      caching each variant would let anyone fill the cache with ``?x=1``, ``?x=2``...
+    - Anonymous visitors (see ``shares_anonymous_page``) share one copy per URL
+      (GET and HEAD alike). A page is stored only if it holds nothing per-visitor:
+      it rendered no CSRF token, set no cookie and is a 200.
     - Everyone else gets ``cache_page`` keyed on their cookies (``vary_on_cookie``).
     """
     per_visitor = cache_page(timeout)
@@ -297,6 +299,8 @@ def cache_page_per_visitor(timeout: int) -> list[Callable]:
 
         @wraps(view)
         def wrapper(request, *args, **kwargs):
+            if request.META.get("QUERY_STRING"):
+                return view(request, *args, **kwargs)
             if not shares_anonymous_page(request):
                 return cached_per_visitor(request, *args, **kwargs)
             key = anonymous_page_key(request)
