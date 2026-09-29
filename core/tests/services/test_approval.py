@@ -17,9 +17,7 @@ class TestApprovalServiceObjectApproval(TestCase):
     """Tests for ApprovalService.approve_object()."""
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            "testuser", "test@test.com", "password", is_staff=True
-        )
+        self.user = User.objects.create_user("testuser", "test@test.com", "password", is_staff=True)
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
 
     def test_approve_character(self):

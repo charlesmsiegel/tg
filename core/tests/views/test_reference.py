@@ -47,18 +47,10 @@ class CreateReferenceViewsTest(TestCase):
             app_prefix="characters/mage",
             fields=["name"],
         )
-        self.assertEqual(
-            views["detail"].template_name, "characters/mage/sphere/detail.html"
-        )
-        self.assertEqual(
-            views["list"].template_name, "characters/mage/sphere/list.html"
-        )
-        self.assertEqual(
-            views["create"].template_name, "characters/mage/sphere/form.html"
-        )
-        self.assertEqual(
-            views["update"].template_name, "characters/mage/sphere/form.html"
-        )
+        self.assertEqual(views["detail"].template_name, "characters/mage/sphere/detail.html")
+        self.assertEqual(views["list"].template_name, "characters/mage/sphere/list.html")
+        self.assertEqual(views["create"].template_name, "characters/mage/sphere/form.html")
+        self.assertEqual(views["update"].template_name, "characters/mage/sphere/form.html")
 
     def test_custom_template_override(self):
         """Test that custom templates override auto-generated paths."""
@@ -83,9 +75,7 @@ class CreateReferenceViewsTest(TestCase):
             fields=["name"],
             model_name="custom_sphere",
         )
-        self.assertEqual(
-            views["detail"].template_name, "characters/mage/custom_sphere/detail.html"
-        )
+        self.assertEqual(views["detail"].template_name, "characters/mage/custom_sphere/detail.html")
 
     def test_cached_true_uses_cached_views(self):
         """Test that cached=True uses CachedDetailView/CachedListView."""
@@ -220,12 +210,8 @@ class CreateReferenceViewsTest(TestCase):
             app_prefix="characters/mage",
             fields=["name"],
         )
-        self.assertEqual(
-            views["create"].error_message, "There was an error creating the Sphere."
-        )
-        self.assertEqual(
-            views["update"].error_message, "There was an error updating the Sphere."
-        )
+        self.assertEqual(views["create"].error_message, "There was an error creating the Sphere.")
+        self.assertEqual(views["update"].error_message, "There was an error updating the Sphere.")
 
     def test_extra_context_applied_to_all_views(self):
         """Test that extra_context is applied to all view types."""
@@ -235,16 +221,10 @@ class CreateReferenceViewsTest(TestCase):
             fields=["name"],
             extra_context={"custom_key": "custom_value"},
         )
-        self.assertEqual(
-            views["detail"].extra_context, {"custom_key": "custom_value"}
-        )
+        self.assertEqual(views["detail"].extra_context, {"custom_key": "custom_value"})
         self.assertEqual(views["list"].extra_context, {"custom_key": "custom_value"})
-        self.assertEqual(
-            views["create"].extra_context, {"custom_key": "custom_value"}
-        )
-        self.assertEqual(
-            views["update"].extra_context, {"custom_key": "custom_value"}
-        )
+        self.assertEqual(views["create"].extra_context, {"custom_key": "custom_value"})
+        self.assertEqual(views["update"].extra_context, {"custom_key": "custom_value"})
 
     def test_view_class_names_generated_correctly(self):
         """Test that generated view classes have correct names."""
@@ -297,9 +277,7 @@ class ReferenceViewSetTest(TestCase):
             fields = ["name"]
             ordering = ["property_name", "-name"]
 
-        self.assertEqual(
-            SphereViews.list_view.ordering, ["property_name", "-name"]
-        )
+        self.assertEqual(SphereViews.list_view.ordering, ["property_name", "-name"])
 
     def test_viewset_with_cached_false(self):
         """Test that cached=False works in viewset."""

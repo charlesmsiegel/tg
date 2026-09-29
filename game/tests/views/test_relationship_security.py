@@ -19,9 +19,7 @@ class RelationshipSecurityTests(TestCase):
         STRelationship.objects.create(user=self.st, chronicle=self.first, gameline=wod)
         STRelationship.objects.create(user=self.wrong_st, chronicle=self.second, gameline=wod)
         self.other_line_st = users.objects.create_user("other_line_scene_st")
-        STRelationship.objects.create(
-            user=self.other_line_st, chronicle=self.first, gameline=vtm
-        )
+        STRelationship.objects.create(user=self.other_line_st, chronicle=self.first, gameline=vtm)
         self.character = Human.objects.create(
             name="First hero", owner=self.owner, chronicle=self.first
         )
@@ -42,9 +40,7 @@ class RelationshipSecurityTests(TestCase):
         self.assertFalse(self.scene.characters.filter(pk=self.other_character.pk).exists())
 
     def test_matching_st_and_staff_can_add_another_players_character(self):
-        for user in (self.st, get_user_model().objects.create_user(
-            "scene_staff", is_staff=True
-        )):
+        for user in (self.st, get_user_model().objects.create_user("scene_staff", is_staff=True)):
             with self.subTest(user=user.username):
                 self.scene.characters.clear()
                 self.client.force_login(user)
@@ -53,9 +49,7 @@ class RelationshipSecurityTests(TestCase):
                     {"character_to_add": str(self.character.pk)},
                 )
                 self.assertEqual(response.status_code, 302)
-                self.assertTrue(
-                    self.scene.characters.filter(pk=self.character.pk).exists()
-                )
+                self.assertTrue(self.scene.characters.filter(pk=self.character.pk).exists())
 
     def test_other_gameline_st_cannot_add_another_players_character(self):
         self.client.force_login(self.other_line_st)
@@ -88,9 +82,7 @@ class RelationshipSecurityTests(TestCase):
 
     def test_st_from_another_chronicle_cannot_close_scene(self):
         self.client.force_login(self.wrong_st)
-        response = self.client.post(
-            f"/game/scene/{self.scene.pk}/close/"
-        )
+        response = self.client.post(f"/game/scene/{self.scene.pk}/close/")
         self.assertEqual(response.status_code, 404)
         self.scene.refresh_from_db()
         self.assertFalse(self.scene.finished)
@@ -129,7 +121,8 @@ class RelationshipSecurityTests(TestCase):
 
     def test_other_gameline_st_post_does_not_clear_waiting_flag(self):
         character = Human.objects.create(
-            name="Other line ST character", owner=self.other_line_st,
+            name="Other line ST character",
+            owner=self.other_line_st,
             chronicle=self.first,
         )
         self.scene.characters.add(character)

@@ -19,9 +19,7 @@ class ScopedPermissionTests(TestCase):
         self.other_chronicle = Chronicle.objects.create(name="Away")
         wod = Gameline.objects.create(name="World of Darkness")
         vampire = Gameline.objects.create(name="Vampire: the Masquerade")
-        STRelationship.objects.create(
-            user=self.matching_st, chronicle=self.chronicle, gameline=wod
-        )
+        STRelationship.objects.create(user=self.matching_st, chronicle=self.chronicle, gameline=wod)
         STRelationship.objects.create(
             user=self.other_gameline_st, chronicle=self.chronicle, gameline=vampire
         )

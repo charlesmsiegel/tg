@@ -111,9 +111,7 @@ class GetCharacterObjectTypeTests(TestCase):
     def test_returns_existing_object_type(self):
         """Test that existing ObjectType is returned."""
         # Create the type first
-        existing = ObjectType.objects.create(
-            name="existing_type", type="char", gameline="vtm"
-        )
+        existing = ObjectType.objects.create(name="existing_type", type="char", gameline="vtm")
 
         obj_type = get_character_object_type("existing_type")
         self.assertEqual(obj_type.pk, existing.pk)

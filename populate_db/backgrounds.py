@@ -3,7 +3,9 @@ from characters.models.core.background_block import Background
 contacts = Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]
 mentor = Background.objects.get_or_create(name="Mentor", property_name="mentor")[0]
 allies = Background.objects.get_or_create(name="Allies", property_name="allies")[0]
-alternate_identity = Background.objects.get_or_create(name="Alternate Identity", property_name="alternate_identity")[0]
+alternate_identity = Background.objects.get_or_create(
+    name="Alternate Identity", property_name="alternate_identity"
+)[0]
 arcane = Background.objects.get_or_create(name="Arcane", property_name="arcane")[0]
 arcane.alternate_name = "Cloaking"
 arcane.save()
@@ -17,7 +19,9 @@ avatar.save()
 
 backup = Background.objects.get_or_create(name="Backup", property_name="backup")[0]
 blessing = Background.objects.get_or_create(name="Blessing", property_name="blessing")[0]
-certification = Background.objects.get_or_create(name="Certification", property_name="certification")[0]
+certification = Background.objects.get_or_create(
+    name="Certification", property_name="certification"
+)[0]
 
 # Chantry is handled at the group level - cannot be pooled by individuals
 chantry = Background.objects.get_or_create(name="Chantry", property_name="chantry")[0]
@@ -40,7 +44,9 @@ destiny.save()
 dream = Background.objects.get_or_create(name="Dream", property_name="dream")[0]
 dream.alternate_name = "Hypercram"
 dream.save()
-enhancement = Background.objects.get_or_create(name="Enhancement", property_name="enhancement", multiplier=2)[0]
+enhancement = Background.objects.get_or_create(
+    name="Enhancement", property_name="enhancement", multiplier=2
+)[0]
 fame = Background.objects.get_or_create(name="Fame", property_name="fame")[0]
 
 # Familiar is a personal spirit companion - intrinsic
@@ -61,7 +67,9 @@ past_lives.save()
 
 patron = Background.objects.get_or_create(name="Patron", property_name="patron")[0]
 rank = Background.objects.get_or_create(name="Rank", property_name="rank")[0]
-requisitions = Background.objects.get_or_create(name="Requisitions", property_name="requisitions")[0]
+requisitions = Background.objects.get_or_create(name="Requisitions", property_name="requisitions")[
+    0
+]
 resources = Background.objects.get_or_create(name="Resources", property_name="resources")[0]
 retainers = Background.objects.get_or_create(name="Retainers", property_name="retainers")[0]
 
@@ -71,9 +79,13 @@ sanctum.alternate_name = "Laboratory"
 sanctum.poolable = False
 sanctum.save()
 
-secret_weapons = Background.objects.get_or_create(name="Secret weapons", property_name="secret_weapons")[0]
+secret_weapons = Background.objects.get_or_create(
+    name="Secret weapons", property_name="secret_weapons"
+)[0]
 spies = Background.objects.get_or_create(name="Spies", property_name="spies")[0]
-status_background = Background.objects.get_or_create(name="Status", property_name="status_background")[0]
+status_background = Background.objects.get_or_create(
+    name="Status", property_name="status_background"
+)[0]
 totem = Background.objects.get_or_create(name="Totem", property_name="totem", multiplier=2)[0]
 wonder = Background.objects.get_or_create(name="Wonder", property_name="wonder")[0]
 
@@ -155,4 +167,6 @@ paragon = Background.objects.get_or_create(name="Paragon", property_name="parago
 paragon.poolable = False
 paragon.save()
 
-ritual_knowledge = Background.objects.get_or_create(name="Ritual Knowledge", property_name="ritual_knowledge")[0]
+ritual_knowledge = Background.objects.get_or_create(
+    name="Ritual Knowledge", property_name="ritual_knowledge"
+)[0]

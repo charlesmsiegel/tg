@@ -53,17 +53,13 @@ class TestMageCreationForm(TestCase):
         nephandi = MageFaction.objects.create(name="Nephandi", parent=None)
         self.chronicle.head_st = self.st
         self.chronicle.save(update_fields=["head_st"])
-        form = MageCreationForm(
-            user=self.st, initial={"chronicle": self.chronicle.pk}
-        )
+        form = MageCreationForm(user=self.st, initial={"chronicle": self.chronicle.pk})
         self.assertIn(nephandi, form.fields["affiliation"].queryset)
 
     def test_st_of_another_chronicle_cannot_choose_nephandi(self):
         nephandi = MageFaction.objects.create(name="Nephandi", parent=None)
         Chronicle.objects.create(name="Other chronicle", head_st=self.st)
-        form = MageCreationForm(
-            user=self.st, initial={"chronicle": self.chronicle.pk}
-        )
+        form = MageCreationForm(user=self.st, initial={"chronicle": self.chronicle.pk})
         self.assertNotIn(nephandi, form.fields["affiliation"].queryset)
 
     def test_form_valid_data(self):

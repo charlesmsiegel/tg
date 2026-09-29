@@ -1,4 +1,3 @@
 """Tests for totem module."""
 
-
 # TODO: Move relevant tests from existing test files here

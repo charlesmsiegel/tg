@@ -1,6 +1,5 @@
 """Tests for auth_error_handler middleware module."""
 
-
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect

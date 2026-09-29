@@ -242,5 +242,3 @@ class TestFeraCharacterCreationView(FeraViewTestCase):
         )
         # May redirect to detail view or show update form
         self.assertIn(response.status_code, [200, 302])
-
-

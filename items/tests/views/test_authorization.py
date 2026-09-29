@@ -30,8 +30,14 @@ class WeaponAuthorizationTests(TestCase):
         self.client.force_login(self.owner)
         response = self.client.post(
             reverse("items:create:weapon"),
-            {"name": "Owned sword", "description": "A sword", "difficulty": 6,
-             "damage": 4, "damage_type": "L", "conceal": "P"},
+            {
+                "name": "Owned sword",
+                "description": "A sword",
+                "difficulty": 6,
+                "damage": 4,
+                "damage_type": "L",
+                "conceal": "P",
+            },
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Weapon.objects.get(name="Owned sword").owner, self.owner)
@@ -44,7 +50,9 @@ class WeaponAuthorizationTests(TestCase):
 
     def test_anonymous_index_uses_public_fields_only(self):
         Weapon.objects.create(
-            name="Public sword", owner=self.owner, visibility="PUB",
+            name="Public sword",
+            owner=self.owner,
+            visibility="PUB",
             st_notes="ANOTHER SECRET",
         )
         response = self.client.get("/items/index/")

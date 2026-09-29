@@ -45,7 +45,7 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
     if parent.xp_given:
         raise ValidationError(
             f"XP has already been awarded for this {parent._meta.verbose_name}",
-            code="xp_already_given"
+            code="xp_already_given",
         )
 
     # Award to all characters atomically

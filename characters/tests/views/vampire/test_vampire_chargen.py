@@ -173,9 +173,7 @@ class TestVampireBasicsView(VampireChargenTestCase):
         response = self.client.get(vampire.get_absolute_url())
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, reverse("characters:character", kwargs={"pk": vampire.pk})
-        )
+        self.assertContains(response, reverse("characters:character", kwargs={"pk": vampire.pk}))
         self.assertContains(response, "Continue character creation")
 
     def test_basics_view_rejects_chronicle_user_is_not_in(self):

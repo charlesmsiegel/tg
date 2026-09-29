@@ -8,7 +8,6 @@ This module provides XP spending services for Demon: The Fallen characters:
 - EarthboundXPSpendingService - Ancient demons bound to relics
 """
 
-
 from characters.costs import get_xp_cost
 
 from .base import (

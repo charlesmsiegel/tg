@@ -1,7 +1,8 @@
 """Explicit, reviewed route policies. Missing entries deny in production."""
 
 POLICIES = {
-    "ACCOUNT": frozenset("""
+    "ACCOUNT": frozenset(
+        """
 accounts.views.FreebieAwardView
 accounts.views.ImageApprovalView
 accounts.views.MarkSceneReadView
@@ -13,8 +14,10 @@ accounts.views.ProfileView
 accounts.views.SceneXPAwardView
 accounts.views.WeeklyXPApprovalView
 accounts.views.WeeklyXPRequestView
-    """.split()),
-    "ACTION": frozenset("""
+    """.split()
+    ),
+    "ACTION": frozenset(
+        """
 characters.views.core.actions.CharacterDeceaseView
 characters.views.core.actions.CharacterRetireView
 characters.views.core.actions.CharacterSpecialtiesView
@@ -28,8 +31,10 @@ game.actions.JournalResponseView
 game.actions.SceneAddCharacterView
 game.actions.SceneCloseView
 game.actions.ScenePostView
-    """.split()),
-    "CHARGEN_STEP": frozenset("""
+    """.split()
+    ),
+    "CHARGEN_STEP": frozenset(
+        """
 characters.views.changeling.changeling.ChangelingAbilityView
 characters.views.changeling.changeling.ChangelingAlliesView
 characters.views.changeling.changeling.ChangelingArtsRealmsView
@@ -270,8 +275,10 @@ locations.views.mage.chantry.ChantryLibrarysView
 locations.views.mage.chantry.ChantryNodeView
 locations.views.mage.chantry.ChantryPointsView
 locations.views.mage.chantry.ChantrySanctumView
-    """.split()),
-    "GAME": frozenset("""
+    """.split()
+    ),
+    "GAME": frozenset(
+        """
 game.views.ChronicleCreateView
 game.views.ChronicleDetailView
 game.views.ChronicleListView
@@ -313,8 +320,10 @@ game.views.XPSpendingRequestCreateView
 game.views.XPSpendingRequestDetailView
 game.views.XPSpendingRequestListView
 game.views.XPSpendingRequestUpdateView
-    """.split()),
-    "LOGIN": frozenset("""
+    """.split()
+    ),
+    "LOGIN": frozenset(
+        """
 characters.views.changeling.changeling.ChangelingBasicsView
 characters.views.changeling.ctdhuman.CtDHumanBasicsView
 characters.views.changeling.ctdhuman.CtDHumanTemplateSelectView
@@ -344,10 +353,14 @@ characters.views.wraith.wtohuman.WtOHumanTemplateSelectView
 core.views.character_template.CharacterTemplateImportView
 core.views.character_template.CharacterTemplateQuickNPCView
 locations.views.mage.chantry.LoadExamplesView
-    """.split()),
-    "OBJECT_ACTION": frozenset("""
-    """.split()),
-    "OBJECT_CREATE": frozenset("""
+    """.split()
+    ),
+    "OBJECT_ACTION": frozenset(
+        """
+    """.split()
+    ),
+    "OBJECT_CREATE": frozenset(
+        """
 characters.views.changeling.autumn_person.AutumnPersonCreateView
 characters.views.changeling.chimera.ChimeraCreateView
 characters.views.changeling.inanimae.InanimaeCreateView
@@ -378,8 +391,10 @@ characters.views.wraith.circle.CircleCreateView
 core.views.character_template.CharacterTemplateCreateView
 locations.views.changeling.creation.FreeholdBasicsView
 locations.views.mage.chantry.ChantryBasicsView
-    """.split()),
-    "OBJECT_DETAIL": frozenset("""
+    """.split()
+    ),
+    "OBJECT_DETAIL": frozenset(
+        """
 characters.views.changeling.autumn_person.AutumnPersonDetailView
 characters.views.changeling.chimera.ChimeraDetailView
 characters.views.changeling.changeling.ChangelingDetailView
@@ -423,8 +438,10 @@ characters.views.wraith.wraith.WraithDetailView
 characters.views.wraith.wtohuman.WtOHumanDetailView
 core.views.character_template.CharacterTemplateDetailView
 core.views.character_template.CharacterTemplateExportView
-    """.split()),
-    "OBJECT_LIST": frozenset("""
+    """.split()
+    ),
+    "OBJECT_LIST": frozenset(
+        """
 characters.views.changeling.motley.MotleyListView
 characters.views.changeling.chimera.ChimeraListView
 characters.views.core.DeceasedCharacterIndex
@@ -446,10 +463,14 @@ characters.views.vampire.coterie.CoterieListView
 characters.views.werewolf.pack.PackListView
 characters.views.wraith.circle.CircleListView
 core.views.character_template.CharacterTemplateListView
-    """.split()),
-    "OBJECT_ST_WRITE": frozenset("""
-    """.split()),
-    "OBJECT_WRITE": frozenset("""
+    """.split()
+    ),
+    "OBJECT_ST_WRITE": frozenset(
+        """
+    """.split()
+    ),
+    "OBJECT_WRITE": frozenset(
+        """
 characters.views.changeling.autumn_person.AutumnPersonUpdateView
 characters.views.changeling.chimera.ChimeraUpdateView
 characters.views.changeling.changeling.ChangelingUpdateView
@@ -494,16 +515,22 @@ characters.views.wraith.wraith.WraithUpdateView
 characters.views.wraith.wtohuman.WtOHumanUpdateView
 core.views.character_template.CharacterTemplateDeleteView
 core.views.character_template.CharacterTemplateUpdateView
-    """.split()),
-    "PUBLIC_CARD": frozenset("""
+    """.split()
+    ),
+    "PUBLIC_CARD": frozenset(
+        """
 core.views.public_object.PublicObjectDetailView
-    """.split()),
-    "PUBLIC_INDEX": frozenset("""
+    """.split()
+    ),
+    "PUBLIC_INDEX": frozenset(
+        """
 characters.views.core.CharacterIndexView
 items.views.core.ItemIndexView
 locations.views.core.LocationIndexView
-    """.split()),
-    "PUBLIC_READ": frozenset("""
+    """.split()
+    ),
+    "PUBLIC_READ": frozenset(
+        """
 core.views.object_type_redirect.ObjectTypeRedirectView
 accounts.views.CustomLoginView
 accounts.views.CustomPasswordResetView
@@ -625,8 +652,10 @@ core.views.language.LanguageDetailView
 core.views.language.LanguageListView
 core.views.newsitem.NewsItemDetailView
 core.views.newsitem.NewsItemListView
-    """.split()),
-    "ROUTER": frozenset("""
+    """.split()
+    ),
+    "ROUTER": frozenset(
+        """
 characters.views.changeling.changeling.ChangelingCharacterCreationView
 characters.views.changeling.ctdhuman.CtDHumanCharacterCreationView
 characters.views.core.GenericCharacterDetailView
@@ -655,8 +684,10 @@ items.views.core.GenericItemDetailView
 locations.views.changeling.creation.FreeholdCreationView
 locations.views.core.GenericLocationDetailView
 locations.views.mage.chantry.ChantryCreationView
-    """.split()),
-    "STAFF_WRITE": frozenset("""
+    """.split()
+    ),
+    "STAFF_WRITE": frozenset(
+        """
 characters.views.changeling.cantrip.CantripCreateView
 characters.views.changeling.cantrip.CantripUpdateView
 characters.views.changeling.house.HouseCreateView
@@ -772,10 +803,13 @@ core.views.language.LanguageCreateView
 core.views.language.LanguageUpdateView
 core.views.newsitem.NewsItemCreateView
 core.views.newsitem.NewsItemUpdateView
-    """.split()),
-    "WIDGET": frozenset("""
+    """.split()
+    ),
+    "WIDGET": frozenset(
+        """
 widgets.views.auto_chained_ajax_view
-    """.split()),
+    """.split()
+    ),
 }
 
 VIEW_POLICIES = {name: policy for policy, names in POLICIES.items() for name in names}

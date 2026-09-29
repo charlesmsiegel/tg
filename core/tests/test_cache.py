@@ -322,9 +322,7 @@ class GetCachedReferenceListTest(TestCase):
         User.objects.create_user(username="inactive", password="test123", is_active=False)
 
         # User model doesn't have "name" field, so specify ordering
-        result = get_cached_reference_list(
-            User, ordering="username", filters={"is_active": True}
-        )
+        result = get_cached_reference_list(User, ordering="username", filters={"is_active": True})
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].username, "active")
 

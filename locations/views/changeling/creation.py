@@ -3,7 +3,6 @@ Multi-step views for Freehold creation.
 Follows the pattern from character creation (DictView).
 """
 
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 

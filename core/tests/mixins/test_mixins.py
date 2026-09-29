@@ -1,6 +1,5 @@
 """Tests for mixins in core/mixins.py."""
 
-
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage

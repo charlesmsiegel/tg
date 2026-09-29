@@ -10,7 +10,6 @@ Tests cover the testing checklist from VIEW_TEMPLATE_MIGRATION_GUIDE.md:
 - No regressions in existing functionality
 """
 
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 

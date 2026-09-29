@@ -520,9 +520,11 @@ def template_names(local):
             if path.is_file() and "__pycache__" not in path.parts:
                 names.setdefault(
                     path.relative_to(base).as_posix(),
-                    path.resolve().relative_to(ROOT).as_posix()
-                    if path.resolve().is_relative_to(ROOT)
-                    else str(path),
+                    (
+                        path.resolve().relative_to(ROOT).as_posix()
+                        if path.resolve().is_relative_to(ROOT)
+                        else str(path)
+                    ),
                 )
     return names
 
