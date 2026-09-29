@@ -10,12 +10,18 @@ are never touched, so the migration is safe to re-run.
 from django.db import migrations
 from django.db.models import Max, Min
 
-from game.models import Story, StoryXPRequest
+from tg_schema.schema import live_field, live_model
 
 
 def assign_story_chronicles(apps, schema_editor):
-    # ``game`` has no migration state on legacy installations (see 0005), so the
-    # live models are used; only their primary keys and chronicle links are read.
+    # ``game`` has no migration state on legacy installations: the live models are
+    # looked up when this runs, and a later rename skips it (see tg_schema.schema).
+    Story, StoryXPRequest = live_model("game.Story"), live_model("game.StoryXPRequest")
+    if live_field(Story, "chronicle") is None or None in (
+        live_field(StoryXPRequest, "story"),
+        live_field(StoryXPRequest, "character"),
+    ):
+        return
     using = schema_editor.connection.alias
     spans = (
         StoryXPRequest.objects.using(using)

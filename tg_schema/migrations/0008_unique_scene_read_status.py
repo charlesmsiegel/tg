@@ -12,6 +12,8 @@ model, so later model changes can't alter what this migration does.
 
 from django.db import migrations
 
+from tg_schema.schema import table_names
+
 TABLE = "game_userscenereadstatus"
 INDEX = "unique_user_scene_read_status"
 
@@ -26,6 +28,8 @@ def has_unique_user_scene(connection, cursor):
 
 def make_scene_read_status_unique(apps, schema_editor):
     connection = schema_editor.connection
+    if TABLE not in table_names(connection):
+        return
     q = connection.ops.quote_name
     table, read, marker = q(TABLE), q("read"), q("last_read_post_id")
     with connection.cursor() as cursor:
