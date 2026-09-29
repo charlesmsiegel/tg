@@ -56,7 +56,6 @@ contents, model_specific, description, post_content, buttons) render on the page
     {% include "core/tl/nav.html" with nav_active=request.resolver_match.namespaces.0 %}
 {% endblock nav %}
 {% block content %}
-    {% csrf_token %}
     {% block image %}
         {% if object.image and object.image_status == "app" %}
             <img class="tl-portrait" src="{{ object.image.url }}" alt="Image of {{ object.name }}">
