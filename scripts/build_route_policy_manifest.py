@@ -33,8 +33,25 @@ from items.models.core import ItemModel
 from locations.models.core import LocationModel
 from scripts.inventory_authorization_routes import get_resolver, walk
 
-PROJECT_PREFIXES = ("accounts.", "characters.", "core.", "game.", "items.", "locations.", "widgets.")
-PLAYER_MODELS = (CharacterModel, Group, Chimera, Effect, Rote, ItemModel, LocationModel, CharacterTemplate)
+PROJECT_PREFIXES = (
+    "accounts.",
+    "characters.",
+    "core.",
+    "game.",
+    "items.",
+    "locations.",
+    "widgets.",
+)
+PLAYER_MODELS = (
+    CharacterModel,
+    Group,
+    Chimera,
+    Effect,
+    Rote,
+    ItemModel,
+    LocationModel,
+    CharacterTemplate,
+)
 # Player-object edit forms that only a scoped storyteller or staff may use.
 ST_WRITE_VIEWS = {"locations.views.mage.chantry.ChantryUpdateView"}
 
@@ -51,9 +68,11 @@ def classify(name, view, step_names):
     if issubclass(view, ObjectActionView):
         return "ACTION"
     if name.startswith("accounts."):
-        return "PUBLIC_READ" if name.rsplit(".", 1)[-1] in {
-            "SignUp", "CustomLoginView", "CustomPasswordResetView"
-        } else "ACCOUNT"
+        return (
+            "PUBLIC_READ"
+            if name.rsplit(".", 1)[-1] in {"SignUp", "CustomLoginView", "CustomPasswordResetView"}
+            else "ACCOUNT"
+        )
     if name.startswith("game."):
         return "GAME"
     if name in ST_WRITE_VIEWS:
@@ -88,8 +107,10 @@ def main():
     rows = list(walk(get_resolver().url_patterns))
     names = {row[2] for row in rows if row[2].startswith(PROJECT_PREFIXES)}
     step_names = {
-        row[2] for row in rows
-        if row[1] and row[1].rsplit("/", 1)[-1].isdigit()
+        row[2]
+        for row in rows
+        if row[1]
+        and row[1].rsplit("/", 1)[-1].isdigit()
         and row[0].startswith(("characters/", "locations/"))
     }
     groups = defaultdict(list)
@@ -104,10 +125,17 @@ def main():
         "POLICIES = {",
     ]
     for policy, members in sorted(groups.items()):
-        lines.append(f"    {policy!r}: frozenset(\"\"\"")
+        lines.append(f'    {policy!r}: frozenset("""')
         lines.extend(members)
         lines.append('    """.split()),')
-    lines.extend(["}", "", "VIEW_POLICIES = {name: policy for policy, names in POLICIES.items() for name in names}", ""])
+    lines.extend(
+        [
+            "}",
+            "",
+            "VIEW_POLICIES = {name: policy for policy, names in POLICIES.items() for name in names}",
+            "",
+        ]
+    )
     output = Path(__file__).resolve().parent.parent / "core" / "route_policy_manifest.py"
     output.write_text("\n".join(lines), encoding="utf-8")
     for policy, members in sorted(groups.items()):

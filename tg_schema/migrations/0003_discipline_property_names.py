@@ -43,4 +43,6 @@ def backfill_discipline_property_names(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [("tg_schema", "0002_chantry_rating_linked_object")]
-    operations = [migrations.RunPython(backfill_discipline_property_names, migrations.RunPython.noop)]
+    operations = [
+        migrations.RunPython(backfill_discipline_property_names, migrations.RunPython.noop)
+    ]
