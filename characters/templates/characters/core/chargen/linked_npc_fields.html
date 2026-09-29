@@ -1,0 +1,66 @@
+{% load static %}
+<div data-linked-npc-form>
+    <div class="tl-chargen__form">
+        {% include "core/tl/field.html" with field=form.npc_type %}
+        {% include "core/tl/field.html" with field=form.name %}
+        {% include "core/tl/field.html" with field=form.rank %}
+        {% include "core/tl/field.html" with field=form.concept %}
+    </div>
+    <div data-npc-except="werewolf changeling fera" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.nature %}
+            {% include "core/tl/field.html" with field=form.demeanor %}
+        </div>
+    </div>
+    <div data-npc-types="vampire" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.clan_name %}
+            {% include "core/tl/field.html" with field=form.sect_name %}
+        </div>
+    </div>
+    <div data-npc-types="werewolf fera" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.breed_name %}
+        </div>
+    </div>
+    <div data-npc-types="werewolf" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.auspice_name %}
+        </div>
+    </div>
+    <div data-npc-types="werewolf kinfolk" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.tribe_name %}
+        </div>
+    </div>
+    <div data-npc-types="mage" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.affiliation_name %}
+        </div>
+    </div>
+    <div data-npc-types="wraith" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.guild_name %}
+        </div>
+    </div>
+    <div data-npc-types="changeling" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.kith_name %}
+            {% include "core/tl/field.html" with field=form.court_name %}
+        </div>
+    </div>
+    <div data-npc-types="demon" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.house_name %}
+        </div>
+    </div>
+    <div data-npc-types="fera" hidden>
+        <div class="tl-chargen__form">
+            {% include "core/tl/field.html" with field=form.fera_type_name %}
+        </div>
+    </div>
+    <div class="tl-chargen__form">
+        {% include "core/tl/field.html" with field=form.note %}
+    </div>
+</div>
+<script src="{% static 'characters/js/linked-npc-fields.js' %}" defer></script>

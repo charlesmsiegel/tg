@@ -11,6 +11,7 @@ from characters.forms.mage.mage import MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
+from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Practice
@@ -74,6 +75,18 @@ class MageCreationControlsTests(TestCase):
         self.assertContains(response, 'Rote points remaining')
         self.assertContains(response, 'data-available="5"')
         self.assertEqual(json.loads(response.context["effect_costs_json"])[str(effect.pk)], 2)
+
+    def test_allies_shows_character_type_specific_fields(self):
+        mage = Mage.objects.create(name="Allied Mage", owner=self.user, creation_status=16)
+        allies = Background.objects.create(name="Allies", property_name="allies")
+        BackgroundRating.objects.create(char=mage, bg=allies, rating=2)
+        response = self.wizard(mage)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["step"].key, "allies")
+        self.assertContains(response, 'data-linked-npc-form')
+        self.assertContains(response, 'data-npc-types="vampire"')
+        self.assertContains(response, 'name="clan_name"')
+        self.assertContains(response, 'linked-npc-fields.js')
 
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):
         Attribute.objects.create(name="Strength", property_name="strength")

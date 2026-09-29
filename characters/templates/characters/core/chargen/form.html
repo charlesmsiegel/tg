@@ -1,7 +1,11 @@
 {% comment %} Default step body: the step form's fields, then any formsets the view
    supplies (chargen_formsets). Non-field errors show in step_body's summary. {% endcomment %}
 {% if form %}
-    {% include "characters/core/chargen/fields.html" with fields_form=form %}
+    {% if form.npc_role %}
+        {% include "characters/core/chargen/linked_npc_fields.html" %}
+    {% else %}
+        {% include "characters/core/chargen/fields.html" with fields_form=form %}
+    {% endif %}
 {% endif %}
 {% for name, context in chargen_formsets.items %}
     {{ context.formset.management_form }}
