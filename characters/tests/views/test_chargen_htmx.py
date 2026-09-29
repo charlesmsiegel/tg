@@ -1,6 +1,6 @@
 """The htmx request/response contract of interactive chargen (Vampire pilot).
 
-See docs/superpowers/specs/2026-09-25-htmx-chargen-design.md. Every mode is
+See docs/architecture/character-creation.md. Every mode is
 served by the ordinary wizard URL, so every test goes through the router,
 the middleware and ``CHARGEN_STEP`` exactly as a browser request would.
 """

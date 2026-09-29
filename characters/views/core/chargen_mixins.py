@@ -31,7 +31,7 @@ class ChargenStepMixin:
     On an interactive workflow the same URL also serves htmx partials: the step
     fragment (``HX-Request``), validate-only feedback (``POST _validate=1``) and
     chained-select options (``GET _options=<field>``). See
-    docs/superpowers/specs/2026-09-25-htmx-chargen-design.md.
+    docs/architecture/character-creation.md.
     """
 
     # Steps whose template renders the live validator (feedback and totals).

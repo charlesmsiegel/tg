@@ -1,7 +1,7 @@
 """
 Tests for XP/Freebie Migration from JSONField to Model-based System
 
-Tests cover the testing checklist from VIEW_TEMPLATE_MIGRATION_GUIDE.md:
+Tests cover:
 - Display of XP/freebie history works correctly
 - Total spent calculations are accurate
 - New requests are created properly

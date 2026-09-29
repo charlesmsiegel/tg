@@ -20,8 +20,6 @@ class Profile(ValidatedSaveMixin, models.Model):
     - Current approach works well with all Django/third-party packages
     - Performance is acceptable with proper use of select_related()
 
-    See docs/design/user_model_architecture.md for detailed trade-off analysis.
-
     For new Django projects, use AbstractUser from the start.
     """
 
