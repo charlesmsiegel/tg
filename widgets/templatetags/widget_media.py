@@ -7,6 +7,7 @@ querysets or call model properties just to discover scripts.
 
 from django import forms, template
 from django.forms.formsets import BaseFormSet
+from django.utils.functional import LazyObject
 
 register = template.Library()
 
@@ -27,6 +28,10 @@ def page_media(context):
     frame = context.render_context.dicts[min(1, len(context.render_context.dicts) - 1)]
     media = frame.get("widget_media", forms.Media())
     for value in context.flatten().values():
+        # Lazy context values (csrf_token, user) are never forms; an isinstance check
+        # would evaluate them, and csrf_token then sets a CSRF cookie on every page.
+        if isinstance(value, LazyObject):
+            continue
         if isinstance(value, forms.BaseForm):
             media += value.media
         else:
