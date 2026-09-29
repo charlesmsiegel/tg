@@ -129,15 +129,24 @@ class QueryBudgetTest(TestCase):
     def test_scene_cost_does_not_grow_with_posts(self):
         scene = self.fixtures.scene
         url = scene.get_absolute_url()
-        before = self.count(url)
         authors = [post.character for post in scene.post_set.all()[:2]]
-        for number in range(10):
-            Post.objects.create(
-                scene=scene,
-                character=authors[number % 2],
-                display_name="More",
-                message=f"More {number}",
-            )
+
+        def add_posts(number):
+            for index in range(number):
+                Post.objects.create(
+                    scene=scene,
+                    character=authors[index % 2],
+                    display_name="More",
+                    message=f"More {index}",
+                )
+
+        # The first visit pays one-off costs (the navigation counts it caches, the
+        # reader's scene status row). Each measured visit follows new posts, so both
+        # move the reader's marker once.
+        self.count(url)
+        add_posts(1)
+        before = self.count(url)
+        add_posts(10)
         self.assertEqual(self.count(url), before)
 
     def test_index_within_ceiling(self):
