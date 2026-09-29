@@ -8,6 +8,15 @@ from characters.models.werewolf.mokole import Mokole
 from characters.models.werewolf.nuwisha import Nuwisha
 from characters.models.werewolf.ratkin import Ratkin
 
+FERA_CLASSES = {
+    "ratkin": Ratkin,
+    "mokole": Mokole,
+    "bastet": Bastet,
+    "corax": Corax,
+    "nuwisha": Nuwisha,
+    "gurahl": Gurahl,
+}
+
 
 class FeraCreationForm(forms.ModelForm):
     """Base form for creating Fera characters."""
@@ -52,18 +61,8 @@ class FeraCreationForm(forms.ModelForm):
         # Get the fera_type to determine which model to instantiate
         fera_type = self.cleaned_data.pop("fera_type")
 
-        # Map fera types to their model classes
-        fera_class_map = {
-            "ratkin": Ratkin,
-            "mokole": Mokole,
-            "bastet": Bastet,
-            "corax": Corax,
-            "nuwisha": Nuwisha,
-            "gurahl": Gurahl,
-        }
-
         # Get the appropriate class
-        fera_class = fera_class_map[fera_type]
+        fera_class = FERA_CLASSES[fera_type]
 
         # Create instance of the specific fera type
         instance = fera_class()

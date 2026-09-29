@@ -1,5 +1,5 @@
 {% load static %}
-<div class="tl-linked-npc" data-linked-npc-form>
+<div class="tl-linked-npc" data-linked-npc-form data-fera-breeds="{{ form.fera_breeds_json }}" data-faction-parents="{{ form.faction_parents_json }}">
     <section class="tl-linked-npc__section">
         <h2 class="tl-linked-npc__heading">Who are they?</h2>
         <div class="tl-chargen__form tl-linked-npc__identity">
@@ -37,6 +37,13 @@
         <div data-npc-types="mage" hidden>
             <div class="tl-chargen__form">
                 {% include "core/tl/field.html" with field=form.affiliation %}
+                {% include "core/tl/field.html" with field=form.faction %}
+                {% include "core/tl/field.html" with field=form.subfaction %}
+            </div>
+        </div>
+        <div data-npc-types="sorcerer" hidden>
+            <div class="tl-chargen__form">
+                {% include "core/tl/field.html" with field=form.fellowship %}
             </div>
         </div>
         <div data-npc-types="wraith" hidden>
@@ -57,8 +64,8 @@
         </div>
         <div data-npc-types="fera" hidden>
             <div class="tl-chargen__form">
-                {% include "core/tl/field.html" with field=form.breed_name %}
-                {% include "core/tl/field.html" with field=form.fera_type_name %}
+                {% include "core/tl/field.html" with field=form.fera_type %}
+                {% include "core/tl/field.html" with field=form.fera_breed %}
             </div>
         </div>
     </section>

@@ -24,6 +24,7 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.thrall import Thrall
 from characters.models.mage.companion import Companion
 from characters.models.mage.faction import MageFaction
+from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
@@ -32,7 +33,7 @@ from characters.models.vampire.ghoul import Ghoul
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
-from characters.models.werewolf.fera import Fera
+from characters.models.werewolf.bastet import Bastet
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.kinfolk import Kinfolk
@@ -191,8 +192,14 @@ class LinkedNPCFormValidationTestCase(TestCase):
                 "name": f"Test {npc_type}",
                 "rank": 2,
             }
+            if npc_type == "fera":
+                data["fera_type"] = "bastet"
             form = LinkedNPCForm(data=data)
             self.assertTrue(form.is_valid(), f"Failed for {npc_type}: {form.errors}")
+
+    def test_fera_requires_a_type(self):
+        form = LinkedNPCForm(data={"npc_type": "fera", "name": "Fera Ally", "rank": 2})
+        self.assertIn("fera_type", form.errors)
 
 
 class LinkedNPCFormSaveTestCase(TestCase):
@@ -354,21 +361,69 @@ class LinkedNPCFormSaveTestCase(TestCase):
         self.assertEqual(npc.tribe, self.tribe)
 
     def test_save_creates_fera(self):
-        """Test saving form creates a Fera NPC."""
+        """The selected Fera subtype receives its selected breed."""
         data = {
             "npc_type": "fera",
             "name": "Fera Ally",
             "rank": 2,
-            "breed_name": "Homid",
-            "fera_type_name": "Ratkin",
+            "fera_type": "bastet",
+            "fera_breed": "feline",
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="ally")
         self.assertTrue(form.is_valid())
 
         npc = form.save()
-        self.assertIsInstance(npc, Fera)
-        self.assertIn("Breed: Homid", npc.notes)
-        self.assertIn("Fera Type: Ratkin", npc.notes)
+        self.assertIsInstance(npc, Bastet)
+        self.assertEqual(npc.breed, "feline")
+
+    def test_fera_breed_must_belong_to_selected_type(self):
+        form = LinkedNPCForm(
+            data={
+                "npc_type": "fera",
+                "name": "Wrong Breed",
+                "rank": 2,
+                "fera_type": "corax",
+                "fera_breed": "feline",
+            }
+        )
+        self.assertIn("fera_breed", form.errors)
+
+    def test_mage_faction_chain_is_saved_and_checked(self):
+        faction = MageFaction.objects.create(name="Tradition", parent=self.affiliation)
+        subfaction = MageFaction.objects.create(name="Cabal", parent=faction)
+        data = {
+            "npc_type": "mage",
+            "name": "Linked Mage",
+            "rank": 2,
+            "affiliation": self.affiliation.pk,
+            "faction": faction.pk,
+            "subfaction": subfaction.pk,
+        }
+        form = LinkedNPCForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
+        npc = form.save()
+        self.assertEqual(
+            (npc.affiliation, npc.faction, npc.subfaction), (self.affiliation, faction, subfaction)
+        )
+        wrong_parent = MageFaction.objects.create(name="Other Affiliation")
+        data["affiliation"] = wrong_parent.pk
+        self.assertIn("faction", LinkedNPCForm(data=data).errors)
+        data["affiliation"] = self.affiliation.pk
+        data["subfaction"] = wrong_parent.pk
+        self.assertIn("subfaction", LinkedNPCForm(data=data).errors)
+
+    def test_sorcerer_fellowship_is_saved(self):
+        fellowship = SorcererFellowship.objects.create(name="Order of Hermes")
+        form = LinkedNPCForm(
+            data={
+                "npc_type": "sorcerer",
+                "name": "Hedge Ally",
+                "rank": 2,
+                "fellowship": fellowship.pk,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().fellowship, fellowship)
 
     def test_save_without_linked_character(self):
         """Test saving form without an associated character."""

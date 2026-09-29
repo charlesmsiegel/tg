@@ -30,18 +30,20 @@ class MageCreationControlsTests(TestCase):
     def test_attribute_and_ability_priority_is_inferred_from_dots(self):
         for step in (1, 2):
             with self.subTest(step=step):
-                mage = Mage.objects.create(name=f"Mage {step}", owner=self.user, creation_status=step)
+                mage = Mage.objects.create(
+                    name=f"Mage {step}", owner=self.user, creation_status=step
+                )
                 response = self.wizard(mage)
                 self.assertEqual(response.status_code, 200)
-                self.assertNotContains(response, 'data-priority-picker')
-                self.assertContains(response, 'data-priority-group')
+                self.assertNotContains(response, "data-priority-picker")
+                self.assertContains(response, "data-priority-group")
 
     def test_sphere_step_uses_dots_and_shows_budget(self):
         mage = Mage.objects.create(name="Sphere Mage", owner=self.user, creation_status=4)
         response = self.wizard(mage)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'data-sphere-budget')
-        self.assertContains(response, 'data-dot-rating')
+        self.assertContains(response, "data-sphere-budget")
+        self.assertContains(response, "data-dot-rating")
         self.assertContains(response, 'name="resonance"')
 
     def test_sphere_names_replace_the_labels_beside_their_dots(self):
@@ -57,7 +59,9 @@ class MageCreationControlsTests(TestCase):
                 )
 
     def test_returning_to_spheres_keeps_saved_arete(self):
-        mage = Mage.objects.create(name="Returning Mage", owner=self.user, creation_status=4, arete=3)
+        mage = Mage.objects.create(
+            name="Returning Mage", owner=self.user, creation_status=4, arete=3
+        )
         response = self.wizard(mage)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["form"]["arete"].value(), 3)
@@ -70,9 +74,11 @@ class MageCreationControlsTests(TestCase):
         response = self.wizard(mage)
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
-        self.assertIn('data-rote-budget', html)
-        self.assertLess(html.index('data-rote-budget'), html.index('data-create-or-select-container'))
-        self.assertContains(response, 'Rote points remaining')
+        self.assertIn("data-rote-budget", html)
+        self.assertLess(
+            html.index("data-rote-budget"), html.index("data-create-or-select-container")
+        )
+        self.assertContains(response, "Rote points remaining")
         self.assertContains(response, 'data-available="5"')
         self.assertEqual(json.loads(response.context["effect_costs_json"])[str(effect.pk)], 2)
 
@@ -83,18 +89,29 @@ class MageCreationControlsTests(TestCase):
         response = self.wizard(mage)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["step"].key, "allies")
-        self.assertContains(response, 'data-linked-npc-form')
+        self.assertContains(response, "data-linked-npc-form")
         self.assertContains(response, 'data-npc-types="vampire"')
         self.assertContains(response, 'name="clan"')
         self.assertContains(response, 'name="sect"')
-        self.assertContains(response, 'tl-linked-npc__section')
-        self.assertContains(response, 'Who are they?')
-        self.assertContains(response, 'Their connection to you')
+        self.assertContains(response, "tl-linked-npc__section")
+        self.assertContains(response, "Who are they?")
+        self.assertContains(response, "Their connection to you")
         self.assertRegex(response.content.decode(), r'<select name="clan"[^>]*>')
         self.assertRegex(response.content.decode(), r'<select name="sect"[^>]*>')
-        self.assertNotContains(response, 'For Vampires only')
-        self.assertNotContains(response, 'if Vampire')
-        self.assertContains(response, 'linked-npc-fields.js')
+        for field in (
+            "fera_type",
+            "fera_breed",
+            "affiliation",
+            "faction",
+            "subfaction",
+            "fellowship",
+        ):
+            self.assertRegex(response.content.decode(), rf'<select name="{field}"[^>]*>')
+        self.assertContains(response, "data-fera-breeds=")
+        self.assertContains(response, "data-faction-parents=")
+        self.assertNotContains(response, "For Vampires only")
+        self.assertNotContains(response, "if Vampire")
+        self.assertContains(response, "linked-npc-fields.js")
 
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):
         Attribute.objects.create(name="Strength", property_name="strength")
@@ -177,7 +194,9 @@ class MageSphereRulesTests(TestCase):
         self.assertEqual(sphere_map[str(self.preferred.pk)], "forces")
 
     def test_resonance_is_required_and_non_npc_arete_is_capped(self):
-        self.assertIn("resonance", MageSpheresForm(data=self.data(resonance=""), instance=self.mage).errors)
+        self.assertIn(
+            "resonance", MageSpheresForm(data=self.data(resonance=""), instance=self.mage).errors
+        )
         self.assertIn("arete", MageSpheresForm(data=self.data(arete=4), instance=self.mage).errors)
         self.mage.npc = True
         self.assertTrue(MageSpheresForm(data=self.data(arete=4), instance=self.mage).is_valid())

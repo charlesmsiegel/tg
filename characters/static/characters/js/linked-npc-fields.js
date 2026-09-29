@@ -8,6 +8,44 @@
         var select = section.querySelector('[name="npc_type"]');
         var details = section.querySelector('[data-linked-npc-details]');
         var groups = section.querySelectorAll('[data-npc-types], [data-npc-except]');
+        var feraBreeds = JSON.parse(section.dataset.feraBreeds || '{}');
+        var factionParents = JSON.parse(section.dataset.factionParents || '{}');
+        var feraType = section.querySelector('[name="fera_type"]');
+        var feraBreed = section.querySelector('[name="fera_breed"]');
+        var affiliation = section.querySelector('[name="affiliation"]');
+        var faction = section.querySelector('[name="faction"]');
+        var subfaction = section.querySelector('[name="subfaction"]');
+
+        function filterOptions(field, allowed) {
+            if (!field) return;
+            Array.from(field.options).forEach(function (option) {
+                var available = !option.value || allowed.includes(option.value);
+                option.hidden = !available;
+                option.disabled = !available;
+            });
+            if (field.value && !allowed.includes(field.value)) field.value = '';
+        }
+
+        function updateFeraBreeds() {
+            if (feraType && feraBreed) filterOptions(feraBreed, feraBreeds[feraType.value] || []);
+        }
+
+        function updateSubfactions() {
+            if (faction && subfaction) {
+                filterOptions(subfaction, Object.keys(factionParents).filter(function (id) {
+                    return !!faction.value && factionParents[id] === faction.value;
+                }));
+            }
+        }
+
+        function updateFactions() {
+            if (affiliation && faction) {
+                filterOptions(faction, Object.keys(factionParents).filter(function (id) {
+                    return !!affiliation.value && factionParents[id] === affiliation.value;
+                }));
+            }
+            updateSubfactions();
+        }
 
         function update() {
             var selected = select.value;
@@ -25,6 +63,11 @@
         }
 
         select.addEventListener('change', update);
+        if (feraType) feraType.addEventListener('change', updateFeraBreeds);
+        if (affiliation) affiliation.addEventListener('change', updateFactions);
+        if (faction) faction.addEventListener('change', updateSubfactions);
+        updateFeraBreeds();
+        updateFactions();
         update();
     }
 

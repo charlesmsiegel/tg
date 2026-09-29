@@ -1,10 +1,15 @@
 """
 Unified NPC/linked character creation form for all background types.
 This single form handles Allies, Mentors, Contacts, Retainers, and Followers.
+Character type selects the model; subtype and parent choices must match that
+model's existing rules before they are copied into canonical character fields.
 """
+
+import json
 
 from django import forms
 
+from characters.forms.werewolf.fera import FERA_CLASSES, FeraCreationForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.kith import Kith
@@ -15,6 +20,7 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.thrall import Thrall
 from characters.models.mage.companion import Companion
 from characters.models.mage.faction import MageFaction
+from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
@@ -185,18 +191,35 @@ class LinkedNPCForm(forms.Form):
     )
     tribe = forms.ModelChoiceField(queryset=Tribe.objects.all(), required=False, label="Tribe")
 
-    # Fera breeds vary by species, so retain a free-text description here.
-    breed_name = forms.CharField(
-        max_length=100,
+    fera_type = forms.ChoiceField(
+        choices=[("", "Choose Fera type"), *FeraCreationForm.FERA_TYPES],
+        required=False,
+        label="Fera Type",
+    )
+    fera_breed = forms.ChoiceField(
+        choices=[
+            ("", "Choose breed"),
+            *dict(
+                breed for fera_class in FERA_CLASSES.values() for breed in fera_class.BREEDS
+            ).items(),
+        ],
         required=False,
         label="Breed",
-        widget=forms.TextInput(attrs={"placeholder": "Breed or birth form"}),
     )
 
     affiliation = forms.ModelChoiceField(
         queryset=MageFaction.objects.top_level(),
         required=False,
         label="Affiliation",
+    )
+    faction = forms.ModelChoiceField(
+        queryset=MageFaction.objects.all(), required=False, label="Faction"
+    )
+    subfaction = forms.ModelChoiceField(
+        queryset=MageFaction.objects.all(), required=False, label="Subfaction"
+    )
+    fellowship = forms.ModelChoiceField(
+        queryset=SorcererFellowship.objects.all(), required=False, label="Fellowship"
     )
 
     guild = forms.ModelChoiceField(
@@ -220,14 +243,6 @@ class LinkedNPCForm(forms.Form):
         queryset=DemonHouse.objects.all(),
         required=False,
         label="House",
-    )
-
-    # Fera special
-    fera_type_name = forms.CharField(
-        max_length=100,
-        required=False,
-        label="Fera Type",
-        widget=forms.TextInput(attrs={"placeholder": "Ratkin, Mokolé, Bastet..."}),
     )
 
     # General notes
@@ -254,6 +269,33 @@ class LinkedNPCForm(forms.Form):
         # Customize label based on role
         role_display = self.npc_role.capitalize()
         self.fields["rank"].label = f"{role_display} Rating"
+        self.fera_breeds_json = json.dumps(
+            {name: [breed for breed, _ in model.BREEDS] for name, model in FERA_CLASSES.items()}
+        )
+        self.faction_parents_json = json.dumps(
+            {
+                str(pk): str(parent_id) if parent_id else ""
+                for pk, parent_id in MageFaction.objects.values_list("pk", "parent_id")
+            }
+        )
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("npc_type") == "fera":
+            fera_class = FERA_CLASSES.get(cleaned.get("fera_type"))
+            if not fera_class:
+                self.add_error("fera_type", "Choose a Fera type.")
+            elif cleaned.get("fera_breed") and cleaned["fera_breed"] not in dict(fera_class.BREEDS):
+                self.add_error("fera_breed", "Choose a breed available to this Fera type.")
+        if cleaned.get("npc_type") == "mage":
+            affiliation = cleaned.get("affiliation")
+            faction = cleaned.get("faction")
+            subfaction = cleaned.get("subfaction")
+            if faction and (not affiliation or faction.parent_id != affiliation.pk):
+                self.add_error("faction", "Choose a faction within the affiliation.")
+            if subfaction and (not faction or subfaction.parent_id != faction.pk):
+                self.add_error("subfaction", "Choose a subfaction within the faction.")
+        return cleaned
 
     def save(self, commit=True):
         """
@@ -261,7 +303,11 @@ class LinkedNPCForm(forms.Form):
         The character is created with status='Un' (Unfinished) so it can be completed later.
         """
         npc_type = self.cleaned_data["npc_type"]
-        char_class = self.NPC_CLASSES[npc_type]
+        char_class = (
+            FERA_CLASSES[self.cleaned_data["fera_type"]]
+            if npc_type == "fera"
+            else self.NPC_CLASSES[npc_type]
+        )
 
         # Build base note with rank and role
         role_display = self.npc_role.capitalize()
@@ -297,7 +343,13 @@ class LinkedNPCForm(forms.Form):
                 "tribe": "tribe",
             },
             "kinfolk": {"tribe": "tribe"},
-            "mage": {"affiliation": "affiliation"},
+            "fera": {"fera_breed": "breed"},
+            "mage": {
+                "affiliation": "affiliation",
+                "faction": "faction",
+                "subfaction": "subfaction",
+            },
+            "sorcerer": {"fellowship": "fellowship"},
             "wraith": {"guild": "guild"},
             "changeling": {"kith": "kith", "court": "court"},
             "demon": {"house": "house"},
@@ -305,19 +357,6 @@ class LinkedNPCForm(forms.Form):
         for source, target in field_map.get(npc_type, {}).items():
             if value := self.cleaned_data.get(source):
                 char_data[target] = value
-
-        # Species-specific Fera descriptors do not yet have a shared reference list.
-        specific_info = []
-        if npc_type == "fera" and self.cleaned_data.get("breed_name"):
-            specific_info.append(f"Breed: {self.cleaned_data['breed_name']}")
-
-        if npc_type == "fera" and self.cleaned_data.get("fera_type_name"):
-            specific_info.append(f"Fera Type: {self.cleaned_data['fera_type_name']}")
-
-        if specific_info:
-            char_data["notes"] += "<br><br><strong>Basics to set:</strong><br>" + "<br>".join(
-                specific_info
-            )
 
         # Create the character
         obj = char_class.objects.create(**char_data)
