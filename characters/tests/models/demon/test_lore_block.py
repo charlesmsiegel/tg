@@ -116,7 +116,7 @@ class LoreBlockAddLoreTests(TestCase):
 
     def test_add_lore_multiple_times(self):
         """add_lore can be called multiple times."""
-        for i in range(3):
+        for _i in range(3):
             self.demon.add_lore("lore_of_patterns")
         self.assertEqual(self.demon.lore_of_patterns, 3)
 

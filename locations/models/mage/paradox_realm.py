@@ -303,7 +303,7 @@ class ParadoxRealm(HorizonRealm):
 
             # Generate atmosphere details (2-3 rolls)
             num_atmosphere_rolls = random.randint(2, 3)
-            for i in range(num_atmosphere_rolls):
+            for _ in range(num_atmosphere_rolls):
                 ParadoxAtmosphere.random(realm=realm, paradigm=para1, save=True)
 
             # Generate primary sphere obstacles

@@ -23,7 +23,10 @@ class AuthErrorHandlerMiddlewareTest(TestCase):
 
     def test_middleware_initialization(self):
         """Test middleware initialization with get_response."""
-        get_response = lambda r: HttpResponse("OK")
+
+        def get_response(r):
+            return HttpResponse("OK")
+
         middleware = AuthErrorHandlerMiddleware(get_response=get_response)
 
         self.assertEqual(middleware.get_response, get_response)

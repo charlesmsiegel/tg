@@ -257,7 +257,8 @@ class ChargenStepMixin:
                     ]
                     context["ability_rows"] = list(zip_longest(*groups))
                     context["ability_columns"] = [
-                        (group.title(), fields) for group, fields in zip(ABILITY_GROUPS, groups)
+                        (group.title(), fields)
+                        for group, fields in zip(ABILITY_GROUPS, groups, strict=True)
                     ]
                 context["chargen_formsets"] = {
                     key: value

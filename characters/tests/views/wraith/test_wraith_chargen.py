@@ -198,7 +198,7 @@ class TestWraithArcanosView(TestCase):
             "usury": 0,
             "intimation": 0,
         }
-        response = self.client.post(url, data)
+        self.client.post(url, data)
         # Should not advance creation status
         self.wraith.refresh_from_db()
         self.assertEqual(self.wraith.creation_status, 4)
@@ -226,7 +226,7 @@ class TestWraithArcanosView(TestCase):
             "usury": 0,
             "intimation": 0,
         }
-        response = self.client.post(url, data)
+        self.client.post(url, data)
         self.wraith.refresh_from_db()
         self.assertEqual(self.wraith.creation_status, 5)
 
@@ -374,7 +374,7 @@ class TestWraithExtrasView(TestCase):
             "notes": "",
             "public_info": "",
         }
-        response = self.client.post(url, data)
+        self.client.post(url, data)
         # Should not advance creation status
         self.wraith.refresh_from_db()
         self.assertEqual(self.wraith.creation_status, 8)

@@ -33,7 +33,7 @@ class TrodListViewTest(TestCase):
         self.client.force_login(
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
-        trod = Trod.objects.create(
+        Trod.objects.create(
             name="Silver Path",
             trod_type="silver_path",
         )
@@ -173,7 +173,7 @@ class TrodUpdateViewTest(TestCase):
             "is_stable": True,
             "glamour_cost": 2,
         }
-        response = self.client.post(self.trod.get_update_url(), data)
+        self.client.post(self.trod.get_update_url(), data)
         self.trod.refresh_from_db()
         self.assertEqual(self.trod.name, "Updated Trod")
         self.assertEqual(self.trod.trod_type, "rath")

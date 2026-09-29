@@ -44,7 +44,7 @@ class Command(BaseCommand):
         try:
             self.chronicle = Chronicle.objects.get(pk=chronicle_id)
         except Chronicle.DoesNotExist:
-            raise CommandError(f"Chronicle with ID {chronicle_id} does not exist")
+            raise CommandError(f"Chronicle with ID {chronicle_id} does not exist") from None
 
         # Gather statistics
         stats = self.gather_statistics()

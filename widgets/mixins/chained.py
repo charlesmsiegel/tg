@@ -47,7 +47,7 @@ class ChainedSelectMixin:
         # Find all chained fields and their relationships
         chained_fields = {}
         for name, field in self.fields.items():
-            if isinstance(field, (ChainedChoiceField, ChainedModelChoiceField)):
+            if isinstance(field, ChainedChoiceField | ChainedModelChoiceField):
                 chained_fields[name] = {
                     "field": field,
                     "parent": getattr(field, "parent_field", None),
@@ -280,7 +280,7 @@ class ChainedSelectMixin:
         validated_chains = set()
 
         for field_name, field in self.fields.items():
-            if not isinstance(field, (ChainedChoiceField, ChainedModelChoiceField)):
+            if not isinstance(field, ChainedChoiceField | ChainedModelChoiceField):
                 continue
             if not field.parent_field:
                 continue

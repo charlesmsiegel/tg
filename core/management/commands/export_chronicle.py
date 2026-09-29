@@ -64,7 +64,7 @@ class Command(BaseCommand):
         try:
             chronicle = Chronicle.objects.get(pk=chronicle_id)
         except Chronicle.DoesNotExist:
-            raise CommandError(f"Chronicle with ID {chronicle_id} does not exist")
+            raise CommandError(f"Chronicle with ID {chronicle_id} does not exist") from None
 
         self.stdout.write(
             self.style.SUCCESS(f"\nExporting chronicle: {chronicle.name} (ID: {chronicle_id})\n")

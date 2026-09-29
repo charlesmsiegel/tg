@@ -89,7 +89,7 @@ class TestChargenBackView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_other_user_cannot_go_back(self):
-        other = User.objects.create_user("other", "o@test.com", "password")
+        User.objects.create_user("other", "o@test.com", "password")
         self.client.login(username="other", password="password")
         url = reverse("characters:chargen_back", kwargs={"pk": self.char.pk})
         response = self.client.post(url)

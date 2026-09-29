@@ -23,12 +23,12 @@ def check_floor_ceiling(x, floor, ceiling):
 
 def weighted_choice(dictionary, floor=0, ceiling=5):
     d = {k: check_floor_ceiling(v, floor=floor, ceiling=ceiling) for k, v in dictionary.items()}
-    l = []
+    choices = []
     for key, value in d.items():
         for _ in range(value + 1):
             for __ in range(value + 1):
-                l.append(key)
-    return random.choice(l)
+                choices.append(key)
+    return random.choice(choices)
 
 
 def dice(dicepool, difficulty=6, specialty=False):

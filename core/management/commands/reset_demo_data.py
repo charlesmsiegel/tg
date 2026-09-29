@@ -95,13 +95,13 @@ class Command(BaseCommand):
 
         # Create demo users
         if not User.objects.filter(username="demo_st").exists():
-            demo_st = User.objects.create_user(
+            User.objects.create_user(
                 username="demo_st", email="demo_st@example.com", password="demo123"
             )
             self.stdout.write("  ✓ Created demo ST user (username: demo_st, password: demo123)")
 
         if not User.objects.filter(username="demo_player").exists():
-            demo_player = User.objects.create_user(
+            User.objects.create_user(
                 username="demo_player",
                 email="demo_player@example.com",
                 password="demo123",

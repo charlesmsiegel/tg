@@ -22,13 +22,13 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
 django.setup()
 
-from django.contrib.auth.models import User
-from django.db import transaction
+from django.contrib.auth.models import User  # noqa: E402
+from django.db import transaction  # noqa: E402
 
-from characters.models.core.character import Character
-from core.models import Observer
-from core.permissions import Permission, PermissionManager, VisibilityTier
-from game.models import Chronicle
+from characters.models.core.character import Character  # noqa: E402
+from core.models import Observer  # noqa: E402
+from core.permissions import Permission, PermissionManager, VisibilityTier  # noqa: E402
+from game.models import Chronicle  # noqa: E402
 
 
 class PermissionsTestSuite:

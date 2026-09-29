@@ -108,8 +108,8 @@ class PactRelationshipTests(TestCase):
     def test_demon_can_have_multiple_pacts(self):
         """A demon can have multiple pacts."""
         thrall2 = Thrall.objects.create(name="Second Thrall", owner=self.user)
-        pact1 = Pact.objects.create(demon=self.demon, thrall=self.thrall)
-        pact2 = Pact.objects.create(demon=self.demon, thrall=thrall2)
+        Pact.objects.create(demon=self.demon, thrall=self.thrall)
+        Pact.objects.create(demon=self.demon, thrall=thrall2)
 
         pacts = Pact.objects.filter(demon=self.demon)
         self.assertEqual(pacts.count(), 2)
@@ -117,8 +117,8 @@ class PactRelationshipTests(TestCase):
     def test_thrall_can_have_multiple_pacts(self):
         """A thrall can have multiple pacts (rare but possible)."""
         demon2 = Demon.objects.create(name="Second Demon", owner=self.user)
-        pact1 = Pact.objects.create(demon=self.demon, thrall=self.thrall)
-        pact2 = Pact.objects.create(demon=demon2, thrall=self.thrall)
+        Pact.objects.create(demon=self.demon, thrall=self.thrall)
+        Pact.objects.create(demon=demon2, thrall=self.thrall)
 
         pacts = Pact.objects.filter(thrall=self.thrall)
         self.assertEqual(pacts.count(), 2)
@@ -191,7 +191,7 @@ class PactActiveStatusTests(TestCase):
         """Can filter for only active pacts."""
         active_pact = Pact.objects.create(demon=self.demon, thrall=self.thrall, active=True)
         thrall2 = Thrall.objects.create(name="Another Thrall", owner=self.user)
-        inactive_pact = Pact.objects.create(demon=self.demon, thrall=thrall2, active=False)
+        Pact.objects.create(demon=self.demon, thrall=thrall2, active=False)
 
         active_pacts = Pact.objects.filter(demon=self.demon, active=True)
         self.assertEqual(active_pacts.count(), 1)

@@ -220,7 +220,7 @@ class TestItemCreationFormSTUser(TestItemCreationFormSetup):
 
         # Get the first gameline
         gameline_values = [choice[0] for choice in form.fields["gameline"].choices]
-        first_gameline = gameline_values[0] if gameline_values else None
+        gameline_values[0] if gameline_values else None
 
         # Item types should be from the first gameline
         item_type_values = [choice[0] for choice in form.fields["item_type"].choices]

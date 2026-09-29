@@ -9,6 +9,7 @@ Reports on:
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from game.models import Chronicle, STRelationship
 
@@ -203,6 +204,3 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write(self.style.SUCCESS(f"\n✓ Audit exported to {filename}"))
-
-
-from django.db.models import Q  # Import for check_profile_completeness

@@ -52,7 +52,7 @@ class Command(BaseCommand):
         try:
             chronicle = Chronicle.objects.get(pk=options["chronicle"])
         except Chronicle.DoesNotExist:
-            raise CommandError(f"Chronicle {options['chronicle']} not found")
+            raise CommandError(f"Chronicle {options['chronicle']} not found") from None
 
         self.stdout.write(self.style.SUCCESS(f"\nPopulating test data for: {chronicle.name}\n"))
 
@@ -128,7 +128,7 @@ class Command(BaseCommand):
 
         statuses = ["App", "App", "App", "Sub", "Un"]  # Weighted towards approved
 
-        for i in range(count):
+        for _i in range(count):
             name = choice(names) + " " + choice(["Smith", "Jones", "Martinez", "Chen", "O'Brien"])
             concept = choice(concepts)
             status = choice(statuses)

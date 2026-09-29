@@ -139,10 +139,10 @@ class TestChoiceFormatting(GroupCreationFormTestCase):
 
         # Note: test_group won't appear unless it's in the allowed list
         # This test verifies the formatting logic is correct
-        group_type_choices = dict(form.fields["group_type"].choices)
+        dict(form.fields["group_type"].choices)
 
         # All existing types should be properly formatted
-        for value, label in form.fields["group_type"].choices:
+        for _value, label in form.fields["group_type"].choices:
             self.assertNotIn("_", label)
             self.assertEqual(label, label.title())
 

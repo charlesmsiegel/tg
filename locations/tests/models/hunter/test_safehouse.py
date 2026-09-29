@@ -239,14 +239,14 @@ class TestSafehouseViews(TestCase):
 
     def test_safehouse_create_view(self):
         """Test safehouse create view."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         response = self.client.get(Safehouse.get_creation_url())
         self.assertEqual(response.status_code, 200)
 
     def test_safehouse_create_post(self):
         """Test creating safehouse via POST."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         data = {
             "name": "New Safehouse",

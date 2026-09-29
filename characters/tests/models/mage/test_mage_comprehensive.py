@@ -259,8 +259,6 @@ class TestMageXPMethods(TestCase):
 
     def test_spend_xp_on_arete(self):
         """Test spending XP on arete."""
-        initial_xp = self.mage.xp
-        initial_arete = self.mage.arete
         self.mage.spend_xp("arete")
         self.mage.refresh_from_db()
         # Either succeeded or failed, but shouldn't crash

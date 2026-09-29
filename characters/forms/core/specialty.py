@@ -8,7 +8,7 @@ from core.widgets import AutocompleteTextInput
 class SpecialtiesForm(forms.Form):
     def __init__(self, *args, **kwargs):
         specialties_needed = kwargs.pop("specialties_needed")
-        character = kwargs.pop("object")
+        kwargs.pop("object")
         super().__init__(*args, **kwargs)
         for field in specialties_needed:
             s = (

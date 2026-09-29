@@ -77,7 +77,7 @@ class TestChargenValidationRendering(TestCase):
         char = MtAHuman.objects.create(
             name="Mage Ability Human", owner=self.owner, creation_status=2
         )
-        staff = User.objects.create_user(username="staff", password="password", is_staff=True)
+        User.objects.create_user(username="staff", password="password", is_staff=True)
         self.client.login(username="staff", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -90,7 +90,7 @@ class TestChargenValidationRendering(TestCase):
         char = MtAHuman.objects.create(
             name="Mage Ability Human", owner=self.owner, creation_status=2
         )
-        other = User.objects.create_user(username="stranger", password="password")
+        User.objects.create_user(username="stranger", password="password")
         self.client.login(username="stranger", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)

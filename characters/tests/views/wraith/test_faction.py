@@ -40,7 +40,7 @@ class TestWraithFactionDetailView(TestCase):
 
     def test_detail_view_shows_subfactions(self):
         """Test that detail view shows subfactions if they exist."""
-        subfaction = WraithFaction.objects.create(
+        WraithFaction.objects.create(
             name="Subfaction",
             faction_type="legion",
             parent=self.faction,

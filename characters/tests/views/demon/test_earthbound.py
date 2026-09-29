@@ -127,7 +127,7 @@ class TestEarthboundListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        earthbound = Earthbound.objects.create(name="My Earthbound", owner=self.user, status="App")
+        Earthbound.objects.create(name="My Earthbound", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:earthbound")
         response = self.client.get(url)

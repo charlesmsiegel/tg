@@ -53,7 +53,7 @@ class TestLoreListView(TestCase):
 
     def test_list_view_shows_lores(self):
         """Test that list view shows lores."""
-        lore = Lore.objects.create(name="Lore of Flame", property_name="flame", owner=self.user)
+        Lore.objects.create(name="Lore of Flame", property_name="flame", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:lore")
         response = self.client.get(url)

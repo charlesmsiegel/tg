@@ -108,7 +108,7 @@ class VisageHouseRelationshipTests(TestCase):
 
     def test_house_can_have_multiple_visages(self):
         """House can have multiple visages associated."""
-        visage2 = Visage.objects.create(name="Anshar", owner=self.user, house=self.house)
+        Visage.objects.create(name="Anshar", owner=self.user, house=self.house)
         self.visage.house = self.house
         self.visage.save()
 
@@ -164,7 +164,6 @@ class VisageDefaultApocalypticFormTests(TestCase):
         self.visage.default_apocalyptic_form = self.form
         self.visage.save()
 
-        form_id = self.form.id
         self.form.delete()
 
         self.visage.refresh_from_db()

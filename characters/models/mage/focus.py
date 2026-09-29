@@ -228,7 +228,7 @@ class Paradigm(Model):
         return associated_practices & limited_practices
 
     def set_tenets(self, t1, t2, t3):
-        types = set([t1.tenet_type, t2.tenet_type, t3.tenet_type])
+        types = {t1.tenet_type, t2.tenet_type, t3.tenet_type}
         if types != {"met", "per", "asc"}:
             return False
         self.add_tenet(t1)

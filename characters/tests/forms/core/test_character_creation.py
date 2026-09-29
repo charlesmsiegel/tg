@@ -303,7 +303,7 @@ class TestDataAttributesForJavaScript(CharacterCreationFormTestCase):
         choices_map = form.fields["char_type"].choices_map
 
         # Each gameline should have a list of tuples with (value, label)
-        for gameline, types in choices_map.items():
+        for _gameline, types in choices_map.items():
             self.assertIsInstance(types, list)
             for type_info in types:
                 self.assertIsInstance(type_info, tuple)
@@ -316,7 +316,7 @@ class TestDataAttributesForJavaScript(CharacterCreationFormTestCase):
         choices_map = form.fields["char_type"].choices_map
 
         # Check each gameline's types are sorted by label
-        for gameline, types in choices_map.items():
+        for _gameline, types in choices_map.items():
             labels = [t[1] for t in types]
             self.assertEqual(labels, sorted(labels))
 

@@ -585,9 +585,9 @@ class TestWeekListViewQueryOptimization(TestCase):
 
         # Create multiple weeks with scenes
         for i in range(3):
-            week = Week.objects.create(end_date=date(2024, 1, 7 * (i + 1)))
+            Week.objects.create(end_date=date(2024, 1, 7 * (i + 1)))
             # Create a finished scene for each week
-            scene = Scene.objects.create(
+            Scene.objects.create(
                 name=f"Scene {i}",
                 chronicle=self.chronicle,
                 location=self.location,
@@ -1306,7 +1306,7 @@ class TestJournalDetailView(TestCase):
 
         ViewPermissionMixin returns 404 (not 403) to hide object existence from unauthorized users.
         """
-        other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        User.objects.create_user("otheruser", "other@test.com", "password")
         self.client.login(username="otheruser", password="password")
         response = self.client.post(
             reverse("game:journal_add_entry", kwargs={"pk": self.journal.pk}),

@@ -822,7 +822,7 @@ class TestApplyBackground(TestCase):
 
     def test_apply_new_background(self):
         """Test applying a new background XP request."""
-        contacts = Background.objects.create(name="Contacts", property_name="contacts")
+        Background.objects.create(name="Contacts", property_name="contacts")
 
         xp_request = XPSpendingRequest.objects.create(
             character=self.mage,

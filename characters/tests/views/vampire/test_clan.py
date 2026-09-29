@@ -113,7 +113,7 @@ class TestVampireClanCreateView(TestCase):
         self.client.force_login(
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
-        response = self.client.post(self.url, self.valid_data)
+        self.client.post(self.url, self.valid_data)
         self.assertEqual(VampireClan.objects.filter(name="Test Clan").count(), 1)
 
 
@@ -212,7 +212,7 @@ class TestVampireClanBloodlineEdgeCases(TestCase):
             "is_bloodline": True,
             "parent_clan": self.parent_clan.pk,
         }
-        response = self.client.post(self.url, data)
+        self.client.post(self.url, data)
         self.assertEqual(VampireClan.objects.filter(name="Tremere antitribu").count(), 1)
         bloodline = VampireClan.objects.get(name="Tremere antitribu")
         self.assertTrue(bloodline.is_bloodline)
@@ -227,6 +227,6 @@ class TestVampireClanBloodlineEdgeCases(TestCase):
             "name": "Orphan Bloodline",
             "is_bloodline": True,
         }
-        response = self.client.post(self.url, data)
+        self.client.post(self.url, data)
         # This should succeed - parent_clan is optional even for bloodlines
         self.assertEqual(VampireClan.objects.filter(name="Orphan Bloodline").count(), 1)

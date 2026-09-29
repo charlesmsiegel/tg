@@ -90,7 +90,7 @@ class TestInanimaeCreateView(TestCase):
             "season": "spring",
             "npc": False,
         }
-        response = self.client.post(reverse("characters:changeling:create:inanimae"), data=data)
+        self.client.post(reverse("characters:changeling:create:inanimae"), data=data)
         self.assertTrue(Inanimae.objects.filter(name="New Inanimae").exists())
 
 

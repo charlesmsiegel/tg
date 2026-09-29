@@ -53,7 +53,7 @@ class TestHouseListView(TestCase):
 
     def test_list_view_shows_houses(self):
         """Test that list view shows houses."""
-        house = DemonHouse.objects.create(name="Devils", celestial_name="Namaru", owner=self.user)
+        DemonHouse.objects.create(name="Devils", celestial_name="Namaru", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:house")
         response = self.client.get(url)

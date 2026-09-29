@@ -242,7 +242,7 @@ class TestBackgroundRatingFormSetFactory(TestCase):
     def test_formset_with_existing_background_ratings(self):
         """Formset properly handles existing background ratings."""
         # Create an existing background rating
-        existing = BackgroundRating.objects.create(
+        BackgroundRating.objects.create(
             char=self.human, bg=self.contacts, rating=2, note="Existing"
         )
         formset = BackgroundRatingFormSet(instance=self.human, character=self.human)

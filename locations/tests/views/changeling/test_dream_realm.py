@@ -33,7 +33,7 @@ class DreamRealmListViewTest(TestCase):
         self.client.force_login(
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
-        realm = DreamRealm.objects.create(
+        DreamRealm.objects.create(
             name="Crystal Gardens",
             depth="far",
             realm_type="mythic",
@@ -180,7 +180,7 @@ class DreamRealmUpdateViewTest(TestCase):
             "time_flow": "slower",
             "is_mutable": False,
         }
-        response = self.client.post(self.realm.get_update_url(), data)
+        self.client.post(self.realm.get_update_url(), data)
         self.realm.refresh_from_db()
         self.assertEqual(self.realm.name, "Updated Realm")
         self.assertEqual(self.realm.depth, "far")

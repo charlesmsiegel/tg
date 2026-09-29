@@ -108,7 +108,7 @@ class TestWtAHumanBasicsView(WtAHumanViewTestCase):
     def test_create_wtahuman_via_post(self):
         """Can create a WtA Human character."""
         self.client.login(username="testuser", password="testpassword")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:werewolf:create:wta_human"),
             data={
                 "name": "New WtA Human",

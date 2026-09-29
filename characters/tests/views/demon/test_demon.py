@@ -167,7 +167,7 @@ class TestDemonListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        demon = Demon.objects.create(name="My Demon", owner=self.user, status="App")
+        Demon.objects.create(name="My Demon", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:demon")
         response = self.client.get(url)
@@ -178,7 +178,7 @@ class TestDemonListView(TestCase):
         other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        demon = Demon.objects.create(name="Other Demon", owner=other_user, status="App")
+        Demon.objects.create(name="Other Demon", owner=other_user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:demon")
         response = self.client.get(url)

@@ -1,8 +1,5 @@
 import logging
 
-from core.constants import CharacterStatus, GameLine, ImageStatus
-
-logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -17,9 +14,12 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
 
 from core.base import ValidatedSaveMixin
+from core.constants import CharacterStatus, GameLine, ImageStatus
 from core.utils import filepath
 from core.validators import validate_gameline, validate_non_empty_name
 from game.models import Chronicle
+
+logger = logging.getLogger(__name__)
 
 
 class ModelQuerySet(PolymorphicQuerySet):

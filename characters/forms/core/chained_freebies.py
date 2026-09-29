@@ -251,7 +251,9 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
         current_flaws = self.instance.total_flaws()
         available_freebies = self.instance.freebies
-        current_rating = lambda mf: self.instance.mf_rating(mf)
+
+        def current_rating(mf):
+            return self.instance.mf_rating(mf)
 
         for mf in all_mfs:
             ratings = mf.get_ratings()

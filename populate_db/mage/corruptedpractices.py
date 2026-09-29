@@ -46,7 +46,7 @@ vamamarga = (
 )
 
 for cp in CorruptedPractice.objects.all():
-    cp.add_abilities([x for x in cp.parent_practice.abilities.all()])
+    cp.add_abilities(list(cp.parent_practice.abilities.all()))
     cp.instruments.add(*cp.parent_practice.instruments.all())
     cp.common_resonance_traits.add(*cp.parent_practice.common_resonance_traits.all())
     cp.save()

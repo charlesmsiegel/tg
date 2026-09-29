@@ -267,7 +267,6 @@ class Command(BaseCommand):
             )
 
             for char, spends in characters_with_pending[:5]:
-                owner_name = char.owner.username if char.owner else "No owner"
                 total_cost = sum(spend.get("cost", 0) for spend in spends)
                 self.stdout.write(
                     f"  - {char.name} (ID: {char.id}): {len(spends)} spend(s), {total_cost} XP"
@@ -280,7 +279,7 @@ class Command(BaseCommand):
                 if not self.dry_run:
                     # Use atomic transaction for bulk XP spend approval
                     with transaction.atomic():
-                        for char, spends in characters_with_pending:
+                        for char, _spends in characters_with_pending:
                             for spend in char.spent_xp:
                                 if spend.get("approved") == "Pending":
                                     spend["approved"] = "Approved"
@@ -297,7 +296,7 @@ class Command(BaseCommand):
     def approve_xp_requests(self, options):
         """Approve weekly and story XP requests."""
         from characters.models.core.character import CharacterModel
-        from game.models import StoryXPRequest, WeeklyXPRequest
+        from game.models import WeeklyXPRequest
 
         # Build character filter
         char_filter = {}
@@ -319,12 +318,8 @@ class Command(BaseCommand):
             weekly_requests = WeeklyXPRequest.objects.filter(
                 approved=False, character_id__in=character_ids
             )
-            story_requests = StoryXPRequest.objects.filter(character_id__in=character_ids)
         else:
             weekly_requests = WeeklyXPRequest.objects.filter(approved=False)
-            story_requests = StoryXPRequest.objects.all()[
-                :0
-            ]  # Story XP doesn't have approved field
 
         weekly_count = weekly_requests.count()
 

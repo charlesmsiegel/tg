@@ -54,4 +54,5 @@ class WidgetsConfig(AppConfig):
                 f"widgets: Could not auto-register URL: {e}. "
                 "You may need to add the URL manually.",
                 RuntimeWarning,
+                stacklevel=2,
             )

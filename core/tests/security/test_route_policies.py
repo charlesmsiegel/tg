@@ -78,7 +78,7 @@ class RoutePolicyTests(SimpleTestCase):
             view = getattr(importlib.import_module(module), class_name)
             model = getattr(view, "model_class", None)
             if isinstance(model, type) and issubclass(
-                model, (CharacterModel, Group, ItemModel, LocationModel, CharacterTemplate)
+                model, CharacterModel | Group | ItemModel | LocationModel | CharacterTemplate
             ):
                 self.assertTrue(
                     view.protected_object or view.chargen_router,

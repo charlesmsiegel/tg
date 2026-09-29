@@ -27,7 +27,7 @@ def field_kind(bound_field):
         return "hidden"
     if isinstance(widget, forms.CheckboxInput):
         return "check"
-    if isinstance(widget, (forms.Textarea, forms.SelectMultiple, forms.CheckboxSelectMultiple)):
+    if isinstance(widget, forms.Textarea | forms.SelectMultiple | forms.CheckboxSelectMultiple):
         return "long"
     if isinstance(widget, forms.NumberInput):
         return "rating"

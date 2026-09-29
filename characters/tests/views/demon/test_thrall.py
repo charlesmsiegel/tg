@@ -127,7 +127,7 @@ class TestThrallListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        thrall = Thrall.objects.create(name="My Thrall", owner=self.user, status="App")
+        Thrall.objects.create(name="My Thrall", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:thrall")
         response = self.client.get(url)

@@ -265,7 +265,7 @@ class TestSignUpViewIntegration(TestCase):
 
     def test_signup_creates_user_and_profile(self):
         """Test that signing up creates both user and profile."""
-        response = self.client.post(
+        self.client.post(
             reverse("accounts:signup"),
             {
                 "username": "newuser",

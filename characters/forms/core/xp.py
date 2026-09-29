@@ -64,7 +64,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
         example_choices_map = {}
         char = self.character
 
-        for cat_value, cat_label in category_choices:
+        for cat_value, _cat_label in category_choices:
             if cat_value == "Attribute":
                 examples = [
                     attr
@@ -126,7 +126,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
         char = self.character
 
         if "MeritFlaw" in example_choices_map:
-            for mf_pk, mf_label in example_choices_map["MeritFlaw"]:
+            for mf_pk, _mf_label in example_choices_map["MeritFlaw"]:
                 mf = MeritFlaw.objects.get(pk=mf_pk)
                 current_rating = char.mf_rating(mf)
                 ratings = mf.get_ratings()

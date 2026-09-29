@@ -258,7 +258,7 @@ class TestXPTransactions(TestCase):
         character = Character.objects.create(name="Test", xp=10)
 
         # Spend XP successfully
-        record = character.spend_xp(
+        character.spend_xp(
             trait_name="strength",
             trait_display="Strength",
             cost=5,
@@ -296,9 +296,7 @@ class TestXPTransactions(TestCase):
         # Simulate error during spending
         try:
             with transaction.atomic():
-                record = character.spend_xp(
-                    trait_name="test", trait_display="Test", cost=5, category="test"
-                )
+                character.spend_xp(trait_name="test", trait_display="Test", cost=5, category="test")
                 # Force an error
                 raise ValueError("Simulated error")
         except ValueError:
@@ -360,13 +358,13 @@ class TestXPTransactions(TestCase):
 
         # The spend_xp method uses select_for_update, which will lock the row
         # In a concurrent scenario, the second transaction would block
-        record = character.spend_xp("test1", "Test 1", 5, "test")
+        character.spend_xp("test1", "Test 1", 5, "test")
 
         character.refresh_from_db()
         self.assertEqual(character.xp, 5)
 
         # Another spend
-        record2 = character.spend_xp("test2", "Test 2", 3, "test")
+        character.spend_xp("test2", "Test 2", 3, "test")
 
         character.refresh_from_db()
         self.assertEqual(character.xp, 2)
@@ -378,7 +376,7 @@ class TestSceneXPAwards(TestCase):
 
     def test_award_xp_atomicity(self):
         """Scene XP awards are atomic - all characters get XP or none do"""
-        user = User.objects.create_user(username="testuser")
+        User.objects.create_user(username="testuser")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
 
@@ -409,7 +407,7 @@ class TestSceneXPAwards(TestCase):
 
     def test_award_xp_idempotent(self):
         """Cannot award XP twice for the same scene"""
-        user = User.objects.create_user(username="testuser")
+        User.objects.create_user(username="testuser")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
 
@@ -428,15 +426,14 @@ class TestSceneXPAwards(TestCase):
 
     def test_award_xp_rollback_on_error(self):
         """If XP award fails partway, all changes roll back"""
-        user = User.objects.create_user(username="testuser")
+        User.objects.create_user(username="testuser")
         chronicle = Chronicle.objects.create(name="Test Chronicle")
-        scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
+        Scene.objects.create(name="Test Scene", chronicle=chronicle)
 
-        char1 = Character.objects.create(name="Char1", xp=0)
+        Character.objects.create(name="Char1", xp=0)
 
         # Simulate error during award by trying to award to deleted character
         char2 = Character.objects.create(name="Char2", xp=0)
-        char2_id = char2.pk
         char2.delete()
 
         # This would normally cause an error, but our implementation handles it gracefully

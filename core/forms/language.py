@@ -7,7 +7,7 @@ from core.widgets import AutocompleteTextInput
 class HumanLanguageForm(forms.Form):
     def __init__(self, *args, **kwargs):
         num_languages = kwargs.pop("num_languages", 1)
-        human_pk = kwargs.pop("pk", None)
+        kwargs.pop("pk", None)
 
         super().__init__(*args, **kwargs)
 

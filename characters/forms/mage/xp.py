@@ -106,7 +106,7 @@ class MageXPForm(XPForm):
         example_choices_map = super()._build_example_choices_map(category_choices)
         char = self.character
 
-        for cat_value, cat_label in category_choices:
+        for cat_value, _cat_label in category_choices:
             if cat_value == "Sphere":
                 examples = [
                     sphere

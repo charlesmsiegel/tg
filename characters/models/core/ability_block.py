@@ -255,7 +255,9 @@ class AbilityBlock(models.Model):
                 f"Secondary {heading}",
                 [(label, rating, self._specialty_for(stat)) for label, rating, stat in column],
             )
-            for (heading, _group), column in zip(self.ABILITY_GROUPS, zip(*rows), strict=True)
+            for (heading, _group), column in zip(
+                self.ABILITY_GROUPS, zip(*rows, strict=True), strict=True
+            )
         ]
 
     def get_secondaries_for_display(self):

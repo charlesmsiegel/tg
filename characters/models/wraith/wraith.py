@@ -252,7 +252,7 @@ class Wraith(WtOHuman):
     def add_passion(self, emotion, description, rating=1, is_dark=False):
         from characters.models.wraith.passion import Passion
 
-        passion = Passion.objects.create(
+        Passion.objects.create(
             wraith=self,
             emotion=emotion,
             description=description,
@@ -272,7 +272,7 @@ class Wraith(WtOHuman):
     def add_fetter(self, fetter_type, description, rating=1):
         from characters.models.wraith.fetter import Fetter
 
-        fetter = Fetter.objects.create(
+        Fetter.objects.create(
             wraith=self,
             fetter_type=fetter_type,
             description=description,
@@ -554,7 +554,7 @@ class Wraith(WtOHuman):
             # Convert Dark Passions back to normal (some may remain dark)
             dark_passions = Passion.objects.filter(wraith=self, is_dark_passion=True)
             redeemed_count = max(1, psyche_successes - shadow_successes)
-            for i, passion in enumerate(dark_passions[:redeemed_count]):
+            for _i, passion in enumerate(dark_passions[:redeemed_count]):
                 passion.is_dark_passion = False
                 passion.save()
 

@@ -118,7 +118,6 @@ class TestWraithFactionHierarchy(TestCase):
             parent=parent,
             description="Child",
         )
-        child_id = child.id
 
         parent.delete()
         child.refresh_from_db()
