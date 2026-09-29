@@ -160,7 +160,7 @@ class TestCompanionMassAssignment(TestCase):
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         # Owner gets LimitedHumanEditForm which doesn't include status
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -182,7 +182,7 @@ class TestCompanionMassAssignment(TestCase):
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         original_xp = self.companion.xp
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -203,7 +203,7 @@ class TestCompanionMassAssignment(TestCase):
         self.client.login(username="owner", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -224,7 +224,7 @@ class TestCompanionMassAssignment(TestCase):
         self.client.login(username="owner", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -245,7 +245,7 @@ class TestCompanionMassAssignment(TestCase):
         self.client.login(username="owner", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -354,7 +354,7 @@ class TestCharacterMassAssignment(TestCase):
         self.client.login(username="owner", password="password")
         url = reverse("characters:update:human", kwargs={"pk": self.human.pk})
 
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",
@@ -376,7 +376,7 @@ class TestCharacterMassAssignment(TestCase):
         url = reverse("characters:update:human", kwargs={"pk": self.human.pk})
 
         original_xp = self.human.xp
-        response = self.client.post(
+        self.client.post(
             url,
             {
                 "notes": "Some notes",

@@ -371,8 +371,8 @@ class Character(CharacterModel):
 
         try:
             request = char.xp_spendings.select_for_update().get(id=request_id)
-        except XPSpendingRequest.DoesNotExist:
-            raise ValidationError("Invalid XP spending request", code="invalid_request")
+        except XPSpendingRequest.DoesNotExist as exc:
+            raise ValidationError("Invalid XP spending request", code="invalid_request") from exc
 
         if request.approved != "Pending":
             raise ValidationError(

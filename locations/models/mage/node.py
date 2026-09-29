@@ -170,7 +170,7 @@ class Node(MeritFlawBlock, LocationModel):
             res, _ = Resonance.objects.get_or_create(name="Corrupted")
             self.add_resonance(res)
             self.add_resonance(res)
-        if any([x.name.startswith("Sphere Attuned") for x in self.merits_and_flaws.all()]):
+        if any(x.name.startswith("Sphere Attuned") for x in self.merits_and_flaws.all()):
             for mf in [
                 x for x in self.merits_and_flaws.all() if x.name.startswith("Sphere Attuned")
             ]:

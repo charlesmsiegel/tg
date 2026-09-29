@@ -481,8 +481,6 @@ class Demon(LoreBlock, DtFHuman):
 
         cost = 7 if is_house_lore else 10
 
-        # Get current rating and increment
-        current_rating = getattr(self, lore_property, 0)
         if self.add_lore(lore_property):
             self.freebies -= cost
             trait = lore.name

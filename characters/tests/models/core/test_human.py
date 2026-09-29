@@ -750,13 +750,14 @@ class TestHuman(TestCase):
         self.character.computer = 2
         self.character.mf_based_corrections()
         self.assertEqual(self.character.total_abilities(), 10)
-        l = [
-            self.character.total_talents(),
-            self.character.total_skills(),
-            self.character.total_knowledges(),
-        ]
-        l.sort()
-        self.assertEqual([0, 5, 5], l)
+        totals = sorted(
+            [
+                self.character.total_talents(),
+                self.character.total_skills(),
+                self.character.total_knowledges(),
+            ]
+        )
+        self.assertEqual([0, 5, 5], totals)
 
     def test_total_backgrounds(self):
         Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]

@@ -36,10 +36,10 @@ class RitualModelTests(TestCase):
         lore2 = Lore.objects.create(name="Lore of Awakening", property_name="awakening")
         lore2.houses.add(house2)
 
-        ritual_c = Ritual.objects.create(
+        Ritual.objects.create(
             name="Conjuration", house=self.house, primary_lore=self.lore, primary_lore_rating=1
         )
-        ritual_a = Ritual.objects.create(
+        Ritual.objects.create(
             name="Awakening", house=house2, primary_lore=lore2, primary_lore_rating=1
         )
 

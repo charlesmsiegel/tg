@@ -231,12 +231,6 @@ class TestJavaScriptBehavior(TestCase):
         self.assertIn('data-create-or-select-group="effects-0"', html)
 
         # Document expected container attribute format
-        expected_select = (
-            'data-create-or-select-container="effects-0" data-create-or-select-mode="select"'
-        )
-        expected_create = (
-            'data-create-or-select-container="effects-0" data-create-or-select-mode="create"'
-        )
 
         # These assertions document the expected template usage pattern
         # (actual templates need to include these attributes)

@@ -209,8 +209,6 @@ class Thrall(DtFHuman):
         cost = 2
         virtue_name = form.cleaned_data["example"].lower()
 
-        # Get current rating and increment
-        current_rating = getattr(self, virtue_name, 1)
         if add_dot(self, virtue_name, 5):
             self.freebies -= cost
             trait = virtue_name.title()

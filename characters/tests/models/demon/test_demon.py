@@ -558,8 +558,8 @@ class DemonPactTests(TestCase):
 
     def test_total_pacts_counts_active_only(self):
         """total_pacts counts only active pacts."""
-        pact1 = Pact.objects.create(demon=self.demon, thrall=self.thrall, active=True)
-        pact2 = Pact.objects.create(demon=self.demon, thrall=self.thrall, active=False)
+        Pact.objects.create(demon=self.demon, thrall=self.thrall, active=True)
+        Pact.objects.create(demon=self.demon, thrall=self.thrall, active=False)
         self.assertEqual(self.demon.total_pacts(), 1)
 
 

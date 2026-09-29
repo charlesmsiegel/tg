@@ -86,7 +86,7 @@ class LocationsUpdateUrlsTest(TestCase):
         try:
             resolver = resolve("/locations/update/location/1/")
             self.assertIsNotNone(resolver)
-        except:
+        except Exception:
             # If specific patterns don't exist, that's fine for this test
             pass
 

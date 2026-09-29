@@ -127,7 +127,7 @@ class TestDtFHumanListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        human = DtFHuman.objects.create(name="My Human", owner=self.user, status="App")
+        DtFHuman.objects.create(name="My Human", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:dtfhuman")
         response = self.client.get(url)

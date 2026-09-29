@@ -88,7 +88,7 @@ class ChainedChoiceField(forms.ChoiceField):
         elif self.choices_callback:
             result = self.choices_callback(parent_value)
             # Handle querysets
-            if hasattr(result, "__iter__") and not isinstance(result, (str, dict)):
+            if hasattr(result, "__iter__") and not isinstance(result, str | dict):
                 choices.extend(result)
 
         return choices

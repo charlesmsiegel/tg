@@ -88,7 +88,7 @@ def linked_dots(value, maximum=10):
     if hasattr(value, "permanent") and hasattr(value, "temporary"):
         permanent = value.permanent
         temporary = value.temporary
-    elif isinstance(value, (list, tuple)) and len(value) >= 2:
+    elif isinstance(value, list | tuple) and len(value) >= 2:
         permanent = value[0]
         temporary = value[1]
     elif isinstance(value, dict):

@@ -66,7 +66,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "balefire_description": "Column of light illuminating the stage",
         }
 
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
 
         freehold.refresh_from_db()
         self.assertEqual(freehold.creation_status, 2)
@@ -93,7 +93,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "dual_nature_ability": "",
         }
 
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
 
         freehold.refresh_from_db()
         self.assertEqual(freehold.creation_status, 3)
@@ -286,7 +286,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "aspect": "Ancient library of lost knowledge",
             "description": "Discovered in the ruins",
         }
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
 
         freehold = Freehold.objects.get(name="Complete Test Freehold")
         self.assertEqual(freehold.creation_status, 1)
@@ -301,7 +301,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "passages": 2,
             "balefire_description": "Glowing tomes",
         }
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
         freehold.refresh_from_db()
         self.assertEqual(freehold.creation_status, 2)
 
@@ -311,7 +311,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "dual_nature_archetype": "",
             "dual_nature_ability": "",
         }
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
         freehold.refresh_from_db()
         self.assertEqual(freehold.creation_status, 3)
 
@@ -325,7 +325,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "contained_within": [],
             "owned_by": self.character.pk,
         }
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
         freehold.refresh_from_db()
 
         # Final checks

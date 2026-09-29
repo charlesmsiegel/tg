@@ -240,14 +240,14 @@ class TestHauntViews(TestCase):
 
     def test_haunt_create_view(self):
         """Test haunt create view."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         response = self.client.get(Haunt.get_creation_url())
         self.assertEqual(response.status_code, 200)
 
     def test_haunt_create_post(self):
         """Test creating haunt via POST."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         data = {
             "name": "New Haunt",

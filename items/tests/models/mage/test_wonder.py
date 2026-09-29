@@ -8,7 +8,7 @@ from items.models.mage import Wonder
 
 class TestWonder(TestCase):
     def setUp(self):
-        for i in range(5):
+        for _i in range(5):
             Resonance.objects.get_or_create(name="Resonance {i}")
         self.wonder = Wonder.objects.create(name="Test Wonder")
 

@@ -53,7 +53,6 @@ class TestMageDetailViewPost(TestCase):
     def test_spend_xp_on_attribute(self):
         """Test spending XP to increase an attribute."""
         self.client.login(username="owner", password="password")
-        initial_xp = self.mage.xp
         strength = Attribute.objects.get(property_name="strength")
 
         response = self.client.post(

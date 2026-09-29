@@ -79,7 +79,7 @@ class TestFeraBasicsView(FeraViewTestCase):
     def test_create_corax(self):
         """Can create a Corax character (simplest Fera type)."""
         self.client.login(username="testuser", password="testpassword")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:werewolf:create:fera"),
             data={
                 "name": "Test Corax",
@@ -195,7 +195,7 @@ class TestFeraBreedFactionView(FeraViewTestCase):
     def test_set_corax_breed(self):
         """Can set Corax breed via POST."""
         self.client.login(username="testuser", password="testpassword")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:werewolf:update:fera", kwargs={"pk": self.corax.pk}),
             data={
                 "breed": "homid",

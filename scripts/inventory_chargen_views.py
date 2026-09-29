@@ -73,7 +73,7 @@ def inventory(root):
                 "lines": node.end_lineno - node.lineno + 1,
                 "methods": [n.name for n in methods],
                 "configuration": [
-                    ast.unparse(n) for n in node.body if isinstance(n, (ast.Assign, ast.AnnAssign))
+                    ast.unparse(n) for n in node.body if isinstance(n, ast.Assign | ast.AnnAssign)
                 ],
                 "configuration_only": not methods,
             }

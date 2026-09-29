@@ -174,7 +174,7 @@ class TestEnhancementFormAttributeValidation(TestCase):
     def test_attributes_requires_correct_number_of_selections(self):
         """Test that Attributes type requires exactly rank attributes selected."""
         strength = Attribute.objects.get(property_name="strength")
-        dexterity = Attribute.objects.get(property_name="dexterity")
+        Attribute.objects.get(property_name="dexterity")
 
         # Missing one attribute for rank 2
         form = EnhancementForm(

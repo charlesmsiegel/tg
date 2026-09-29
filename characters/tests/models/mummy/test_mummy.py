@@ -674,7 +674,6 @@ class TestMummyRelationships(TestCase):
             owner=self.player,
             dynasty=self.dynasty,
         )
-        dynasty_id = self.dynasty.id
         self.dynasty.delete()
         mummy.refresh_from_db()
         self.assertIsNone(mummy.dynasty)

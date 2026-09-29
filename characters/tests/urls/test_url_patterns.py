@@ -96,13 +96,10 @@ class CharactersGamelineUrlsTest(TestCase):
 
     def test_all_gamelines_have_url_patterns(self):
         """Test that all gamelines in URL_PATTERNS create URL entries."""
-        for url_path, module_name, namespace in GameLine.URL_PATTERNS:
+        for url_path, _module_name, _namespace in GameLine.URL_PATTERNS:
             # Test that the gameline path exists in urlpatterns
-            expected_prefix = f"/characters/{url_path}/"
-            found = False
             for pattern in characters_urls.urlpatterns:
                 if hasattr(pattern, "pattern") and str(pattern.pattern).startswith(url_path):
-                    found = True
                     break
             # Note: found may be False if module doesn't exist (caught by exception)
             # This is expected behavior
@@ -126,7 +123,7 @@ class CharactersUpdateUrlsTest(TestCase):
         try:
             resolver = resolve("/characters/update/human/1/")
             self.assertIsNotNone(resolver)
-        except:
+        except Exception:
             # If specific patterns don't exist, that's fine for this test
             pass
 

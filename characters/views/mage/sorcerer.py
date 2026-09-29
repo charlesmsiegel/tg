@@ -238,10 +238,8 @@ class SorcererRitualView(ChargenStepMixin, SpendFreebiesPermissionMixin, FormVie
             return self.form_invalid(form)
         sorcerer.rituals.add(r)
         if all(
-            [
-                sorcerer.rituals.filter(path=x).count() == sorcerer.path_rating(x)
-                for x in sorcerer.paths.all()
-            ]
+            sorcerer.rituals.filter(path=x).count() == sorcerer.path_rating(x)
+            for x in sorcerer.paths.all()
         ):
             advance(sorcerer, user=self.request.user)
             sorcerer.save()

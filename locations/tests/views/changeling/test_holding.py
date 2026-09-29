@@ -33,7 +33,7 @@ class HoldingListViewTest(TestCase):
         self.client.force_login(
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
-        holding = Holding.objects.create(
+        Holding.objects.create(
             name="Test Barony",
             rank="barony",
             court="seelie",
@@ -174,7 +174,7 @@ class HoldingUpdateViewTest(TestCase):
             "stability": 4,
             "freehold_count": 2,
         }
-        response = self.client.post(self.holding.get_update_url(), data)
+        self.client.post(self.holding.get_update_url(), data)
         self.holding.refresh_from_db()
         self.assertEqual(self.holding.name, "Updated Barony")
         self.assertEqual(self.holding.rank, "duchy")

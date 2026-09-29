@@ -33,7 +33,7 @@ class VampireArtifactCreateViewTest(TestCase):
     def test_create_valid_artifact(self):
         """Valid form data creates an artifact."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
+        self.client.post(
             self.create_url,
             {
                 "name": "Test Artifact",

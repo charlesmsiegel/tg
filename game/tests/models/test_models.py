@@ -173,7 +173,7 @@ class TestChronicleAdvanced(TestCase):
         player = User.objects.create_user(
             username="player", email="player@test.com", password="password"
         )
-        character = Human.objects.create(
+        Human.objects.create(
             name="Player Character",
             owner=player,
             chronicle=self.chronicle,
@@ -804,7 +804,7 @@ class TestSceneModel(TestCase):
         )
         scene.characters.add(self.character)
 
-        post1 = scene.add_post(self.character, "", "First post")
+        scene.add_post(self.character, "", "First post")
         post2 = scene.add_post(self.character, "", "Second post")
 
         recent = scene.most_recent_post()
@@ -1223,7 +1223,7 @@ class TestJournalModel(TestCase):
         date1 = now()
         date2 = now() + timedelta(days=1)
 
-        entry1 = self.journal.add_post(date1, "First entry")
+        self.journal.add_post(date1, "First entry")
         entry2 = self.journal.add_post(date2, "Second entry")
 
         entries = list(self.journal.all_entries())

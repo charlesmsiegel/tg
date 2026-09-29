@@ -1,15 +1,6 @@
 import logging
 from typing import Any
 
-from characters.chargen.registry import WorkflowViews
-from characters.chargen.transitions import advance
-from characters.forms.core.crud_fields import MAGE_CREATE_FIELDS
-from characters.views.core.chargen_mixins import ChargenStepMixin
-from characters.views.core.human import HumanLanguagesView, HumanSpecialtiesView
-from core.mixins import ScopedCreationFormMixin, ScopedEditFormMixin
-
-logger = logging.getLogger(__name__)
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -17,6 +8,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, FormView, UpdateView
 
+from characters.chargen.registry import WorkflowViews
+from characters.chargen.transitions import advance
+from characters.forms.core.crud_fields import MAGE_CREATE_FIELDS
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -34,6 +28,7 @@ from characters.models.mage.rote import Rote
 from characters.services.mage_chargen import set_starting_practices
 from characters.services.rotes import learn_rote
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 from characters.views.core.extras import CharacterExtrasView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
@@ -41,6 +36,8 @@ from characters.views.core.human import (
     HumanCharacterCreationView,
     HumanDetailView,
     HumanFreebiesView,
+    HumanLanguagesView,
+    HumanSpecialtiesView,
 )
 from characters.views.mage.background_views import (
     CharacterChantryBackgroundView,
@@ -51,6 +48,8 @@ from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    ScopedCreationFormMixin,
+    ScopedEditFormMixin,
     SpecialUserMixin,
 )
 from core.permissions import PermissionManager
@@ -60,6 +59,8 @@ from items.models.core.item import ItemModel
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
+
+logger = logging.getLogger(__name__)
 
 
 class MageDetailView(HumanDetailView):

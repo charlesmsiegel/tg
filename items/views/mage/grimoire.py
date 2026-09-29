@@ -17,7 +17,11 @@ def grimoire_contents(rank, is_primer, practices, spheres, abilities, rotes):
     marked ``over``; slots nothing fills are empty cells.
     """
     counts = dict(
-        zip(CONTENTS_ORDER, (1 if is_primer else 0, practices, spheres, abilities, rotes))
+        zip(
+            CONTENTS_ORDER,
+            (1 if is_primer else 0, practices, spheres, abilities, rotes),
+            strict=True,
+        )
     )
     total = (rank or 0) + 3
     filled = sum(counts.values())

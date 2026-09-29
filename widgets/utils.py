@@ -30,13 +30,13 @@ def normalize_choices(choices):
     """
     choices_list = []
     for item in choices:
-        if isinstance(item, (list, tuple)) and len(item) >= 3:
+        if isinstance(item, list | tuple) and len(item) >= 3:
             # 3-tuple with metadata
             choice_dict = {"value": str(item[0]), "label": str(item[1])}
             if item[2]:
                 choice_dict["metadata"] = item[2]
             choices_list.append(choice_dict)
-        elif isinstance(item, (list, tuple)) and len(item) >= 2:
+        elif isinstance(item, list | tuple) and len(item) >= 2:
             choices_list.append({"value": str(item[0]), "label": str(item[1])})
         elif hasattr(item, "pk"):
             # Model instance

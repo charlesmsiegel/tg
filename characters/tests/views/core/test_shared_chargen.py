@@ -141,6 +141,7 @@ class SharedChargenTests(TestCase):
                         response.context["secondary"],
                         response.context["tertiary"],
                     ),
+                    strict=True,
                 ):
                     for name in getattr(character, group):
                         if name in payload:
@@ -217,7 +218,7 @@ class SharedChargenTests(TestCase):
         form = self.client.get(url).context["form"]
         self.assertNotIn("animal_kinship", form.fields)
         payload = dict.fromkeys(form.fields, 0)
-        for group, total in zip(("talents", "skills", "knowledges"), (11, 7, 4)):
+        for group, total in zip(("talents", "skills", "knowledges"), (11, 7, 4), strict=True):
             for name in getattr(character, group):
                 if name in payload:
                     payload[name] = min(total, 3)

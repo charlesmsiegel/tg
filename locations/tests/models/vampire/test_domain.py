@@ -196,14 +196,14 @@ class TestDomainViews(TestCase):
 
     def test_domain_create_view(self):
         """Test domain create view."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         response = self.client.get(Domain.get_creation_url())
         self.assertEqual(response.status_code, 200)
 
     def test_domain_create_post(self):
         """Test creating domain via POST."""
-        user = User.objects.create_user(username="testuser", password="password")
+        User.objects.create_user(username="testuser", password="password")
         self.client.login(username="testuser", password="password")
         data = {
             "name": "New Domain",

@@ -11,6 +11,7 @@ Tests cover:
 """
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.forms.mage.rote import RoteCreationForm
@@ -350,7 +351,7 @@ class TestRoteCreationFormSave(TestCase):
         )
 
         if form.is_valid():
-            result = form.save(self.mage)
+            form.save(self.mage)
 
             self.mage.refresh_from_db()
             self.assertIn(self.existing_rote, self.mage.rotes.all())
@@ -363,7 +364,6 @@ class TestRoteCreationFormSave(TestCase):
     def test_save_with_new_rote_existing_effect(self):
         """Test saving form when creating new rote with existing effect."""
         new_effect = Effect.objects.create(name="New Selectable Effect", forces=1)
-        initial_rote_points = self.mage.rote_points
 
         form = RoteCreationForm(
             data={
@@ -380,7 +380,7 @@ class TestRoteCreationFormSave(TestCase):
         )
 
         if form.is_valid():
-            result = form.save(self.mage)
+            form.save(self.mage)
 
             self.mage.refresh_from_db()
             # Check new rote was created and added to mage
@@ -390,7 +390,6 @@ class TestRoteCreationFormSave(TestCase):
 
     def test_save_with_new_rote_new_effect(self):
         """Test saving form when creating new rote with new effect."""
-        initial_rote_points = self.mage.rote_points
 
         form = RoteCreationForm(
             data={
@@ -416,7 +415,7 @@ class TestRoteCreationFormSave(TestCase):
         )
 
         if form.is_valid():
-            result = form.save(self.mage)
+            form.save(self.mage)
 
             self.mage.refresh_from_db()
             # Check new rote was created
@@ -491,5 +490,5 @@ class TestRoteCreationFormValidation(TestCase):
 
         # Form might be valid but save should raise validation error
         if form.is_valid():
-            with self.assertRaises(Exception):
+            with self.assertRaises(ValidationError):
                 form.save(mage_low_points)

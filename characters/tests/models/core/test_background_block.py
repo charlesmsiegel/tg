@@ -126,7 +126,7 @@ class BackgroundPoolableTests(TestCase):
         # even if 'pooled' is in the form data
 
         # Create a BackgroundRating for a non-poolable background
-        bgr = BackgroundRating.objects.create(
+        BackgroundRating.objects.create(
             char=self.character,
             bg=self.non_poolable_bg,
             rating=1,
@@ -142,7 +142,7 @@ class BackgroundPoolableTests(TestCase):
     def test_poolable_background_can_be_pooled(self):
         """Test that poolable backgrounds can be added to the group pool."""
         # Create a pooled BackgroundRating
-        bgr = BackgroundRating.objects.create(
+        BackgroundRating.objects.create(
             char=self.character,
             bg=self.poolable_bg,
             rating=2,

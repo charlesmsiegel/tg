@@ -55,7 +55,7 @@ class TestXPSpendingRequest(TestCase):
         """Test retrieving pending XP requests."""
         # Create multiple requests
         alertness_req = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        strength_req = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
+        self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
 
         # Approve Alertness (leaves Strength pending)
         alertness_req.approved = "Approved"
@@ -227,7 +227,7 @@ class TestXPSpendingSystem(TestCase):
         # Create and approve requests
         request1 = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
         request2 = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
-        request3 = self.char.create_xp_spending_request("Wits", "attribute", 3, 5)
+        self.char.create_xp_spending_request("Wits", "attribute", 3, 5)
 
         self.char.approve_xp_request(request1.id, self.user)
         self.char.approve_xp_request(request2.id, self.user)
@@ -298,7 +298,7 @@ class TestXPSpendingIndexes(TestCase):
         """Test ordering by created_at (indexed)."""
         # Create requests
         request1 = self.char.create_xp_spending_request("First", "ability", 1, 2)
-        request2 = self.char.create_xp_spending_request("Second", "ability", 2, 4)
+        self.char.create_xp_spending_request("Second", "ability", 2, 4)
         request3 = self.char.create_xp_spending_request("Third", "ability", 3, 6)
 
         # This query should use the index
@@ -334,7 +334,7 @@ class TestFreebieSpendingIndexes(TestCase):
     def test_order_by_created_at(self):
         """Test ordering by created_at (indexed)."""
         record1 = self.human.create_freebie_spending_record("First", "ability", 1, 2)
-        record2 = self.human.create_freebie_spending_record("Second", "ability", 2, 4)
+        self.human.create_freebie_spending_record("Second", "ability", 2, 4)
         record3 = self.human.create_freebie_spending_record("Third", "ability", 3, 6)
 
         # This query should use the index
@@ -390,7 +390,7 @@ class TestXPSpendingEdgeCases(TestCase):
     def test_mixed_approved_pending_denied_requests(self):
         """Test character with mixed request statuses."""
         request1 = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        request2 = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
+        self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
         request3 = self.char.create_xp_spending_request("Wits", "attribute", 3, 5)
 
         self.char.approve_xp_request(request1.id, self.user)  # Approved - 6 XP

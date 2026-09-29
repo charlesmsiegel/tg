@@ -593,7 +593,7 @@ class OwnerRequiredMixinTest(TestCase):
         view.kwargs = {}
 
         # Call dispatch directly
-        response = view.dispatch(request)
+        view.dispatch(request)
         # Should not raise - passes through to super().dispatch()
 
 
@@ -1279,7 +1279,7 @@ class ErrorMessageMixinTest(TestCase):
         view.object = None
 
         form = TestForm(data={})
-        response = view.form_invalid(form)
+        view.form_invalid(form)
 
         # Check that error message was added
         messages = list(get_messages(request))

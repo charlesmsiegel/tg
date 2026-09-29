@@ -102,9 +102,7 @@ class TestAutumnPersonCreateView(TestCase):
             "banality_rating": 9,
             "npc": True,
         }
-        response = self.client.post(
-            reverse("characters:changeling:create:autumn_person"), data=data
-        )
+        self.client.post(reverse("characters:changeling:create:autumn_person"), data=data)
         self.assertTrue(AutumnPerson.objects.filter(name="New Autumn Person").exists())
 
 

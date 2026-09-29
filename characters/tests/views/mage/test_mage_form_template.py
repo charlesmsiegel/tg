@@ -41,7 +41,7 @@ class MageFormTemplateTest(TestCase):
         mage.specialties.add(Specialty.objects.create(name="Keen Eye", stat="art"))
         response = self.edit(mage)
         abilities = next(s for s in response.context["form_sections"] if s["title"] == "Abilities")
-        talents = dict((heading, rows) for heading, rows in abilities["columns"])["Talents"]
+        talents = dict(abilities["columns"])["Talents"]
         self.assertIn("Art (Keen Eye)", [label for _field, label in talents])
         self.assertContains(response, "Art (Keen Eye)")
 

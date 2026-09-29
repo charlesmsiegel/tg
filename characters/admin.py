@@ -41,6 +41,7 @@ from characters.models.demon import (
     Visage,
 )
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
+from characters.models.demon.ritual import Ritual
 from characters.models.mage import (
     Cabal,
     CorruptedPractice,
@@ -585,9 +586,6 @@ class EarthboundAdmin(admin.ModelAdmin):
 class ApocalypticFormTraitAdmin(admin.ModelAdmin):
     list_display = ("name", "cost", "high_torment_only")
     list_filter = ("cost", "high_torment_only")
-
-
-from characters.models.demon.ritual import Ritual
 
 
 @admin.register(Ritual)

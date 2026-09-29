@@ -156,7 +156,7 @@ STORAGES = {
 # Uses rotating file handlers to prevent log files from growing too large
 # Keeps logs organized with separate files for errors and general logs
 
-from logging.handlers import RotatingFileHandler  # noqa: F401
+from logging.handlers import RotatingFileHandler  # noqa: E402, F401
 
 # Replace file handlers with rotating file handlers for production
 LOGGING["handlers"]["file"] = {  # noqa: F405

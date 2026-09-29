@@ -50,7 +50,7 @@ class CompanionFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
             name="companion", defaults={"type": "char", "gameline": "mta"}
         )
 
-        for cat_value, cat_label in all_cats:
+        for cat_value, _cat_label in all_cats:
             if cat_value == "Attribute":
                 examples = Attribute.objects.all()
                 examples = [x for x in examples if getattr(m, x.property_name, 0) < 5]
@@ -91,7 +91,7 @@ class CompanionFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
         # Build value choices_map for MeritFlaw (example → value)
         value_choices_map = {}
         if "MeritFlaw" in example_choices_map:
-            for mf_pk, mf_label in example_choices_map["MeritFlaw"]:
+            for mf_pk, _mf_label in example_choices_map["MeritFlaw"]:
                 mf = MeritFlaw.objects.get(pk=mf_pk)
                 ratings = list(range(mf.min_rating, mf.max_rating + 1))
                 # Filter out ratings based on character's current state
@@ -100,8 +100,7 @@ class CompanionFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
                     ratings = [r for r in ratings if r >= -7 - m.total_flaws()]
                 value_choices_map[mf_pk] = [(str(r), str(r)) for r in ratings]
         if "Advantage" in example_choices_map:
-            for adv_pk, adv_label in example_choices_map["Advantage"]:
-                adv = Advantage.objects.get(pk=adv_pk)
+            for adv_pk, _adv_label in example_choices_map["Advantage"]:
                 # Advantage values are typically 1-5
                 ratings = list(range(1, 6))
                 ratings = [r for r in ratings if r * 3 <= m.freebies]  # 3 freebies per dot
@@ -142,7 +141,7 @@ class SorcererFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
             name="companion", defaults={"type": "char", "gameline": "mta"}
         )
 
-        for cat_value, cat_label in all_cats:
+        for cat_value, _cat_label in all_cats:
             if cat_value == "Attribute":
                 examples = Attribute.objects.all()
                 examples = [x for x in examples if getattr(m, x.property_name, 0) < 5]

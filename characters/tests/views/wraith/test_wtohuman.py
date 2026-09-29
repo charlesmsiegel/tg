@@ -101,9 +101,7 @@ class TestWtOHumanTemplateSelectView(TestCase):
 
     def test_template_select_view_returns_404_for_other_user(self):
         """Test that template select returns 404 for non-owners."""
-        other_user = User.objects.create_user(
-            username="other", email="other@test.com", password="password"
-        )
+        User.objects.create_user(username="other", email="other@test.com", password="password")
         self.client.login(username="other", password="password")
         url = reverse("characters:wraith:wtohuman_template", kwargs={"pk": self.wtohuman.pk})
         response = self.client.get(url)

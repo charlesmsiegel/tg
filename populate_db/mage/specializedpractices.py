@@ -128,7 +128,7 @@ wheeltending = SpecializedPractice.objects.get_or_create(
 )[0].add_source("Prism of Focus", 124)
 
 for sp in SpecializedPractice.objects.all():
-    sp.add_abilities([x for x in sp.parent_practice.abilities.all()])
+    sp.add_abilities(list(sp.parent_practice.abilities.all()))
     sp.instruments.add(*sp.parent_practice.instruments.all())
     sp.common_resonance_traits.add(*sp.parent_practice.common_resonance_traits.all())
     sp.benefit = sp.parent_practice.benefit

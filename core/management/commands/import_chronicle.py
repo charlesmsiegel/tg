@@ -47,9 +47,9 @@ class Command(BaseCommand):
             with open(filename) as f:
                 import_data = json.load(f)
         except FileNotFoundError:
-            raise CommandError(f"File not found: {filename}")
+            raise CommandError(f"File not found: {filename}") from None
         except json.JSONDecodeError as e:
-            raise CommandError(f"Invalid JSON file: {e}")
+            raise CommandError(f"Invalid JSON file: {e}") from e
 
         # Validate import data
         if "chronicle" not in import_data:
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 self.import_data(import_data, options, user_map)
         except Exception as e:
             logger.error(f"Chronicle import failed: {e}", exc_info=True)
-            raise CommandError(f"Import failed: {e}")
+            raise CommandError(f"Import failed: {e}") from e
 
         self.stdout.write(self.style.SUCCESS("\n✓ Import complete!\n"))
 

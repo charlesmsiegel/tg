@@ -99,17 +99,17 @@ class TestFetterRelationship(FetterTestCase):
 
     def test_multiple_fetters_per_wraith(self):
         """A wraith can have multiple fetters."""
-        fetter1 = Fetter.objects.create(
+        Fetter.objects.create(
             wraith=self.wraith,
             fetter_type="object",
             description="Ring",
         )
-        fetter2 = Fetter.objects.create(
+        Fetter.objects.create(
             wraith=self.wraith,
             fetter_type="location",
             description="House",
         )
-        fetter3 = Fetter.objects.create(
+        Fetter.objects.create(
             wraith=self.wraith,
             fetter_type="person",
             description="Child",

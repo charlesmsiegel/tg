@@ -42,13 +42,13 @@ class Command(BaseCommand):
                 chronicles = Chronicle.objects.filter(storytellers=st_user)
                 report_title = f"ST Report for {st_user.username}"
             except User.DoesNotExist:
-                raise CommandError(f"User {options['st_username']} not found")
+                raise CommandError(f"User {options['st_username']} not found") from None
         elif options["chronicle"]:
             try:
                 chronicles = [Chronicle.objects.get(pk=options["chronicle"])]
                 report_title = f"ST Report for Chronicle: {chronicles[0].name}"
             except Chronicle.DoesNotExist:
-                raise CommandError(f"Chronicle {options['chronicle']} not found")
+                raise CommandError(f"Chronicle {options['chronicle']} not found") from None
         else:
             chronicles = Chronicle.objects.all()
             report_title = "ST Report - All Chronicles"

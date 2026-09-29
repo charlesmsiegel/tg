@@ -35,7 +35,7 @@ def _button_dispatch(tree):
     """
     for node in ast.walk(tree):
         if isinstance(node, ast.Compare) and any(
-            isinstance(op, (ast.In, ast.NotIn)) for op in node.ops
+            isinstance(op, ast.In | ast.NotIn) for op in node.ops
         ):
             literal = isinstance(node.left, ast.Constant) and isinstance(node.left.value, str)
             for target in node.comparators:

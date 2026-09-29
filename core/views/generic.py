@@ -224,7 +224,7 @@ class MultipleFormsetsMixin:
         # Get bound formsets from POST data
         bound_formsets = self.get_bound_formsets()
 
-        for prefix, formset in bound_formsets.items():
+        for _prefix, formset in bound_formsets.items():
             if not formset.is_valid():
                 return self.form_invalid(form)  # Handle invalid formsets
             formset.save()  # Save valid formsets
@@ -263,6 +263,6 @@ class MultipleFormsetsMixin:
             if sample:
                 forms_data.append(sample)
         forms_data = [
-            x for x in forms_data if "" not in set([v for k, v in x.items() if k not in blankable])
+            x for x in forms_data if "" not in {v for k, v in x.items() if k not in blankable}
         ]
         return forms_data

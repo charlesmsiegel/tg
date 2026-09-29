@@ -36,3 +36,8 @@ ignore = [
     "E501",  # line too long (handled by black)
     "B008",  # do not perform function calls in argument defaults
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# Data scripts import other data scripts mid-file on purpose: each import runs that
+# script, so the order is the load order.
+"populate_db/**" = ["E402"]

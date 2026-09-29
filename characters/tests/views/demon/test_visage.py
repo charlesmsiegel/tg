@@ -51,7 +51,7 @@ class TestVisageListView(TestCase):
 
     def test_list_view_shows_visages(self):
         """Test that list view shows visages."""
-        visage = Visage.objects.create(name="Bel", owner=self.user)
+        Visage.objects.create(name="Bel", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:visage")
         response = self.client.get(url)

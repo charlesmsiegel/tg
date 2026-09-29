@@ -60,8 +60,6 @@ class Command(BaseCommand):
             for xp_record in character.spent_xp:
                 total_records += 1
 
-                # Skip if already migrated (check by index or unique criteria)
-                index = xp_record.get("index", "")
                 trait_name = xp_record.get("trait", "")
                 cost = xp_record.get("cost", 0)
                 approved = xp_record.get("approved", "Pending")

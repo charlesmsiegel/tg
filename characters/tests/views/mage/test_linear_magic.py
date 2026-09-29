@@ -98,7 +98,7 @@ class TestPathCreateView(TestCase):
     def test_create_view_can_create_path(self):
         """Test that path can be created through the view."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:mage:create:path"),
             {
                 "name": "Test Path",
@@ -143,7 +143,7 @@ class TestPathUpdateView(TestCase):
     def test_update_view_can_update_path(self):
         """Test that path can be updated through the view."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:mage:update:path", kwargs={"pk": self.path.pk}),
             {
                 "name": "Updated Alchemy",
@@ -267,7 +267,7 @@ class TestRitualCreateView(TestCase):
     def test_create_view_can_create_ritual(self):
         """Test that ritual can be created through the view."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:mage:create:ritual"),
             {
                 "name": "Test Ritual",
@@ -318,7 +318,7 @@ class TestRitualUpdateView(TestCase):
     def test_update_view_can_update_ritual(self):
         """Test that ritual can be updated through the view."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
+        self.client.post(
             reverse("characters:mage:update:ritual", kwargs={"pk": self.ritual.pk}),
             {
                 "name": "Updated Purify Water",

@@ -256,7 +256,7 @@ class TestWraithArcanoi(WraithTestCase):
 
     def test_add_arcanos_up_to_max(self):
         """add_arcanos works up to maximum of 5."""
-        for i in range(5):
+        for _i in range(5):
             result = self.wraith.add_arcanos("argos")
             self.assertTrue(result)
         self.assertEqual(self.wraith.argos, 5)

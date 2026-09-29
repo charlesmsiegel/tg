@@ -1,3 +1,5 @@
+import unittest
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -1262,9 +1264,6 @@ class TestChangelingBasicsView(TestCase):
         # Post with empty name (invalid)
         response = self.client.post(Changeling.get_creation_url(), data={"name": ""})
         self.assertEqual(response.status_code, 200)  # Form error, stay on page
-
-
-import unittest
 
 
 @unittest.skip("URL 'changeling_arts_realms' not implemented yet")

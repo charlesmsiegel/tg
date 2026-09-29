@@ -122,7 +122,7 @@ class TestPermissionDenied(TestCase):
 
     def test_permission_denied_in_view(self):
         """Test that views raising PermissionDenied return 403."""
-        user = User.objects.create_user(username="testuser2", password="testpass123")
+        User.objects.create_user(username="testuser2", password="testpass123")
         # Profile is auto-created by signal
         client = Client()
         client.login(username="testuser2", password="testpass123")

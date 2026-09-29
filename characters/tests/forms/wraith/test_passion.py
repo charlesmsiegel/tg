@@ -92,17 +92,17 @@ class TestPassionRelationship(PassionTestCase):
 
     def test_multiple_passions_per_wraith(self):
         """A wraith can have multiple passions."""
-        passion1 = Passion.objects.create(
+        Passion.objects.create(
             wraith=self.wraith,
             emotion="Love",
             description="Family",
         )
-        passion2 = Passion.objects.create(
+        Passion.objects.create(
             wraith=self.wraith,
             emotion="Rage",
             description="Murder",
         )
-        passion3 = Passion.objects.create(
+        Passion.objects.create(
             wraith=self.wraith,
             emotion="Fear",
             description="Being forgotten",
@@ -129,13 +129,13 @@ class TestPassionDarkConversion(PassionTestCase):
 
     def test_mix_of_regular_and_dark_passions(self):
         """Wraith can have both regular and dark passions."""
-        regular = Passion.objects.create(
+        Passion.objects.create(
             wraith=self.wraith,
             emotion="Love",
             description="Family",
             is_dark_passion=False,
         )
-        dark = Passion.objects.create(
+        Passion.objects.create(
             wraith=self.wraith,
             emotion="Hatred",
             description="Enemies",

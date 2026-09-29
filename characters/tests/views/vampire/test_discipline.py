@@ -120,7 +120,7 @@ class TestDisciplineCreateView(TestCase):
         self.client.force_login(
             get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
         )
-        response = self.client.post(self.url, self.valid_data)
+        self.client.post(self.url, self.valid_data)
         self.assertEqual(Discipline.objects.filter(name="Test Discipline").count(), 1)
 
 

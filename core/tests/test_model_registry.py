@@ -362,7 +362,7 @@ def smoke_case(app, label):
         registry = get_registry(app)
         entry = registry.entry(label)
         values = {"name": f"Smoke {label}"}
-        if issubclass(entry.model, (ItemModel, LocationModel)):
+        if issubclass(entry.model, ItemModel | LocationModel):
             values.update(owner=self.staff, description="PRIVATE SMOKE DESCRIPTION")
         obj = entry.model.objects.create(**values)
         self.client.force_login(self.staff)

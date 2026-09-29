@@ -292,7 +292,7 @@ class NPCProfileFormSaveTestCase(TestCase):
         guild = Guild.objects.create(name="Haunters")
         legion = WraithFaction.objects.create(name="Iron Legion", faction_type="legion")
         # Use "heretic" as it's a valid choice, "faction" is not in FACTION_TYPE_CHOICES
-        heretic_faction = WraithFaction.objects.create(name="Renegades", faction_type="heretic")
+        WraithFaction.objects.create(name="Renegades", faction_type="heretic")
 
         data = {
             "npc_type": "wraith",

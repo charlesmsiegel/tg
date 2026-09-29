@@ -105,7 +105,7 @@ class TestNunnehiCreateView(TestCase):
             "path": "healer",
             "npc": False,
         }
-        response = self.client.post(reverse("characters:changeling:create:nunnehi"), data=data)
+        self.client.post(reverse("characters:changeling:create:nunnehi"), data=data)
         self.assertTrue(Nunnehi.objects.filter(name="New Nunnehi").exists())
 
 

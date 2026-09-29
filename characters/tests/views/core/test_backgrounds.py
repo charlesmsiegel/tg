@@ -322,7 +322,7 @@ class TestHumanBackgroundsViewIntegration(TestCase):
             "backgrounds-0-pooled": "",
         }
 
-        response = self.client.post(self.human.get_absolute_url(), data=data)
+        self.client.post(self.human.get_absolute_url(), data=data)
         self.human.refresh_from_db()
 
         # Should stay on the same page (not redirect)

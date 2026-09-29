@@ -52,7 +52,7 @@ class TestFactionListView(TestCase):
 
     def test_list_view_shows_factions(self):
         """Test that list view shows factions."""
-        faction = DemonFaction.objects.create(name="Cryptics", owner=self.user)
+        DemonFaction.objects.create(name="Cryptics", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:faction")
         response = self.client.get(url)
