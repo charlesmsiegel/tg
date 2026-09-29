@@ -1,104 +1,90 @@
-# Character Template System
+# Character templates
 
-Pre-configured character concepts from sourcebooks that speed up character creation.
+Rules for working on `core.models.CharacterTemplate`: pre-built character concepts that
+can be applied to a new character or turned into an NPC. The model is documented in
+[core/docs/models.md](../../../../core/docs/models.md); chargen in
+[docs/architecture/character-creation.md](../../../../docs/architecture/character-creation.md).
 
-## Template Data Structure
+## The model
 
-```python
-CharacterTemplate(
-    name="Template Name",
-    gameline="mta",  # vtm, wta, mta, wto, ctd, dtf
-    character_type="mage",
-    concept="Concept Name",
-    
-    # Character Data (JSONFields)
-    basic_info={"nature": "FK:Archetype:Name", "demeanor": "FK:Archetype:Name"},
-    attributes={"strength": 2, "perception": 4, ...},
-    abilities={"alertness": 2, "investigation": 3, ...},
-    backgrounds=[{"name": "Contacts", "rating": 3}],
-    powers={"auspex": 2, "celerity": 1},
-    merits_flaws=[{"name": "Merit Name", "rating": 2}],
-    specialties=["Ability (Specialty)"],
-    languages=["English", "Latin"],
-    
-    is_official=True,
-    is_public=True,
-    times_used=0,
-)
-```
+`CharacterTemplate(Model)` ([`core/models.py`](../../../../core/models.py)) is a player
+object: it has `owner`, `chronicle`, `status`, `visibility` and the approval workflow.
+Unlike other `Model` subclasses it stores `gameline` as a **column**
+(`choices=GameLine.CHOICES`, default `"wod"`) next to `character_type` (the character
+`type`, such as `"vampire"`).
 
-Use `"FK:Model:Name"` format for foreign key references (resolved during apply).
+| Field | Content |
+|-------|---------|
+| `basic_info` | `{field: value}` set on the character; `"FK:Archetype:<name>"` resolves an archetype |
+| `attributes`, `abilities`, `powers` | `{property_name: rating}` set with `setattr` when the character has the attribute |
+| `backgrounds`, `merits_flaws` | `[{"name": ..., "rating": ...}]`, matched by `name` |
+| `specialties` | `["Ability (Specialty)", ...]` |
+| `languages` | Language names |
+| `equipment`, `suggested_freebie_spending` | Guidance text and data; not applied |
+| `is_official`, `is_public`, `times_used` | Metadata |
 
-## Adding Template Selection
+`Meta.unique_together = [["gameline", "character_type", "name"]]`.
 
-### 1. Form and View
+`apply_to_character(character)` sets the fields, creates `BackgroundRating`,
+`MeritFlawRating` and `Specialty` rows with `get_or_create`, adds languages, saves the
+character, records a `TemplateApplication` and increments `times_used`. Names that match
+no row are skipped silently.
 
-```python
-from core.models import CharacterTemplate
+## Rules
 
-class CharacterTemplateSelectionForm(forms.Form):
-    template = forms.ModelChoiceField(
-        queryset=CharacterTemplate.objects.none(),
-        required=False,
-        empty_label="No template - build from scratch",
-        widget=forms.RadioSelect,
-    )
+- **Keys are property names.** `attributes`, `abilities` and `powers` keys must be field
+  names on the target character class (`"alertness"`, `"potence"`); unknown keys are
+  ignored, so a typo loses data without an error. Test a new template against its
+  character type.
+- **Only `Archetype` is supported in `"FK:Model:Name"`.** Add a resolver in
+  `apply_to_character` (with a test) before using another model name.
+- **Call it inside a transaction.** `CharacterTemplateSelectView.form_valid` is
+  `@transaction.atomic`; `CharacterTemplateQuickNPCView` wraps creation and application in
+  `transaction.atomic()`.
+- **Access follows the player-object policies**: list `OBJECT_LIST`, detail and export
+  `OBJECT_DETAIL`, create `OBJECT_CREATE`, update and delete `OBJECT_WRITE`, import and
+  quick NPC `LOGIN` (the quick NPC view requires `can_manage_scope` for the template's
+  chronicle and gameline). An **official** template (`is_official=True`) needs a scoped
+  editor for every `OBJECT_*` write (`core/access_policy.py`).
+- **Selection offers approved public templates only.**
+  `characters.forms.core.template_selection.CharacterTemplateSelectionForm` filters
+  `gameline`, `character_type`, `is_public=True`, `status="App"`; subclasses set the
+  `gameline` and `character_type` class attributes.
+- **The selection step is position 0**, outside the numbered chargen workflow:
+  `characters.views.core.template_selection.CharacterTemplateSelectView` serves only the
+  owner's `Un`/`Rev` character with `creation_status == 0`, applies the template, sets
+  `creation_status = 1` and redirects to `creation_route`. Gameline subclasses set
+  `model`, `form_class`, `template_name` and `creation_route`, and are routed in the
+  gameline's `detail.py` (`characters:vampire:vtmhuman_template`).
+- **Seed data** lives in `populate_db/character_templates/<gameline>_templates.py` and uses
+  `CharacterTemplate.objects.get_or_create(name=..., gameline=..., defaults={...})`;
+  `populate_gamedata` loads it.
+- `CharacterTemplate.clean()` lists valid gamelines in code (`wod`, `vtm`, `wta`, `mta`,
+  `wto`, `ctd`, `dtf`); a template for `htr` or `mtr` fails validation until that list
+  follows `settings.GAMELINES`.
 
-    def __init__(self, *args, gameline="vtm", character_type="vampire", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["template"].queryset = CharacterTemplate.objects.filter(
-            gameline=gameline, character_type=character_type, is_public=True
-        )
+## Views and URLs
 
-class VampireTemplateSelectView(LoginRequiredMixin, FormView):
-    form_class = CharacterTemplateSelectionForm
-    template_name = "characters/vampire/vampire/template_select.html"
+[`core/views/character_template.py`](../../../../core/views/character_template.py), routed
+in `core/urls.py` as `core:character_template_list`, `_create`, `_detail`, `_update`,
+`_delete`, `_export` (JSON download), `_import` (JSON upload through
+`core.forms.character_template.CharacterTemplateImportForm`, always `is_official=False`)
+and `_create_npc` (POST; creates an approved NPC of the mapped model and applies the
+template).
 
-    def form_valid(self, form):
-        template = form.cleaned_data.get("template")
-        if template:
-            template.apply_to_character(self.object)
-        self.object.creation_status = 1
-        self.object.save()
-        return redirect("characters:vampire:vampire_creation", pk=self.object.pk)
-```
+## Checklist
 
-### 2. URL
+- [ ] Keys match the target class's field names; `FK:` only for `Archetype`.
+- [ ] Application runs in a transaction; tests assert the character's values and the
+  `TemplateApplication` row.
+- [ ] Official templates still require a scoped editor to change.
+- [ ] Selection shows only approved, public templates of the right gameline and type.
+- [ ] Seed scripts use `get_or_create` and a valid gameline.
 
-```python
-path("vampire/<int:pk>/template/", VampireTemplateSelectView.as_view(), name="vampire_template"),
-```
+## See also
 
-### 3. Update Basics View success_url
-
-```python
-def get_success_url(self):
-    return reverse("characters:vampire:vampire_template", kwargs={"pk": self.object.pk})
-```
-
-## Template Application Logic
-
-`CharacterTemplate.apply_to_character(character)`:
-1. Resolves `"FK:Model:Name"` → actual objects
-2. Sets attributes and abilities directly
-3. Creates BackgroundRating entries
-4. Sets power ratings (disciplines/spheres/gifts)
-5. Creates MeritFlawRating entries
-6. Links Language objects
-7. Creates Specialty entries
-8. Creates TemplateApplication record
-9. Increments times_used counter
-
-## Loading Templates
-
-```bash
-python populate_db/character_templates/__init__.py      # All
-python populate_db/character_templates/vampire_templates.py  # Specific gameline
-```
-
-## Reference Implementation
-
-Mage (MtAHuman) is fully integrated:
-- `characters/views/mage/mtahuman.py`
-- `characters/urls/mage/detail.py`
-- `characters/templates/characters/mage/mtahuman/template_select.html`
+- [core/docs/models.md](../../../../core/docs/models.md)
+- [docs/architecture/character-creation.md](../../../../docs/architecture/character-creation.md)
+- [`characters/views/core/template_selection.py`](../../../../characters/views/core/template_selection.py)
+- [`core/tests/views/test_character_template.py`](../../../../core/tests/views/test_character_template.py)
+- [permissions.md](permissions.md), [commands.md](commands.md)

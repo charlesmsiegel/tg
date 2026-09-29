@@ -1,161 +1,109 @@
-# Template Patterns
+# Templates
 
-## Template Tags
+Rules for writing a template, a partial or htmx markup. The visual system (shells, blocks,
+tokens, components) is in [spread.md](spread.md); tags and filters are listed in
+[docs/reference/template-tags.md](../../../../docs/reference/template-tags.md).
 
-```html
-{% load sanitize_text dots %}
-{{ rating|dots }}       {# ●●●○○ (auto 5 or 10 max) #}
-{{ rating|dots:10 }}    {# explicit max 10 #}
-{{ value|boxes }}       {# ■■■□□ for temp values #}
-{{ content|sanitize_html|linebreaks }}
-```
+## Where templates live
 
-## Always Use TG Components
+- `<app>/templates/<app>/<gameline>/<model>/<page>.html`: `detail.html`, `form.html`,
+  `list.html`, `chargen.html`, `template_select.html`
+  (`characters/vampire/clan/detail.html`).
+- Partials start with `_` when they are htmx fragments (`game/scene/_post.html`,
+  `_post_window.html`) and otherwise live in a `tl/` folder of their area
+  (`characters/tl/`, `game/tl/`, `core/tl/`).
+- Shared fallbacks: `characters/shared/<kind>/...` and `core/registry/<action>.html`.
+  A view declares its specific `template_name` and a `shared_template_name`
+  (`core.mixins.SharedTemplateMixin`, `core.template_resolution.shared_template_names`);
+  the specific file is an optional override. Do not copy a shared template to make a
+  per-type one that says the same thing.
 
-| Use | NOT |
-|-----|-----|
-| `tg-card` | `card` |
-| `tg-card-header` | `card-header` |
-| `tg-card-body` | `card-body` |
-| `tg-btn` | `btn` |
-| `tg-badge` | `badge` |
-| `tg-table` | `table` |
+## Structure
 
-## Page Header Card
+- Extend a Spread shell (`core/tl_base.html`, `core/form.html`, `core/object.html`, an
+  area shell). Set `{% block gameline %}{{ object|gameline_code }}{% endblock %}` on any
+  page about a gameline object.
+- Load what you use: `{% load tl sanitize_text %}`, plus `static`, `tl_forms`
+  (`fields_only`, `fields_except`) as needed. The old `dots` library is unused; use the
+  `tl` tags: `{% dots rating %}`, `{% boxes n %}`, `{% trait label value %}`,
+  `{% track "Willpower" perm temp %}`, `{% fact "Owner" name url %}`.
+- Fields: `{% include "core/tl/field.html" with field=form.x %}`. A template shared by
+  several forms selects fields with `form|fields_only:"name concept"` so it never renders
+  a field the form lacks.
+- No Bootstrap grid or component classes, no jQuery, no `tg-card` markup, no Font
+  Awesome.
+- No inline `style="..."` and no `<style>` blocks
+  (`core/tests/test_template_policy.py`: a budget of 3 inline styles, all in the password
+  reset e-mail, and an allowlist of one `<style>` template). Add a class to
+  `core/static/core/tl/tl.css`.
+- No inline `<script>` code. Load `{% static %}` files through `extrascripts` or
+  `form_scripts`; pass data with `{{ value|json_script:"id" }}` or `data-*` attributes
+  (`characters/tests/test_static_page_assets.py`).
+- `{# ... #}` only on a single line: Django prints a multi-line `{# #}` as page text.
+  Longer notes use `{% comment %}`, which also documents a partial's parameters at its
+  top.
 
-```html
-<div class="tg-card header-card mb-4" data-gameline="{{ object.gameline|lower }}">
-    <div class="tg-card-header">
-        <h1 class="tg-card-title {{ object.get_heading }}">{{ object.name }}</h1>
-        <p class="tg-card-subtitle mb-0">{{ object.concept }}</p>
-    </div>
-</div>
-```
+## Data and escaping
 
-## Section Card
+- Autoescape stays on. User-entered rich text goes through `|sanitize_html` (bleach
+  allowlist); scene posts through `|safe_post`; plain markdown-ish text through
+  `|simple_markdown`. Never `|safe` or `{% autoescape off %}` on user data.
+- Titles and names in `<title>` and headings: `{{ object.name|sanitize_html }}` as the
+  shells do.
+- Images: show `object.image` only when `object.image_status == "app"`; otherwise say it
+  is pending.
 
-```html
-<div class="tg-card">
-    <div class="tg-card-header text-center">
-        <h5 class="tg-card-title {{ object.get_heading }}">Section Title</h5>
-    </div>
-    <div class="tg-card-body text-center" style="padding: 20px;">
-        <!-- Content -->
-    </div>
-</div>
-```
+## Permissions in templates
 
-## Stat Displays
+- Show or hide controls from `object_perms` (`object_perms.can_edit`,
+  `.can_spend_xp`, `.can_approve`, `.is_owner`, `.can_chargen`, ...). It is a snapshot of
+  `PermissionManager`, added by `PermissionContextMixin` and the middleware.
+- Do not compute access from `user.is_staff`, `user.profile.is_st` or ownership
+  comparisons; the view or `PermissionManager` decides, the template renders.
+- Hiding a control is not authorization: the endpoint checks again.
 
-### Inline Stat Box (Label Beside Value)
-```html
-<div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
-    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Label:</span>
-    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ value }}</span>
-</div>
-```
+## Queries
 
-### Large Stat Display (Label Below Value)
-```html
-<div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ value }}</div>
-    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Label</div>
-</div>
-```
+- Templates do not trigger queries per row: no related-manager `.all` inside loops over
+  unprefetched data, no model methods that query. Prefetch in the view.
+- `object.sources.all` on a cover is one query; loops over prefetched relations are free.
+- Query ceilings in `core/tests/test_query_budgets.py` catch regressions on sheets, the
+  scene page and the index.
 
-### Dots Row (Advantages)
-```html
-<div class="row mb-2 text-center">
-    <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
-    <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
-    <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temp:</div>
-    <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-</div>
-```
+## htmx markup
 
-## Boolean Features Grid
+- Include `core/includes/interactive_scripts.html` on pages that use htmx or Alpine
+  (`ws=True` adds the WebSocket extension, `alpine=False` leaves Alpine out). The meta
+  config disables `eval` and restricts requests to the same origin.
+- Alpine is the CSP build: no inline expressions that need `eval`; register components in
+  a static script loaded before Alpine.
+- Target stable ids; replace `#tg-messages` out of band (`core/tl/messages.html` with
+  `oob=True`) to show messages after a swap.
+- Every htmx interaction has a no-JavaScript path through the same URL (links and plain
+  form posts).
 
-```html
-<div class="col-6 mb-2">
-    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.feature|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
-        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Feature</div>
-        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.feature|yesno:"Yes,No" }}</div>
-    </div>
-</div>
-```
+## Tests that cover templates
 
-## Card Grid for Related Items
+| Test | Catches |
+|------|---------|
+| `core/tests/test_routed_templates.py` | A routed view whose template, parent or constant include is missing |
+| `core/tests/test_template_render_smoke.py` | A fixture page that fails at render time |
+| `core/tests/test_template_policy.py` | Inline styles, `<style>` blocks, extends depth |
+| `core/tests/test_query_budgets.py` | Per-row queries on hot pages |
+| `characters/tests/test_static_page_assets.py` | Inline scripts and leaked comments on chargen pages |
 
-```html
-<div class="row">
-    {% for item in items %}
-        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
-            <div class="tg-card h-100">
-                <div class="tg-card-body text-center" style="padding: 16px;">
-                    <div class="mb-2">
-                        <a href="{{ item.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ item.name }}</a>
-                    </div>
-                    <div class="dots" style="font-size: 0.875rem;">{{ item.rating|dots }}</div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-</div>
-```
+## Checklist
 
-## Status Badge
+- [ ] Right location and name; shared template reused where one exists.
+- [ ] Extends a Spread shell; `gameline` block set; `tl` tags and partials used.
+- [ ] No inline styles, `<style>`, inline scripts, Bootstrap, jQuery, `tg-card`.
+- [ ] User text sanitized; no `|safe` on user data.
+- [ ] Controls gated on `object_perms`.
+- [ ] No per-row queries; fragments have a no-JS path.
 
-```html
-<span class="tg-badge badge-{{ object.status|lower }}">{{ object.get_status_display }}</span>
-```
+## See also
 
-## List Template
-
-```html
-{% extends "core/base.html" %}
-{% block content %}
-<div class="container mt-4">
-    <div class="tg-card">
-        <div class="tg-card-header d-flex justify-content-between align-items-center">
-            <h4 class="tg-card-title mb-0">{{ model_name_plural }}</h4>
-            {% if user.profile.is_st %}
-            <a href="{% url 'app:gameline:create:model_name' %}" class="btn btn-primary btn-sm">Create New</a>
-            {% endif %}
-        </div>
-        <div class="tg-card-body">
-            <table class="tg-table">
-                <thead><tr><th>Name</th><th>Owner</th><th>Status</th></tr></thead>
-                <tbody>
-                    {% for obj in objects %}
-                    <tr>
-                        <td><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
-                        <td>{{ obj.owner.username }}</td>
-                        <td><span class="tg-badge badge-{{ obj.status|lower }}">{{ obj.get_status_display }}</span></td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="3" class="text-center">No items found.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
-```
-
-## Style Rules
-
-### Typography
-- Labels: `font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);`
-- Values: `font-weight: 700; color: var(--theme-text-primary);`
-
-### Spacing
-- Card body: `padding: 20px;` (standard) or `padding: 24px;` (spacious)
-- Section gaps: `mb-4` or `mb-5`
-- Related items: `mb-3`
-
-### Responsive Columns
-- Two-column: `col-md-6`
-- Three-column: `col-md-4`
-- Card grid: `col-sm-6 col-md-4 col-lg-3`
-- Equal height: add `h-100` to cards
+- [spread.md](spread.md), [views.md](views.md)
+- [docs/architecture/frontend.md](../../../../docs/architecture/frontend.md)
+- [docs/reference/template-tags.md](../../../../docs/reference/template-tags.md)
+- [`core/templatetags/tl.py`](../../../../core/templatetags/tl.py), [`core/templatetags/sanitize_text.py`](../../../../core/templatetags/sanitize_text.py)

@@ -1,110 +1,100 @@
-# Management Command Patterns
+# Management commands
 
-## File Location
+Rules for writing or changing a management command. The existing commands are listed with
+their options in [docs/reference/management-commands.md](../../../../docs/reference/management-commands.md).
 
-```
-app_name/
-└── management/
-    ├── __init__.py
-    └── commands/
-        ├── __init__.py
-        └── command_name.py
-```
+## Where they live
 
-## Basic Command Template
+- `<app>/management/commands/<command_name>.py`, one `Command(BaseCommand)` per file,
+  with `__init__.py` in `management/` and `commands/`. Project-wide maintenance commands
+  live in `core/management/commands/` (for example `populate_gamedata`,
+  `validate_data_integrity`, `cleanup_orphaned_data`, `export_chronicle`,
+  `reset_db`); `game/management/commands/` holds game-specific ones.
+- Name it `verb_object` in snake_case (`cleanup_old_weeks`, `audit_xp_spending`).
+
+## Shape
 
 ```python
+"""Delete Week objects older than a threshold."""
+
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
+
+from game.models import Week
+
 
 class Command(BaseCommand):
-    help = "Description of what this command does"
+    help = "Clean up old Week objects to prevent unbounded growth"
 
     def add_arguments(self, parser):
-        parser.add_argument('chronicle_id', type=int)
-        parser.add_argument('--verbose', action='store_true')
-        parser.add_argument('--limit', type=int, default=100)
+        parser.add_argument("--months", type=int, default=6, help="Age threshold in months")
+        parser.add_argument("--dry-run", action="store_true", help="Report without writing")
 
     def handle(self, *args, **options):
-        verbose = options['verbose']
-        try:
-            # Command logic
-            self.stdout.write(self.style.SUCCESS('Command completed'))
-        except Exception as e:
-            raise CommandError(f'Command failed: {e}')
-```
-
-## Output Styling
-
-```python
-self.stdout.write(self.style.SUCCESS('Operation successful'))  # Green
-self.stdout.write(self.style.ERROR('Something failed'))        # Red
-self.stdout.write(self.style.WARNING('Potential issue'))       # Yellow
-self.stdout.write(self.style.NOTICE('Information'))            # Cyan
-```
-
-## Data Validation Command
-
-```python
-class Command(BaseCommand):
-    help = "Validate data integrity across models"
-
-    def add_arguments(self, parser):
-        parser.add_argument('--fix', action='store_true')
-
-    def handle(self, *args, **options):
-        issues = []
-        issues.extend(self.validate_characters(options['fix']))
-        
-        if issues:
-            self.stdout.write(self.style.WARNING(f'Found {len(issues)} issues'))
-            for issue in issues:
-                self.stdout.write(f"  - {issue}")
-        else:
-            self.stdout.write(self.style.SUCCESS('No issues found'))
-
-    def validate_characters(self, fix_mode):
-        issues = []
-        orphans = Character.objects.filter(owner__isnull=True)
-        for char in orphans:
-            issues.append(f"Character {char.id} has no owner")
-            if fix_mode:
-                char.delete()
-        return issues
-```
-
-## Batch Processing
-
-```python
-def handle(self, *args, **options):
-    batch_size = options['batch_size']
-    dry_run = options['dry_run']
-    
-    queryset = Character.objects.filter(needs_processing=True)
-    
-    for batch in self.batch_iterator(queryset, batch_size):
+        if options["months"] < 1:
+            raise CommandError("--months must be at least 1")
+        weeks = Week.objects.filter(...)
+        self.stdout.write(f"Found {weeks.count()} week(s)")
+        if options["dry_run"]:
+            self.stdout.write(self.style.WARNING("[DRY RUN] Nothing deleted"))
+            return
         with transaction.atomic():
-            for obj in batch:
-                self.process_record(obj)
-
-def batch_iterator(self, queryset, batch_size):
-    start = 0
-    while True:
-        batch = list(queryset[start:start + batch_size])
-        if not batch:
-            break
-        yield batch
-        start += batch_size
+            weeks.delete()
+        self.stdout.write(self.style.SUCCESS("Done"))
 ```
 
-## Testing Commands
+## Rules
+
+- **`help` and a module docstring** that say what the command changes.
+- **Every command that writes has `--dry-run`** (`store_true`, dest `dry_run`) that
+  reports what it would do and writes nothing.
+- **Wrap writes in `transaction.atomic()`.** Commands are not requests, so
+  `ATOMIC_REQUESTS` does not apply. Lock rows with `select_for_update()` when the command
+  changes points (XP, freebies).
+- **Go through services and model methods** (`ApprovalService`,
+  `Character.add_xp`, `change_character_status`) rather than setting `status`, `xp` or
+  approval fields directly. Save with validation; use `skip_validation=True` or
+  `update()` only for documented bulk repairs.
+- **Report with `self.stdout.write` and `self.style.SUCCESS` / `WARNING` / `ERROR`**,
+  never `print()`. Fail with `CommandError` (non-zero exit), not `sys.exit` or a bare
+  exception.
+- **Bound the work**: iterate large querysets with `.iterator()` or in batches, and join
+  what the loop reads (`select_related`, `prefetch_related`).
+- **Destructive commands** refuse in production: `reset_db` raises `CommandError` unless
+  `settings.DEBUG` and asks for confirmation unless `--yes`.
+- **Never change the schema in a command.** Columns, tables, constraints and backfills that
+  existing databases need are `tg_schema` migrations ([schema-changes.md](schema-changes.md)).
+- **Game data** loads through `populate_gamedata`, which runs every script under
+  `populate_db/` (recursively, top-level files first, `chronicles/` last). Add data as a
+  `populate_db` script that uses `get_or_create` so a rerun changes nothing; see
+  [docs/guides/adding-reference-data.md](../../../../docs/guides/adding-reference-data.md).
+
+## Tests
+
+Put them in `<app>/tests/` (the core commands are tested in
+`core/tests/test_management_commands.py`):
 
 ```python
-from io import StringIO
-from django.core.management import call_command
-
-class CommandTestCase(TestCase):
-    def test_validate_command(self):
-        out = StringIO()
-        call_command('validate_data_integrity', stdout=out)
-        self.assertIn('No issues found', out.getvalue())
+out = StringIO()
+call_command("cleanup_old_weeks", "--dry-run", stdout=out)
+self.assertIn("[DRY RUN]", out.getvalue())
+self.assertTrue(Week.objects.filter(pk=old.pk).exists())
 ```
+
+Cover: the normal run changes what it should, `--dry-run` changes nothing, bad input
+raises `CommandError`, and output names what was changed.
+
+## Checklist
+
+- [ ] Correct location and name; `help` and docstring.
+- [ ] `--dry-run` for any write; writes in `transaction.atomic()`.
+- [ ] Uses services for status, XP and approvals; no schema changes.
+- [ ] Output through `self.stdout` and `self.style`; errors as `CommandError`.
+- [ ] Tests for run, dry run and errors.
+
+## See also
+
+- [docs/reference/management-commands.md](../../../../docs/reference/management-commands.md)
+- [docs/getting-started/seed-data.md](../../../../docs/getting-started/seed-data.md)
+- [`core/management/commands/`](../../../../core/management/commands/)
+- [validation.md](validation.md), [schema-changes.md](schema-changes.md)
