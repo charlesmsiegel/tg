@@ -17,9 +17,10 @@ function page() {
     const vampire = group({ npcTypes: 'vampire' });
     const werewolf = group({ npcTypes: 'werewolf fera' });
     const groups = [archetypes, vampire, werewolf];
+    const details = { hidden: false };
     const section = {
         dataset: {},
-        querySelector: () => select,
+        querySelector: (selector) => selector === '[data-linked-npc-details]' ? details : select,
         querySelectorAll: () => groups,
     };
     vm.runInNewContext(script, {
@@ -29,15 +30,17 @@ function page() {
             querySelector: () => section,
         },
     });
-    return { select, archetypes, vampire, werewolf };
+    return { select, details, archetypes, vampire, werewolf };
 }
 
 test('Allies details follow the selected character type', () => {
-    const { select, archetypes, vampire, werewolf } = page();
+    const { select, details, archetypes, vampire, werewolf } = page();
+    assert.equal(details.hidden, true);
     assert.equal(vampire.hidden, true);
     assert.equal(archetypes.hidden, true);
     select.value = 'vampire';
     select.onChange();
+    assert.equal(details.hidden, false);
     assert.equal(vampire.hidden, false);
     assert.equal(archetypes.hidden, false);
     assert.equal(werewolf.hidden, true);

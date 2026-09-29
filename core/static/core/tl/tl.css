@@ -1282,6 +1282,15 @@ body.tl {
 .tl-chargen__form { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px 24px; align-items: end; }
 .tl-chargen__form > .tl-field:has(textarea, select[multiple]) { grid-column: 1 / -1; }
 .tl-chargen__form .tl-field textarea { height: 9em; resize: vertical; }
+.tl-linked-npc { display: flex; flex-direction: column; gap: 28px; }
+.tl-linked-npc__section { border-top: 2px solid var(--ink); padding-top: 14px; }
+.tl-linked-npc__heading {
+  margin: 0 0 18px; color: var(--ink2); font: 500 12px var(--mono);
+  letter-spacing: .13em; text-transform: uppercase;
+}
+.tl-linked-npc__identity > .tl-field:first-child { grid-column: 1 / -1; max-width: 420px; }
+.tl-linked-npc__section [data-npc-types]:not([hidden]) ~ [data-npc-types]:not([hidden]),
+.tl-linked-npc__section [data-npc-except]:not([hidden]) ~ [data-npc-types]:not([hidden]) { margin-top: 20px; }
 .tl-chargen__subform { border: 0; border-top: 1px solid var(--rule); margin: 0; padding: 14px 0 0; min-width: 0; }
 .tl-chargen__costs { max-width: 420px; }
 

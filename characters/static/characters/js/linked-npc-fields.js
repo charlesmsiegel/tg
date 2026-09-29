@@ -6,10 +6,12 @@
         if (!section || section.dataset.ready) return;
         section.dataset.ready = '1';
         var select = section.querySelector('[name="npc_type"]');
+        var details = section.querySelector('[data-linked-npc-details]');
         var groups = section.querySelectorAll('[data-npc-types], [data-npc-except]');
 
         function update() {
             var selected = select.value;
+            details.hidden = !selected;
             groups.forEach(function (group) {
                 var types = (group.dataset.npcTypes || '').split(' ');
                 var excluded = (group.dataset.npcExcept || '').split(' ');

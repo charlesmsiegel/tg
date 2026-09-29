@@ -7,15 +7,20 @@ from django import forms
 
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
+from characters.models.changeling.kith import Kith
 from characters.models.core.archetype import Archetype
 from characters.models.demon.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
+from characters.models.demon.house import DemonHouse
 from characters.models.demon.thrall import Thrall
 from characters.models.mage.companion import Companion
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
+from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.ghoul import Ghoul
+from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.fera import Fera
@@ -23,7 +28,9 @@ from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.spirit_character import SpiritCharacter
+from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
+from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
 
@@ -149,96 +156,70 @@ class LinkedNPCForm(forms.Form):
         queryset=Archetype.objects.all(),
         label="Nature",
         required=False,
-        help_text="Inner self (leave blank for Werewolf/Changeling)",
+        help_text="Inner self",
     )
     demeanor = forms.ModelChoiceField(
         queryset=Archetype.objects.all(),
         label="Demeanor",
         required=False,
-        help_text="Outer personality (leave blank for Werewolf/Changeling)",
+        help_text="Outer personality",
     )
 
-    # Gameline-specific basics - collected but only used if relevant
-    # Vampire
-    clan_name = forms.CharField(
-        max_length=100,
+    # The selected values belong on the new character's actual fields.
+    clan = forms.ModelChoiceField(
+        queryset=VampireClan.objects.all(),
         required=False,
         label="Clan",
-        widget=forms.TextInput(attrs={"placeholder": "Vampire clan (if Vampire)"}),
-        help_text="For Vampires only",
     )
-    sect_name = forms.CharField(
-        max_length=100,
+    sect = forms.ModelChoiceField(
+        queryset=VampireSect.objects.all(),
         required=False,
         label="Sect",
-        widget=forms.TextInput(attrs={"placeholder": "Vampire sect (if Vampire)"}),
-        help_text="For Vampires only",
     )
 
-    # Werewolf
+    werewolf_breed = forms.ChoiceField(
+        choices=[("", "Choose breed"), *Werewolf.BREEDS], required=False, label="Breed"
+    )
+    auspice = forms.ChoiceField(
+        choices=[("", "Choose auspice"), *Werewolf.AUSPICES], required=False, label="Auspice"
+    )
+    tribe = forms.ModelChoiceField(queryset=Tribe.objects.all(), required=False, label="Tribe")
+
+    # Fera breeds vary by species, so retain a free-text description here.
     breed_name = forms.CharField(
         max_length=100,
         required=False,
         label="Breed",
-        widget=forms.TextInput(attrs={"placeholder": "Homid/Metis/Lupus"}),
-        help_text="For Werewolves/Fera only",
-    )
-    auspice_name = forms.CharField(
-        max_length=100,
-        required=False,
-        label="Auspice",
-        widget=forms.TextInput(attrs={"placeholder": "Moon sign"}),
-        help_text="For Werewolves only",
-    )
-    tribe_name = forms.CharField(
-        max_length=100,
-        required=False,
-        label="Tribe",
-        widget=forms.TextInput(attrs={"placeholder": "Tribe name"}),
-        help_text="For Werewolves/Kinfolk only",
+        widget=forms.TextInput(attrs={"placeholder": "Breed or birth form"}),
     )
 
-    # Mage
-    affiliation_name = forms.CharField(
-        max_length=100,
+    affiliation = forms.ModelChoiceField(
+        queryset=MageFaction.objects.top_level(),
         required=False,
         label="Affiliation",
-        widget=forms.TextInput(attrs={"placeholder": "Tradition/Technocracy/etc"}),
-        help_text="For Mages only",
     )
 
-    # Wraith
-    guild_name = forms.CharField(
-        max_length=100,
+    guild = forms.ModelChoiceField(
+        queryset=Guild.objects.all(),
         required=False,
         label="Guild",
-        widget=forms.TextInput(attrs={"placeholder": "Wraith guild"}),
-        help_text="For Wraiths only",
     )
 
-    # Changeling
-    kith_name = forms.CharField(
-        max_length=100,
+    kith = forms.ModelChoiceField(
+        queryset=Kith.objects.all(),
         required=False,
         label="Kith",
-        widget=forms.TextInput(attrs={"placeholder": "Changeling kith"}),
-        help_text="For Changelings only",
     )
-    court_name = forms.CharField(
-        max_length=100,
+    court = forms.ChoiceField(
+        choices=[("", "Choose court"), *Changeling._meta.get_field("court").choices],
         required=False,
         label="Court",
-        widget=forms.TextInput(attrs={"placeholder": "Seelie/Unseelie"}),
-        help_text="For Changelings only",
     )
 
-    # Demon
-    house_name = forms.CharField(
-        max_length=100,
+    house = forms.ModelChoiceField(
+        queryset=DemonHouse.objects.all(),
         required=False,
         label="House",
-        widget=forms.TextInput(attrs={"placeholder": "Demon house"}),
-        help_text="For Demons only",
     )
 
     # Fera special
@@ -246,14 +227,13 @@ class LinkedNPCForm(forms.Form):
         max_length=100,
         required=False,
         label="Fera Type",
-        widget=forms.TextInput(attrs={"placeholder": "Ratkin/Mokole/Bastet/etc"}),
-        help_text="For Fera only",
+        widget=forms.TextInput(attrs={"placeholder": "Ratkin, Mokolé, Bastet..."}),
     )
 
     # General notes
     note = forms.CharField(
         widget=forms.Textarea(
-            attrs={"placeholder": "Additional notes about this character", "rows": 4}
+            attrs={"placeholder": "How do you know them, and what can they do for you?", "rows": 4}
         ),
         label="Notes",
         required=False,
@@ -308,36 +288,28 @@ class LinkedNPCForm(forms.Form):
             if self.cleaned_data.get("demeanor"):
                 char_data["demeanor"] = self.cleaned_data["demeanor"]
 
-        # Add gameline-specific basics to notes for reference
-        # We store these in notes since the actual ForeignKey fields need real objects
+        # Copy selected rules data to the new character's real fields.
+        field_map = {
+            "vampire": {"clan": "clan", "sect": "sect"},
+            "werewolf": {
+                "werewolf_breed": "breed",
+                "auspice": "auspice",
+                "tribe": "tribe",
+            },
+            "kinfolk": {"tribe": "tribe"},
+            "mage": {"affiliation": "affiliation"},
+            "wraith": {"guild": "guild"},
+            "changeling": {"kith": "kith", "court": "court"},
+            "demon": {"house": "house"},
+        }
+        for source, target in field_map.get(npc_type, {}).items():
+            if value := self.cleaned_data.get(source):
+                char_data[target] = value
+
+        # Species-specific Fera descriptors do not yet have a shared reference list.
         specific_info = []
-
-        if npc_type == "vampire" and self.cleaned_data.get("clan_name"):
-            specific_info.append(f"Clan: {self.cleaned_data['clan_name']}")
-        if npc_type == "vampire" and self.cleaned_data.get("sect_name"):
-            specific_info.append(f"Sect: {self.cleaned_data['sect_name']}")
-
-        if npc_type in ["werewolf", "fera"] and self.cleaned_data.get("breed_name"):
+        if npc_type == "fera" and self.cleaned_data.get("breed_name"):
             specific_info.append(f"Breed: {self.cleaned_data['breed_name']}")
-        if npc_type == "werewolf" and self.cleaned_data.get("auspice_name"):
-            specific_info.append(f"Auspice: {self.cleaned_data['auspice_name']}")
-        if npc_type in ["werewolf", "kinfolk"] and self.cleaned_data.get("tribe_name"):
-            specific_info.append(f"Tribe: {self.cleaned_data['tribe_name']}")
-
-        if npc_type == "mage" and self.cleaned_data.get("affiliation_name"):
-            specific_info.append(f"Affiliation: {self.cleaned_data['affiliation_name']}")
-
-        if npc_type == "wraith" and self.cleaned_data.get("guild_name"):
-            specific_info.append(f"Guild: {self.cleaned_data['guild_name']}")
-
-        if npc_type == "changeling":
-            if self.cleaned_data.get("kith_name"):
-                specific_info.append(f"Kith: {self.cleaned_data['kith_name']}")
-            if self.cleaned_data.get("court_name"):
-                specific_info.append(f"Court: {self.cleaned_data['court_name']}")
-
-        if npc_type == "demon" and self.cleaned_data.get("house_name"):
-            specific_info.append(f"House: {self.cleaned_data['house_name']}")
 
         if npc_type == "fera" and self.cleaned_data.get("fera_type_name"):
             specific_info.append(f"Fera Type: {self.cleaned_data['fera_type_name']}")

@@ -85,7 +85,15 @@ class MageCreationControlsTests(TestCase):
         self.assertEqual(response.context["step"].key, "allies")
         self.assertContains(response, 'data-linked-npc-form')
         self.assertContains(response, 'data-npc-types="vampire"')
-        self.assertContains(response, 'name="clan_name"')
+        self.assertContains(response, 'name="clan"')
+        self.assertContains(response, 'name="sect"')
+        self.assertContains(response, 'tl-linked-npc__section')
+        self.assertContains(response, 'Who are they?')
+        self.assertContains(response, 'Their connection to you')
+        self.assertRegex(response.content.decode(), r'<select name="clan"[^>]*>')
+        self.assertRegex(response.content.decode(), r'<select name="sect"[^>]*>')
+        self.assertNotContains(response, 'For Vampires only')
+        self.assertNotContains(response, 'if Vampire')
         self.assertContains(response, 'linked-npc-fields.js')
 
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):

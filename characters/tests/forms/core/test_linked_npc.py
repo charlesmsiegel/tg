@@ -15,16 +15,21 @@ from django.test import TestCase
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
+from characters.models.changeling.kith import Kith
 from characters.models.core.archetype import Archetype
 from characters.models.core.human import Human
 from characters.models.demon.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
+from characters.models.demon.house import DemonHouse
 from characters.models.demon.thrall import Thrall
 from characters.models.mage.companion import Companion
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
+from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.ghoul import Ghoul
+from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.fera import Fera
@@ -32,7 +37,9 @@ from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.spirit_character import SpiritCharacter
+from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
+from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
 
@@ -77,6 +84,7 @@ class LinkedNPCFormValidationTestCase(TestCase):
 
     def setUp(self):
         self.archetype = Archetype.objects.create(name="Survivor")
+        self.affiliation = MageFaction.objects.create(name="Order of Hermes")
 
     def test_valid_basic_data(self):
         """Test form validates with basic required data."""
@@ -97,7 +105,7 @@ class LinkedNPCFormValidationTestCase(TestCase):
             "concept": "Occult librarian",
             "nature": self.archetype.pk,
             "demeanor": self.archetype.pk,
-            "affiliation_name": "Order of Hermes",
+            "affiliation": self.affiliation.pk,
             "note": "Special notes about this NPC",
         }
         form = LinkedNPCForm(data=data)
@@ -194,6 +202,13 @@ class LinkedNPCFormSaveTestCase(TestCase):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.pc = Human.objects.create(name="Test PC", owner=self.user)
         self.archetype = Archetype.objects.create(name="Survivor")
+        self.clan = VampireClan.objects.create(name="Ventrue")
+        self.sect = VampireSect.objects.create(name="Camarilla")
+        self.tribe = Tribe.objects.create(name="Bone Gnawers")
+        self.affiliation = MageFaction.objects.create(name="Verbena")
+        self.guild = Guild.objects.create(name="Haunters")
+        self.kith = Kith.objects.create(name="Pooka")
+        self.house = DemonHouse.objects.create(name="Defiler", celestial_name="Lammasu")
 
     def test_save_creates_vampire(self):
         """Test saving form creates a Vampire NPC."""
@@ -202,8 +217,8 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "name": "Vampire Ally",
             "rank": 2,
             "concept": "Kindred elder",
-            "clan_name": "Ventrue",
-            "sect_name": "Camarilla",
+            "clan": self.clan.pk,
+            "sect": self.sect.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="ally")
         self.assertTrue(form.is_valid())
@@ -215,8 +230,14 @@ class LinkedNPCFormSaveTestCase(TestCase):
         self.assertEqual(npc.status, "Un")
         self.assertIn("Rank 2 Ally", npc.notes)
         self.assertIn("Test PC", npc.notes)
-        self.assertIn("Clan: Ventrue", npc.notes)
-        self.assertIn("Sect: Camarilla", npc.notes)
+        self.assertEqual(npc.clan, self.clan)
+        self.assertEqual(npc.sect, self.sect)
+
+    def test_vampire_selector_rejects_unknown_clan(self):
+        form = LinkedNPCForm(
+            data={"npc_type": "vampire", "name": "Unknown Clan", "rank": 2, "clan": 999999}
+        )
+        self.assertIn("clan", form.errors)
 
     def test_save_creates_werewolf(self):
         """Test saving form creates a Werewolf NPC."""
@@ -224,9 +245,9 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "npc_type": "werewolf",
             "name": "Garou Mentor",
             "rank": 3,
-            "breed_name": "Homid",
-            "auspice_name": "Philodox",
-            "tribe_name": "Bone Gnawers",
+            "werewolf_breed": "homid",
+            "auspice": "philodox",
+            "tribe": self.tribe.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="mentor")
         self.assertTrue(form.is_valid())
@@ -234,9 +255,9 @@ class LinkedNPCFormSaveTestCase(TestCase):
         npc = form.save()
         self.assertIsInstance(npc, Werewolf)
         self.assertEqual(npc.name, "Garou Mentor")
-        self.assertIn("Breed: Homid", npc.notes)
-        self.assertIn("Auspice: Philodox", npc.notes)
-        self.assertIn("Tribe: Bone Gnawers", npc.notes)
+        self.assertEqual(npc.breed, "homid")
+        self.assertEqual(npc.auspice, "philodox")
+        self.assertEqual(npc.tribe, self.tribe)
 
     def test_save_creates_mage(self):
         """Test saving form creates a Mage NPC."""
@@ -246,7 +267,7 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "rank": 1,
             "nature": self.archetype.pk,
             "demeanor": self.archetype.pk,
-            "affiliation_name": "Verbena",
+            "affiliation": self.affiliation.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="contact")
         self.assertTrue(form.is_valid())
@@ -255,7 +276,7 @@ class LinkedNPCFormSaveTestCase(TestCase):
         self.assertIsInstance(npc, Mage)
         self.assertEqual(npc.nature, self.archetype)
         self.assertEqual(npc.demeanor, self.archetype)
-        self.assertIn("Affiliation: Verbena", npc.notes)
+        self.assertEqual(npc.affiliation, self.affiliation)
 
     def test_save_creates_wraith(self):
         """Test saving form creates a Wraith NPC."""
@@ -263,14 +284,14 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "npc_type": "wraith",
             "name": "Wraith Ally",
             "rank": 2,
-            "guild_name": "Haunters",
+            "guild": self.guild.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="ally")
         self.assertTrue(form.is_valid())
 
         npc = form.save()
         self.assertIsInstance(npc, Wraith)
-        self.assertIn("Guild: Haunters", npc.notes)
+        self.assertEqual(npc.guild, self.guild)
 
     def test_save_creates_changeling(self):
         """Test saving form creates a Changeling NPC."""
@@ -278,16 +299,16 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "npc_type": "changeling",
             "name": "Fae Friend",
             "rank": 2,
-            "kith_name": "Pooka",
-            "court_name": "Seelie",
+            "kith": self.kith.pk,
+            "court": "seelie",
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="ally")
         self.assertTrue(form.is_valid())
 
         npc = form.save()
         self.assertIsInstance(npc, Changeling)
-        self.assertIn("Kith: Pooka", npc.notes)
-        self.assertIn("Court: Seelie", npc.notes)
+        self.assertEqual(npc.kith, self.kith)
+        self.assertEqual(npc.court, "seelie")
 
     def test_save_creates_demon(self):
         """Test saving form creates a Demon NPC."""
@@ -295,14 +316,14 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "npc_type": "demon",
             "name": "Fallen Mentor",
             "rank": 4,
-            "house_name": "Defiler",
+            "house": self.house.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="mentor")
         self.assertTrue(form.is_valid())
 
         npc = form.save()
         self.assertIsInstance(npc, Demon)
-        self.assertIn("House: Defiler", npc.notes)
+        self.assertEqual(npc.house, self.house)
 
     def test_save_creates_spirit(self):
         """Test saving form creates a Spirit NPC."""
@@ -323,14 +344,14 @@ class LinkedNPCFormSaveTestCase(TestCase):
             "npc_type": "kinfolk",
             "name": "Kinfolk Contact",
             "rank": 1,
-            "tribe_name": "Silver Fangs",
+            "tribe": self.tribe.pk,
         }
         form = LinkedNPCForm(data=data, obj=self.pc, npc_role="contact")
         self.assertTrue(form.is_valid())
 
         npc = form.save()
         self.assertIsInstance(npc, Kinfolk)
-        self.assertIn("Tribe: Silver Fangs", npc.notes)
+        self.assertEqual(npc.tribe, self.tribe)
 
     def test_save_creates_fera(self):
         """Test saving form creates a Fera NPC."""
