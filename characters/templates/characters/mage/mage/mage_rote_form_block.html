@@ -6,6 +6,11 @@ are toggled with d-none by widgets/create_or_select.js (data-create-or-select-*)
 <p class="tl-lede">
     A rote is an effect along with a Practice, an Associated Ability of the Practice, and an Attribute. Describe how the character performs the rote, what it does, and the game mechanical impact. A rote's cost is the total number of sphere dots.
 </p>
+<p class="tl-chargen__line" data-rote-budget data-available="{{ object.rote_points }}" data-rote-costs="{{ rote_costs_json }}" data-effect-costs="{{ effect_costs_json }}" role="status" aria-live="polite">
+    <span class="tl-chargen__tag">Rote points remaining</span>
+    <strong class="tl-chargen__pool">{{ object.rote_points }}</strong>
+    <span data-rote-preview hidden>After this rote: <strong data-rote-remaining></strong></span>
+</p>
 {% include "characters/mage/form/field.html" with field=form.select_or_create_rote label="Create a new rote" %}
 <div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="select">
     <div class="tl-chargen__form">
@@ -13,10 +18,6 @@ are toggled with d-none by widgets/create_or_select.js (data-create-or-select-*)
     </div>
 </div>
 <div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="create" class="tl-chargen__fields d-none">
-    <p class="tl-chargen__line">
-        <span class="tl-chargen__tag">Rote points remaining</span>
-        <span class="tl-chargen__pool">{{ object.rote_points }}</span>
-    </p>
     <div class="tl-chargen__form">
         {% include "characters/mage/form/field.html" with field=form.name label="Name" %}
         {% include "characters/mage/form/field.html" with field=form.practice label="Practice" %}
@@ -37,3 +38,4 @@ are toggled with d-none by widgets/create_or_select.js (data-create-or-select-*)
         </div>
     </div>
 </div>
+{% load static %}<script src="{% static 'characters/js/mage-rote-budget.js' %}" defer></script>

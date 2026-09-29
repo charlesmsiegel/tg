@@ -11,6 +11,7 @@ from characters.forms.mage.mage import MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
+from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Practice
 from characters.models.mage.mage import Mage
@@ -59,6 +60,20 @@ class MageCreationControlsTests(TestCase):
         response = self.wizard(mage)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["form"]["arete"].value(), 3)
+
+    def test_rote_balance_is_visible_before_either_creation_mode(self):
+        mage = Mage.objects.create(
+            name="Rote Mage", owner=self.user, creation_status=9, rote_points=5, arete=2, forces=2
+        )
+        effect = Effect.objects.create(name="Spark", owner=self.user, forces=2)
+        response = self.wizard(mage)
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn('data-rote-budget', html)
+        self.assertLess(html.index('data-rote-budget'), html.index('data-create-or-select-container'))
+        self.assertContains(response, 'Rote points remaining')
+        self.assertContains(response, 'data-available="5"')
+        self.assertEqual(json.loads(response.context["effect_costs_json"])[str(effect.pk)], 2)
 
     def test_freebie_category_populates_attribute_and_only_relevant_fields_show(self):
         Attribute.objects.create(name="Strength", property_name="strength")

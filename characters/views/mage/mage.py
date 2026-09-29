@@ -373,6 +373,13 @@ class MageRoteView(ChargenStepMixin, SpecialUserMixin, CreateView):
         context = super().get_context_data(**kwargs)
         mage_id = self.kwargs.get("pk")
         context["object"] = get_object_or_404(Mage, id=mage_id)
+        form = context["form"]
+        context["rote_costs_json"] = json.dumps(
+            dict(form.fields["rote_options"].queryset.values_list("pk", "effect__rote_cost"))
+        )
+        context["effect_costs_json"] = json.dumps(
+            dict(form.fields["effect_options"].queryset.values_list("pk", "rote_cost"))
+        )
         return context
 
     def get_form_kwargs(self):
