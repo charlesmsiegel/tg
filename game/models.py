@@ -623,13 +623,17 @@ class UserSceneReadStatusManager(models.Manager):
             self.filter(scene=scene, user_id__in=user_ids).values_list("user_id", flat=True)
         )
         self.bulk_create(
-            self.model(
-                user_id=user_id,
-                scene=scene,
-                read=user_id == author_id,
-                last_read_post=post if user_id == author_id else None,
-            )
-            for user_id in user_ids - existing
+            [
+                self.model(
+                    user_id=user_id,
+                    scene=scene,
+                    read=user_id == author_id,
+                    last_read_post=post if user_id == author_id else None,
+                )
+                for user_id in user_ids - existing
+            ],
+            # A concurrent post may have created the row since ``existing`` was read.
+            ignore_conflicts=True,
         )
         others = self.filter(scene=scene, user_id__in=user_ids & existing)
         if author_id in existing:
@@ -672,16 +676,18 @@ class UserSceneReadStatusManager(models.Manager):
 
 
 class UserSceneReadStatus(models.Model):
+    # One row per user and scene (tg_schema 0008 merged older duplicates); a row
+    # goes with its user or scene. The columns stay nullable for legacy databases.
     user = models.ForeignKey(
         User,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         related_name="scene_read_statuses",
         db_index=True,
     )
     scene = models.ForeignKey(
         Scene,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         related_name="user_read_statuses",
         db_index=True,
@@ -702,6 +708,9 @@ class UserSceneReadStatus(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["user", "scene"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "scene"], name="unique_user_scene_read_status"),
         ]
 
     def __str__(self):

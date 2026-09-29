@@ -313,8 +313,9 @@ class SceneDetailView(DetailView):
             if not read or (latest is not None and marker != latest.pk):
                 UserSceneReadStatus.objects.mark_read(scene, user.pk, latest)
         elif any(character.owner_id == user.pk for character in cast):
-            UserSceneReadStatus.objects.create(
-                scene=scene, user=user, read=True, last_read_post=latest
+            # get_or_create: a post landing meanwhile may have created the row.
+            UserSceneReadStatus.objects.get_or_create(
+                scene=scene, user=user, defaults={"read": True, "last_read_post": latest}
             )
         return divider
 
