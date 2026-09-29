@@ -419,6 +419,7 @@ MAGE = bind(
         "abilities": "characters/mage/mtahuman/ability_block_form.html",
         "spheres": "characters/mage/mage/mage_powers_block_form.html",
         "focus": "characters/mage/mage/mage_focus_block_form.html",
+        "freebies": "characters/mage/mage/freebies_chargen.html",
         "rote": "characters/mage/mage/mage_rote_form_block.html",
         "node": "locations/mage/node/form_include.html",
         "library": "locations/mage/library/form_include.html",

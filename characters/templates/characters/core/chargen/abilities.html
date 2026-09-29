@@ -3,7 +3,7 @@
    running count and a PRI / SEC / TER picker (`priority` from AllocationStepMixin;
    without it, the plain ability_columns from ChargenStepMixin), then a status line
    checked by ability-validation.js (non-interactive) or tgPool + the server's verdict. {% endcomment %}
-<p class="tl-lede">Rank Talents, Skills and Knowledges as primary, secondary and tertiary, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
+<p class="tl-lede">{% if infer_priority %}Place dots to determine primary, secondary and tertiary{% else %}Rank Talents, Skills and Knowledges as primary, secondary and tertiary{% endif %}, then add {{ primary }} / {{ secondary }} / {{ tertiary }} dots.</p>
 <div class="tl-alloc"{% if priority %} data-priority="{{ priority.rule }}"{% endif %}>
     {% if priority %}
         {% for column in priority.columns %}

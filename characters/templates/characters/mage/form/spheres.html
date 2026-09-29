@@ -7,6 +7,7 @@ label + number rows, in sheet order. Used by the effect form and the rote steps.
     <div class="tl-alloc">
         <div class="tl-alloc__col">
             {% include "characters/core/chargen/alloc_row.html" with field=form.correspondence label="Correspondence" %}
+            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.corr_name label="Correspondence name" %}{% endif %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.entropy label="Entropy" %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.forces label="Forces" %}
         </div>
@@ -17,7 +18,9 @@ label + number rows, in sheet order. Used by the effect form and the rote steps.
         </div>
         <div class="tl-alloc__col">
             {% include "characters/core/chargen/alloc_row.html" with field=form.prime label="Prime" %}
+            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.prime_name label="Prime name" %}{% endif %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.spirit label="Spirit" %}
+            {% if show_sphere_names %}{% include "characters/mage/form/field.html" with field=form.spirit_name label="Spirit name" %}{% endif %}
             {% include "characters/core/chargen/alloc_row.html" with field=form.time label="Time" %}
         </div>
     </div>

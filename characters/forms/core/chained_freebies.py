@@ -56,7 +56,7 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
     eliminating the need for custom JavaScript in templates.
     """
 
-    category = forms.ChoiceField(choices=BASE_CATEGORY_CHOICES)
+    category = ChainedChoiceField(choices=BASE_CATEGORY_CHOICES)
     example = ChainedChoiceField(
         parent_field="category",
         required=False,
@@ -78,12 +78,18 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
             self._setup_category_choices()
             self._setup_example_choices()
             self._setup_value_choices()
+            # The mixin initializes chains before these instance-specific maps
+            # exist; rebuild the embedded tree after the maps are populated.
+            self._setup_chains()
 
     def get_conditional_context(self):
         """Provide context variables for conditional field visibility."""
         context = super().get_conditional_context()
         if self.instance:
-            context["is_group_member"] = getattr(self.instance, "is_group_member", False)
+            is_group_member = getattr(self.instance, "is_group_member", False)
+            context["is_group_member"] = bool(
+                is_group_member() if callable(is_group_member) else is_group_member
+            )
         return context
 
     def get_conditional_rules(self):

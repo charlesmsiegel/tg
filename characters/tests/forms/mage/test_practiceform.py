@@ -17,6 +17,7 @@ from characters.forms.mage.practiceform import (
     PracticeRatingForm,
     PracticeRatingFormSet,
 )
+from characters.models.core.ability_block import Ability
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import (
     CorruptedPractice,
@@ -25,6 +26,17 @@ from characters.models.mage.focus import (
 )
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
+
+
+def enable_practice(mage, practice, dots=4):
+    ability = practice.abilities.first()
+    if ability is None:
+        ability, _ = Ability.objects.get_or_create(
+            property_name="athletics", defaults={"name": "Athletics"}
+        )
+        practice.abilities.add(ability)
+    setattr(mage, ability.property_name, dots)
+    mage.save(update_fields=[ability.property_name])
 
 
 class TestPracticeRatingFormInit(TestCase):
@@ -39,6 +51,7 @@ class TestPracticeRatingFormInit(TestCase):
             owner=self.user,
             faction=self.faction,
         )
+        enable_practice(self.mage, Practice.objects.first())
 
     def test_form_has_expected_fields(self):
         """Test that form has expected fields."""
@@ -100,6 +113,7 @@ class TestPracticeRatingFormWithFaction(TestCase):
             owner=self.user,
             faction=self.faction,
         )
+        enable_practice(self.mage, self.specialized_practice)
 
     def test_form_includes_faction_specialized_practice(self):
         """Test that form includes specialized practice for mage's faction."""
@@ -144,6 +158,7 @@ class TestPracticeRatingFormExclusions(TestCase):
             owner=self.user,
             faction=self.faction,
         )
+        enable_practice(self.mage, Practice.objects.first())
 
     def test_form_excludes_corrupted_practices(self):
         """Test that form excludes corrupted practices."""
@@ -186,6 +201,7 @@ class TestBasePracticeRatingFormSet(TestCase):
             owner=self.user,
             faction=self.faction,
         )
+        enable_practice(self.mage, Practice.objects.first())
 
     def test_formset_stores_mage(self):
         """Test that formset stores mage reference."""
@@ -241,6 +257,7 @@ class TestBasePracticeRatingFormSetWithSpecialized(TestCase):
             owner=self.user,
             faction=self.faction,
         )
+        enable_practice(self.mage, self.specialized)
 
     def test_formset_includes_faction_specialized(self):
         """Test that formset includes specialized practice for mage's faction."""
@@ -313,6 +330,7 @@ class TestPracticeRatingFormValidation(TestCase):
             .exclude(polymorphic_ctype__model="corruptedpractice")
             .first()
         )
+        enable_practice(self.mage, self.practice)
 
     def test_form_valid_with_practice_and_rating(self):
         """Test that form is valid with practice and rating."""

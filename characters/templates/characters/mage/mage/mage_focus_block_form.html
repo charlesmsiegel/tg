@@ -17,6 +17,10 @@ then starting Practices totalling Arete ("Add Practice" clones a row; formset_ma
 </fieldset>
 <fieldset class="tl-mageform__group">
     <legend class="tl-subhead">Practices</legend>
+    <p class="tl-muted">Place {{ object.arete }} Practice dot{{ object.arete|pluralize }} in total. Each Practice dot needs two dots in its listed Abilities.</p>
+    <div data-practice-budget data-target="{{ object.arete }}" role="status" aria-live="polite">
+        Practice dots: <strong data-practice-count>0 / {{ object.arete }}</strong>
+    </div>
     {% if practice_formset.non_form_errors %}
         <ul class="tl-field__error">
             {% for error in practice_formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
@@ -33,3 +37,5 @@ then starting Practices totalling Arete ("Add Practice" clones a row; formset_ma
         {% endif %}
     {% endformset %}
 </fieldset>
+{{ practice_formset.practice_limits|json_script:"mage-practice-limits" }}
+{% load static %}<script src="{% static 'characters/js/mage-practices.js' %}" defer></script>

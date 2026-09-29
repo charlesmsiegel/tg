@@ -56,6 +56,28 @@ class TestLocationTypeNavigation(TestCase):
         self.assertIn("mage", response.url)
         self.assertIn("create", response.url)
 
+    def test_chronicle_context_survives_location_type_selection(self):
+        self.client.force_login(User.objects.create_user(username="creator"))
+        chronicle = Chronicle.objects.create(name="Selected Chronicle")
+        response = self.client.get(
+            self.url("create"),
+            {"loc_type": "node", "gameline": "mta", "chronicle": chronicle.pk},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f"chronicle={chronicle.pk}", response.url)
+
+    def test_created_location_belongs_to_selected_chronicle(self):
+        user = User.objects.create_user(username="creator")
+        chronicle = Chronicle.objects.create(name="Selected Chronicle")
+        chronicle.storytellers.add(user)
+        self.client.force_login(user)
+        response = self.client.post(
+            f"{reverse('locations:create:location')}?chronicle={chronicle.pk}",
+            {"name": "New Sanctum", "gauntlet": 7, "shroud": 7, "dimension_barrier": 6},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(LocationModel.objects.get(name="New Sanctum").chronicle, chronicle)
+
     def test_create_action_wta(self):
         """Test create action redirects to Werewolf location create."""
         self.client.force_login(User.objects.create_user(username="creator"))

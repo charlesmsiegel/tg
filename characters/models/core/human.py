@@ -103,10 +103,10 @@ class Human(
     derangements = models.ManyToManyField("Derangement", blank=True)
 
     age = models.IntegerField(
-        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5000)]
+        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(65535)]
     )
     apparent_age = models.IntegerField(
-        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(200)]
+        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(65535)]
     )
     date_of_birth = models.DateField(blank=True, null=True)
 
@@ -124,17 +124,17 @@ class Human(
         ordering = ["name"]
         constraints = [
             *_willpower.constraints("characters_human_"),
-            # Age must be reasonable if provided
+            # Age may span centuries in chronicles with long-lived characters.
             CheckConstraint(
-                check=Q(age__isnull=True) | Q(age__gte=0, age__lte=5000),
+                check=Q(age__isnull=True) | Q(age__gte=0, age__lte=65535),
                 name="characters_human_reasonable_age",
-                violation_error_message="Age must be between 0 and 5000",
+                violation_error_message="Age must be between 0 and 65535",
             ),
-            # Apparent age must be reasonable if provided
+            # Apparent age uses the same whole-number input range.
             CheckConstraint(
-                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=200),
+                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=65535),
                 name="characters_human_reasonable_apparent_age",
-                violation_error_message="Apparent age must be between 0 and 200",
+                violation_error_message="Apparent age must be between 0 and 65535",
             ),
         ]
 

@@ -1,0 +1,27 @@
+{% comment %}Mage's plain wizard uses the embedded chained choices and conditional rules.{% endcomment %}
+{% if object.freebies_approved %}
+    <p class="tl-lede">Freebie points remaining: <strong>{{ object.freebies }}</strong></p>
+    <div class="tl-chargen__form">
+        {% with shown=form.visibility %}
+            {% include "core/tl/field.html" with field=form.category label="Category" %}
+            <div class="tl-chargen__wrap{% if not shown.example %} d-none{% endif %}" id="example_wrap">
+                {% include "core/tl/field.html" with field=form.example label="Trait" %}
+            </div>
+            <div class="tl-chargen__wrap{% if not shown.value %} d-none{% endif %}" id="value_wrap">
+                {% include "core/tl/field.html" with field=form.value label="Rating" %}
+            </div>
+            <div class="tl-chargen__wrap{% if not shown.note %} d-none{% endif %}" id="note_wrap">
+                {% include "core/tl/field.html" with field=form.note label="Note" %}
+            </div>
+            <div class="tl-chargen__wrap{% if not shown.pooled %} d-none{% endif %}" id="pooled_wrap">
+                {% include "core/tl/field.html" with field=form.pooled label="Pooled?" %}
+            </div>
+            <div class="tl-chargen__wrap{% if not shown.resonance %} d-none{% endif %}" id="resonance_wrap">
+                {% include "core/tl/field.html" with field=form.resonance label="Resonance" %}
+            </div>
+        {% endwith %}
+    </div>
+    {{ form.conditional_js }}
+{% else %}
+    {% include "core/tl/empty.html" with text="Waiting on ST to assign your freebie total." %}
+{% endif %}

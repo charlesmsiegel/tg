@@ -408,6 +408,20 @@ def prepare_created_object(form, request):
     user = request.user
     if not user.is_authenticated:
         raise PermissionDenied("Login required to create objects")
+    # The Chronicle's location picker redirects through a type selector. Most
+    # location create forms do not expose a chronicle field, so retain that
+    # scoped destination when the selected create form is submitted.
+    from locations.models.core.location import LocationModel
+
+    if (
+        isinstance(obj, LocationModel)
+        and "chronicle" not in form.fields
+        and obj.chronicle_id is None
+        and request.GET.get("chronicle")
+    ):
+        obj.chronicle = get_object_or_404(
+            readable_chronicles(user), pk=request.GET["chronicle"]
+        )
     chronicle = getattr(obj, "chronicle", None)
     if chronicle is not None:
         if not readable_chronicles(user).filter(pk=chronicle.pk).exists():

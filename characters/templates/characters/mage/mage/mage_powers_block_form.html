@@ -4,7 +4,7 @@ Sphere and a starting Resonance trait, the nine Spheres as ruled columns, then t
 names this mage uses for Correspondence, Prime and Spirit.
 {% endcomment %}
 <p class="tl-lede">
-    Arete may be chosen from 1-3, each dot costs 4 Freebie Points. You must place one dot into your Affinity Sphere, 5 more dots into your Spheres capped at Arete, and choose a starting Resonance trait.
+    {% if object.npc %}Choose Arete{% else %}Choose Arete from 1–3{% endif %}; each dot above one costs 4 Freebie Points. Place six Sphere dots, including at least one in your Affinity Sphere. No Sphere may exceed Arete. Choose a starting Resonance trait.
 </p>
 <div class="tl-chargen__form">
     {% if object.is_technocrat %}
@@ -13,11 +13,11 @@ names this mage uses for Correspondence, Prime and Spirit.
         {% include "characters/mage/form/field.html" with field=form.arete label="Arete" %}
     {% endif %}
     {% include "characters/mage/form/field.html" with field=form.affinity_sphere label="Affinity Sphere" %}
+    <p class="tl-muted">Your faction’s preferred Spheres are marked in the list; you may choose any Sphere.</p>
     {% include "characters/mage/form/field.html" with field=form.resonance label="Resonance" %}
 </div>
-{% include "characters/mage/form/spheres.html" %}
-<div class="tl-chargen__form">
-    {% include "characters/mage/form/field.html" with field=form.corr_name label="Correspondence name" %}
-    {% include "characters/mage/form/field.html" with field=form.prime_name label="Prime name" %}
-    {% include "characters/mage/form/field.html" with field=form.spirit_name label="Spirit name" %}
+<div data-sphere-budget data-target="6" data-npc="{% if object.npc %}true{% else %}false{% endif %}" role="status" aria-live="polite">
+    Sphere dots: <strong data-sphere-count>0 / 6</strong> <span data-sphere-message></span>
 </div>
+{% include "characters/mage/form/spheres.html" with show_sphere_names=True %}
+{% load static %}<script src="{% static 'characters/js/mage-spheres.js' %}" defer></script>

@@ -173,7 +173,9 @@ class Mage(MtAHuman):
         max_length=100,
     )
 
-    age_of_awakening = models.IntegerField(default=0)
+    age_of_awakening = models.IntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(65535)]
+    )
     avatar_description = models.TextField(default="", blank=True)
 
     resonance = models.ManyToManyField("Resonance", through="ResRating")

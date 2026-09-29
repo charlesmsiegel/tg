@@ -31,6 +31,7 @@ class AllocationStepMixin:
 
     allocation_rules = ()
     live_validation = True
+    infer_priority = False
 
     def get_allocation_rules(self):
         return self.allocation_rules
@@ -48,6 +49,7 @@ class AllocationStepMixin:
         kwargs = super().get_form_kwargs()
         kwargs["allocation_rules"] = self.get_allocation_rules()
         kwargs["extra_clean"] = self.get_extra_clean()
+        kwargs["infer_priority"] = self.infer_priority
         return kwargs
 
     def get_context_data(self, **kwargs):

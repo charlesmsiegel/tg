@@ -6,6 +6,8 @@ browser's back button and bookmarks behave. The type is resolved only through
 registries), never from a route name in the request.
 """
 
+from urllib.parse import urlencode
+
 from django.contrib.auth.views import redirect_to_login
 from django.http import Http404
 from django.shortcuts import redirect
@@ -34,4 +36,7 @@ class ObjectTypeRedirectView(View):
         category, field = KINDS[kind]
         type_name = request.GET.get(field) or request.GET.get("type")
         gameline = request.GET.get("gameline") or None
-        return redirect(resolve_object_type_url(category, type_name, action, gameline))
+        target = resolve_object_type_url(category, type_name, action, gameline)
+        if kind == "location" and action == "create" and request.GET.get("chronicle"):
+            target += "?" + urlencode({"chronicle": request.GET["chronicle"]})
+        return redirect(target)

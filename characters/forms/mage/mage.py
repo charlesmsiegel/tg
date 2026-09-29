@@ -133,7 +133,7 @@ class MageSpheresForm(forms.ModelForm):
     def clean_arete(self):
         """Validate that Arete doesn't exceed 3 at character creation."""
         arete = self.cleaned_data.get("arete", 1)
-        if arete > 3:
+        if arete > 3 and not self.instance.npc:
             raise ValidationError("Arete may not exceed 3 at character creation.")
         return arete
 

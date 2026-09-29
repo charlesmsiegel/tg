@@ -105,6 +105,13 @@ ChantryListView = registry.view("locations.Chantry", "list")
 class _ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """All-fields create form for Mage STs of the chosen chronicle, and staff."""
 
+    def get_initial(self):
+        initial = super().get_initial()
+        chronicle_id = self.request.GET.get("chronicle")
+        if chronicle_id and direct_create_chronicles(self.request.user).filter(pk=chronicle_id).exists():
+            initial["chronicle"] = chronicle_id
+        return initial
+
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated and not direct_create_chronicles(request.user).exists():
             raise PermissionDenied("Only storytellers can create a chantry directly")

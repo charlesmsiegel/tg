@@ -42,6 +42,7 @@ indented under their parent), and the "New location" form behind a ghost button.
                 <form class="tl-reveal__body tl-block"
                       method="get"
                       action="{% url 'core:object_type_redirect' 'location' 'create' %}">
+                    <input type="hidden" name="chronicle" value="{{ object.pk }}">
                     <div class="tl-formgrid tl-formgrid--2">
                         {% include "core/tl/field.html" with field=loc_form.gameline label="Game line" %}
                         {% include "core/tl/field.html" with field=loc_form.loc_type label="Location type" %}

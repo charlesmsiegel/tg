@@ -1,5 +1,5 @@
-/* PRI / SEC / TER picker on the Attributes and Abilities steps
- * (characters/core/chargen/priority_head.html), on every workflow.
+/* Priority totals on the Attributes and Abilities steps.
+ * Mage ranks are inferred from dots; other workflows can show PRI / SEC / TER.
  *
  * Markup: [data-priority] > [data-priority-group] columns, each with a
  * [data-priority-count] span and a [data-priority-picker] of three radios
@@ -62,6 +62,9 @@
             var radios = cols[index].querySelectorAll('[data-priority-picker] ' + RADIO);
             if (radios[rank]) {
                 result[cols[index].dataset.priorityGroup] = Number(radios[rank].dataset.target);
+            } else {
+                var head = cols[index].querySelector('[data-priority-targets]');
+                if (head) result[cols[index].dataset.priorityGroup] = Number(head.dataset.priorityTargets.split(',')[rank]);
             }
         });
         return result;
@@ -69,9 +72,15 @@
 
     function recount(container) {
         var goals = targets(container);
+        var rankedGoals = columns(container).map(function (column) {
+            return goals[column.dataset.priorityGroup];
+        }).sort(function (a, b) { return b - a; });
+        var ranks = ['Primary', 'Secondary', 'Tertiary'];
         columns(container).forEach(function (column) {
             var count = column.querySelector('[data-priority-count]');
             var goal = goals[column.dataset.priorityGroup];
+            var rank = column.querySelector('[data-inferred-priority]');
+            if (rank) rank.textContent = ranks[rankedGoals.indexOf(goal)] || '';
             if (!count || goal === undefined) return;
             var left = goal - total(column);
             count.textContent = left > 0 ? left + ' left' : left < 0 ? -left + ' over' : 'done';

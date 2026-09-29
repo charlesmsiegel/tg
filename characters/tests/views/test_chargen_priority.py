@@ -62,20 +62,10 @@ class AttributePickerRenderTests(PriorityTestCase):
     def test_picker_counts_and_dots_render_without_javascript(self):
         html = self.client.get(self.url(self.mage())).content.decode()
         physical = section(html, "physical")
-        self.assertIn("data-priority-picker", physical)
-        # Nothing chosen yet: all columns tie, so the ranking follows their order.
-        self.assertInHTML(
-            '<input class="tl-sr" type="radio" name="priority_physical" '
-            'id="id_priority_physical_primary" value="primary" data-target="10" checked>',
-            physical,
-        )
-        self.assertInHTML(
-            '<input class="tl-sr" type="radio" name="priority_physical" '
-            'id="id_priority_physical_secondary" value="secondary" data-target="8">',
-            physical,
-        )
-        self.assertRegex(section(html, "social"), r'value="secondary"[^>]*checked')
-        self.assertRegex(section(html, "mental"), r'value="tertiary"[^>]*checked')
+        self.assertNotIn("data-priority-picker", physical)
+        self.assertIn('data-priority-targets="10,8,6"', physical)
+        for group, rank in (("physical", "Primary"), ("social", "Secondary"), ("mental", "Tertiary")):
+            self.assertIn(f'<small data-inferred-priority>{rank}</small>', section(html, group))
         # Each column counts down from its rank's target (every Attribute starts at 1).
         for group, left in (("physical", 7), ("social", 5), ("mental", 3)):
             self.assertRegex(
@@ -117,9 +107,8 @@ class AttributePickerRenderTests(PriorityTestCase):
             strength=1, charisma=4, manipulation=3, appearance=3, perception=3, intelligence=2
         )
         html = self.client.get(self.url(character)).content.decode()
-        self.assertRegex(section(html, "social"), r'value="primary"[^>]*checked')
-        self.assertRegex(section(html, "mental"), r'value="secondary"[^>]*checked')
-        self.assertRegex(section(html, "physical"), r'value="tertiary"[^>]*checked')
+        for group, rank in (("social", "Primary"), ("mental", "Secondary"), ("physical", "Tertiary")):
+            self.assertIn(f'<small data-inferred-priority>{rank}</small>', section(html, group))
         self.assertIn('id="social-status" data-priority-count>done<', html)
         self.assertIn('id="physical-status" data-priority-count>3 left<', html)
 
@@ -139,28 +128,14 @@ class AttributeRankValidationTests(PriorityTestCase):
         character.refresh_from_db()
         self.assertEqual((character.creation_status, character.charisma), (2, 4))
 
-    def test_swapped_ranks_are_refused_with_counts_against_the_choice(self):
+    def test_posted_ranks_cannot_override_dots(self):
         character = self.mage()
         response = self.client.post(
             self.url(character), {**ATTRIBUTES, **ranks("secondary", "primary", "tertiary")}
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            "Attributes must be distributed 7/5/3 as ranked "
-            "(Physical secondary, Social primary, Mental tertiary)",
-        )
-        html = response.content.decode()
-        # Physical holds 10 against secondary's 8; Social 8 against primary's 10.
-        self.assertIn('class="tl-alloc__left is-over" id="physical-status"', html)
-        self.assertIn('id="physical-status" data-priority-count>2 over<', html)
-        self.assertIn('id="social-status" data-priority-count>2 left<', html)
-        self.assertIn('id="mental-status" data-priority-count>done<', html)
-        # The posted choice stays selected.
-        self.assertRegex(section(html, "physical"), r'value="secondary"[^>]*checked')
-        self.assertRegex(section(html, "social"), r'value="primary"[^>]*checked')
+        self.assertEqual(response.status_code, 302)
         character.refresh_from_db()
-        self.assertEqual((character.creation_status, character.strength), (1, 1))
+        self.assertEqual((character.creation_status, character.strength), (2, 4))
 
     def test_missing_ranks_are_inferred_from_the_dots(self):
         character = self.mage()
@@ -179,20 +154,12 @@ class AttributeRankValidationTests(PriorityTestCase):
         character.refresh_from_db()
         self.assertEqual((character.creation_status, character.perception), (2, 4))
 
-    def test_repeated_rank_is_refused(self):
+    def test_repeated_rank_is_ignored(self):
         character = self.mage()
         response = self.client.post(
             self.url(character), {**ATTRIBUTES, **ranks("primary", "primary", "tertiary")}
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            "Choose primary, secondary and tertiary once each for Physical, Social and Mental",
-        )
-        html = response.content.decode()
-        # Both columns show the rank posted for them.
-        self.assertRegex(section(html, "physical"), r'value="primary"[^>]*checked')
-        self.assertRegex(section(html, "social"), r'value="primary"[^>]*checked')
+        self.assertEqual(response.status_code, 302)
 
     def test_unknown_rank_values_count_as_no_choice(self):
         # Clients that post every field with a placeholder still get the inference.
@@ -201,14 +168,12 @@ class AttributeRankValidationTests(PriorityTestCase):
         self.assertEqual(response.status_code, 302)
         character.refresh_from_db()
         self.assertEqual(character.creation_status, 2)
-        # One unknown value beside two real choices leaves the ranking incomplete.
+        # A mixed set of old picker values is likewise ignored.
         character = self.mage()
         response = self.client.post(
             self.url(character), {**ATTRIBUTES, **ranks("first", "secondary", "tertiary")}
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["form"].errors.get("priority_physical"), None)
-        self.assertContains(response, "Choose primary, secondary and tertiary once each")
+        self.assertEqual(response.status_code, 302)
 
 
 class AbilityPickerTests(PriorityTestCase):
@@ -222,9 +187,9 @@ class AbilityPickerTests(PriorityTestCase):
                 column = section(html, group)
                 shown = re.findall(r'<input type="number" name="(\w+)"', column)
                 self.assertEqual(sorted(shown), sorted(names))
-                self.assertIn(f'name="priority_{group}"', column)
+                self.assertNotIn(f'name="priority_{group}"', column)
                 self.assertIn(f'id="{group}-status"', column)
-        self.assertRegex(section(html, "talents"), r'value="primary" data-target="13" checked')
+        self.assertIn('<small data-inferred-priority>Primary</small>', section(html, "talents"))
         self.assertIn('id="talents-status" data-priority-count>13 left<', html)
         self.assertIn('id="knowledges-status" data-priority-count>5 left<', html)
         self.assertIn('data-dot-rating data-min="0" data-max="3"', html)
@@ -252,15 +217,15 @@ class AbilityPickerTests(PriorityTestCase):
             "priority_knowledges": "tertiary",
         }
         response = self.client.post(self.url(character), swapped)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Abilities must be distributed 13/9/5 as ranked")
-        self.assertIn('id="talents-status" data-priority-count>4 over<', response.content.decode())
+        self.assertEqual(response.status_code, 302)
         chosen = {
             **abilities,
             "priority_talents": "primary",
             "priority_skills": "secondary",
             "priority_knowledges": "tertiary",
         }
+        character.creation_status = 2
+        character.save(update_fields=["creation_status"])
         self.assertEqual(self.client.post(self.url(character), chosen).status_code, 302)
         character.refresh_from_db()
         self.assertEqual(character.creation_status, 3)

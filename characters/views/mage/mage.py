@@ -25,6 +25,7 @@ from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
+from characters.models.mage.sphere import Sphere
 from characters.services.mage_chargen import set_starting_practices
 from characters.services.rotes import learn_rote
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -185,16 +186,28 @@ class MageBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
 
 class MageAttributeView(HumanAttributeView):
     model = Mage
+    infer_priority = True
     template_name = "characters/mage/mage/chargen.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["infer_priority"] = True
+        return context
 
 
 class MageAbilityView(MtAHumanAbilityView):
     model = Mage
+    infer_priority = True
     template_name = "characters/mage/mage/chargen.html"
 
     primary = 13
     secondary = 9
     tertiary = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["infer_priority"] = True
+        return context
 
 
 class MageBackgroundsView(HumanBackgroundsView):
@@ -249,10 +262,22 @@ class MageSpheresView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     form_class = MageSpheresForm
     template_name = "characters/mage/mage/chargen.html"
 
+    def dot_bounds(self):
+        return {
+            "arete": (1, 10 if self.object.npc else 3),
+            **{name: (0, 5) for name in self.object.get_spheres()},
+        }
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["affinity_sphere"].queryset = (
-            self.object.get_affinity_sphere_options().order_by("name")
+        affinity = form.fields["affinity_sphere"]
+        affinity.queryset = Sphere.objects.order_by("name")
+        preferred = set()
+        for faction in (self.object.affiliation, self.object.faction, self.object.subfaction):
+            if faction is not None:
+                preferred.update(faction.affinities.values_list("pk", flat=True))
+        affinity.label_from_instance = (
+            lambda sphere: f"{sphere.name} (preferred)" if sphere.pk in preferred else sphere.name
         )
         form.fields["affinity_sphere"].empty_label = "Choose an Affinity"
         form.fields["resonance"].widget = AutocompleteTextInput(
@@ -306,6 +331,15 @@ class MageExtrasView(CharacterExtrasView):
             "placeholder": "This will be displayed to all players who look at your character, include Fame and anything else that would be publicly seen beyond physical description"
         },
     }
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        for name in ("age", "apparent_age", "age_of_awakening"):
+            field = form.fields[name]
+            field.min_value = 0
+            field.max_value = 65535
+            field.widget.attrs.update({"min": 0, "max": 65535, "step": 1, "inputmode": "numeric"})
+        return form
 
 
 class MageFreebiesView(HumanFreebiesView):

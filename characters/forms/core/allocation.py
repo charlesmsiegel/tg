@@ -17,22 +17,21 @@ class AllocationFormMixin:
     ``extra_clean`` is an optional callable ``(cleaned_data) -> RuleViolation |
     None`` for a check that needs the character, run after every rule passes.
 
-    A priority rule (Attributes, Abilities) also reads one posted choice per
-    group (``priority_physical`` ...): the rank the player gave it, from the
-    PRI / SEC / TER picker. The choices are not form fields (nothing is saved
-    and the model never sees them); a missing or unknown value is no choice,
-    and without a complete choice the rule infers the ranking from the dots.
+    A priority rule (Attributes, Abilities) can read one posted choice per
+    group from the PRI / SEC / TER picker. ``infer_priority`` ignores those
+    values and always ranks groups from their dots, as Mage creation does.
     """
 
-    def __init__(self, *args, allocation_rules=(), extra_clean=None, **kwargs):
+    def __init__(self, *args, allocation_rules=(), extra_clean=None, infer_priority=False, **kwargs):
         self.allocation_rules = tuple(allocation_rules)
         self.extra_clean = extra_clean
+        self.infer_priority = infer_priority
         self.flash_errors = []
         super().__init__(*args, **kwargs)
 
     def rank_values(self):
         """The posted rank choices, by rank field name (empty when unbound)."""
-        if not self.is_bound:
+        if not self.is_bound or self.infer_priority:
             return {}
         return {
             name: self.data.get(self.add_prefix(name), "")

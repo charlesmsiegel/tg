@@ -6,7 +6,7 @@
    infers them from the dots. Interactive workflows show the tgPool summary and the
    server's verdict (#chargen-feedback) instead of attribute-validation.js. {% endcomment %}
 <p class="tl-lede">
-    Rank Physical, Social and Mental as primary, secondary and tertiary, then add
+    {% if infer_priority %}Place dots to determine primary, secondary and tertiary{% else %}Rank Physical, Social and Mental as primary, secondary and tertiary{% endif %}, then add
     {{ primary }} / {{ secondary }} / {{ tertiary }} dots. Every Attribute starts at one dot.
 </p>
 <div class="tl-alloc"{% if priority %} data-priority="{{ priority.rule }}"{% endif %}>

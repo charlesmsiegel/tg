@@ -5,11 +5,11 @@
    counts current. Without `column` (no priority rule) only the name and an empty
    count render.
    {% include "characters/core/chargen/priority_head.html" with title="Physical" heading_id="attr-physical" status_id="physical-status" column=priority.physical %} {% endcomment %}
-<div class="tl-alloc__head">
-    <h2 class="tl-alloc__name" id="{{ heading_id }}">{{ title }}</h2>
+<div class="tl-alloc__head"{% if infer_priority and column %} data-priority-targets="{% for option in column.options %}{{ option.target }}{% if not forloop.last %},{% endif %}{% endfor %}"{% endif %}>
+    <h2 class="tl-alloc__name" id="{{ heading_id }}">{{ title }}{% if infer_priority and column %} <small data-inferred-priority>{{ column.rank|title }}</small>{% endif %}</h2>
     <span class="tl-alloc__left{% if column.state == 'done' %} is-done{% elif column.state == 'over' %} is-over{% endif %}"{% if status_id %} id="{{ status_id }}"{% endif %} data-priority-count>{{ column.count }}</span>
 </div>
-{% if column %}
+{% if column and not infer_priority %}
     <fieldset class="tl-prio" data-priority-picker>
         <legend class="tl-sr">{{ title }} priority</legend>
         {% for option in column.options %}
