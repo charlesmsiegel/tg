@@ -1,230 +1,103 @@
-# Items App
+# items
 
-The `items` app manages equipment, artifacts, and magical items across all World of Darkness gamelines. Like the characters app, it uses polymorphic inheritance to support gameline-specific item types while sharing common functionality.
+The `items` app holds every object a character can own or carry: weapons, Mage Wonders
+and grimoires, Werewolf fetishes, Vampire bloodstones, Changeling treasures, Mummy
+relics and the like. This page is the entry point for developers and coding agents
+working in the app; the detailed reference lives in [`docs/`](docs/).
 
-## Purpose
+## Main concepts
 
-The items app provides:
-- Item creation and management for all WoD gamelines
-- Polymorphic item models (weapons, armor, fetishes, talismans, etc.)
-- Gameline-specific magical and mundane items
-- Item ownership and chronicle association
-- Item status management (Unfinished → Submitted → Approved)
-- Gameline-specific forms, views, and templates
+- **`ItemModel`** ([`models/core/item.py`](models/core/item.py)) is the polymorphic
+  base of every item. It extends `core.models.Model`, so each item has an owner,
+  chronicle, status, visibility, sources, description, public info and image, and
+  its `save()` runs `full_clean()`. Items add two relations: `owned_by`
+  (characters) and `located_at` (locations).
+- **Gameline subclasses** live under `models/<gameline>/` (for example
+  `models/mage/wonder.py`). Each sets a `type` string and a `gameline` code.
+  See [models](docs/models.md).
+- **Reference data** that is not an item: `Material` and `Medium` (grimoire covers
+  and writing media) are plain Django models in `models/core/`.
+- **The registry** ([`registry.py`](registry.py)) declares, once per routable model,
+  its URLs, access policy for each action, form fields or form class, and templates.
+  Views and URL patterns are built from it. See
+  [views and URLs](docs/views-and-urls.md).
+- **Polymorphic detail routing**: `/items/<pk>/` resolves the concrete item type and
+  hands the request to that type's detail view.
 
-## Supported Item Types
+## Key modules
 
-- **Vampire (VtM)** - Weapons, armor, blood bags, ritual components
-- **Werewolf (WtA)** - Fetishes, talismans, klaives, caern items
-- **Mage (MtA)** - Wonders, talismans, grimoires, nodes (as items)
-- **Wraith (WtO)** - Relics, artifacts, fetters
-- **Changeling (CtD)** - Treasures, chimera, tokens
-- **Demon (DtF)** - Relics, infernal items
+| Path | Responsibility |
+|------|----------------|
+| [`models/`](models/) | `ItemModel` and its subclasses, grouped by gameline (`core`, `changeling`, `demon`, `hunter`, `mage`, `mummy`, `vampire`, `werewolf`, `wraith`) |
+| [`registry.py`](registry.py) | One `ModelSpec` per routable model: slug, gameline, URL routes, policies, fields, templates |
+| [`views/`](views/) | View classes built by the registry, plus the custom behaviour they wrap (`_ItemUpdateView`, `_WonderCreateView`, grimoire context) and the staff index |
+| [`urls/`](urls/) | URL modules; each one asks the registry for its routes |
+| [`forms/`](forms/) | Item-type chooser, owner-limited edit forms, `WonderForm`, the Vampire artifact forms and the Sorcerer artifact chooser |
+| [`templates/items/`](templates/items/) | Spread templates: shared shells in `core/item/` and `tl/`, one folder per item type |
+| [`static/items/js/wonder-form.js`](static/items/js/wonder-form.js) | Toggles the create/select halves of each power subform in the Wonder form |
+| [`admin.py`](admin.py) | Django admin registrations |
+| [`tests/`](tests/) | Model, form, view and authorization tests |
 
-## Directory Structure
+## How it connects to other apps
 
-```
-items/
-├── __init__.py
-├── admin.py                    # Admin configuration
-├── apps.py                     # App configuration
-├── forms/                      # Item creation/edit forms
-│   ├── __init__.py
-│   ├── core/                   # Shared form components
-│   ├── vampire/                # VtM-specific forms
-│   ├── werewolf/               # WtA-specific forms
-│   ├── mage/                   # MtA-specific forms
-│   ├── wraith/                 # WtO-specific forms
-│   ├── changeling/             # CtD-specific forms
-│   └── demon/                  # DtF-specific forms
-├── models/                     # Item models
-│   ├── __init__.py
-│   ├── core/                   # Base ItemModel class
-│   │   ├── item.py            # Main ItemModel
-│   │   └── weapon.py          # Generic weapon stats
-│   ├── vampire/                # VtM item types
-│   ├── werewolf/               # WtA item types (Fetish, etc.)
-│   ├── mage/                   # MtA item types (Wonder, etc.)
-│   ├── wraith/                 # WtO item types
-│   ├── changeling/             # CtD item types
-│   └── demon/                  # DtF item types
-├── templates/
-│   └── items/
-│       ├── core/               # Base item templates
-│       ├── vampire/            # VtM templates
-│       ├── werewolf/           # WtA templates
-│       ├── mage/               # MtA templates
-│       ├── wraith/             # WtO templates
-│       ├── changeling/         # CtD templates
-│       └── demon/              # DtF templates
-├── templatetags/               # Custom template tags
-├── tests/                      # Tests by gameline
-│   ├── vampire/
-│   ├── werewolf/
-│   ├── mage/
-│   └── ...
-├── urls/                       # URL routing by gameline
-│   ├── __init__.py
-│   ├── vampire/
-│   ├── werewolf/
-│   └── ...
-└── views/                      # Views by gameline
-    ├── __init__.py
-    ├── core/                   # Shared view logic
-    ├── vampire/
-    ├── werewolf/
-    └── ...
-```
+- **core**: base model and managers (`core.models.Model`, `ModelManager`), the
+  registry machinery (`core.model_registry`), route policies
+  (`core.route_policy_manifest`, `core.access_policy`), the public projection views
+  (`core.views.public_object`), and the shared fallback templates under
+  `core/templates/core/registry/`.
+- **characters**: `ItemModel.owned_by` points at `characters.CharacterModel`. Mage
+  chargen reuses `WonderForm` and `items/mage/wonder/form_include.html`, and the
+  Sorcerer wizard uses `ArtifactCreateOrSelectForm`. Grimoires reference Mage
+  statistics (spheres, practices, instruments, rotes, factions); several items link
+  to `characters.Effect`, `characters.Resonance`, `characters.DemonHouse` and
+  `characters.Mummy`.
+- **locations**: `ItemModel.located_at` points at `locations.LocationModel`, and a
+  Mage `Library` holds `Grimoire` books.
+- **game**: items belong to a `game.Chronicle`; the chronicle page offers its own
+  item-creation form (`game.forms.ChronicleItemCreationForm`).
+- **populate_db**: loads `Material`, `Medium`, weapons and example items (see
+  [`populate_db/README.md`](../populate_db/README.md)).
 
-## Key Components
+## Admin
 
-### Base ItemModel
+[`admin.py`](admin.py) registers `ItemModel`, the four weapon models, `Medium`,
+`Material`, `Wonder`, `WonderResonanceRating`, `Charm`, `Talisman`, `Artifact`,
+`Grimoire`, `Fetish`, `SorcererArtifact`, `VampireArtifact`, `Bloodstone`, the Demon
+`Relic`, `WraithRelic`, `WraithArtifact` and `Treasure`. `Periapt`, `Talen`, `Dross`,
+`HunterGear`, `HunterRelic`, `MummyRelic`, `Vessel`, `Ushabti` and
+`RelicResonanceRating` have no admin registration; edit them through the site or the
+shell.
 
-All items inherit from `ItemModel` in `models/core/item.py`:
+## Tests
 
-```python
-from core.models import Model
+Tests mirror the source tree under [`tests/`](tests/): `tests/models/<gameline>/`,
+`tests/forms/<gameline>/` and `tests/views/<gameline>/`. Two cross-cutting modules
+are worth knowing:
 
-class ItemModel(Model):
-    # Core fields shared across all item types
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    chronicle = models.ForeignKey('game.Chronicle', on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=3, choices=STATUS_CHOICES, default='Un')
+- [`tests/views/test_authorization.py`](tests/views/test_authorization.py) checks
+  that anonymous users and other players cannot edit an item and that creating one
+  records the owner.
+- [`tests/views/test_spread_forms.py`](tests/views/test_spread_forms.py) walks every
+  registry entry and checks that its create and edit pages render every form field
+  with Spread markup and no legacy classes.
 
-    # Basic properties
-    item_type = models.CharField(max_length=50)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    value = models.IntegerField(default=0)  # In Resources dots
+Run the app's tests with `python manage.py test items`. See
+[`docs/development/testing.md`](../docs/development/testing.md) for the test runner
+and conventions.
 
-    class Meta:
-        verbose_name = "Item"
-        verbose_name_plural = "Items"
-```
+## Documentation
 
-### Gameline-Specific Items
+| Page | Contents |
+|------|----------|
+| [docs/models.md](docs/models.md) | Every item model, grouped by gameline, with fields, computed values and invariants |
+| [docs/views-and-urls.md](docs/views-and-urls.md) | The registry, access policies, custom views and the full URL table |
+| [docs/forms.md](docs/forms.md) | The item-type chooser, limited edit forms, `WonderForm` and the Vampire artifact forms |
+| [docs/templates.md](docs/templates.md) | Template layout, shared shells and blocks, fallbacks and chargen includes |
 
-**Werewolf (Fetish):**
-```python
-class Fetish(ItemModel):
-    # Werewolf-specific fields
-    gnosis = models.IntegerField(default=1)
-    level = models.IntegerField(default=1)
-    spirit_type = models.CharField(max_length=100)
-    power = models.TextField()
+## See also
 
-    class Meta:
-        verbose_name = "Fetish"
-        verbose_name_plural = "Fetishes"
-```
-
-**Mage (Wonder):**
-```python
-class Wonder(ItemModel):
-    # Mage-specific fields
-    arete = models.IntegerField(default=1)
-    quintessence = models.IntegerField(default=0)
-    paradox = models.IntegerField(default=0)
-    sphere_requirements = models.JSONField(default=dict)
-    effects = models.TextField()
-
-    class Meta:
-        verbose_name = "Wonder"
-        verbose_name_plural = "Wonders"
-```
-
-## Usage Examples
-
-### Creating a Fetish
-
-```python
-from items.models.werewolf import Fetish
-
-fetish = Fetish.objects.create(
-    owner=user,
-    name="Spirit Whistle",
-    description="A bone whistle that summons spirits",
-    gnosis=5,
-    level=2,
-    spirit_type="Wind Spirit",
-    power="Summons a wind spirit when blown"
-)
-```
-
-### Querying Items
-
-```python
-# Get all items for a user
-my_items = ItemModel.objects.filter(owner=request.user)
-
-# Get all fetishes in a chronicle
-fetishes = Fetish.objects.filter(chronicle=chronicle)
-
-# Get approved wonders
-wonders = Wonder.objects.filter(status='App')
-```
-
-## Item Status
-
-Items follow the same status progression as characters:
-
-- **Un (Unfinished)** - Item in creation
-- **Sub (Submitted)** - Awaiting ST approval
-- **App (Approved)** - Ready for use
-- **Ret (Retired)** - No longer in use
-- **Dec (Deceased)** - Item destroyed
-
-## Testing
-
-Run item tests:
-```bash
-# All item tests
-pytest items/tests/
-
-# Gameline-specific tests
-pytest items/tests/werewolf/
-pytest items/tests/mage/
-
-# Specific test file
-pytest -v items/tests/werewolf/test_fetish.py
-```
-
-## Permissions
-
-Items use these permission checks:
-
-- **Owner** - Can edit their own items
-- **Storyteller** - Can edit items in their chronicles
-- **Approved Status** - Only STs can approve items
-
-## Related Apps
-
-- **core** - Base models and utilities
-- **characters** - Items can be assigned to characters
-- **game** - Items belong to chronicles
-- **accounts** - User ownership
-
-## Common Tasks
-
-### Adding a New Item Type
-
-1. Create model in appropriate gameline folder
-2. Create form in `forms/{gameline}/`
-3. Create views in `views/{gameline}/`
-4. Add URL patterns in `urls/{gameline}/`
-5. Create templates in `templates/items/{gameline}/`
-6. Add tests in `tests/{gameline}/`
-
-### Adding a New Property
-
-1. Add field to appropriate model
-2. Create migration: `python manage.py makemigrations`
-3. Update form to include new field
-4. Update template to display property
-5. Add tests for the new property
-
-## Related Documentation
-
-- See `docs/CODE_STYLE.md` for coding standards
-- See `docs/MODELS.md` for model patterns
-- See `/CLAUDE.md` for project-wide conventions
-- See `characters/docs/` for parallel character app structure
+- [Adding an item or location type](../docs/guides/adding-an-item-or-location-type.md)
+- [Data model overview](../docs/architecture/data-model.md)
+- [Authorization](../docs/architecture/authorization.md)
+- [locations app](../locations/README.md)
+- [core app](../core/README.md)

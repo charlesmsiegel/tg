@@ -1,214 +1,110 @@
-# Locations App
+# locations
 
-The `locations` app manages places, territories, and special locations across all World of Darkness gamelines. It uses polymorphic inheritance similar to characters and items apps.
+The `locations` app models the places of a chronicle: cities and generic locations,
+Vampire havens and domains, Werewolf caerns, Mage chantries, nodes and realms,
+Changeling freeholds, Wraith haunts and necropoli, Demon bastions, Hunter safehouses
+and Mummy tombs. This page is the entry point for developers and coding agents working
+in the app; the detailed reference lives in [`docs/`](docs/).
 
-## Purpose
+## Main concepts
 
-The locations app provides:
-- Location creation and management for all WoD gamelines
-- Polymorphic location models (havens, caerns, chantries, haunts, freeholds, etc.)
-- Gameline-specific special locations
-- Location ownership and chronicle association
-- Location status management (Unfinished → Submitted → Approved)
-- Gameline-specific forms, views, and templates
+- **`LocationModel`** ([`models/core/location.py`](models/core/location.py)) is the
+  polymorphic base of every place. It extends `core.models.Model` (owner, chronicle,
+  status, visibility, sources, description, image), adds the three barrier ratings
+  (`gauntlet`, `shroud`, `dimension_barrier`), a `creation_status` wizard counter, an
+  owning character (`owned_by`) and **containment**: `contained_within` places a
+  location inside one or more others.
+- **Gameline subclasses** live under `models/<gameline>/`. Several recompute fields on
+  save (for example a haven's total rating, a tomb's rank, a caern's gauntlet). See
+  [models](docs/models.md).
+- **Reference data** that is not a location: `RealityZone` (a set of practice
+  ratings) is a plain model that nodes, sanctums, demesnes, realms and sectors point to.
+- **The registry** ([`registry.py`](registry.py)) declares each routable model's URLs,
+  access policy per action, fields or form class, and templates. Views and URL patterns
+  are built from it; see [views and URLs](docs/views-and-urls.md).
+- **Creation wizards**: a Mage chantry is built in a seven-step wizard that spends
+  points on backgrounds and Integrated Effects ([chantries](docs/chantries.md)); a
+  Changeling freehold has a four-step wizard ([freeholds](docs/freeholds.md)).
+- **Point-built places**: nodes and reality zones ([nodes](docs/nodes.md)), and
+  Horizon and Paradox realms with random generation ([realms](docs/realms.md)).
 
-## Supported Location Types
+## Key modules
 
-- **Vampire (VtM)** - Havens, Elysiums, domains, feeding grounds
-- **Werewolf (WtA)** - Caerns, septs, hunting grounds, bawn
-- **Mage (MtA)** - Chantries, Nodes, Realms, sanctums
-- **Wraith (WtO)** - Haunts, Citadels, Necropoli
-- **Changeling (CtD)** - Freeholds, trods, glens
-- **Demon (DtF)** - Lairs, domains, strongholds
+| Path | Responsibility |
+|------|----------------|
+| [`models/`](models/) | `LocationModel`, `City`, and the subclasses for each gameline |
+| [`registry.py`](registry.py) | One `ModelSpec` per routable model |
+| [`services/chantry_points.py`](services/chantry_points.py) | The single source of chantry point costs, caps and purchase/refund mutations |
+| [`views/`](views/) | Registry-built views, the staff index, the polymorphic detail router, the chantry and freehold wizards |
+| [`urls/`](urls/) | URL modules; each asks the registry for its routes and adds the wizard entry points |
+| [`forms/`](forms/) | Type chooser, owner-limited edit form, chantry wizard forms, node/sanctum/demesne forms with reality-zone formsets, freehold wizard forms, paradox realm forms |
+| [`templates/locations/`](templates/locations/) | Spread templates: shells in `core/` and `tl/`, one folder per type |
+| [`static/locations/js/`](static/locations/js/) | Behaviour for the chantry effects step and the freehold forms |
+| [`admin.py`](admin.py) | Django admin registrations |
+| [`tests/`](tests/) | Model, form, service, view, URL and authorization tests |
 
-## Directory Structure
+## How it connects to other apps
 
-```
-locations/
-├── __init__.py
-├── admin.py                    # Admin configuration
-├── apps.py                     # App configuration
-├── forms/                      # Location creation/edit forms
-│   ├── __init__.py
-│   ├── core/                   # Shared form components
-│   ├── vampire/                # VtM-specific forms
-│   ├── werewolf/               # WtA-specific forms
-│   ├── mage/                   # MtA-specific forms
-│   ├── wraith/                 # WtO-specific forms
-│   └── demon/                  # DtF-specific forms
-├── models/                     # Location models
-│   ├── __init__.py
-│   ├── core/                   # Base LocationModel class
-│   │   └── location.py        # Main LocationModel
-│   ├── vampire/                # VtM location types
-│   ├── werewolf/               # WtA location types (Caern, etc.)
-│   ├── mage/                   # MtA location types (Node, Chantry)
-│   ├── wraith/                 # WtO location types
-│   └── demon/                  # DtF location types
-├── templates/
-│   └── locations/
-│       ├── core/               # Base location templates
-│       ├── vampire/            # VtM templates
-│       ├── werewolf/           # WtA templates
-│       ├── mage/               # MtA templates
-│       ├── wraith/             # WtO templates
-│       └── demon/              # DtF templates
-├── templatetags/               # Custom template tags
-├── tests/                      # Tests by gameline
-│   ├── vampire/
-│   ├── werewolf/
-│   ├── mage/
-│   └── ...
-├── urls/                       # URL routing by gameline
-│   ├── __init__.py
-│   ├── vampire/
-│   ├── werewolf/
-│   └── ...
-└── views/                      # Views by gameline
-    ├── __init__.py
-    ├── core/                   # Shared view logic
-    ├── vampire/
-    ├── werewolf/
-    └── ...
-```
+- **core**: base model, registry machinery (`core.model_registry`), route policies,
+  public projection views, the approval service (`core.services.approval`, which calls
+  a chantry's `submission_errors()` and `on_returned_for_revision()` hooks), and the
+  shared fallback templates in `core/templates/core/registry/`.
+- **characters**: `LocationModel.owned_by`, `City.characters`, chantry personnel and
+  cabals, and many Mage statistics (Effects, Resonance, practices, merits and flaws,
+  backgrounds). Mage-family character wizards reuse `NodeForm`, `LibraryForm`,
+  `SanctumForm` and `ChantrySelectOrCreateForm` and their templates for background
+  steps.
+- **items**: a Mage `Library` holds `items.Grimoire` books; `ItemModel.located_at`
+  points at locations.
+- **game**: `game.Scene.location` points at a location (`LocationModel.get_scenes()`);
+  locations belong to a `game.Chronicle`.
+- **populate_db**: loads the example Sectors in `populate_db/mage/sectors.py` (see
+  [`populate_db/README.md`](../populate_db/README.md)).
 
-## Key Components
+## Admin
 
-### Base LocationModel
+[`admin.py`](admin.py) registers `LocationModel`, `City`, `Sanctum`, `Node`,
+`NodeMeritFlawRating`, `NodeResonanceRating`, `Library`, `Sector`, `HorizonRealm`,
+`RealityZone`, `ZoneRating`, `Caern`, `Chantry`, `ChantryBackgroundRating`, `Haunt`,
+`Necropolis`, `Haven`, `HavenMeritFlawRating`, `Domain`, `Elysium`, `Rack`,
+`TremereChantry`, `Barrens`, `Freehold`, `Bastion` and `Reliquary`. The other types
+(for example `Demesne`, `ParadoxRealm`, `DreamRealm`, `Holding`, `Trod`, `Byway`,
+`Citadel`, `WraithFreehold`, `Nihil`, `HuntingGround`, `Safehouse`, `Tomb`,
+`CultTemple`, `UndergroundSanctuary`) have no admin registration.
 
-All locations inherit from `LocationModel` in `models/core/location.py`:
+## Tests
 
-```python
-from core.models import Model
+Tests mirror the source tree under [`tests/`](tests/) (`models/`, `forms/`, `views/`
+per gameline), plus:
 
-class LocationModel(Model):
-    # Core fields shared across all location types
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    chronicle = models.ForeignKey('game.Chronicle', on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=3, choices=STATUS_CHOICES, default='Un')
+- [`tests/services/test_chantry_points.py`](tests/services/test_chantry_points.py)
+  for the chantry point rules;
+- [`tests/views/mage/test_chantry_wizard.py`](tests/views/mage/test_chantry_wizard.py),
+  `test_chantry_create.py` and `test_chantry_update.py` for the chantry flows;
+- [`tests/views/test_authorization.py`](tests/views/test_authorization.py) and
+  [`tests/views/test_form_pages.py`](tests/views/test_form_pages.py) across types;
+- [`tests/urls/test_url_patterns.py`](tests/urls/test_url_patterns.py) for route names.
 
-    # Location properties
-    location_type = models.CharField(max_length=50)
-    address = models.TextField(blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True)
-    country = models.CharField(max_length=100, blank=True)
-    size = models.CharField(max_length=20, blank=True)
+Run them with `python manage.py test locations`. See
+[`docs/development/testing.md`](../docs/development/testing.md).
 
-    class Meta:
-        verbose_name = "Location"
-        verbose_name_plural = "Locations"
-```
+## Documentation
 
-### Gameline-Specific Locations
+| Page | Contents |
+|------|----------|
+| [docs/models.md](docs/models.md) | Every location model, grouped by gameline |
+| [docs/chantries.md](docs/chantries.md) | Mage chantry points, the creation wizard, direct ST forms and character integration |
+| [docs/nodes.md](docs/nodes.md) | Nodes, their point budget and output, and reality zones |
+| [docs/realms.md](docs/realms.md) | Horizon realm build points and Paradox realm generation |
+| [docs/freeholds.md](docs/freeholds.md) | Changeling freehold features, powers and the creation wizard |
+| [docs/views-and-urls.md](docs/views-and-urls.md) | Registry, policies, routers, the index and the full URL table |
+| [docs/forms.md](docs/forms.md) | Every location form |
+| [docs/templates.md](docs/templates.md) | Template layout, shells, partials and chargen includes |
 
-**Werewolf (Caern):**
-```python
-class Caern(LocationModel):
-    # Caern-specific fields
-    level = models.IntegerField(default=1)
-    totem = models.CharField(max_length=100)
-    tribe = models.ForeignKey('Tribe', on_delete=models.SET_NULL, null=True)
-    gauntlet_rating = models.IntegerField(default=7)
+## See also
 
-    class Meta:
-        verbose_name = "Caern"
-        verbose_name_plural = "Caerns"
-```
-
-**Mage (Node):**
-```python
-class Node(LocationModel):
-    # Node-specific fields
-    quintessence_per_day = models.IntegerField(default=1)
-    aura = models.CharField(max_length=50)
-    resonance = models.CharField(max_length=100)
-    sphere_affinities = models.JSONField(default=list)
-
-    class Meta:
-        verbose_name = "Node"
-        verbose_name_plural = "Nodes"
-```
-
-## Usage Examples
-
-### Creating a Caern
-
-```python
-from locations.models.werewolf import Caern
-
-caern = Caern.objects.create(
-    owner=user,
-    name="Sept of the Silver Fang",
-    description="Ancient caern in the mountains",
-    level=3,
-    totem="Falcon",
-    gauntlet_rating=5
-)
-```
-
-### Querying Locations
-
-```python
-# Get all locations for a user
-my_locations = LocationModel.objects.filter(owner=request.user)
-
-# Get all caerns in a chronicle
-caerns = Caern.objects.filter(chronicle=chronicle)
-
-# Get approved nodes
-nodes = Node.objects.filter(status='App')
-```
-
-## Location Status
-
-Locations follow the same status progression:
-
-- **Un (Unfinished)** - Location in creation
-- **Sub (Submitted)** - Awaiting ST approval
-- **App (Approved)** - Ready for use
-- **Ret (Retired)** - No longer in use
-- **Dec (Deceased)** - Location destroyed
-
-## Testing
-
-Run location tests:
-```bash
-# All location tests
-pytest locations/tests/
-
-# Gameline-specific tests
-pytest locations/tests/werewolf/
-pytest locations/tests/mage/
-```
-
-## Permissions
-
-Locations use standard permission checks:
-
-- **Owner** - Can edit their own locations
-- **Storyteller** - Can edit locations in their chronicles
-- **Approved Status** - Only STs can approve locations
-
-## Related Apps
-
-- **core** - Base models and utilities
-- **characters** - Locations can be associated with characters
-- **game** - Locations belong to chronicles
-- **accounts** - User ownership
-
-## Common Tasks
-
-### Adding a New Location Type
-
-1. Create model in appropriate gameline folder
-2. Create form in `forms/{gameline}/`
-3. Create views in `views/{gameline}/`
-4. Add URL patterns in `urls/{gameline}/`
-5. Create templates in `templates/locations/{gameline}/`
-6. Add tests in `tests/{gameline}/`
-
-## Related Documentation
-
-- See `docs/CODE_STYLE.md` for coding standards
-- See `/CLAUDE.md` for project-wide conventions
-- See `characters/docs/` and `items/docs/` for parallel app structures
+- [Adding an item or location type](../docs/guides/adding-an-item-or-location-type.md)
+- [Data model overview](../docs/architecture/data-model.md)
+- [Authorization](../docs/architecture/authorization.md)
+- [XP and approvals](../docs/architecture/xp-and-approvals.md)
+- [items app](../items/README.md)
