@@ -1,5 +1,4 @@
-"""Ratchets for the template policy in the Step 8 design
-(docs/superpowers/specs/2026-09-25-template-consolidation-design.md).
+"""Ratchets for the template policy (docs/architecture/frontend.md).
 
 * Inline ``style="..."`` attributes may only go down: styles belong in
   ``core/static/core/tl/tl.css`` (Spread). Lower ``INLINE_STYLE_BUDGET`` when a

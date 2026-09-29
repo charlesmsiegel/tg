@@ -1,9 +1,9 @@
 """Guards for code deleted by the Step 1 dead-code removal.
 
-Design: docs/superpowers/specs/2026-09-25-dead-code-removal-design.md. Each rollout PR adds
-one ``SimpleTestCase`` subclass named after its PR ID (``D2DependencyRemovedTest``, ...) that
-mixes in ``RemovalAssertions``. A guard fails while the dead code exists and keeps it from
-coming back. Guards need no database, so every class is a ``SimpleTestCase``.
+Each rollout PR adds one ``SimpleTestCase`` subclass named after its PR ID
+(``D2DependencyRemovedTest``, ...) that mixes in ``RemovalAssertions``. A guard fails while
+the dead code exists and keeps it from coming back. Guards need no database, so every class
+is a ``SimpleTestCase``.
 """
 
 import importlib

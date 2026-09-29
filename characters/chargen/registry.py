@@ -33,7 +33,7 @@ class Step:
 class Workflow:
     steps: tuple[Step, ...]
     # Interactive workflows swap step fragments with htmx and add live
-    # validation (see docs/superpowers/specs/2026-09-25-htmx-chargen-design.md).
+    # validation (see docs/architecture/character-creation.md).
     # The same views and forms serve both modes; only rendering differs.
     interactive: bool = False
 

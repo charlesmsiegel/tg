@@ -9,7 +9,7 @@ Shared fragments live under ``characters/templates/characters/shared/`` and
 ``core/templates/core/shared/``; the item/location registry's fallbacks live under
 ``core/templates/core/registry/``. The view mixins built on this are
 ``core.mixins.SharedTemplateMixin`` and ``core.mixins.ListHeadingMixin``. See
-``docs/superpowers/specs/2026-09-25-template-consolidation-design.md``.
+``docs/architecture/frontend.md``.
 """
 
 
