@@ -309,6 +309,39 @@ class TestMageFreebieSpendingService(TestCase):
         self.assertIn("Arete", categories)
         self.assertIn("Resonance", categories)
 
+    def test_avatar_freebie_adds_to_starting_quintessence(self):
+        avatar, _ = Background.objects.get_or_create(
+            property_name="avatar", defaults={"name": "Avatar"}
+        )
+        self.mage.quintessence = 4
+        self.mage.save(update_fields=["quintessence"])
+        service = MageFreebieSpendingService(self.mage)
+        result = service.spend("Background", avatar)
+        self.assertTrue(result.success, result.error)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.avatar, 1)
+        self.assertEqual(self.mage.quintessence, 5)
+
+        rating = BackgroundRating.objects.get(char=self.mage, bg=avatar)
+        result = service.spend("Background", rating)
+        self.assertTrue(result.success, result.error)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.avatar, 2)
+        self.assertEqual(self.mage.quintessence, 6)
+
+    def test_denied_avatar_freebie_reverts_its_quintessence(self):
+        avatar, _ = Background.objects.get_or_create(
+            property_name="avatar", defaults={"name": "Avatar"}
+        )
+        service = MageFreebieSpendingService(self.mage)
+        self.assertTrue(service.spend("Background", avatar).success)
+        request = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        storyteller = User.objects.create_user("avatar_storyteller")
+        self.assertTrue(service.deny(request, storyteller).success)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.avatar, 0)
+        self.assertEqual(self.mage.quintessence, 0)
+
 
 class TestFreebieApprovalDenial(TestCase):
     """Test freebie spending approval and denial."""

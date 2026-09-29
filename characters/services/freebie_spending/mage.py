@@ -42,6 +42,26 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     Spheres, Arete, Practices, Tenets, Resonance, Rote Points, and Quintessence.
     """
 
+    @handler("Background")
+    def _handle_background(self, example, **kwargs) -> FreebieSpendResult:
+        previous_avatar = self.character.avatar
+        result = super()._handle_background(example, **kwargs)
+        avatar_gained = self.character.avatar - previous_avatar
+        if result.success and avatar_gained:
+            self.character.quintessence += avatar_gained
+            self.character.save(update_fields=["quintessence"])
+        return result
+
+    @applier("background")
+    def _apply_background(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
+        previous_avatar = self.character.avatar if deny else 0
+        result = super()._apply_background(freebie_request, approver, deny=deny)
+        avatar_lost = previous_avatar - self.character.avatar if deny else 0
+        if result.success and avatar_lost:
+            self.character.quintessence = max(0, self.character.quintessence - avatar_lost)
+            self.character.save(update_fields=["quintessence"])
+        return result
+
     @handler("Sphere")
     def _handle_sphere(self, example, **kwargs) -> FreebieSpendResult:
         """Handle sphere freebie spending."""

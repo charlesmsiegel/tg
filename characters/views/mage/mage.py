@@ -214,6 +214,18 @@ class MageAbilityView(MtAHumanAbilityView):
 class MageBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mage/chargen.html"
 
+    @transaction.atomic
+    def form_valid(self, form):
+        previous_avatar = self.object.avatar
+        response = super().form_valid(form)
+        # Adjust the starting grant only by the change in Avatar rating, so
+        # revisiting this step does not refill Quintessence already spent.
+        self.object.quintessence = max(
+            0, self.object.quintessence + self.object.avatar - previous_avatar
+        )
+        self.object.save(update_fields=["quintessence"])
+        return response
+
 
 class MageFocusView(ChargenStepMixin, SpecialUserMixin, UpdateView):
     model = Mage

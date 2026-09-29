@@ -27,6 +27,57 @@ class MageCreationControlsTests(TestCase):
     def wizard(self, mage):
         return self.client.get(reverse("characters:character", kwargs={"pk": mage.pk}))
 
+    def test_avatar_background_sets_starting_quintessence(self):
+        avatar = Background.objects.create(name="Avatar", property_name="avatar")
+        resources = Background.objects.create(name="Resources", property_name="resources")
+        mage = Mage.objects.create(name="New Mage", owner=self.user, creation_status=3)
+        response = self.client.post(
+            reverse("characters:character", kwargs={"pk": mage.pk}),
+            {
+                "backgrounds-TOTAL_FORMS": "2",
+                "backgrounds-INITIAL_FORMS": "0",
+                "backgrounds-MIN_NUM_FORMS": "0",
+                "backgrounds-MAX_NUM_FORMS": "1000",
+                "backgrounds-0-bg": str(avatar.pk),
+                "backgrounds-0-rating": "3",
+                "backgrounds-1-bg": str(resources.pk),
+                "backgrounds-1-rating": "4",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        mage.refresh_from_db()
+        self.assertEqual(mage.avatar, 3)
+        self.assertEqual(mage.quintessence, 3)
+
+    def test_resaving_unchanged_avatar_does_not_refill_spent_quintessence(self):
+        avatar = Background.objects.create(name="Avatar", property_name="avatar")
+        resources = Background.objects.create(name="Resources", property_name="resources")
+        mage = Mage.objects.create(
+            name="Returning Mage", owner=self.user, creation_status=3, quintessence=1
+        )
+        avatar_rating = BackgroundRating.objects.create(char=mage, bg=avatar, rating=3)
+        resources_rating = BackgroundRating.objects.create(char=mage, bg=resources, rating=4)
+        response = self.client.post(
+            reverse("characters:character", kwargs={"pk": mage.pk}),
+            {
+                "backgrounds-TOTAL_FORMS": "2",
+                "backgrounds-INITIAL_FORMS": "2",
+                "backgrounds-MIN_NUM_FORMS": "0",
+                "backgrounds-MAX_NUM_FORMS": "1000",
+                "backgrounds-0-id": str(avatar_rating.pk),
+                "backgrounds-0-char": str(mage.pk),
+                "backgrounds-0-bg": str(avatar.pk),
+                "backgrounds-0-rating": "3",
+                "backgrounds-1-id": str(resources_rating.pk),
+                "backgrounds-1-char": str(mage.pk),
+                "backgrounds-1-bg": str(resources.pk),
+                "backgrounds-1-rating": "4",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        mage.refresh_from_db()
+        self.assertEqual(mage.quintessence, 1)
+
     def test_attribute_and_ability_priority_is_inferred_from_dots(self):
         for step in (1, 2):
             with self.subTest(step=step):
