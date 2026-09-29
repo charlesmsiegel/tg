@@ -1,6 +1,7 @@
 """tg_schema 0008 merges duplicate scene read statuses and makes (user, scene) unique."""
 
 import importlib
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, connection, transaction
@@ -113,6 +114,12 @@ class UniqueSceneReadStatusMigrationTests(TransactionTestCase):
             ),
             1,
         )
+
+    def test_a_renamed_marker_column_is_skipped(self):
+        with mock.patch.object(migration, "COLUMNS", migration.COLUMNS | {"renamed_id"}):
+            UserSceneReadStatus.objects.create(user=self.ada, scene=None)
+            self.run_migration()
+        self.assertTrue(UserSceneReadStatus.objects.filter(scene=None).exists())
 
     def test_rows_go_with_their_user_and_scene(self):
         UserSceneReadStatus.objects.create(user=self.ada, scene=self.scene)

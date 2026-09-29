@@ -12,10 +12,11 @@ model, so later model changes can't alter what this migration does.
 
 from django.db import migrations
 
-from tg_schema.schema import table_names
+from tg_schema.schema import table_columns, table_names
 
 TABLE = "game_userscenereadstatus"
 INDEX = "unique_user_scene_read_status"
+COLUMNS = {"id", "user_id", "scene_id", "read", "last_read_post_id"}
 
 
 def has_unique_user_scene(connection, cursor):
@@ -28,7 +29,9 @@ def has_unique_user_scene(connection, cursor):
 
 def make_scene_read_status_unique(apps, schema_editor):
     connection = schema_editor.connection
-    if TABLE not in table_names(connection):
+    # A later release that renames the table or these columns owns them (see
+    # tg_schema.schema): skip rather than fail every migrate.
+    if TABLE not in table_names(connection) or not COLUMNS <= table_columns(connection, TABLE):
         return
     q = connection.ops.quote_name
     table, read, marker = q(TABLE), q("read"), q("last_read_post_id")
