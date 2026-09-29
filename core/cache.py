@@ -9,12 +9,16 @@ database queries and view rendering. It includes:
 - A cached reference-list helper
 """
 
+import hashlib
 from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
+from django.conf import settings
+from django.contrib.messages.storage.cookie import CookieStorage
 from django.core.cache import cache
 from django.db.models import Model
+from django.utils.cache import patch_vary_headers
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
@@ -250,13 +254,69 @@ def get_cached_reference_list(
     return result
 
 
-def cache_page_per_visitor(timeout: int) -> list[Callable]:
-    """``cache_page`` that keys on the visitor's cookies, for ``method_decorator``.
+ANONYMOUS_PAGE_PREFIX = CacheKeyGenerator.make_key("anonymous_page")
 
-    Every page renders per-user markup (nav username, Edit and staff links,
-    messages). SessionMiddleware only adds ``Vary: Cookie`` after the view
-    returns, too late for ``cache_page``'s key, so a plain ``cache_page`` serves
-    the first visitor's page to everyone. ``vary_on_cookie`` inside it fixes the
-    key. Use as ``@method_decorator(cache_page_per_visitor(60 * 15), name="dispatch")``.
+
+def shares_anonymous_page(request) -> bool:
+    """Whether ``request`` may get the page every anonymous visitor shares: a GET
+    from a visitor with no session and no pending messages (so nothing per-visitor
+    can be on the page). A ``csrftoken`` cookie alone doesn't count."""
+    return (
+        request.method in ("GET", "HEAD")
+        and settings.SESSION_COOKIE_NAME not in request.COOKIES
+        and CookieStorage.cookie_name not in request.COOKIES
+        and not request.user.is_authenticated
+    )
+
+
+def anonymous_page_key(request) -> str:
+    path = hashlib.sha256(request.build_absolute_uri().encode()).hexdigest()
+    htmx = "htmx" if request.headers.get("HX-Request") else "page"
+    return f"{ANONYMOUS_PAGE_PREFIX}:{htmx}:{path}"
+
+
+def cache_page_per_visitor(timeout: int) -> list[Callable]:
+    """Page caching that never serves one visitor's page to another, for
+    ``method_decorator``: ``@method_decorator(cache_page_per_visitor(60 * 15),
+    name="dispatch")``.
+
+    Pages render per-user markup (nav username, Edit and staff links, messages).
+    SessionMiddleware only adds ``Vary: Cookie`` after the view returns, too late
+    for ``cache_page``'s key, so a plain ``cache_page`` serves the first visitor's
+    page to everyone.
+
+    - Anonymous visitors (see ``shares_anonymous_page``) share one copy per URL.
+      A page is stored only if it holds nothing per-visitor: it rendered no CSRF
+      token, set no cookie and is a 200.
+    - Everyone else gets ``cache_page`` keyed on their cookies (``vary_on_cookie``).
     """
-    return [cache_page(timeout), vary_on_cookie]
+    per_visitor = cache_page(timeout)
+
+    def decorator(view: Callable) -> Callable:
+        cached_per_visitor = per_visitor(vary_on_cookie(view))
+
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            if not shares_anonymous_page(request):
+                return cached_per_visitor(request, *args, **kwargs)
+            key = anonymous_page_key(request)
+            response = cache.get(key)
+            if response is not None:
+                return response
+            response = view(request, *args, **kwargs)
+            if hasattr(response, "render") and not response.is_rendered:
+                response.render()
+            if (
+                response.status_code == 200
+                and not response.streaming
+                and not response.cookies
+                and not request.META.get("CSRF_COOKIE_NEEDS_UPDATE")
+                and "private" not in response.get("Cache-Control", "")
+            ):
+                patch_vary_headers(response, ("Cookie", "HX-Request"))
+                cache.set(key, response, timeout)
+            return response
+
+        return wrapper
+
+    return [decorator]
