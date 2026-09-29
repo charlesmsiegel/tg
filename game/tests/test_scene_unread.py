@@ -1,6 +1,7 @@
 """Scene read markers and the C4 "new" divider (Spread)."""
 
 import re
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.db import connection
@@ -56,6 +57,28 @@ class RecordPostTests(ReadMarkerBase):
         owner = self.status("owner")
         self.assertFalse(owner.read)
         self.assertEqual(owner.last_read_post, first)  # unchanged
+
+    def test_rows_a_concurrent_first_post_created_get_this_posts_state(self):
+        # Both first posts saw no rows; the other one's insert won the race (Codex).
+        first = self.post(self.character, "First")
+        insert = UserSceneReadStatus.objects.bulk_create
+
+        def racing(rows, **kwargs):
+            insert(
+                [
+                    UserSceneReadStatus(
+                        user=self.users["owner"], scene=self.scene, read=True, last_read_post=first
+                    ),
+                    UserSceneReadStatus(user=self.users["st"], scene=self.scene, read=False),
+                ],
+                ignore_conflicts=True,
+            )
+            return insert(rows, **kwargs)
+
+        with mock.patch.object(UserSceneReadStatus.objects, "bulk_create", racing):
+            reply = self.scene.add_post(self.st_character, "", "Reply")
+        self.assertFalse(self.status("owner").read)
+        self.assertEqual((self.status("st").read, self.status("st").last_read_post), (True, reply))
 
     def test_rows_are_not_duplicated(self):
         for n in range(3):
