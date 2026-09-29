@@ -653,13 +653,15 @@ class UserSceneReadStatusManager(models.Manager):
         was rendered (and was never shown) keeps the scene unread. With
         ``shown_from`` (the first of the posts just shown, e.g. delivered live), a
         row moves only if no unread post precedes it: a backlog the reader has not
-        loaded yet keeps its marker. Returns the number of rows updated.
+        loaded yet keeps its marker. Returns the number of rows changed.
         """
         rows = self.filter(scene=scene, user_id=user_id)
         if post is LATEST_POST:
             post = Post.objects.filter(scene=scene).order_by("-pk").only("pk").first()
         if post is None:
             return rows.update(read=~Exists(Post.objects.filter(scene=scene)))
+        # Already read through ``post`` (e.g. its author, or a re-sent live post): no write.
+        rows = rows.exclude(read=True, last_read_post__gte=post.pk)
         if shown_from is not None:
             unseen = Post.objects.filter(
                 scene=scene,

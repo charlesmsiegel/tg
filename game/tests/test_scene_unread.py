@@ -130,6 +130,16 @@ class MarkReadTests(ReadMarkerBase):
         UserSceneReadStatus.objects.mark_read(self.scene, self.users["owner"].pk, None)
         self.assertTrue(self.status().read)
 
+    def test_a_reader_already_through_the_post_is_not_rewritten(self):
+        shown = self.post(self.character, "Shown")
+        self.set_status(read=True, marker=shown)
+        owner = self.users["owner"].pk
+        self.assertEqual(UserSceneReadStatus.objects.mark_read(self.scene, owner, shown), 0)
+        newer = self.post(self.st_character, "Newer")
+        self.set_status(read=False, marker=shown)
+        self.assertEqual(UserSceneReadStatus.objects.mark_read(self.scene, owner, newer), 1)
+        self.assertEqual((self.status().read, self.status().last_read_post), (True, newer))
+
     def test_only_updates_existing_rows(self):
         self.post(self.character, "One")
         self.assertEqual(
