@@ -27,11 +27,10 @@ class _FreeholdCreateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         prepare_created_object(form, self.request)
+        # Default the holder to the creator's first character, as the wizard does
+        if not form.instance.owned_by:
+            form.instance.owned_by = self.request.user.profile.my_characters().first()
         self.object = form.save()
-        # Set the owner to the current user's first character if they have one
-        if self.request.user.profile.characters.exists():
-            self.object.owned_by = self.request.user.profile.characters.first()
-            self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self):
