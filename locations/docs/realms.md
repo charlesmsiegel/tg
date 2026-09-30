@@ -87,7 +87,7 @@ Related rows:
 
 ### Random generation
 
-`ParadoxRealm.random(name="Random Paradox Realm", save=False)` follows the guide's
+`ParadoxRealm.random(name="Random Paradox Realm", save=False, realm=None)` follows the guide's
 tables. The dice helpers are static methods: `roll_d10()`, `roll_d5()` (a d10 halved,
 rounded up), `roll_2d10()` and `roll_d100()`.
 
@@ -104,8 +104,9 @@ rounded up), `roll_2d10()` and `roll_d100()`.
 4. **Final obstacle (Table B4, `random_final_obstacle()`)**: a d10; a 10 gives
    `combined`.
 
-The method builds the realm unsaved. With `save=True` it also saves the realm, then
-creates two or three `ParadoxAtmosphere` rows for the primary paradigm, one
+The method builds a new unsaved realm, or rolls onto `realm` when one is passed
+(keeping its other fields). With `save=True` it also saves the realm, deletes any
+obstacles and atmospheres it already had, then creates two or three `ParadoxAtmosphere` rows for the primary paradigm, one
 `ParadoxObstacle` per primary obstacle in the primary Sphere, and one per random
 obstacle in a freshly rolled Sphere, numbered in order.
 
@@ -130,9 +131,13 @@ carries two inline formsets: `ParadoxObstacleFormSet` (prefix `obstacles`) and
 - Without `generate_random`, `is_valid()` also validates both formsets, and
   `save(commit=True)` saves the realm and both formsets.
 - With `generate_random`, the formsets are not validated and `save()` returns
-  `ParadoxRealm.random(name=<the name entered>, save=commit)`: a new realm with
-  generated obstacles and atmospheres. The form's bound instance is not the object
-  returned.
+  `ParadoxRealm.random(name=<the name entered>, save=commit, realm=<the form's
+  instance>)`: the Spheres, paradigms, obstacle counts and final obstacle are rolled
+  onto the form's own instance, so a new realm keeps the owner and status the create
+  view set and an edited realm keeps its identity, owner, chronicle and status. The
+  other entered fields (description, barriers, `contained_within`) are saved as
+  entered; on save the realm's old obstacles and atmospheres are replaced by generated
+  ones.
 
 ### Views
 

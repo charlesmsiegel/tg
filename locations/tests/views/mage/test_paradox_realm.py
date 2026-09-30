@@ -199,6 +199,9 @@ class TestParadoxRealmCreateView(TestCase):
         realm = ParadoxRealm.objects.get(name="Random Realm")
         # Random generation creates atmosphere elements
         self.assertGreaterEqual(realm.realm_atmospheres.count(), 2)
+        # ...and keeps the creator binding the view set on the form instance (U11)
+        self.assertEqual(realm.owner, self.user)
+        self.assertEqual(realm.status, "Un")
 
 
 class TestParadoxRealmUpdateView(TestCase):
@@ -261,3 +264,46 @@ class TestParadoxRealmUpdateView(TestCase):
         self.realm.refresh_from_db()
         self.assertEqual(self.realm.name, "Updated Realm")
         self.assertEqual(self.realm.primary_sphere, SphereChoices.TIME)
+
+    def test_update_view_random_regenerates_same_realm(self):
+        """Generating at random on the edit page rerolls this realm, not a new one (U11)."""
+        ParadoxAtmosphere.objects.create(
+            realm=self.realm,
+            paradigm=ParadigmChoices.OBLIVION,
+            atmosphere_number=1,
+            description="Old atmosphere",
+        )
+        self.client.login(username="st_user", password="password")
+        data = {
+            "name": "Rerolled Realm",
+            "description": "Kept description",
+            "primary_sphere": SphereChoices.ENTROPY,
+            "paradigm": ParadigmChoices.OBLIVION,
+            "num_primary_obstacles": 0,
+            "num_random_obstacles": 0,
+            "final_obstacle_type": "maze",
+            "gauntlet": 5,
+            "shroud": 5,
+            "dimension_barrier": 5,
+            "generate_random": True,
+            "obstacles-TOTAL_FORMS": "0",
+            "obstacles-INITIAL_FORMS": "0",
+            "obstacles-MIN_NUM_FORMS": "0",
+            "obstacles-MAX_NUM_FORMS": "1000",
+            "atmospheres-TOTAL_FORMS": "0",
+            "atmospheres-INITIAL_FORMS": "0",
+            "atmospheres-MIN_NUM_FORMS": "0",
+            "atmospheres-MAX_NUM_FORMS": "1000",
+        }
+        count = ParadoxRealm.objects.count()
+        response = self.client.post(self.url, data=data)
+        self.assertRedirects(response, self.realm.get_absolute_url(), fetch_redirect_response=False)
+        self.assertEqual(ParadoxRealm.objects.count(), count)
+        self.realm.refresh_from_db()
+        self.assertEqual(self.realm.name, "Rerolled Realm")
+        self.assertEqual(self.realm.description, "Kept description")
+        self.assertEqual(self.realm.owner, self.st)
+        self.assertEqual(self.realm.chronicle, self.chronicle)
+        self.assertEqual(self.realm.status, "App")
+        self.assertFalse(self.realm.realm_atmospheres.filter(description="Old atmosphere").exists())
+        self.assertGreaterEqual(self.realm.realm_atmospheres.count(), 2)
