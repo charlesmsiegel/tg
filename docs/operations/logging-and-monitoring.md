@@ -57,8 +57,9 @@ Consequences worth knowing:
   5xx responses are.
 - In development the app loggers have both `console` and `console_debug`, so each `INFO` or
   higher message from them appears twice on the console.
-- Development sets `django.db.backends` to `DEBUG` on `console_debug`, but that handler's level
-  is `INFO`, so SQL statements (logged at `DEBUG`) are not printed.
+- `django.db.backends` goes to `null`, so SQL statements are not logged, unless development
+  runs with `DJANGO_LOG_SQL=True`, which prints them to the console through a `DEBUG`-level
+  `console_sql` handler.
 - `django.db.backends` also carries errors from `transaction.on_commit(..., robust=True)`
   callbacks (Django logs them on `django.db.backends.base`), and in production that logger
   goes to `null`. Code whose on-commit failures matter logs them itself: a failed scene-chat

@@ -141,6 +141,18 @@ class SettingsEnvironmentTest(SimpleTestCase):
         module = load_settings({"DJANGO_ENVIRONMENT": None, "DJANGO_ALLOWED_HOSTS": None})
         self.assertEqual(module.ALLOWED_HOSTS, ["localhost", "127.0.0.1"])
 
+    def test_development_prints_sql_only_when_asked_regression(self):
+        """DJANGO_LOG_SQL=True sends SQL (logged at DEBUG) to a DEBUG-level console handler."""
+        module = load_settings({"DJANGO_ENVIRONMENT": "development", "DJANGO_LOG_SQL": None})
+        self.assertEqual(module.LOGGING["loggers"]["django.db.backends"]["handlers"], ["null"])
+
+        module = load_settings({"DJANGO_ENVIRONMENT": "development", "DJANGO_LOG_SQL": "True"})
+        sql_logger = module.LOGGING["loggers"]["django.db.backends"]
+        self.assertEqual(sql_logger["level"], "DEBUG")
+        for name in sql_logger["handlers"]:
+            with self.subTest(handler=name):
+                self.assertEqual(module.LOGGING["handlers"][name]["level"], "DEBUG")
+
     def test_dotenv_is_read_from_the_repository_root(self):
         load_settings({"DJANGO_ENVIRONMENT": None})
         self.assertEqual(load_settings.dotenv_paths, [Path(settings.BASE_DIR) / ".env"])

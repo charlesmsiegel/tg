@@ -71,10 +71,8 @@ root (gitignored) and fill it in. The variables the settings read in production:
 
 Notes on `.env.example`:
 
-- `DJANGO_DEBUG` appears in the template but no settings module reads it. Development always
-  has `DEBUG = True`; production always has `DEBUG = False`.
-- It sets `PASSWORD_RESET_TIMEOUT=259200` and describes that as the default; the code default
-  is `3600`. Copying the template unchanged gives three-day reset links.
+- There is no debug variable: development always has `DEBUG = True`; production always has
+  `DEBUG = False`.
 - The `DB_*` variables other than `DB_CONN_MAX_AGE`, and the AWS and Mailgun variables, are read
   only by commented-out code or by packages that are not in `requirements.txt`
   (`django-ses`, `django-anymail`, `django-storages`, `boto3`).

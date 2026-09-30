@@ -117,9 +117,9 @@ The flow itself is described in
   log at `DEBUG` to `logs/debug.log`, errors to `logs/error.log`, and `INFO` and above to
   the console. Development adds the verbose `console_debug` handler to each of them, so
   their `INFO` messages appear twice on the console, once per format.
-- `django.db.backends` is set to `DEBUG` and routed to `console_debug`. That handler's
-  level is `INFO`, and Django logs each SQL query at `DEBUG`, so queries are not printed.
-  Use the debug toolbar's SQL panel or `debugsqlshell` to see queries.
+- SQL queries are not printed by default (`django.db.backends` goes to the `null`
+  handler). Set `DJANGO_LOG_SQL=True` to print every query to the console at `DEBUG`, or
+  use the debug toolbar's SQL panel or `debugsqlshell`.
 - `logs/warning.log` is defined but no development logger writes to it.
 
 The `logs/` directory must exist (it is kept in git with its own `.gitignore`).

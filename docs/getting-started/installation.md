@@ -45,9 +45,8 @@ Development works with no `.env` at all. If you want one:
 cp .env.example .env
 ```
 
-Read [Configuration](configuration.md#envexample) before relying on it: three entries in
-[`.env.example`](../../.env.example) do not behave the way their comments say
-(`DJANGO_ENVIRONMENT`, `DJANGO_DEBUG` and `PASSWORD_RESET_TIMEOUT`).
+[Configuration](configuration.md#envexample) describes every entry in
+[`.env.example`](../../.env.example).
 
 ## Create the database
 

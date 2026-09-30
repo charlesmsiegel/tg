@@ -230,7 +230,7 @@ Loggers (`propagate` is `False` for all):
 | `django.request` | `error_file`, `console`, plus `mail_admins` in production | `ERROR` | `ERROR` |
 | `django.security` | `error_file`, `console` | `WARNING` | `WARNING` |
 | `django.template` | `console` | `INFO` | `INFO` |
-| `django.db.backends` | development: `console_debug`; production: `null` | `DEBUG` | `INFO` |
+| `django.db.backends` | `null`; development with `DJANGO_LOG_SQL=True`: `console_sql` (`StreamHandler`, `DEBUG`) | `INFO` (`DEBUG` with `DJANGO_LOG_SQL=True`) | `INFO` |
 | `tg`, `accounts`, `characters`, `game`, `items`, `locations`, `core` | `console`, `file`, `error_file`, plus `console_debug` in development and `warning_file` in production | `DEBUG` | `INFO` |
 
 Every file handler opens its file when settings load, so the `logs/` directory must

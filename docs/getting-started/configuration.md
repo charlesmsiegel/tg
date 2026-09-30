@@ -87,6 +87,14 @@ Read in `production.py`; ignored in development.
 | `DB_CONN_MAX_AGE` | `600` | `CONN_MAX_AGE` for the default database, in seconds (integer). |
 | `ADMIN_EMAILS` | empty | Comma-separated addresses, each plain (`a@example.com`) or named (`Jane Doe <jane@example.com>`). Builds `ADMINS` (a plain address is named `Admin`), who receive an email for every unhandled request error; `MANAGERS` is the same list. |
 
+### Development only
+
+Read in `development.py`; ignored in production.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `DJANGO_LOG_SQL` | `False` | `True` prints every SQL query to the console (`django.db.backends` at `DEBUG`). |
+
 ### Used by tests and scripts, not by the settings
 
 | Variable | Read in | Purpose |
@@ -97,13 +105,12 @@ Read in `production.py`; ignored in development.
 
 ## `.env.example`
 
-[`.env.example`](../../.env.example) is a template: copy it to `.env` and edit. Most of
-its entries match the tables above. These do not:
+[`.env.example`](../../.env.example) is a template: copy it to `.env` and edit. Its
+entries match the tables above; a few need a note:
 
 | Entry | What actually happens |
 |-------|-----------------------|
-| `DJANGO_DEBUG=True` | Nothing reads it. `DEBUG` is hard-coded: `True` in `development.py`, `False` in `production.py`. |
-| `PASSWORD_RESET_TIMEOUT=259200` | Works, but the comment above it gives the default as 259200 (three days). The code default is 3600 (one hour); copying the file unchanged lengthens reset links to three days. `core.tests.test_settings.SettingsSecurityTest.test_password_reset_timeout_is_one_hour` then fails. Delete the line to keep the default. |
+| `DJANGO_ENVIRONMENT=development` | Selects the settings module; `DEBUG` follows it (`True` in `development.py`, always `False` in `production.py`). There is no separate debug variable. |
 | `SECRET_KEY=django-insecure-...` | Overrides the development fallback key with another insecure one. Harmless in development; replace it in production. |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_SSLMODE` (commented out) | Read only by the PostgreSQL and MySQL examples that are commented out in `production.py`. The active configuration is SQLite. |
 | `AWS_*`, `MAILGUN_*` (commented out) | Nothing reads them; the packages they refer to are not in `requirements.txt`. |

@@ -60,8 +60,18 @@ except ImportError:
 
 # Enable DEBUG level for Django core (useful for development)
 LOGGING["loggers"]["django"]["level"] = "INFO"  # noqa: F405
-LOGGING["loggers"]["django.db.backends"]["handlers"] = ["console_debug"]  # noqa: F405
-LOGGING["loggers"]["django.db.backends"]["level"] = "DEBUG"  # noqa: F405  # Shows SQL queries
+
+# SQL queries: django.db.backends logs every statement at DEBUG while DEBUG is on. That is
+# very noisy, so the console prints them only when DJANGO_LOG_SQL=True.
+if os.environ.get("DJANGO_LOG_SQL", "False") == "True":
+    LOGGING["handlers"]["console_sql"] = {  # noqa: F405
+        "level": "DEBUG",
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
+        "filters": ["require_debug_true"],
+    }
+    LOGGING["loggers"]["django.db.backends"]["handlers"] = ["console_sql"]  # noqa: F405
+    LOGGING["loggers"]["django.db.backends"]["level"] = "DEBUG"  # noqa: F405
 
 # Set all app loggers to DEBUG in development
 LOGGING["loggers"]["tg"]["level"] = "DEBUG"  # noqa: F405
