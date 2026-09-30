@@ -194,14 +194,7 @@ class Profile(ValidatedSaveMixin, models.Model):
             )
 
         # Validate preferred_heading is in valid choices
-        valid_headings = [
-            "wod_heading",
-            "vtm_heading",
-            "wta_heading",
-            "mta_heading",
-            "ctd_heading",
-            "wto_heading",
-        ]
+        valid_headings = [key for key, _ in HeadingChoices.CHOICES]
         if self.preferred_heading not in valid_headings:
             errors["preferred_heading"] = (
                 f"Invalid preferred heading '{self.preferred_heading}'. Must be one of: {', '.join(valid_headings)}"

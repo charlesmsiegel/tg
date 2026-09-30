@@ -1,6 +1,7 @@
 """Tests for accounts models (Profile)."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.core import Human
@@ -281,6 +282,21 @@ class TestThemePreferences(TestCase):
             profile.save()
             profile.refresh_from_db()
             self.assertEqual(profile.theme, "dark")
+
+    def test_demon_heading_saves(self):
+        """U16: every HeadingChoices value, dtf_heading included, passes clean()."""
+        profile = self.user.profile
+        profile.preferred_heading = "dtf_heading"
+        profile.save()
+        profile.refresh_from_db()
+        self.assertEqual(profile.preferred_heading, "dtf_heading")
+
+    def test_unknown_heading_is_rejected(self):
+        profile = self.user.profile
+        profile.preferred_heading = "xyz_heading"
+        with self.assertRaises(ValidationError) as ctx:
+            profile.full_clean()
+        self.assertIn("preferred_heading", ctx.exception.message_dict)
 
 
 class TestProfilePermissions(TestCase):

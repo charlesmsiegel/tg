@@ -12,6 +12,7 @@ from accounts.forms import (
     StoryXP,
 )
 from characters.models.core.human import Human
+from core.constants import HeadingChoices
 from game.models import Chronicle, Scene, Story
 from locations.models.core import LocationModel
 
@@ -133,15 +134,9 @@ class TestProfileUpdateForm(TestCase):
             self.assertTrue(form.is_valid(), f"Theme {theme} should be valid")
 
     def test_all_heading_choices_valid(self):
-        """Test that all heading choices are valid."""
-        headings = [
-            "wod_heading",
-            "vtm_heading",
-            "wta_heading",
-            "mta_heading",
-            "ctd_heading",
-            "wto_heading",
-        ]
+        """Every offered heading validates, Demon's included (U16)."""
+        headings = [key for key, _ in HeadingChoices.CHOICES]
+        self.assertIn("dtf_heading", headings)
         for heading in headings:
             form = ProfileUpdateForm(
                 data={
