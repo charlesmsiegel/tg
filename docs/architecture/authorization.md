@@ -251,7 +251,7 @@ All in [`core/mixins.py`](../../core/mixins.py):
 | `EditPermissionMixin` | `EDIT_FULL`, `403` on denial. |
 | `SpendFreebiesPermissionMixin` | `SPEND_FREEBIES`, `403` on denial. |
 | `ScopedEditFormMixin` | Serves the view's full form only to a scoped editor; everyone else gets `limited_form_class`. |
-| `ScopedCreationFormMixin` | Limits a creation form's `chronicle` choices to `readable_chronicles(user)`. |
+| `ScopedCreationFormMixin` | Limits a creation form's `chronicle` choices to `readable_chronicles(user)` and drops its `npc` field unless `user_can_manage_creation`. |
 | `VisibilityFilterMixin` | Filters `get_queryset()` with `filter_queryset_for_user`; on detail views adds `visibility_tier`, `user_can_edit`, `user_can_spend_xp`, `user_can_spend_freebies`. |
 | `OwnerRequiredMixin` | Owner (or `user`) of the object, or staff; can instead check a character from a URL kwarg (`owner_check_model`). |
 | `CharacterOwnerOrSTMixin` | Staff, or `VIEW_FULL` on the record's `character`. |

@@ -38,7 +38,7 @@ for developers and agents who know Django but not the games, or the games but no
 | Limited form | The owner's edit form with descriptive fields only (`LimitedHumanEditForm`, `LimitedItemEditForm`), chosen by `ScopedEditFormMixin`. |
 | Live model | A model looked up by label when a `tg_schema` migration runs (`tg_schema.schema.live_model`), never imported. |
 | Local apps | `accounts`, `characters`, `core`, `game`, `items`, `locations`: they commit no migrations ([Schema migrations](../architecture/schema-migrations.md)). |
-| NPC | `CharacterModel.npc`: a character run by the storyteller. The creation pages show the checkbox to storytellers only, and the `OBJECT_WRITE` field guard refuses changes to it from non-staff users. |
+| NPC | `CharacterModel.npc`: a character run by the storyteller. The creation pages show the checkbox to storytellers only, and ignore it from anyone else (`ScopedCreationFormMixin`, `prepare_created_object`); the `OBJECT_WRITE` field guard refuses changes to it from non-staff users. |
 | Object type | `game.models.ObjectType`: a seeded (`name`, `type`, `gameline`) row naming a creatable character type (`type` is `char`, `obj` or `loc`); feeds the new-character menu. |
 | `object_perms` | The template context value holding the viewer's capabilities on the page's object (`core.permission_context.ObjectPermissions`). |
 | Observer | `core.models.Observer`: a user granted access to one object; `Role.OBSERVER`, which carries `VIEW_PARTIAL` (the public card). |

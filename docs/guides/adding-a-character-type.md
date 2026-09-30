@@ -368,9 +368,10 @@ class CultistCharacterCreationView(HumanCharacterCreationView):
   chronicle the user cannot read. Several existing basics views (`ThrallBasicsView`,
   `VampireBasicsView`) set only the owner, in their form's `save()`; `MessageMixin` calls
   `prepare_created_object` automatically only for `CreateView` subclasses.
-- The basics templates show the `npc` checkbox only when `storyteller` is true, but the
-  form still accepts it. To enforce that on the server, remove the field in `get_form()` when
-  `PermissionManager.user_can_manage_creation(...)` is false.
+- The basics templates show the `npc` checkbox only when `storyteller` is true.
+  `ScopedCreationFormMixin.get_form()` enforces the same rule on the server: it removes the
+  `npc` field when `PermissionManager.user_can_manage_creation(...)` is false, so a player's
+  posted `npc=on` is ignored.
 - `CultistCharacterCreationView` is the chargen router: `WorkflowViews()` resolves
   `get_workflow(Cultist.type).view_mapping` (position to step view), and the router
   dispatches by `creation_status` while the status is `Un` or `Rev`.
