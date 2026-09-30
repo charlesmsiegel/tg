@@ -13,6 +13,7 @@ from django.test import LiveServerTestCase, TestCase
 from django.utils.timezone import now
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 
 from characters.models.core import CharacterModel, Human
 from core.constants import CharacterStatus, ImageStatus
@@ -30,7 +31,7 @@ class FunctionalTest(LiveServerTestCase):
 
     def setUp(self) -> None:
         options = webdriver.FirefoxOptions()
-        options.headless = True
+        options.add_argument("-headless")
         try:
             self.browser = webdriver.Firefox(options=options)
         except WebDriverException as exc:
@@ -44,7 +45,7 @@ class FunctionalTest(LiveServerTestCase):
         while True:
             try:
                 table = self.browser.find_element("id", "id_character_table")
-                rows = table.find_elements_by_tag_name("tr")
+                rows = table.find_elements(By.TAG_NAME, "tr")
                 self.assertIn(row_text, [row.text for row in rows])
                 return
             except (AssertionError, WebDriverException) as exception:

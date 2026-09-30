@@ -47,13 +47,15 @@ class TemplatePolicyTest(SimpleTestCase):
         self.assertLessEqual(
             count,
             INLINE_STYLE_BUDGET,
-            "New inline styles: move them to a stylesheet under source_static/",
+            "New inline styles: move them to a class in core/static/core/tl/tl.css",
         )
 
     def test_style_blocks_only_in_known_templates(self):
         found = {name for name, source in self.templates.items() if "<style" in source}
         self.assertLessEqual(
-            found, STYLE_BLOCK_TEMPLATES, "Move new <style> blocks to source_static/pages/"
+            found,
+            STYLE_BLOCK_TEMPLATES,
+            "Move new <style> blocks into core/static/core/tl/tl.css",
         )
 
     def test_extends_depth(self):
