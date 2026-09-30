@@ -207,9 +207,10 @@ information only. `--verbose` lists the affected rows.
 
 ### `audit_xp_spending`
 
-For submitted and approved characters (`--chronicle ID` to narrow), compares earned XP
-with approved and pending `xp_spendings`, flags pending spends older than
-`--pending-days` (default 30) and negative XP, then lists unapproved weekly XP requests
+For submitted and approved characters (`--chronicle ID` to narrow), shows the unspent
+`xp` balance with the approved and pending `xp_spendings` already taken from it (earned XP
+is their sum), flags pending spends older than `--pending-days` (default 30) and a
+negative balance, then lists unapproved weekly XP requests
 (oldest first) and weekly and story requests with no character.
 `--show-all` lists characters without issues; `--export FILE.csv` writes the results.
 

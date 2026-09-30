@@ -29,7 +29,7 @@ Things that hold for all of them:
 | [`populate_test_chronicle`](#populate_test_chronicle) | core | yes | Add sample characters and scenes to a chronicle. |
 | [`approve_pending_items`](#approve_pending_items) | core | yes | Bulk-approve submitted characters, images, freebies and weekly XP requests. |
 | [`process_weekly_xp`](#process_weekly_xp) | core | yes | Create a `Week` and a `WeeklyXPRequest` for each character who played that week. |
-| [`audit_xp_spending`](#audit_xp_spending) | core | CSV only | Report characters whose approved or pending XP spends exceed their XP. |
+| [`audit_xp_spending`](#audit_xp_spending) | core | CSV only | Report negative XP balances and stale or unusually many XP spends. |
 | [`cleanup_old_weeks`](#cleanup_old_weeks) | core | yes | Delete old `Week` rows. |
 | [`cleanup_orphaned_data`](#cleanup_orphaned_data) | core | yes | Delete XP requests without a character and, optionally, unowned drafts, empty scenes and unused setting elements. |
 | [`archive_inactive_chronicles`](#archive_inactive_chronicles) | core | optional | List inactive chronicles; optionally export and rename them. |
@@ -188,13 +188,13 @@ When: weekly, by hand or from a scheduler, if requests are not created in the ap
 ### `audit_xp_spending`
 
 Read-only report over characters with status `Sub` or `App` (optionally one chronicle).
-For each character with an `xp` field it sums `XPSpendingRequest` costs by status and
-reports:
+For each character with an `xp` field it sums `XPSpendingRequest` costs by status. `xp` is
+the unspent balance (a spend's cost is deducted when it is filed and refunded on denial),
+so earned XP is shown as `xp` plus the approved and pending costs. It reports:
 
-- an issue when approved spends exceed earned XP;
-- warnings when pending spends exceed the remaining XP, when pending spends are older than
-  `--pending-days`, when a character has more than 15 pending or more than 100 approved
-  spends.
+- an issue when the balance is negative;
+- warnings when pending spends are older than `--pending-days`, when a character has more
+  than 15 pending or more than 100 approved spends.
 
 It then lists unapproved `WeeklyXPRequest` rows (oldest ten by week) and XP requests
 with no character.
