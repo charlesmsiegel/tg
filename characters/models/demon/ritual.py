@@ -106,10 +106,6 @@ class Ritual(Model):
     def get_update_url(self):
         return reverse("characters:demon:update:ritual", kwargs={"pk": self.pk})
 
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("characters:demon:create:ritual")
-
     def get_secondary_lores(self):
         """Get list of secondary lore objects with ratings."""
         from characters.models.demon.lore import Lore

@@ -213,6 +213,13 @@ class Earthbound(LoreBlock, DtFHuman):
     def get_absolute_url(self):
         return reverse("characters:demon:earthbound", kwargs={"pk": self.pk})
 
+    def get_update_url(self):
+        return reverse("characters:demon:update:earthbound", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:earthbound")
+
     def is_final_damnation(self):
         """Check if Earthbound has reached Final Damnation (Torment 10)"""
         return self.torment >= 10

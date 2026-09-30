@@ -20,9 +20,8 @@ the `Human` base. Terms such as Faith, Torment, Lore and Thrall are in the
 | `Conclave` | `Group` | `conclave` | n/a | `characters:group` (a `characters:demon:conclave` route also exists) |
 
 `gameline = "dtf"` (URL namespace `characters:demon:`). `DtFHuman` defines its own URL
-methods with the route names `dtfhuman` (no underscore). `Earthbound` overrides only
-`get_absolute_url()`, so its inherited `get_update_url()` and `get_creation_url()` point at
-the `DtFHuman` routes; the Earthbound routes are `characters:demon:update:earthbound` and
+methods with the route names `dtfhuman` (no underscore). `Earthbound` overrides
+them with its own routes, `characters:demon:update:earthbound` and
 `characters:demon:create:earthbound` (see [Views and URLs](views-and-urls.md#demon)).
 
 ## DtFHuman
@@ -85,9 +84,8 @@ holds one configured form: `low_torment_traits` and `high_torment_traits`
 and four high-Torment traits costing at most 16 points in total
 (`is_valid()`, `is_complete()`, `points_remaining()`). `can_add_low_torment_trait()`
 rejects `high_torment_only` traits; neither list may repeat a trait or share one with the
-other list. `add_*`, `remove_*` and `copy_from()` edit it. Its URL methods name
-`characters:demon:apocalyptic_form` routes, which the URLconf does not define; forms are
-edited through the Demon chargen step and the Demon forms.
+other list. `add_*`, `remove_*` and `copy_from()` edit it. It has no routes and no URL methods;
+forms are edited through the Demon chargen step and the Demon forms.
 
 ## Thrall
 

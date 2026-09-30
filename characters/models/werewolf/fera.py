@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.rite import Rite
@@ -56,6 +57,18 @@ class Fera(WtAHuman):
     class Meta:
         verbose_name = "Fera"
         verbose_name_plural = "Fera"
+
+    # The breeds have detail routes of their own but share the Fera chargen
+    # router and edit form.
+    def get_update_url(self):
+        return reverse("characters:werewolf:update:fera", kwargs={"pk": self.pk})
+
+    def get_full_update_url(self):
+        return reverse("characters:werewolf:update:fera_full", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:werewolf:create:fera")
 
     def chargen_field_help(self):
         return {"breed": "Choose your breed (birth form).", **self.chargen_help_text}

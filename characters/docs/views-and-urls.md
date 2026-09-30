@@ -266,21 +266,26 @@ Demon and Hunter detail routes use `<int:pk>`; the other gamelines' detail route
 | `mtr_human` | `create:mtrhuman` | `update:mtrhuman` | `mtrhuman`, `list:mtrhuman` |
 | `mummy` | `create:mummy` | `update:mummy` | `mummy`, `list:mummy` |
 
-## URL methods that do not resolve
+## URL methods
 
 `Human.get_update_url()`, `get_full_update_url()`, `get_creation_url()` and
-`get_full_creation_url()` build names from `gameline` and `type`. Some types have no
-matching route:
+`get_full_creation_url()` build names from `gameline` and `type`. Types whose routes are
+named differently override them:
 
-| Type | Method that raises `NoReverseMatch` |
-|------|--------------------------------------|
-| `companion`, `sorcerer` | `get_update_url()` (use `get_full_update_url()`) |
-| `htr_human` | `get_update_url()`, `get_creation_url()` |
-| Fera breeds (`ajaba` ... `rokea`) | `get_update_url()`, `get_creation_url()` |
-| Most types | `get_full_creation_url()` (only `human`, `mage` and `companion` have a `create:<type>_full` route) |
+| Type | Override |
+|------|----------|
+| `companion`, `sorcerer` | `get_update_url()` returns `get_full_update_url()` (`update:<type>_full`) |
+| `htr_human`, `hunter` | `update:htrhuman` / `create:htrhuman`, `update:hunter` / `create:hunter` |
+| `fera` and every breed | `update:fera`, `update:fera_full`, `create:fera` (the breeds have only detail routes) |
+| `earthbound` | `update:earthbound`, `create:earthbound` |
 
-`Earthbound` inherits the `DtFHuman` URL methods, so its `get_update_url()` resolves to the
-`dtfhuman` update route. `CharacterDetailView` catches `NoReverseMatch` for the edit link.
+`ApocalypticForm` has no routes and no URL methods; the demon `Ritual` has no creation
+route or `get_creation_url()`.
+[`tests/models/test_url_methods.py`](../tests/models/test_url_methods.py) reverses
+`get_absolute_url()`, `get_update_url()` and `get_creation_url()` on every concrete model.
+The `_full` variants still only resolve for types with a `<type>_full` route (creation:
+`human`, `mage` and `companion`); nothing calls them for other types.
+`CharacterDetailView` still catches `NoReverseMatch` for the edit link.
 [`tests/models/core/test_human_urls.py`](../tests/models/core/test_human_urls.py) tests
 the gameline prefix used to build these names, and
 [`tests/urls/test_url_patterns.py`](../tests/urls/test_url_patterns.py) tests that core

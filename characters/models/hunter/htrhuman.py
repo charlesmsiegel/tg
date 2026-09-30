@@ -127,3 +127,10 @@ class HtRHuman(Human):
 
     def get_absolute_url(self):
         return reverse("characters:hunter:htrhuman", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:hunter:update:htrhuman", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:hunter:create:htrhuman")

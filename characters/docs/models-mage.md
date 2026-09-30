@@ -22,8 +22,8 @@ Paradox and Focus are in the [glossary](../../docs/reference/glossary.md).
 All have `gameline = "mta"`. Every Mage character's detail page is the polymorphic
 `characters:character` route. There is no `characters:mage:update:companion` or
 `characters:mage:update:sorcerer` route, so `Companion.get_update_url()` and
-`Sorcerer.get_update_url()` (inherited from `Human`) raise `NoReverseMatch`; use
-`get_full_update_url()` (see [Views and URLs](views-and-urls.md#mage)).
+`Sorcerer.get_update_url()` return `get_full_update_url()` (see
+[Views and URLs](views-and-urls.md#mage)).
 
 ## MtAHuman
 

@@ -126,6 +126,10 @@ class Sorcerer(MtAHuman):
         verbose_name = "Sorcerer"
         verbose_name_plural = "Sorcerers"
 
+    def get_update_url(self):
+        # No chargen router is routed under update:sorcerer; edit the full form.
+        return self.get_full_update_url()
+
     def path_rating(self, path):
         ratings = PathRating.objects.filter(path=path, character=self)
         if not ratings.exists():
