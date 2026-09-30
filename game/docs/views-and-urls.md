@@ -143,7 +143,8 @@ which applies point tags and dice commands). `JournalResponseView` loads the ent
 `can_manage_global_records` (staff or superuser) decides whether the week pages show
 edit links and the pending-request table with batch approval. When
 `WeeklyXPRequestBatchApproveView` receives no ids it redirects to the `Referer` header
-(or the week list).
+when that URL is on this site (same host, and HTTPS when the request is), otherwise to the
+week list.
 
 ## XP, story XP and freebie records
 

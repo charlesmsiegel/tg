@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic import (
     CreateView,
@@ -719,13 +720,24 @@ class WeeklyXPRequestApproveView(LoginRequiredMixin, View):
 class WeeklyXPRequestBatchApproveView(LoginRequiredMixin, View):
     """View for STs to batch approve multiple weekly XP requests at once."""
 
+    def _redirect_back(self):
+        """Return to the referring page when it is on this site, else to the week list."""
+        referer = self.request.META.get("HTTP_REFERER", "")
+        if url_has_allowed_host_and_scheme(
+            referer,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            return redirect(referer)
+        return redirect("game:week:list")
+
     def post(self, request, *args, **kwargs):
         # Get list of request IDs from POST data
         request_ids = request.POST.getlist("request_ids")
 
         if not request_ids:
             messages.warning(request, "No requests selected for approval.")
-            return redirect(request.META.get("HTTP_REFERER", "game:week:list"))
+            return self._redirect_back()
 
         if len(request_ids) > 100 or any(
             not value.isascii() or not value.isdecimal() for value in request_ids

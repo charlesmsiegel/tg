@@ -1462,6 +1462,31 @@ class TestWeeklyXPRequestBatchApproveView(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
+    def test_batch_approve_ignores_offsite_referer(self):
+        """An empty selection never redirects to another site's Referer."""
+        self.client.login(username="stuser", password="password")
+        for referer in ("https://evil.example/phish", "//evil.example/", "javascript:alert(1)"):
+            with self.subTest(referer=referer):
+                response = self.client.post(
+                    reverse("game:weekly_xp_request:batch_approve"),
+                    {"request_ids": []},
+                    HTTP_REFERER=referer,
+                )
+                self.assertRedirects(
+                    response, reverse("game:week:list"), fetch_redirect_response=False
+                )
+
+    def test_batch_approve_follows_same_site_referer(self):
+        """An empty selection returns to the referring page on this site."""
+        self.client.login(username="stuser", password="password")
+        referer = "http://testserver" + reverse("game:week:detail", kwargs={"pk": self.week.pk})
+        response = self.client.post(
+            reverse("game:weekly_xp_request:batch_approve"),
+            {"request_ids": []},
+            HTTP_REFERER=referer,
+        )
+        self.assertRedirects(response, referer, fetch_redirect_response=False)
+
     def test_batch_approve_approves_requests(self):
         """Test that batch approve approves multiple requests."""
         self.client.login(username="stuser", password="password")
