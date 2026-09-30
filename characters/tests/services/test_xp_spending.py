@@ -1298,3 +1298,36 @@ class TestApplySphereAreteValidation(TestCase):
         # Verify sphere was changed
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.forces, 2)
+
+
+class TestEveryCharacterTypeCanSpendXP(TestCase):
+    """The services call spend_xp with keywords; every model must accept them."""
+
+    def test_willpower_spend_files_a_request_for_every_character_type(self):
+        from django.apps import apps
+
+        from characters.models.core.human import Human
+
+        user = User.objects.create_user(username="spender")
+        models = [
+            model
+            for model in apps.get_app_config("characters").get_models()
+            if issubclass(model, Human) and not model._meta.abstract
+        ]
+        self.assertGreater(len(models), 30)
+        for model in models:
+            with self.subTest(type=model.type):
+                character = model(name=f"XP {model.type}", owner=user, xp=50)
+                for field in model._meta.concrete_fields:
+                    # Types such as Inanimae require a choice (kingdom, season...).
+                    if field.choices and not field.blank and not getattr(character, field.attname):
+                        setattr(character, field.attname, field.choices[0][0])
+                character.save()
+                service = XPSpendingServiceFactory.get_service(character)
+                result = service.spend("Willpower")
+                self.assertTrue(result.success, result.error)
+                self.assertTrue(
+                    XPSpendingRequest.objects.filter(
+                        character=character, trait_type="willpower"
+                    ).exists()
+                )
