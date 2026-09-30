@@ -214,7 +214,7 @@ Demon relic's list path is `relics/` and its name `relic`; `items:create:melee_w
 | `core.registry_urls.RegistryURLMixin` ([`core/registry_urls.py`](../../core/registry_urls.py)) | For `ItemModel` and `LocationModel` subclasses: the names in the model's `ModelSpec.model_urls` |
 | Reference models (`Discipline`, `DemonHouse`, ...) | Their own `get_absolute_url` / `get_update_url` / `get_creation_url` with `reverse(...)` |
 | `{{ obj|update_url }}` (`tl` template library, [`core/templatetags/tl.py`](../../core/templatetags/tl.py)) | `obj.get_update_url()`, or `""` when the model has no update route |
-| `core.create_redirects.resolve_object_type_url(category, type_name, action, gameline)` | The create or list URL for a type chosen in a picker: items and locations through the registry, characters through `game.models.ObjectType` and the name `characters:<app_name>:<action>:<type_name>` |
+| `core.create_redirects.resolve_object_type_url(category, type_name, action, gameline)` | The create or list URL for a type chosen in a picker: items and locations through the registry, characters through `game.models.ObjectType` and the name `characters:<app_name>:<action>:<type_name>` (`dtf_human`, `htr_human`, `mtr_human` drop the underscore) |
 
 ## Listing every route
 

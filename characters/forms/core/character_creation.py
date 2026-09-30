@@ -1,6 +1,7 @@
 from django import forms
 
 from core.constants import GameLine
+from core.create_redirects import creatable_character_types
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
@@ -145,8 +146,8 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
             if user.profile.is_st():
                 # For STs, show all gamelines and character types
                 gamelines_with_chars = set()
-                all_char_types = ObjectType.objects.filter(type="char").exclude(
-                    name__in=self.EXCLUDED_TYPES
+                all_char_types = creatable_character_types(
+                    ObjectType.objects.filter(type="char").exclude(name__in=self.EXCLUDED_TYPES)
                 )
 
                 for obj in all_char_types:
@@ -182,8 +183,10 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
                 # For regular users, only show mage gameline
                 self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
 
-                mage_types = ObjectType.objects.filter(type="char", gameline="mta").exclude(
-                    name__in=self.EXCLUDED_TYPES
+                mage_types = creatable_character_types(
+                    ObjectType.objects.filter(type="char", gameline="mta").exclude(
+                        name__in=self.EXCLUDED_TYPES
+                    )
                 )
 
                 choices_map = {

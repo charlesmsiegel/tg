@@ -102,7 +102,9 @@ page; they are never saved.
   | Anyone else | Gamelines that have an ST in the chronicle | The chronicle's `allowed_objects` of that kind |
 
 - The character form excludes group types and trait or reference types listed in
-  `ChronicleCharacterCreationForm.EXCLUDED_TYPES`.
+  `ChronicleCharacterCreationForm.EXCLUDED_TYPES`, and any type without a create route
+  (`core.create_redirects.creatable_character_types`), such as the individual Fera breeds
+  (created through `fera`) and `spirit_character` (created through `spirit`).
 - Labels come from `_format_label`: `<line>_human` becomes "Human (<Gameline>)",
   `spirit_character` becomes "Spirit", other names are title-cased.
 

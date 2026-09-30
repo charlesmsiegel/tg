@@ -161,7 +161,7 @@ Spheres, practices and Arete. Both are bases for the XP spend forms in `game.for
 
 | Form | Purpose |
 |------|---------|
-| `CharacterCreationForm` ([`character_creation.py`](../forms/core/character_creation.py)) | The index page's "Begin a new character" picker: chained `gameline` and `char_type` from `game.ObjectType` rows (excluding `EXCLUDED_TYPES`). Storytellers see every gameline; other users see Mage types only. It submits by `GET` to `core:object_type_redirect` |
+| `CharacterCreationForm` ([`character_creation.py`](../forms/core/character_creation.py)) | The index page's "Begin a new character" picker: chained `gameline` and `char_type` from `game.ObjectType` rows (excluding `EXCLUDED_TYPES` and types without a create route, via `core.create_redirects.creatable_character_types`). Storytellers see every gameline; other users see Mage types only. It submits by `GET` to `core:object_type_redirect` |
 | `GroupCreationForm` ([`group_creation.py`](../forms/core/group_creation.py)) | The "form a group" picker: storytellers choose any group type, other users only `cabal` |
 | `NPCProfileForm` ([`npc_profile.py`](../forms/core/npc_profile.py)) | `NPCProfileCreateView` (`characters:create:npc`, optionally for a related character): any character type, with conditional sections for Mage, Sorcerer, Werewolf, Kinfolk, Wraith, Changeling, Thrall and Demon fields. `save()` creates an `npc=True`, `Un` character owned by the user, in a chronicle the user can read |
 
