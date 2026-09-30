@@ -1,6 +1,7 @@
 """Scene chat without sockets (Step 11): partial, selectors, posting service, broadcasts."""
 
 import asyncio
+from unittest.mock import patch
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -333,6 +334,26 @@ class HttpActionBroadcastTests(SceneChatBase):
                 reverse("game:scene_post", kwargs={"pk": self.scene.pk}), {"message": "Hi"}
             )
         self.assertEqual(self.listener.events(), [])
+
+    def test_channel_layer_failure_is_logged_on_the_game_logger_regression(self):
+        """A failed send reaches the "game" handlers, not the silenced django.db.backends."""
+
+        class BrokenLayer:
+            async def group_send(self, group, event):
+                raise ConnectionError("redis is down")
+
+        self.client.force_login(self.users["st"])
+        with (
+            patch("game.scene_chat.get_channel_layer", return_value=BrokenLayer()),
+            self.assertLogs("game.scene_chat", level="ERROR") as logs,
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            response = self.client.post(reverse("game:scene_close", kwargs={"pk": self.scene.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.scene.refresh_from_db()
+        self.assertTrue(self.scene.finished)
+        self.assertIn("scene.closed", logs.output[0])
+        self.assertIn("ConnectionError: redis is down", logs.output[0])
 
 
 class LivePageTests(SceneChatBase):
