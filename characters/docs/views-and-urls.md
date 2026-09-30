@@ -17,7 +17,8 @@ at `characters/` with the namespace `characters`. That module builds, in order:
 1. One include per entry of `core.constants.GameLine.URL_PATTERNS`: `vampire/`,
    `werewolf/`, `mage/`, `wraith/`, `changeling/`, `demon/`, `mummy/`, `hunter/`, each
    loading `characters/urls/<gameline>/__init__.py` (its `urls` list) under the namespace of
-   the same name. A gameline module that fails to import is skipped silently.
+   the same name. Import errors are not caught: a broken gameline module stops startup
+   rather than silently dropping its routes.
 2. The core `create/`, `update/` and `list/` includes (namespaces `create`, `update`,
    `list`), from [`urls/core/`](../urls/core/).
 3. `index/`, `retired/`, `deceased/`, `npc/`.

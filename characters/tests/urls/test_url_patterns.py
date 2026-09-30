@@ -1,5 +1,8 @@
 """Tests for characters URL routing configuration."""
 
+import importlib
+from unittest import mock
+
 from django.test import SimpleTestCase, TestCase
 from django.urls import NoReverseMatch, resolve, reverse
 
@@ -95,14 +98,29 @@ class CharactersGamelineUrlsTest(TestCase):
             pass
 
     def test_all_gamelines_have_url_patterns(self):
-        """Test that all gamelines in URL_PATTERNS create URL entries."""
-        for url_path, _module_name, _namespace in GameLine.URL_PATTERNS:
-            # Test that the gameline path exists in urlpatterns
-            for pattern in characters_urls.urlpatterns:
-                if hasattr(pattern, "pattern") and str(pattern.pattern).startswith(url_path):
-                    break
-            # Note: found may be False if module doesn't exist (caught by exception)
-            # This is expected behavior
+        """Every gameline in URL_PATTERNS is included under its path and namespace."""
+        included = {
+            (str(pattern.pattern), pattern.namespace)
+            for pattern in characters_urls.urlpatterns
+            if hasattr(pattern, "namespace")
+        }
+        for url_path, _module_name, namespace in GameLine.URL_PATTERNS:
+            self.assertIn((f"{url_path}/", namespace), included)
+
+    def test_broken_gameline_url_module_is_not_swallowed(self):
+        """An import error in a gameline URL module propagates instead of dropping routes."""
+        real_import = importlib.import_module
+
+        def failing_import(name, package=None):
+            if name == ".vampire" and package == "characters.urls":
+                raise ImportError("broken gameline module")
+            return real_import(name, package)
+
+        with mock.patch("importlib.import_module", side_effect=failing_import):
+            with self.assertRaisesMessage(ImportError, "broken gameline module"):
+                importlib.reload(characters_urls)
+        importlib.reload(characters_urls)
+        self.assertEqual(reverse("characters:index"), "/characters/index/")
 
 
 class CharactersCreateUrlsTest(TestCase):
