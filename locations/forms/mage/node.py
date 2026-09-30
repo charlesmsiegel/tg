@@ -192,6 +192,7 @@ class NodeForm(forms.ModelForm):
         node.quintessence_per_week = getattr(self, "quintessence_per_week", 0)
         if commit:
             node.save()
+            self.save_m2m()
 
             # Save the resonance and merit/flaw formsets
             self.resonance_formset.instance = node

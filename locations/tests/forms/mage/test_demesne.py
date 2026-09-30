@@ -13,6 +13,7 @@ from django.test import TestCase
 from characters.models.mage.focus import Practice
 from characters.tests.utils import mage_setup
 from locations.forms.mage.demesne import DemesneForm
+from locations.models.core.location import LocationModel
 from locations.models.mage.demesne import Demesne
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
@@ -395,3 +396,31 @@ class TestDemesneFormAccessibility(TestDemesneFormSetup):
 
             form = DemesneForm(data=form_data)
             self.assertTrue(form.is_valid(), f"Form should be valid for accessibility '{choice}'")
+
+
+class TestDemesneFormContainedWithin(TestDemesneFormSetup):
+    """The form saves its contained_within selection (U9)."""
+
+    def test_save_keeps_contained_within(self):
+        parent = LocationModel.objects.create(name="Old Town")
+        form = DemesneForm(
+            data={
+                "name": "Nested Demesne",
+                "description": "Inside the old town",
+                "rank": 1,
+                "size": "Small chamber",
+                "accessibility": "difficult",
+                "contained_within": [parent.pk],
+                "reality_zone-TOTAL_FORMS": "2",
+                "reality_zone-INITIAL_FORMS": "0",
+                "reality_zone-MIN_NUM_FORMS": "0",
+                "reality_zone-MAX_NUM_FORMS": "1000",
+                "reality_zone-0-practice": str(self.practice1.pk),
+                "reality_zone-0-rating": "1",
+                "reality_zone-1-practice": str(self.practice2.pk),
+                "reality_zone-1-rating": "-1",
+            }
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        demesne = form.save()
+        self.assertEqual(list(demesne.contained_within.all()), [parent])

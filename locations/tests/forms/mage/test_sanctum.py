@@ -3,7 +3,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.mage.focus import Practice
 from locations.forms.mage.sanctum import SanctumForm
+from locations.models.core.location import LocationModel
 from locations.models.mage.reality_zone import RealityZone
 from locations.models.mage.sanctum import Sanctum
 
@@ -114,3 +116,31 @@ class TestSanctumFormSave(TestCase):
         sanctum = Sanctum.objects.create(name="Initial", rank=1)
         form = SanctumForm(instance=sanctum)
         self.assertIsNotNone(form.reality_zone)
+
+
+class TestSanctumFormContainedWithin(TestCase):
+    """The form saves its contained_within selection (U9)."""
+
+    def test_save_keeps_contained_within(self):
+        practice1 = Practice.objects.create(name="High Ritual Magick")
+        practice2 = Practice.objects.create(name="Chaos Magick")
+        parent = LocationModel.objects.create(name="Old Town")
+        form = SanctumForm(
+            data={
+                "name": "Nested Sanctum",
+                "description": "Inside the old town",
+                "rank": 1,
+                "contained_within": [parent.pk],
+                "reality_zone-TOTAL_FORMS": "2",
+                "reality_zone-INITIAL_FORMS": "0",
+                "reality_zone-MIN_NUM_FORMS": "0",
+                "reality_zone-MAX_NUM_FORMS": "1000",
+                "reality_zone-0-practice": str(practice1.pk),
+                "reality_zone-0-rating": "1",
+                "reality_zone-1-practice": str(practice2.pk),
+                "reality_zone-1-rating": "-1",
+            }
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        sanctum = form.save()
+        self.assertEqual(list(sanctum.contained_within.all()), [parent])

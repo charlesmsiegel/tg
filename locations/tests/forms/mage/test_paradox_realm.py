@@ -9,6 +9,7 @@ from locations.forms.mage.paradox_realm import (
     ParadoxObstacleFormSet,
     ParadoxRealmForm,
 )
+from locations.models.core.location import LocationModel
 from locations.models.mage.paradox_realm import (
     ParadigmChoices,
     ParadoxRealm,
@@ -207,6 +208,16 @@ class TestParadoxRealmFormSave(TestCase):
             "atmospheres-MIN_NUM_FORMS": "0",
             "atmospheres-MAX_NUM_FORMS": "1000",
         }
+
+    def test_save_keeps_contained_within(self):
+        """The form saves its contained_within selection (U9)."""
+        parent = LocationModel.objects.create(name="Old Town")
+        data = self._get_valid_form_data()
+        data["contained_within"] = [parent.pk]
+        form = ParadoxRealmForm(data=data)
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        realm = form.save()
+        self.assertEqual(list(realm.contained_within.all()), [parent])
 
     def test_save_creates_realm(self):
         """Test save creates a paradox realm."""

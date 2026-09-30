@@ -36,6 +36,7 @@ class SanctumForm(forms.ModelForm):
         sanctum.rank = self.cleaned_data.get("rank")
         if commit:
             sanctum.save()
+            self.save_m2m()
             self.reality_zone.name = sanctum.name  # Or get from form if you have a RealityZoneForm
             self.reality_zone.save()
             sanctum.reality_zone = self.reality_zone

@@ -14,6 +14,7 @@ from django.test import TestCase
 from characters.tests.utils import changeling_setup
 from locations.forms.changeling.freehold import FreeholdForm
 from locations.models.changeling.freehold import Freehold, PowerChoices
+from locations.models.core.location import LocationModel
 
 
 class TestFreeholdFormSetup(TestCase):
@@ -641,3 +642,29 @@ class TestFreeholdFormPowerChoices(TestFreeholdFormSetup):
         )
         html = str(FreeholdForm(instance=freehold)["powers"])
         self.assertRegex(html, r'value="resonant_dreams"[^>]*checked')
+
+
+class TestFreeholdFormContainedWithin(TestFreeholdFormSetup):
+    """The form saves its contained_within selection (U9)."""
+
+    def test_save_keeps_contained_within(self):
+        parent = LocationModel.objects.create(name="Old Town")
+        form = FreeholdForm(
+            data={
+                "name": "Nested Freehold",
+                "description": "Inside the old town",
+                "archetype": "stronghold",
+                "balefire": 2,
+                "size": 2,
+                "sanctuary": 1,
+                "resources": 0,
+                "passages": 1,
+                "gauntlet": 7,
+                "shroud": 7,
+                "dimension_barrier": 6,
+                "contained_within": [parent.pk],
+            }
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        freehold = form.save()
+        self.assertEqual(list(freehold.contained_within.all()), [parent])
