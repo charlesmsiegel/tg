@@ -171,7 +171,7 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
         from characters.models.werewolf.rite import Rite
 
         rite = Rite.objects.get(name=xp_request.trait_name)
-        self.character.rites.add(rite)
+        self.character.rites_known.add(rite)
 
         # Mark as approved
         xp_request.approved = "Approved"
@@ -276,3 +276,6 @@ XPSpendingServiceFactory.register("gurahl", GurahlXPSpendingService)
 XPSpendingServiceFactory.register("mokole", MokoleXPSpendingService)
 XPSpendingServiceFactory.register("nuwisha", NuwishaXPSpendingService)
 XPSpendingServiceFactory.register("ratkin", RatkinXPSpendingService)
+# Breeds with no rules of their own beyond the shared Fera traits.
+for _breed in ("ajaba", "ananasi", "grondr", "kitsune", "nagah", "rokea"):
+    XPSpendingServiceFactory.register(_breed, FeraXPSpendingService)
