@@ -128,7 +128,9 @@ into a redirect. `kind` is `character`, `group`, `item` or `location`; `action` 
   (`ModelRegistry.resolve()` then `selection_url()`);
 - characters and groups are resolved through seeded `game.ObjectType` rows; exactly one
   match is required, and the route is `characters:<app_name>:<action>:<type>` (no
-  gameline segment for `wod`).
+  gameline segment for `wod`). `dtf_human`, `htr_human` and `mtr_human` map to the route
+  names `dtfhuman`, `htrhuman` and `mtrhuman` (`CHARACTER_ROUTE_NAMES`). The character
+  pickers offer only types for which `character_type_has_route()` is true.
 
 Unknown or ambiguous types are a 404. Anonymous users choosing `create` are redirected to
 login. No route name is ever taken from the request. The Spread partial

@@ -9,6 +9,7 @@ from characters.forms.mage.xp import MageXPForm
 from characters.models.core import CharacterModel
 from characters.models.mage.mage import Mage
 from core.constants import GameLine, XPApprovalStatus
+from core.create_redirects import creatable_character_types
 from core.permissions import PermissionManager
 from game.models import (
     Chronicle,
@@ -182,6 +183,8 @@ class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
         all_types = ObjectType.objects.filter(type=self.object_type_code).exclude(
             name__in=excluded_types
         )
+        if self.object_type_code == "char":
+            all_types = creatable_character_types(all_types)
 
         if is_privileged:
             # STs and admins can create anything
