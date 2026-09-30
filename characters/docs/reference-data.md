@@ -124,8 +124,11 @@ Source: [`characters/models/demon/`](../models/demon/). Namespace `characters:de
 | `ApocalypticFormTrait` | Catalogue | `cost`, `house` (reverse `apocalyptic_traits`), `high_torment_only` | `apocalyptic_trait` |
 | `Ritual` | Catalogue | `house`, `primary_lore`, `primary_lore_rating`, `secondary_lore_requirements` (JSON), `base_cost`, `restrictions`, `minimum_casting_time`, `system`, `torment_effect`, `variations`, `flavor_text`, `source_page`; `total_lore_dots()`, `get_secondary_lores()` | `ritual` |
 
-`Pact` (a Demon-Thrall link; see [Demon models](models-demon.md#pact)) also has `PUBLIC_READ`
-detail and list views under `characters:demon:pact`.
+`Pact` (a Demon-Thrall link; see [Demon models](models-demon.md#pact)) is not reference
+data: it is per-character. Its detail and list views under `characters:demon:pact` are
+`LOGIN` routes that show a pact only to users with `VIEW_FULL` on its demon or its thrall
+(others get 404; the list leaves such pacts out, staff see all); create and update are
+`STAFF_WRITE`.
 
 ## Hunter
 

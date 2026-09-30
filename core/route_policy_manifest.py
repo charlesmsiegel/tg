@@ -332,6 +332,8 @@ characters.views.core.npc.NPCProfileCreateView
 characters.views.demon.demon_chargen.DemonBasicsView
 characters.views.demon.dtfhuman_chargen.DtFHumanBasicsView
 characters.views.demon.dtfhuman_chargen.DtFHumanTemplateSelectView
+characters.views.demon.pact.PactDetailView
+characters.views.demon.pact.PactListView
 characters.views.demon.thrall_chargen.ThrallBasicsView
 characters.views.mage.mage.MageBasicsView
 characters.views.mage.mtahuman.MtAHumanBasicsView
@@ -561,8 +563,6 @@ characters.views.demon.house.DemonHouseDetailView
 characters.views.demon.house.DemonHouseListView
 characters.views.demon.lore.LoreDetailView
 characters.views.demon.lore.LoreListView
-characters.views.demon.pact.PactDetailView
-characters.views.demon.pact.PactListView
 characters.views.demon.ritual.RitualDetailView
 characters.views.demon.ritual.RitualListView
 characters.views.demon.visage.VisageDetailView
