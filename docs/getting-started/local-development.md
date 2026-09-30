@@ -148,7 +148,9 @@ Storyteller pages need an `STRelationship` row; being a superuser is not enough
 `/admin/`, or run `python manage.py reset_demo_data --confirm`, which **deletes all
 characters, items, locations, scenes, weeks, XP requests and chronicles** (and every
 non-superuser account unless you pass `--preserve-users`) and then creates `demo_st` and
-`demo_player` (password `demo123`) and a demo chronicle with `demo_st` as storyteller.
+`demo_player` and a demo chronicle with `demo_st` as storyteller. The accounts get the
+`--password` you pass, or a random password the command prints. It runs only with
+`DEBUG=True`.
 
 ### Helper scripts
 

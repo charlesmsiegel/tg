@@ -193,7 +193,8 @@ parsed, not stored in `media/`.
 `.env`, `tg/secrets.py`, `local_settings.py`, `db.sqlite3` and `*.log` are gitignored. Keep
 `.env` readable only by the account that runs the server. Logs can contain user names and
 exception details; treat `logs/` as sensitive. Never run `reset_demo_data` on a real
-installation: it creates accounts with published passwords
+installation: it deletes all game data and creates demo accounts. It refuses to run
+unless `DEBUG` is true (or `--force` is given)
 ([Maintenance](maintenance.md#data-maintenance-commands)).
 
 ## Dependency pinning

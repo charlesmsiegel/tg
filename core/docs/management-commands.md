@@ -66,11 +66,12 @@ Creates or reuses a `test_player` user (password `test123` when created), `N` co
 
 ### `reset_demo_data`
 
-Without `--confirm` it only prints a warning. With it, in one transaction: deletes all
-weekly and story XP requests, weeks, scenes, characters, items, locations and
-chronicles; deletes every non-superuser account unless `--preserve-users`; then creates
-`demo_st` and `demo_player` (password `demo123`) if missing and a demo chronicle with
-`demo_st` as a storyteller. Never run it against a database you want to keep.
+Refuses to run unless `DEBUG` is true or `--force` is given. Without `--confirm` it only
+prints a warning. With it, in one transaction: deletes all weekly and story XP requests,
+weeks, scenes, characters, items, locations and chronicles; deletes every non-superuser
+account unless `--preserve-users`; then creates `demo_st` and `demo_player` if missing
+(with the `--password` value, or a random password it prints once) and a demo chronicle
+with `demo_st` as a storyteller. Never run it against a database you want to keep.
 
 ### `reset_db`
 
@@ -168,13 +169,14 @@ there. `--export-before-archive` runs `export_chronicle --pretty` for each into
 [--include-users]`. Writes JSON with the chronicle (Django serializer format, plus the
 usernames of its `storytellers`), its characters, items, locations, setting elements,
 scenes and journals (unless `--exclude-scenes`) and weekly and story XP requests.
-`--include-users` adds the storytellers and character owners. The default file name is
+`--include-users` adds the storytellers' and character owners' username, e-mail and
+name; password hashes, flags and permissions are never exported. The default file name is
 `chronicle_<id>_<name>_<date>.json` in the working directory.
 
 ### `import_chronicle`
 
 `import_chronicle FILE [--dry-run] [--skip-users] [--remap-users MAP.json]`. In one
-transaction it creates users from the file (without passwords; existing usernames are
+transaction it creates users from the file (with unusable passwords; existing usernames are
 skipped; `--remap-users` renames them), creates a new chronicle from the exported name,
 theme, mood, year and headings, adds the storytellers, and attaches setting elements
 (matched or created by name). Characters, items, locations, scenes, journals and XP

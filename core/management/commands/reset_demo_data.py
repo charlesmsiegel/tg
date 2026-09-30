@@ -1,10 +1,14 @@
 """
 Management command to reset database to demo/test state.
 
-WARNING: This command will delete existing data. Use with caution!
+WARNING: This command will delete existing data. It refuses to run unless
+settings.DEBUG is true or --force is given.
 """
 
-from django.core.management.base import BaseCommand
+import secrets
+
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 
@@ -22,8 +26,23 @@ class Command(BaseCommand):
             action="store_true",
             help="Confirm that you want to delete all data",
         )
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help="Run even when DEBUG is false (never on a real installation)",
+        )
+        parser.add_argument(
+            "--password",
+            help="Password for the demo accounts (default: a random one, printed once)",
+        )
 
     def handle(self, *args, **options):
+        if not settings.DEBUG and not options["force"]:
+            raise CommandError(
+                "reset_demo_data deletes all game data and only runs with DEBUG=True "
+                "(pass --force to override)"
+            )
+
         if not options["confirm"]:
             self.stdout.write(
                 self.style.ERROR("\nWARNING: This command will DELETE ALL GAME DATA!\n")
@@ -47,7 +66,7 @@ class Command(BaseCommand):
                 self.stdout.write("Preserving user accounts...")
 
             # Load demo data
-            self.load_demo_data()
+            self.load_demo_data(options["password"] or secrets.token_urlsafe(12))
 
         self.stdout.write(self.style.SUCCESS("\n✓ Demo data loaded successfully!"))
 
@@ -84,8 +103,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("  ✓ User accounts deleted"))
 
-    def load_demo_data(self):
-        """Load demo data."""
+    def load_demo_data(self, password):
+        """Load demo data; new demo accounts get ``password``."""
 
         from django.contrib.auth.models import User
 
@@ -93,22 +112,15 @@ class Command(BaseCommand):
 
         self.stdout.write("Loading demo data...")
 
-        # Create demo users
-        if not User.objects.filter(username="demo_st").exists():
-            User.objects.create_user(
-                username="demo_st", email="demo_st@example.com", password="demo123"
-            )
-            self.stdout.write("  ✓ Created demo ST user (username: demo_st, password: demo123)")
-
-        if not User.objects.filter(username="demo_player").exists():
-            User.objects.create_user(
-                username="demo_player",
-                email="demo_player@example.com",
-                password="demo123",
-            )
-            self.stdout.write(
-                "  ✓ Created demo player user (username: demo_player, password: demo123)"
-            )
+        # Create demo users; existing accounts keep their password
+        created = []
+        for username in ("demo_st", "demo_player"):
+            if not User.objects.filter(username=username).exists():
+                User.objects.create_user(
+                    username=username, email=f"{username}@example.com", password=password
+                )
+                created.append(username)
+                self.stdout.write(f"  ✓ Created demo user {username}")
 
         # Create demo chronicle
         chronicle = Chronicle.objects.create(
@@ -124,6 +136,5 @@ class Command(BaseCommand):
         self.stdout.write(f"  ✓ Created demo chronicle: {chronicle.name} (ID: {chronicle.id})")
 
         self.stdout.write(self.style.SUCCESS("\n✓ Demo data loaded!"))
-        self.stdout.write("\nDemo accounts created:")
-        self.stdout.write("  ST: demo_st / demo123")
-        self.stdout.write("  Player: demo_player / demo123")
+        if created:
+            self.stdout.write(f"\nPassword for {', '.join(created)}: {password}")
