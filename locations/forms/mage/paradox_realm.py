@@ -125,9 +125,13 @@ class ParadoxRealmForm(forms.ModelForm):
         generate_random = self.cleaned_data.get("generate_random", False)
 
         if generate_random:
-            # Generate a completely random realm
-            name = self.cleaned_data.get("name", "Random Paradox Realm")
-            realm = ParadoxRealm.random(name=name, save=commit)
+            # Generate the realm's rolled fields onto this form's instance, so the
+            # creator's owner/status and an edited realm's identity are kept
+            name = self.cleaned_data.get("name") or "Random Paradox Realm"
+            realm = super().save(commit=False)
+            realm = ParadoxRealm.random(name=name, save=commit, realm=realm)
+            if commit:
+                self.save_m2m()
             return realm
         else:
             # Normal save

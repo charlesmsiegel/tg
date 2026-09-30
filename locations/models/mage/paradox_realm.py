@@ -247,16 +247,19 @@ class ParadoxRealm(HorizonRealm):
             return FinalObstacleTypeChoices.COMBINED, {}
 
     @classmethod
-    def random(cls, name="Random Paradox Realm", save=False):
+    def random(cls, name="Random Paradox Realm", save=False, realm=None):
         """
         Generate a complete random paradox realm following the guide's procedures.
 
         Args:
             name: Name for the realm
             save: Whether to save the realm and related objects to database
+            realm: An existing (possibly unsaved) realm to fill in instead of a new
+                one; its owner, status, chronicle and other fields are kept, and on
+                save its old obstacles and atmospheres are replaced
 
         Returns:
-            A new ParadoxRealm instance
+            The generated ParadoxRealm instance
         """
         # Step 1: Select sphere
         primary = cls.random_sphere()
@@ -285,21 +288,22 @@ class ParadoxRealm(HorizonRealm):
         # Step 4: Generate final obstacle
         final_type, final_details = cls.random_final_obstacle()
 
-        # Create the realm
-        realm = cls(
-            name=name,
-            primary_sphere=primary,
-            secondary_sphere=secondary,
-            paradigm=para1,
-            secondary_paradigm=para2,
-            num_primary_obstacles=num_primary,
-            num_random_obstacles=num_random,
-            final_obstacle_type=final_type,
-            final_obstacle_details=final_details,
-        )
+        if realm is None:
+            realm = cls()
+        realm.name = name
+        realm.primary_sphere = primary
+        realm.secondary_sphere = secondary
+        realm.paradigm = para1
+        realm.secondary_paradigm = para2
+        realm.num_primary_obstacles = num_primary
+        realm.num_random_obstacles = num_random
+        realm.final_obstacle_type = final_type
+        realm.final_obstacle_details = final_details
 
         if save:
             realm.save()
+            realm.realm_obstacles.all().delete()
+            realm.realm_atmospheres.all().delete()
 
             # Generate atmosphere details (2-3 rolls)
             num_atmosphere_rolls = random.randint(2, 3)
