@@ -175,9 +175,12 @@ class FullPageAndFragmentTests(InteractiveChargenTestCase):
         character = self.vampire(13)
         Vampire.objects.filter(pk=character.pk).update(status="Sub")
         response = self.client.get(self.url(character), headers=HX)
-        # The character's own page: the generic router's detail fallback for
-        # Vampire (a bare DetailView) has no access policy and answers 403.
         self.assertEqual(response["HX-Redirect"], character.get_absolute_url())
+        # The character's own page renders the sheet through the router's
+        # declared detail fallback.
+        page = self.client.get(self.url(character))
+        self.assertEqual(page.status_code, 200)
+        self.assertTemplateUsed(page, "characters/vampire/vampire/detail.html")
 
     def test_back_through_htmx_returns_previous_step_fragment_and_messages(self):
         character = self.vampire(3)

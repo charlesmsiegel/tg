@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import DetailView, FormView
+from django.views.generic import FormView
 
 from characters.chargen.registry import WorkflowViews
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -22,6 +22,7 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from characters.views.core.template_selection import CharacterTemplateSelectView
+from characters.views.demon.dtfhuman import DtFHumanDetailView
 from core.mixins import (
     ScopedCreationFormMixin,
 )
@@ -139,4 +140,4 @@ class DtFHumanCharacterCreationView(HumanCharacterCreationView):
     model_class = DtFHuman
     key_property = "creation_status"
     template_route = "characters:demon:dtfhuman_template"
-    default_redirect = DetailView
+    default_redirect = DtFHumanDetailView

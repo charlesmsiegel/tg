@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
@@ -29,6 +29,7 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
+from characters.views.demon.demon import DemonDetailView
 from core.mixins import (
     EditPermissionMixin,
     ScopedCreationFormMixin,
@@ -269,4 +270,4 @@ class DemonCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = Demon
     key_property = "creation_status"
-    default_redirect = DetailView
+    default_redirect = DemonDetailView
