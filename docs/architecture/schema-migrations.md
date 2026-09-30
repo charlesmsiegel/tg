@@ -57,13 +57,9 @@ Consequences:
 
 `python manage.py reset_db` ([`core/management/commands/reset_db.py`](../../core/management/commands/reset_db.py))
 refuses to run unless `DEBUG` is true. It deletes `db.sqlite3` in the current directory and every
-`.py` file except `__init__.py` in every top-level `*/migrations/` directory. That includes the
-committed files in `tg_schema/migrations/`. `setup_db.sh` runs it with `--yes`. After running
-either, restore the committed migrations before you commit:
-
-```bash
-git checkout -- tg_schema/migrations
-```
+`.py` file except `__init__.py` in every top-level `*/migrations/` directory except
+`tg_schema/migrations/`, whose committed files it keeps (`COMMITTED_MIGRATION_APPS`).
+`setup_db.sh` runs it with `--yes`.
 
 ## The `tg_schema` app
 

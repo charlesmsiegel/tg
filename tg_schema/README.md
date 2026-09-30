@@ -61,9 +61,8 @@ fields `null=True` or a default.
 - The test runner (`tg.test_runner.LocalMigrationTestRunner`, see
   [test runner](../tg/docs/test-runner.md)) builds test tables for the local apps from the
   models, then runs these migrations, which find nothing to do.
-- `python manage.py reset_db` (and `setup_db.sh`, which calls it) deletes the files in
-  `tg_schema/migrations/` along with generated migrations. Restore them with
-  `git checkout -- tg_schema/migrations` before committing.
+- `python manage.py reset_db` (and `setup_db.sh`, which calls it) deletes the generated
+  migrations of the local apps but keeps the files in `tg_schema/migrations/`.
 
 ## Documentation
 

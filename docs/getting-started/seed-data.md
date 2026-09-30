@@ -208,17 +208,10 @@ python manage.py populate_gamedata
 - It deletes `db.sqlite3` in the current directory (the path is fixed; it does not read
   `DATABASES`).
 - For every top-level directory that has a `migrations/` folder, it deletes every
-  `*.py` file in that folder except `__init__.py`. That includes the **committed**
-  migrations in `tg_schema/migrations/`, not only the local apps' generated ones.
+  `*.py` file in that folder except `__init__.py`, the local apps' generated
+  migrations. It keeps the **committed** migrations in `tg_schema/migrations/`, which
+  the following `migrate` applies (on a fresh database they change nothing).
 - Without `--yes` it asks for confirmation (`y` or `yes`).
-
-After `setup_db.sh`, restore the `tg_schema` migrations from git before you commit
-anything, and apply them (on a fresh database they change nothing):
-
-```bash
-git checkout -- tg_schema/migrations/
-python manage.py migrate
-```
 
 Everything in the old `db.sqlite3` is lost: users, chronicles, characters and all game
 data.

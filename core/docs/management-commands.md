@@ -19,7 +19,7 @@ the database owner.
 | [`populate_gamedata`](#populate_gamedata) | Yes | Load reference data from `populate_db/` |
 | [`populate_test_chronicle`](#populate_test_chronicle) | Yes | Fill a chronicle with random test characters and scenes |
 | [`reset_demo_data`](#reset_demo_data) | Yes, destructive | Delete game data and load a demo chronicle |
-| [`reset_db`](#reset_db) | Yes, destructive | Delete `db.sqlite3` and migration files (development only) |
+| [`reset_db`](#reset_db) | Yes, destructive | Delete `db.sqlite3` and generated migration files (development only) |
 | [`approve_pending_items`](#approve_pending_items) | Yes | Bulk approve submitted characters, images, freebies and XP requests |
 | [`process_weekly_xp`](#process_weekly_xp) | Yes | Create a `Week` and weekly XP requests |
 | [`sync_character_status`](#sync_character_status) | Yes | Remove retired and deceased characters from groups, chantries and scenes |
@@ -77,10 +77,9 @@ with `demo_st` as a storyteller. Never run it against a database you want to kee
 
 Refuses to run unless `DEBUG` is true. After a prompt (skip with `--yes`) it deletes
 `db.sqlite3` in the working directory and every `*.py` file except `__init__.py` in
-every top-level `*/migrations/` folder. That includes `tg_schema/migrations/`, the
-project's hand-written schema migrations; restore them from version control afterwards
-(see [tg_schema](../../tg_schema/README.md)). It then suggests `makemigrations`,
-`migrate` and `populate_gamedata`.
+every top-level `*/migrations/` folder except `tg_schema/migrations/`, the project's
+committed schema migrations (see [tg_schema](../../tg_schema/README.md)), which it
+keeps. It then suggests `makemigrations`, `migrate` and `populate_gamedata`.
 
 ## Approvals and XP
 

@@ -25,7 +25,7 @@ Things that hold for all of them:
 | Command | App | Writes? | Purpose |
 |---------|-----|---------|---------|
 | [`populate_gamedata`](#populate_gamedata) | core | yes | Load game reference data from `populate_db/`. |
-| [`reset_db`](#reset_db) | core | deletes files | Delete `db.sqlite3` and all migration files (development only). |
+| [`reset_db`](#reset_db) | core | deletes files | Delete `db.sqlite3` and the generated migration files of local apps (development only). |
 | [`reset_demo_data`](#reset_demo_data) | core | yes, destructive | Delete all game data and create a demo storyteller, player and chronicle. |
 | [`populate_test_chronicle`](#populate_test_chronicle) | core | yes | Add sample characters and scenes to a chronicle. |
 | [`approve_pending_items`](#approve_pending_items) | core | yes | Bulk-approve submitted characters, images, freebies and weekly XP requests. |
@@ -74,15 +74,14 @@ When: after creating a database, and after pulling changes to `populate_db/`.
 ### `reset_db`
 
 Deletes `db.sqlite3` in the current directory and every `*.py` file except `__init__.py`
-in each top-level `*/migrations/` directory, **including the committed
-`tg_schema/migrations/` files**. Refuses to run unless `DEBUG` is true.
+in each top-level `*/migrations/` directory except `tg_schema/migrations/`, whose
+committed migrations it keeps. Refuses to run unless `DEBUG` is true.
 
 | Option | Effect |
 |--------|--------|
 | `--yes` | Skip the `[y/N]` confirmation. |
 
-When: only in development, normally through [`setup_db.sh`](../../setup_db.sh). Restore
-`tg_schema/migrations/` from git afterwards (see
+When: only in development, normally through [`setup_db.sh`](../../setup_db.sh) (see
 [Seed data](../getting-started/seed-data.md#setup_dbsh-and-reset_db)).
 
 ### `reset_demo_data`

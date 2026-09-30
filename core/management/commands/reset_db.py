@@ -1,8 +1,12 @@
 """
-Management command to delete the database and all migration files.
+Management command to delete the database and the generated migration files.
 
 This is useful for completely resetting the database during development.
 CAUTION: This will delete all data!
+
+Only generated migrations are deleted. Apps in COMMITTED_MIGRATION_APPS (the
+hand-written tg_schema migrations) keep their files: they are tracked in git
+and patch existing databases.
 """
 
 from pathlib import Path
@@ -10,9 +14,15 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+# Apps whose migrations are committed and must survive a reset.
+COMMITTED_MIGRATION_APPS = {"tg_schema"}
+
 
 class Command(BaseCommand):
-    help = "Delete db.sqlite3 and all migration files (CAUTION: Deletes all data!)"
+    help = (
+        "Delete db.sqlite3 and the generated migration files of local apps "
+        "(CAUTION: Deletes all data!)"
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -29,12 +39,15 @@ class Command(BaseCommand):
         # Confirmation prompt
         if not options["yes"]:
             self.stdout.write(
-                self.style.WARNING("\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n")
+                self.style.WARNING(
+                    "\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n"
+                )
             )
             self.stdout.write("This action will:")
             self.stdout.write("  1. Delete db.sqlite3")
-            self.stdout.write("  2. Delete all migration files from all apps")
-            self.stdout.write("     (keeping only __init__.py and __pycache__/ in migrations/)\n")
+            self.stdout.write("  2. Delete the generated migration files of local apps")
+            self.stdout.write("     (keeping __init__.py, __pycache__/ and the committed")
+            self.stdout.write("     tg_schema migrations)\n")
 
             response = input("Are you sure you want to continue? [y/N]: ")
             if response.lower() not in ["y", "yes"]:
@@ -55,7 +68,7 @@ class Command(BaseCommand):
         # Find all Django apps with migrations
         apps_with_migrations = []
         for app_path in Path(".").iterdir():
-            if app_path.is_dir():
+            if app_path.is_dir() and app_path.name not in COMMITTED_MIGRATION_APPS:
                 migrations_dir = app_path / "migrations"
                 if migrations_dir.exists() and migrations_dir.is_dir():
                     apps_with_migrations.append((app_path.name, migrations_dir))

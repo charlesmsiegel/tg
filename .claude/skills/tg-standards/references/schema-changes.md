@@ -24,9 +24,8 @@ Facts behind the rules:
 - `tg_schema` ([`tg_schema/`](../../../../tg_schema/)) has no models. Its migrations are
   `RunPython` operations that inspect the live database and the current models.
 - `core/management/commands/reset_db.py` deletes every non-`__init__.py` file in every
-  top-level `*/migrations/` directory, `tg_schema/migrations/` included. After running it
-  (or `setup_db.sh`), restore the committed files with
-  `git checkout -- tg_schema/migrations` before you commit.
+  top-level `*/migrations/` directory except `tg_schema/migrations/`
+  (`COMMITTED_MIGRATION_APPS`), whose committed files it keeps.
 
 ## Which changes need a tg_schema migration
 

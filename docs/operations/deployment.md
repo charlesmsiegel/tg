@@ -251,7 +251,7 @@ python manage.py check --deploy
 Then start the ASGI server under your process manager.
 
 Do not use [`setup_db.sh`](../../setup_db.sh) on a production host. It starts with
-`reset_db --yes`, which deletes `db.sqlite3` and every migration file; `reset_db` refuses to
+`reset_db --yes`, which deletes `db.sqlite3` and every generated migration file; `reset_db` refuses to
 run when `DEBUG` is `False`, so under production settings the script fails at its first step.
 
 ## Updating
