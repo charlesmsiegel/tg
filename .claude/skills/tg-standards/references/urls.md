@@ -34,9 +34,9 @@ prefix.
 - For items and locations, the leaf modules delegate to the registry:
   `urls = registry.urls("mummy", "detail")`. Add routes on the `ActionSpec.routes`, not
   in the leaf file ([registry.md](registry.md)).
-- `characters/urls/__init__.py` skips a gameline module that fails to import
-  (`except (ImportError, AttributeError)`), so a broken module removes its routes
-  silently. Run `python manage.py check` and the route tests after editing one.
+- The root `__init__.py` of `characters`, `items` and `locations` imports every gameline
+  module without catching errors, so a broken module fails at startup instead of silently
+  dropping its routes (`characters/tests/urls/test_url_patterns.py`).
 
 ## Names
 
