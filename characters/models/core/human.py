@@ -148,7 +148,8 @@ class Human(
             ),
             # Apparent age uses the same whole-number input range.
             CheckConstraint(
-                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=65535),
+                check=Q(apparent_age__isnull=True)
+                | Q(apparent_age__gte=0, apparent_age__lte=65535),
                 name="characters_human_reasonable_apparent_age",
                 violation_error_message="Apparent age must be between 0 and 65535",
             ),

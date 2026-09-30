@@ -39,9 +39,7 @@ class Command(BaseCommand):
         # Confirmation prompt
         if not options["yes"]:
             self.stdout.write(
-                self.style.WARNING(
-                    "\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n"
-                )
+                self.style.WARNING("\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n")
             )
             self.stdout.write("This action will:")
             self.stdout.write("  1. Delete db.sqlite3")

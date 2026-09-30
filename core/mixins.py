@@ -448,11 +448,7 @@ def prepare_created_object(form, request):
     user = request.user
     if not user.is_authenticated:
         raise PermissionDenied("Login required to create objects")
-    if (
-        "chronicle" not in form.fields
-        and obj.chronicle_id is None
-        and request.GET.get("chronicle")
-    ):
+    if "chronicle" not in form.fields and obj.chronicle_id is None and request.GET.get("chronicle"):
         obj.chronicle = launch_chronicle(request, required=True)
     chronicle = getattr(obj, "chronicle", None)
     if chronicle is not None:
