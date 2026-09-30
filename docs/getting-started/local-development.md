@@ -63,10 +63,9 @@ module:
 Both modules start with `from .base import *`, so [`base.py`](../../tg/settings/base.py)
 holds everything shared and the two environment modules only override.
 
-`DJANGO_ENVIRONMENT` must be in the real process environment. The `.env` file is loaded
-by `load_dotenv()` inside `base.py`, which runs after `__init__.py` has already chosen the
-module, so a `DJANGO_ENVIRONMENT` line in `.env` never changes which settings load. See
-[Configuration](configuration.md) for every variable the settings read.
+`__init__.py` loads the `.env` file before it reads `DJANGO_ENVIRONMENT`, so the variable
+may come from the real process environment or from `.env` (the real environment wins).
+See [Configuration](configuration.md) for every variable the settings read.
 
 What development changes compared with production, in short: `DEBUG = True`, a fallback
 `SECRET_KEY`, `ALLOWED_HOSTS` of `localhost,127.0.0.1`, the console e-mail backend,

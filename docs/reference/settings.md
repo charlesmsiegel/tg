@@ -10,8 +10,8 @@ Modules, all in [`tg/settings/`](../../tg/settings/):
 
 | Module | Role |
 |--------|------|
-| [`__init__.py`](../../tg/settings/__init__.py) | Star-imports `development` or `production` according to `DJANGO_ENVIRONMENT`. |
-| [`base.py`](../../tg/settings/base.py) | Shared settings. Calls `load_dotenv()` first. |
+| [`__init__.py`](../../tg/settings/__init__.py) | Calls `load_dotenv()` on the repository's `.env`, then star-imports `development` or `production` according to `DJANGO_ENVIRONMENT`. |
+| [`base.py`](../../tg/settings/base.py) | Shared settings. |
 | [`development.py`](../../tg/settings/development.py) | `from .base import *`, then development overrides. |
 | [`production.py`](../../tg/settings/production.py) | `from .base import *`, then production overrides. |
 

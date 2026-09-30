@@ -10,9 +10,17 @@ Environment options:
 
 If DJANGO_ENVIRONMENT is not set, defaults to 'development'.
 Unknown values will raise an error to prevent accidental misconfiguration.
+
+The repository's .env file is loaded first, so DJANGO_ENVIRONMENT (like every other
+variable) may be set there; a variable already in the process environment wins.
 """
 
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # Determine which settings to use based on environment
 # Default to development for convenience

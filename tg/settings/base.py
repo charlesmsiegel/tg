@@ -8,9 +8,7 @@ Environment-specific settings are in development.py and production.py.
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()
+# tg/settings/__init__.py loads the .env file before it chooses the settings module.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
