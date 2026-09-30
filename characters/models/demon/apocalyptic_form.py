@@ -84,16 +84,6 @@ class ApocalypticForm(Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("characters:demon:apocalyptic_form", kwargs={"pk": self.pk})
-
-    def get_update_url(self):
-        return reverse("characters:demon:update:apocalyptic_form", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("characters:demon:create:apocalyptic_form")
-
     def low_torment_count(self):
         """Count of low torment traits."""
         return self.low_torment_traits.count()

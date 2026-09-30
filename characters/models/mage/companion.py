@@ -125,6 +125,10 @@ class Companion(MtAHuman):
     FAMILIAR_PACKAGE_ADVANTAGES = (("Bond-Sharing", 4), ("Paradox Nullification", 2))
     FAMILIAR_PACKAGE_CHARM = "Airt Sense"
 
+    def get_update_url(self):
+        # No chargen router is routed under update:companion; edit the full form.
+        return self.get_full_update_url()
+
     def prepare_starting_freebies(self):
         """Set the chargen freebie budget; familiars also get their fixed package.
 

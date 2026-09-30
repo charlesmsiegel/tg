@@ -24,9 +24,9 @@ Kinfolk are in the [glossary](../../docs/reference/glossary.md).
 | `Pack` | `Group` | `pack` | n/a | `characters:group` |
 
 All have `gameline = "wta"` (URL namespace `characters:werewolf:`). The Fera subclasses
-have no `create:` or `update:` routes of their own, so `get_update_url()` and
-`get_creation_url()` inherited from `Human` do not resolve for them; they are created and
-edited through the `fera` routes (see [Views and URLs](views-and-urls.md#werewolf)).
+have no `create:` or `update:` routes of their own; `Fera` overrides `get_update_url()`,
+`get_full_update_url()` and `get_creation_url()` so every breed is created and edited
+through the `fera` routes (see [Views and URLs](views-and-urls.md#werewolf)).
 
 ## WtAHuman
 

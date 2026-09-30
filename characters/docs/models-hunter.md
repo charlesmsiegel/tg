@@ -18,9 +18,8 @@ the `Human` base. Terms such as Creed, Edge and Imbued are in the
 workflow: both are created and edited with plain form views
 (`characters:hunter:create:hunter`, `characters:hunter:create:htrhuman`,
 `characters:hunter:update:hunter`, `characters:hunter:update:htrhuman`). `HtRHuman`
-overrides only `get_absolute_url()`, and the `Human` defaults it inherits look for
-`...:htr_human` route names, so `HtRHuman.get_update_url()` and `get_creation_url()` raise
-`NoReverseMatch`. Hunter has no group model.
+and `Hunter` override `get_update_url()` and `get_creation_url()` to name these routes
+(the `Human` defaults would look for `...:htr_human`). Hunter has no group model.
 
 ## HtRHuman
 
