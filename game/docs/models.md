@@ -183,8 +183,8 @@ Methods:
 - `most_recent_post()`, `total_posts()`, `total_characters()`, `get_absolute_url()`
   (`game:scene`).
 
-`__str__` returns `name`; for an empty name it reads `self.date`, an attribute `Scene`
-does not define, so give every scene a name.
+`__str__` returns `name`; for an empty name (or `''`) it returns the location (or
+"Scene") and `date_of_scene`, falling back to `date_played`.
 
 ### Post
 

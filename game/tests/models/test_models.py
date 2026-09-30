@@ -757,20 +757,19 @@ class TestSceneModel(TestCase):
         self.assertEqual(str(scene), "The Gathering")
 
     def test_scene_str_without_name(self):
-        """Test Scene __str__ uses location and date when name is empty."""
+        """An unnamed scene is its location and in-game date."""
         scene = Scene.objects.create(
             name="",
             chronicle=self.chronicle,
             location=self.location,
+            date_of_scene=date(2024, 3, 9),
         )
-        # When name is empty or "''", __str__ uses location + date_of_scene
-        # The format is: str(self.location) + " " + str(self.date)
-        # Note: Scene model doesn't have 'date' attribute, this is a known quirk
-        # in the model that would show an error - we just test it doesn't crash with a name
-        scene.name = "Named Scene"
-        scene.save()
-        str_repr = str(scene)
-        self.assertEqual(str_repr, "Named Scene")
+        self.assertEqual(str(scene), "Test Location 2024-03-09")
+
+    def test_scene_str_without_name_location_or_date(self):
+        """Without a location or in-game date it falls back to the day it was played."""
+        scene = Scene.objects.create(name="''", chronicle=self.chronicle, date_of_scene=None)
+        self.assertEqual(str(scene), f"Scene {scene.date_played}")
 
     def test_scene_get_absolute_url(self):
         """Test Scene get_absolute_url returns correct URL."""

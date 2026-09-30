@@ -513,7 +513,9 @@ class Scene(models.Model):
     def __str__(self):
         if self.name not in ["", "''"]:
             return self.name
-        return str(self.location) + " " + str(self.date)
+        # Unnamed scenes: the setting and the in-game date (or the day it was played).
+        when = self.date_of_scene or self.date_played
+        return f"{self.location or 'Scene'} {when or ''}".strip()
 
     def get_absolute_url(self):
         return reverse("game:scene", kwargs={"pk": self.pk})
