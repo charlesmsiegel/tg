@@ -128,7 +128,7 @@ app's model registry for the URL (see [views](views.md#registry-views)).
 A concrete subclass of `Model` (so it has owner, chronicle, status and the permission
 behaviour). Its `type` is `"character_template"`.
 
-- Descriptive fields: `gameline` (from `GameLine.CHOICES`), `character_type` (free text,
+- Descriptive fields: `gameline` (from `settings.GAMELINE_CHOICES`), `character_type` (free text,
   required), `concept`, `faction`.
 - JSON data: `basic_info`, `attributes`, `abilities`, `backgrounds` (list of
   `{name, rating}`), `powers`, `merits_flaws` (list of `{name, rating}`), `specialties`

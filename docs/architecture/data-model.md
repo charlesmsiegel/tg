@@ -194,9 +194,9 @@ An object's gameline is determined as follows:
   `"wod"`); `get_full_gameline()` maps it to the display name through
   `core.utils.get_gameline_name`; `get_heading()` returns `"<code>_heading"`; and
   `get_badge_class()` returns a CSS badge class.
-- A few models store the gameline in a **column**: `core.Book` and `core.HouseRule` (choices
-  `GAMELINE_CHOICES`), and `core.CharacterTemplate`, `game.Scene`, `game.ObjectType` and
-  `game.SettingElement` (choices `core.constants.GameLine.CHOICES`).
+- A few models store the gameline in a **column**, all with choices
+  `settings.GAMELINE_CHOICES`: `core.Book`, `core.HouseRule`, `core.CharacterTemplate`,
+  `game.Scene`, `game.ObjectType` and `game.SettingElement`.
 - In templates, the `gameline_code` filter in
   [`core/templatetags/tl.py`](../../core/templatetags/tl.py) accepts an object (via
   `get_gameline()` or `gameline`), a `Chronicle` (via its `headings`) or a string, and falls back
