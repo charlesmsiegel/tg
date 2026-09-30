@@ -391,7 +391,13 @@ class ErrorMessageMixin:
 
 
 class ScopedCreationFormMixin:
-    """Limit creation forms to chronicles the current user can access."""
+    """Limit creation forms to chronicles the current user can access.
+
+    The ``npc`` field is kept only for a user who may manage the chosen chronicle and
+    gameline (``PermissionManager.user_can_manage_creation``, the same test that decides
+    whether the template shows the box); for everyone else it is dropped, so a posted
+    ``npc=on`` cannot create an NPC.
+    """
 
     def get_initial(self):
         initial = super().get_initial()
@@ -405,6 +411,10 @@ class ScopedCreationFormMixin:
         form = super().get_form(form_class)
         if "chronicle" in form.fields:
             form.fields["chronicle"].queryset = readable_chronicles(self.request.user)
+        if "npc" in form.fields and not PermissionManager.user_can_manage_creation(
+            self.request.user, form, request=self.request
+        ):
+            del form.fields["npc"]
         return form
 
 
@@ -454,6 +464,9 @@ def prepare_created_object(form, request):
     roles = PermissionManager.get_scoped_roles(user, chronicle, gameline, request)
     shared_allowed = bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
     obj.owner = None if shared_allowed and request.POST.get("shared") == "1" else user
+    if "npc" in form.fields and not shared_allowed:
+        # Only staff and the scope's storytellers create NPCs through a form.
+        obj.npc = False
     if Role.ADMIN not in roles:
         obj.status = "Un"
 

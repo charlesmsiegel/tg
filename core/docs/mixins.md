@@ -19,7 +19,7 @@ top of whatever a mixin checks.
 | `OwnerRequiredMixin` | Owner or staff only | 403 |
 | `CharacterOwnerOrSTMixin` | `VIEW_FULL` on the record's character, or staff | 403 |
 | `StorytellerRequiredMixin` | Staff or scoped storyteller for the target | 403 |
-| `ScopedCreationFormMixin` | Limits the chronicle choice to readable chronicles | none |
+| `ScopedCreationFormMixin` | Limits the chronicle choice to readable chronicles; drops `npc` for non-storytellers | none |
 | `PermissionContextMixin` | Adds `object_perms` to the context | none |
 | `SpecialUserMixin` | `check_if_special_user()` helper | none |
 | `ObjectCachingMixin` | Caches `get_object()` | none |
@@ -122,7 +122,10 @@ Restricts a view to staff or a storyteller scoped to the target. In `dispatch()`
 
 In `get_form()`, if the form has a `chronicle` field, limits its queryset to
 `game.security.readable_chronicles(user)`, so a user cannot create an object in a
-chronicle they cannot see.
+chronicle they cannot see. If the form has an `npc` field and
+`PermissionManager.user_can_manage_creation(user, form)` is false (the same test that
+decides whether the basics templates show the NPC box), it removes the field, so only
+staff and the chosen chronicle's storytellers for the gameline can create an NPC.
 
 ### `MessageMixin`, `SuccessMessageMixin`, `ErrorMessageMixin`
 
@@ -141,6 +144,8 @@ chronicle they cannot see.
 - a chosen chronicle must be one of `readable_chronicles(user)`;
 - `owner` is set to the user, or to `None` when the user is a scoped editor for the
   chronicle and gameline and the POST contains `shared=1`;
+- `npc` is cleared when the form has an `npc` field and the user is not a scoped editor
+  (admin, head storyteller or storyteller for the chronicle and gameline);
 - `status` is forced to `"Un"` unless the user is staff or a superuser (`Role.ADMIN`).
 
 This is why creation views must use `MessageMixin` (or call the function): it stops a
