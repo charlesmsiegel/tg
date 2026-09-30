@@ -88,6 +88,31 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
         self.assertNotIn("Integrated Effects", category_values)
 
 
+class TestChantryPointFormVisibility(TestChantryPointFormSetup):
+    """U24: the category decides which of example / note / alternate name show."""
+
+    def test_visibility_follows_category(self):
+        form = ChantryPointForm(pk=self.chantry.pk)
+        cases = {
+            "-----": (False, False, False),
+            "Integrated Effects": (False, False, False),
+            "New Background": (True, True, True),
+            "Existing Background": (True, False, False),
+        }
+        for category, expected in cases.items():
+            with self.subTest(category=category):
+                visible = form.field_visibility({"category": category})
+                self.assertEqual(
+                    (visible["example"], visible["note"], visible["display_alt_name"]),
+                    expected,
+                )
+
+    def test_rules_render_for_the_browser(self):
+        form = ChantryPointForm(pk=self.chantry.pk)
+        self.assertIn("data-conditional-rules", str(form.conditional_js()))
+        self.assertIn("widgets/conditional.js", str(form.media))
+
+
 class TestChantryPointFormValidation(TestChantryPointFormSetup):
     """Test ChantryPointForm validation logic."""
 

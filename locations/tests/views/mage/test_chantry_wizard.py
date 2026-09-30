@@ -1,10 +1,16 @@
 """The chantry URL routes an unfinished chantry's editor into the creation wizard."""
 
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from characters.models.core.background_block import Background
+from characters.models.mage.focus import Practice
 from characters.models.mage.mtahuman import MtAHuman
+from characters.models.mage.resonance import Resonance
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.models.mage.library import Library
+from locations.models.mage.node import Node
 from locations.tests.views.mage.chantry_fixtures import add_chantry_actors
 
 
@@ -117,6 +123,61 @@ class ChantryBackgroundStepTests(TestCase):
         self.assertEqual(rating.linked_object, ally)
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.creation_status, 6)
+
+    def test_node_step_attaches_the_node_to_the_chantry(self):
+        """U24: the detailed node joins chantry.nodes, so has_node() and refunds see it."""
+        Resonance.objects.create(name="Dynamic", entropy=True)
+        practice1 = Practice.objects.create(name="High Ritual Magick")
+        practice2 = Practice.objects.create(name="Chaos Magick")
+        rating = self.at_step(3, "node", rating=1)
+        response = self.client.post(
+            self.url,
+            {
+                "name": "Chantry Well",
+                "description": "",
+                "rank": 1,
+                "ratio": 0,
+                "size": 0,
+                "quintessence_form": "Light",
+                "tass_form": "Dew",
+                "gauntlet": 5,
+                "shroud": 5,
+                "dimension_barrier": 5,
+                "resonance-TOTAL_FORMS": "1",
+                "resonance-INITIAL_FORMS": "0",
+                "resonance-0-resonance": "Dynamic",
+                "resonance-0-rating": "1",
+                "merit_flaw-TOTAL_FORMS": "0",
+                "merit_flaw-INITIAL_FORMS": "0",
+                "reality_zone-TOTAL_FORMS": "2",
+                "reality_zone-INITIAL_FORMS": "0",
+                "reality_zone-0-practice": str(practice1.pk),
+                "reality_zone-0-rating": "1",
+                "reality_zone-1-practice": str(practice2.pk),
+                "reality_zone-1-rating": "-1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        node = Node.objects.get(name="Chantry Well")
+        self.assertEqual((node.owner, node.chronicle), (self.player, self.chronicle))
+        self.assertEqual(list(self.chantry.nodes.all()), [node])
+        rating.refresh_from_db()
+        self.assertEqual(rating.linked_object, node)
+        self.assertTrue(self.chantry.has_node())
+
+    def test_library_step_sets_the_chantry_library(self):
+        """U24: the detailed library becomes chantry_library and sits inside the chantry."""
+        self.at_step(4, "library", rating=1)
+        with patch.object(Library, "random_book") as random_book:
+            response = self.client.post(self.url, {"name": "Chantry Stacks", "rank": 1})
+        self.assertEqual(response.status_code, 302)
+        library = Library.objects.get(name="Chantry Stacks")
+        random_book.assert_called_once()
+        self.assertEqual(library.owner, self.player)
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.chantry_library, library)
+        self.assertIn(self.chantry, library.contained_within.all())
+        self.assertEqual(self.chantry.creation_status, 5)
 
     def test_a_step_with_nothing_to_detail_offers_continue(self):
         self.at_step(3)

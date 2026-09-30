@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -111,7 +112,10 @@ class _ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         if self.request.GET.get("chronicle"):
             initial.pop("chronicle", None)
             chronicle = launch_chronicle(self.request)
-            if chronicle and direct_create_chronicles(self.request.user).filter(pk=chronicle.pk).exists():
+            if (
+                chronicle
+                and direct_create_chronicles(self.request.user).filter(pk=chronicle.pk).exists()
+            ):
                 initial["chronicle"] = chronicle
         return initial
 
@@ -371,12 +375,21 @@ class ChantryBackgroundView(EditPermissionMixin, ChantryObjectMixin, FormView):
         self.object.save(update_fields=["creation_status"])
         return HttpResponseRedirect(self.object.get_absolute_url())
 
+    def attach(self, background_object):
+        """Record the new object on the chantry itself; subclasses override."""
+
     def form_valid(self, form):
+        if isinstance(form, ModelForm):
+            # Before the first save, so anything the form generates (a library's
+            # books) is created under the chantry's owner and chronicle too.
+            form.instance.owner = self.object.owner
+            form.instance.chronicle = self.object.chronicle
         background_object = form.save()
         background_object.owner = self.object.owner
         background_object.chronicle = self.object.chronicle
         background_object.status = "Sub"
         background_object.save()
+        self.attach(background_object)
         self.current_background.note = background_object.name
         self.current_background.url = background_object.get_absolute_url()
         self.current_background.linked_object = background_object
@@ -393,10 +406,17 @@ class ChantryNodeView(ChantryBackgroundView):
     background_name = "node"
     form_class = NodeForm
 
+    def attach(self, background_object):
+        self.object.nodes.add(background_object)
+
 
 class ChantryLibrarysView(ChantryBackgroundView):
     background_name = "library"
     form_class = LibraryForm
+
+    def attach(self, background_object):
+        self.object.set_library(background_object)
+        self.object.save(update_fields=["chantry_library"])
 
 
 class ChantryAlliesView(ChantryBackgroundView):

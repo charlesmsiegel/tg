@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.core.background_block import Background
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
 from characters.models.mage.faction import MageFaction
@@ -8,7 +9,7 @@ from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
 from game.models import Chronicle
 from items.models.mage.grimoire import Grimoire
-from locations.models.mage.chantry import Chantry
+from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
 
@@ -91,13 +92,43 @@ class TestChantry(TestCase):
         self.assertEqual(chantry.nodes.count(), 1)
         self.assertIn(node, chantry.nodes.all())
 
+    def _rate(self, chantry, property_name, rating):
+        bg, _ = Background.objects.get_or_create(
+            property_name=property_name, defaults={"name": property_name.title()}
+        )
+        return ChantryBackgroundRating.objects.create(chantry=chantry, bg=bg, rating=rating)
+
+    def test_background_properties_read_chantry_ratings(self):
+        """U24: background ratings come from ChantryBackgroundRating, not character ratings."""
+        chantry = Chantry.objects.create(name="Rated Chantry")
+        self.assertEqual(chantry.allies, 0)
+        self.assertEqual(chantry.total_background_rating("node"), 0)
+        self._rate(chantry, "allies", 2)
+        self._rate(chantry, "node", 3)
+        self.assertEqual(chantry.allies, 2)
+        self.assertEqual(chantry.total_background_rating("node"), 3)
+        with self.assertRaises(AttributeError):
+            chantry.allies = 1
+
+    def test_has_node_compares_nodes_with_rating(self):
+        chantry = Chantry.objects.create(name="Node Rated Chantry")
+        self._rate(chantry, "node", 1)
+        self.assertFalse(chantry.has_node())
+        chantry.nodes.add(self.node1)
+        self.assertTrue(chantry.has_node())
+
     def test_points_spent(self):
-        # Note: points_spent() relies on BackgroundBlock properties which don't work
-        # for Chantry because BackgroundBlock.total_background_rating() queries
-        # BackgroundRating.objects.filter(char=self) expecting a Human instance.
-        # This is a known design issue - Chantry uses BackgroundBlock but is a Location.
-        # Skipping this test until the design is fixed.
-        pass
+        chantry = Chantry.objects.create(name="Spending Chantry", integrated_effects_score=1)
+        self._rate(chantry, "allies", 2)
+        self._rate(chantry, "node", 1)
+        self.assertEqual(chantry.points_spent(), 2 * 2 + 3 * 1 + 2 * 1)
+        self.assertEqual(chantry.points_spent(), chantry.total_cost())
+
+    def test_set_chantry_type_library_grants_free_library_dots(self):
+        chantry = Chantry.objects.create(name="Library Type Chantry")
+        chantry.set_chantry_type("library")
+        self.assertEqual(chantry.total_background_rating("library"), Chantry.LIBRARY_TYPE_FREE_DOTS)
+        self.assertEqual(chantry.total_cost(), 0)
 
     def test_set_rank(self):
         # Chantry.rank is a property, not settable
@@ -158,12 +189,14 @@ class TestChantry(TestCase):
         self.assertTrue(chantry.has_season())
 
     def test_get_traits(self):
-        # Note: get_traits() relies on BackgroundBlock properties which don't work
-        # for Chantry because BackgroundBlock.total_background_rating() queries
-        # BackgroundRating.objects.filter(char=self) expecting a Human instance.
-        # This is a known design issue - Chantry uses BackgroundBlock but is a Location.
-        # Skipping this test until the design is fixed.
-        pass
+        chantry = Chantry.objects.create(name="Traits Chantry", integrated_effects_score=2)
+        self._rate(chantry, "sanctum", 1)
+        self._rate(chantry, "library", 3)
+        traits = chantry.get_traits()
+        self.assertEqual(traits["sanctum"], 1)
+        self.assertEqual(traits["library"], 3)
+        self.assertEqual(traits["integrated_effects"], 2)
+        self.assertEqual(traits["allies"], 0)
 
 
 class TestChantryDetailView(TestCase):

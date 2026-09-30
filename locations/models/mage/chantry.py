@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, Sum
 
 from characters.models.core.background_block import BackgroundBlock
 from characters.models.core.character import CharacterModel
@@ -170,6 +170,22 @@ class Chantry(BackgroundBlock, LocationModel):
     def points(self):
         return self.total_points - self.total_cost()
 
+    # BackgroundBlock gives the class one property per allowed background
+    # (``chantry.allies``...); its defaults read and write a character's
+    # BackgroundRating rows, so read this chantry's own ratings here. ``node``,
+    # ``library`` and ``sanctum`` are never properties: django-polymorphic's
+    # accessors for those LocationModel subclasses already hold the names, so
+    # call total_background_rating() for them.
+    def total_background_rating(self, bg_name):
+        total = self.backgrounds.filter(bg__property_name=bg_name).aggregate(total=Sum("rating"))
+        return total["total"] or 0
+
+    def _set_property(self, prop, value):
+        raise AttributeError(
+            f"Chantry.{prop} is read-only; buy or refund dots through "
+            "locations.services.chantry_points."
+        )
+
     def free_dots(self, property_name):
         """Dots of a background this chantry holds at no cost.
 
@@ -227,10 +243,11 @@ class Chantry(BackgroundBlock, LocationModel):
         return self.chantry_type is not None
 
     def set_chantry_type(self, chantry_type):
+        from locations.services.chantry_points import apply_type_grants
+
         self.chantry_type = chantry_type
-        if chantry_type == "library":
-            self.library = 3
         self.save()
+        apply_type_grants(self)
         return True
 
     def trait_cost(self, trait):
@@ -255,26 +272,10 @@ class Chantry(BackgroundBlock, LocationModel):
         return 1000
 
     def points_spent(self):
-        return (
-            2
-            * (
-                self.allies
-                + self.arcane
-                + self.backup
-                + self.cult
-                + self.elders
-                + self.integrated_effects
-                + self.library
-                + self.retainers
-                + self.spies
-            )
-            + 3 * (self.node + self.resources)
-            + 4 * (self.enhancement + self.requisitions)
-            + 5 * (self.sanctum)
-        )
+        return self.total_cost()
 
     def has_node(self):
-        return self.total_node() == self.node
+        return self.total_node() == self.total_background_rating("node")
 
     def add_node(self, node):
         self.nodes.add(node)
@@ -293,27 +294,10 @@ class Chantry(BackgroundBlock, LocationModel):
         library.contained_within.add(self)
         return True
 
-    def set_rank(self, rank):
-        self.rank = rank
-        return True
-
     def get_traits(self):
-        return {
-            "allies": self.allies,
-            "arcane": self.arcane,
-            "backup": self.backup,
-            "cult": self.cult,
-            "elders": self.elders,
-            "integrated_effects": self.integrated_effects,
-            "retainers": self.retainers,
-            "spies": self.spies,
-            "resources": self.resources,
-            "enhancement": self.enhancement,
-            "requisitions": self.requisitions,
-            "reality_zone": self.sanctum,
-            "node": self.node,
-            "library": self.library,
-        }
+        traits = {name: self.total_background_rating(name) for name in self.allowed_backgrounds}
+        traits["integrated_effects"] = self.integrated_effects_score
+        return traits
 
     def set_faction(self, faction):
         self.faction = faction
