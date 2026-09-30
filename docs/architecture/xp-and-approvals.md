@@ -334,8 +334,11 @@ through the applier's `deny=True` branch before marking the record `Denied`.
 `decide_spending_request()` accepts it, but no URL currently routes a freebie decision to
 it, so records created by chargen stay `Pending`. The `game:freebie_spending_record:`
 views (list, detail, create, update) manage the records themselves: create and update
-require `Permission.SPEND_FREEBIES` on the character, only pending records can be edited,
-and saving a record there does not change the character's pool.
+require `Permission.SPEND_FREEBIES` on the character and only pending records can be
+edited. Filing a record there (`game.freebie_records.file_freebie_record`) deducts its
+cost from the locked character's `freebies`, refusing a negative cost or one the pool
+cannot cover, so the record keeps the chargen bargain (pending means paid; a denial
+refunds `cost`). Editing changes only what the record names, never its cost.
 
 Once `freebies_approved` is set, chargen back navigation is blocked for good, because an
 earlier step's change could invalidate the allocation (see

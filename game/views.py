@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Count, Max, Q, Sum
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -39,6 +39,7 @@ from game.forms import (
     ChronicleForm,
     ChronicleItemCreationForm,
     ChronicleLocationCreationForm,
+    FreebieSpendingRecordCorrectionForm,
     FreebieSpendingRecordForm,
     JournalEntryForm,
     PostForm,
@@ -53,6 +54,7 @@ from game.forms import (
     XPSpendingRequestCorrectionForm,
     xp_spend_form_class,
 )
+from game.freebie_records import file_freebie_record
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,
@@ -1074,19 +1076,30 @@ class FreebieSpendingRecordCreateView(LoginRequiredMixin, MessageMixin, CreateVi
             request.user, character, Permission.SPEND_FREEBIES, request=request
         ):
             raise PermissionDenied("Freebie spending is unavailable for this character")
+        self.character = character.get_real_instance()
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        kwargs["character"] = self.character
         return kwargs
+
+    def form_valid(self, form):
+        # The record is paid for when filed, as chargen's are: a denial refunds its cost.
+        try:
+            self.object = file_freebie_record(self.character, **form.cleaned_data)
+        except ValidationError as exc:
+            form.add_error(None, exc)
+            return self.form_invalid(form)
+        messages.success(self.request, self.success_message)
+        return redirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse("game:freebie_spending_record:list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        context["character"] = self.character
         return context
 
 
@@ -1094,7 +1107,7 @@ class FreebieSpendingRecordUpdateView(
     CharacterOwnerOrSTMixin, MessageMixin, CharacterContextMixin, UpdateView
 ):
     model = FreebieSpendingRecord
-    form_class = FreebieSpendingRecordForm
+    form_class = FreebieSpendingRecordCorrectionForm
     template_name = "game/freebie_spending_record/form.html"
     success_message = "Freebie spending record updated successfully!"
     error_message = "Failed to update freebie spending record. Please correct the errors below."

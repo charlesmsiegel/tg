@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
@@ -766,7 +767,7 @@ class XPSpendingRequestApprovalForm(forms.ModelForm):
 
 
 class FreebieSpendingRecordForm(forms.ModelForm):
-    """Form for creating and updating freebie spending records."""
+    """Form for filing a freebie spending record (game.freebie_records deducts its cost)."""
 
     class Meta:
         model = FreebieSpendingRecord
@@ -778,15 +779,17 @@ class FreebieSpendingRecordForm(forms.ModelForm):
         self.fields["trait_name"].widget.attrs.update({"placeholder": "e.g., Strength"})
         self.fields["trait_type"].widget.attrs.update({"placeholder": "e.g., Attribute"})
         self.fields["trait_value"].widget.attrs.update({"placeholder": "Value gained"})
-        self.fields["cost"].widget.attrs.update({"placeholder": "Freebie cost"})
+        if "cost" in self.fields:
+            self.fields["cost"].min_value = 0
+            self.fields["cost"].validators.append(MinValueValidator(0))
+            self.fields["cost"].widget.attrs.update({"placeholder": "Freebie cost", "min": 0})
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if self.character:
-            instance.character = self.character
-        if commit:
-            instance.save()
-        return instance
+
+class FreebieSpendingRecordCorrectionForm(FreebieSpendingRecordForm):
+    """Correct what a pending record names; its cost stays as filed (a denial refunds it)."""
+
+    class Meta(FreebieSpendingRecordForm.Meta):
+        fields = ["trait_name", "trait_type", "trait_value"]
 
 
 class StoryXPRequestForm(forms.ModelForm):

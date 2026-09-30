@@ -230,8 +230,12 @@ create them as the player spends.
 The `game:freebie_spending_record:*` pages list and show records the caller may read,
 and create or edit a record for a character on which the caller holds
 `Permission.SPEND_FREEBIES` (for an owner without an ST role, only while the character
-is `Un` or `Rev`). These pages save the record as entered, cost included; they do not
-change the character's `freebies`. Editing is limited to pending records.
+is `Un` or `Rev`). Filing a record goes through
+[`game.freebie_records.file_freebie_record`](../freebie_records.py): it locks the
+character, refuses a negative cost or one above its `freebies`, deducts the cost and
+creates the pending record, as a chargen spend does (a denial refunds `cost`). Editing is
+limited to pending records and, like an XP request correction, cannot change the cost
+(`FreebieSpendingRecordCorrectionForm`).
 
 `decide_spending_request` accepts `FreebieSpendingRecord`, but no view calls it with
 that model.
