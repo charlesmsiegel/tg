@@ -4,6 +4,7 @@ from django.urls import reverse
 from characters.models.core import Ability, Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
+from core.constants import CharacterStatus
 from core.models import Model
 from core.utils import weighted_choice
 
@@ -37,7 +38,7 @@ class Rote(Model):
         self.save()
 
     def random(self, mage=None, book=None):
-        self.update_status("Ran")
+        self.update_status(CharacterStatus.SUBMITTED)
         self.name = f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
 
         if mage is not None:

@@ -84,7 +84,6 @@ class Grimoire(Wonder):
     def set_focus(self, practices, instruments):
         self.practices.set(practices)
         self.instruments.set(instruments)
-        self.save()
         return True
 
     def has_focus(self):
@@ -130,7 +129,6 @@ class Grimoire(Wonder):
 
     def set_rotes(self, rotes):
         self.rotes.set(rotes)
-        self.save()
         return True
 
     def has_rotes(self):
@@ -159,7 +157,7 @@ class Grimoire(Wonder):
         return True
 
     def random_abilities(self, abilities=None):
-        if self.practices is None:
+        if not self.practices.exists():
             raise ValueError("Must have Practice before assigning abilities")
         if abilities is None:
             ability_list = Ability.objects.none()
@@ -183,14 +181,12 @@ class Grimoire(Wonder):
 
     def random_date_written(self, date_written=None):
         if date_written is None:
-            if self.faction is not None:
-                if self.faction.founded is not None:
-                    date_written = random.randint(
-                        self.faction.founded, datetime.datetime.now().year
-                    )
-            date_written = random.randint(
-                datetime.datetime.now().year - 100, datetime.datetime.now().year
-            )
+            this_year = datetime.datetime.now().year
+            founded = self.faction.founded if self.faction is not None else None
+            if founded is not None and founded <= this_year:
+                date_written = random.randint(founded, this_year)
+            else:
+                date_written = random.randint(this_year - 100, this_year)
         self.set_date_written(date_written)
 
     def random_faction(self, faction=None):
@@ -198,15 +194,14 @@ class Grimoire(Wonder):
             faction_probs = {}
             from characters.models.mage.faction import MageFaction
 
-            for faction in MageFaction.objects.all():
-                if faction.parent is None:
-                    faction_probs[faction] = 30
-                elif faction.parent.parent is None:
-                    faction_probs[faction] = 10
-                elif faction.parent.parent.parent is None:
-                    faction_probs[faction] = 1
-                else:
-                    faction_probs[faction] = 0
+            for candidate in MageFaction.objects.select_related("parent__parent"):
+                if candidate.parent is None:
+                    faction_probs[candidate] = 30
+                elif candidate.parent.parent is None:
+                    faction_probs[candidate] = 10
+                elif candidate.parent.parent.parent is None:
+                    faction_probs[candidate] = 1
+            if faction_probs:
                 faction = weighted_choice(faction_probs, ceiling=100)
         self.set_faction(faction)
 
@@ -353,7 +348,7 @@ class Grimoire(Wonder):
                 if choice == "practices":
                     self.practices.remove(self.practices.last())
                 if choice == "abilities":
-                    self.practices.remove(self.practices.last())
+                    self.abilities.remove(self.abilities.last())
                 num_rotes = (
                     self.rank
                     + 3
@@ -364,10 +359,10 @@ class Grimoire(Wonder):
                 if self.is_primer:
                     num_rotes -= 1
 
-            rotes = list(effects.order_by("?")[:num_rotes])
-            rotes = [Rote.objects.create(effect=x) for x in rotes]
-            for x in rotes:
-                x.random(book=self)
+            # Rote.random() fills the name, practice, attribute and ability, then saves.
+            rotes = [Rote(effect=effect) for effect in effects.order_by("?")[:num_rotes]]
+            for rote in rotes:
+                rote.random(book=self)
         self.set_rotes(rotes)
 
     def random_spheres(self, spheres=None):
@@ -391,28 +386,36 @@ class Grimoire(Wonder):
         self.set_is_primer(is_primer)
 
     def random_name(self):
+        if self.has_name() and self.name != self.PLACEHOLDER_NAME:
+            return False
         name = ""
-        if not self.has_name() or self.name == self.PLACEHOLDER_NAME:
-            while Grimoire.objects.filter(name=name).exists() or name == "":
-                sphere = random.choice(self.spheres.all())
-                noun = Noun.objects.order_by("?").first().name.title()
-                noun2 = Noun.objects.order_by("?").first().name.title()
-                resonance = (
-                    Resonance.objects.filter(Q(**{sphere.property_name: True}))
-                    .order_by("?")
-                    .first()
-                    .name.title()
-                )
-                sphere = str(sphere).title()
-                forms = [
-                    f"Book of {resonance} {noun}",
-                    f"{resonance} {sphere} Grimoire",
-                    f"{resonance} {self.medium} of {sphere}",
-                    f"{noun} of {resonance} {noun2}",
-                ]
-                name = random.choice(forms)
-            return self.set_name(name)
-        return False
+        # A small vocabulary runs out of unused names, so stop rolling after a few tries
+        # and number the last roll instead of looping forever.
+        for _ in range(20):
+            sphere = random.choice(self.spheres.all())
+            noun = Noun.objects.order_by("?").first().name.title()
+            noun2 = Noun.objects.order_by("?").first().name.title()
+            resonance = (
+                Resonance.objects.filter(Q(**{sphere.property_name: True}))
+                .order_by("?")
+                .first()
+                .name.title()
+            )
+            sphere = str(sphere).title()
+            forms = [
+                f"Book of {resonance} {noun}",
+                f"{resonance} {sphere} Grimoire",
+                f"{resonance} {self.medium} of {sphere}",
+                f"{noun} of {resonance} {noun2}",
+            ]
+            name = random.choice(forms)
+            if not Grimoire.objects.filter(name=name).exists():
+                return self.set_name(name)
+        base, number = name, 2
+        while Grimoire.objects.filter(name=name).exists():
+            name = f"{base} {number}"
+            number += 1
+        return self.set_name(name)
 
     def random(
         self,
@@ -438,8 +441,7 @@ class Grimoire(Wonder):
         self.random_is_primer(is_primer)
         self.random_faction(faction)
         self.random_medium(medium)
-        self.random_material(cover_material)
-        self.random_material(inner_material)
+        self.random_material(cover_material, inner_material)
         self.random_length(length)
         self.random_focus(practices, instruments)
         self.random_date_written(date_written)

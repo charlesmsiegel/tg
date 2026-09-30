@@ -203,9 +203,12 @@ Each keyword argument (`rank`, `is_primer`, `faction`, `practices`, `instruments
 matching `random_*` method, in this order: rank, primer flag, faction, medium,
 materials, length, focus (practices and instruments), date, abilities, language,
 spheres, rotes, name. It sets `status` to `Sub`, `background_cost = 2 * rank` and
-`quintessence_max = 5 * rank`. `random_rotes()` creates new `Rote` rows from matching
-`Effect`s and calls `Rote.random(book=self)` on each. `locations.Library.random_book()`
-uses this to stock libraries.
+`quintessence_max = 5 * rank`. The date falls between the faction's `founded` year and
+now, or within the last 100 years when the faction has none. `random_rotes()` creates new
+`Rote` rows from matching `Effect`s and calls `Rote.random(book=self)` on each (status
+`Sub`); when the book has more Spheres, practices or Abilities than its rank allows, it
+drops extras of that kind. `locations.Library.random_book()` uses this to stock libraries;
+it saves the unnamed book without validation first, and `random()` names it.
 
 ### `SorcererArtifact`
 
