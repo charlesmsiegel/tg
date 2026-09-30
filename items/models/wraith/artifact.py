@@ -4,7 +4,7 @@ from items.models.core import ItemModel
 
 
 class WraithArtifact(ItemModel):
-    type = "artifact"
+    type = "wraith_artifact"
     gameline = "wto"
 
     level = models.IntegerField(default=1)

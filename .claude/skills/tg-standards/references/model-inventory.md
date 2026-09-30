@@ -73,13 +73,13 @@ Every concrete `LocationModel` has a `ModelSpec` in `locations/registry.py`.
 
 `widgets` and `tg_schema` have no models.
 
-## Duplicate `type` values
+## Unique `type` values
 
-These pairs share a `type` string today: `House` / `DemonHouse` (`"house"`),
-`LinearMagicPath` / `LinearMagicRitual` (`"linear_magic_path"`), `Relic` / `WraithRelic`
-(`"relic"`), `Artifact` / `WraithArtifact` (`"artifact"`). None of them is dispatched by
-`type` through `GenericCharacterDetailView`, but do not add more: give every new model its
-own `type`.
+No two `core.models.Model` subclasses in one app share a `type` string;
+`core/tests/test_model_types.py` fails on a duplicate. Where a line needs a name another
+line already uses, prefix it with the line (`demon_house`, `wraith_relic`,
+`wraith_artifact`). `type` is a class attribute, not a column, so renaming one needs no
+schema change; it does change `get_type()`, the label list pages show.
 
 ## Re-generating
 

@@ -165,7 +165,7 @@ class TestWraithRelicProperties(TestCase):
     def test_type_is_relic(self):
         """Test type is 'relic'."""
         relic = WraithRelic.objects.create(name="Type Test")
-        self.assertEqual(relic.type, "relic")
+        self.assertEqual(relic.type, "wraith_relic")
 
     def test_gameline_is_wto(self):
         """Test gameline is 'wto'."""
