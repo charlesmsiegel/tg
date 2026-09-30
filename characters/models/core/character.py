@@ -5,8 +5,17 @@ from django.urls import reverse
 from django.utils import timezone
 
 from characters.chargen.registry import FreebiePosition
+from core.constants import CharacterStatus
 from core.models import Model, ModelManager, ModelQuerySet
 from core.utils import CharacterOrganizationRegistry
+
+# In play or still being built (including sheets returned for revision).
+ACTIVE_STATUSES = (
+    CharacterStatus.UNAPPROVED,
+    CharacterStatus.REVISION_REQUESTED,
+    CharacterStatus.SUBMITTED,
+    CharacterStatus.APPROVED,
+)
 
 
 class CharacterQuerySet(ModelQuerySet):
@@ -22,7 +31,7 @@ class CharacterQuerySet(ModelQuerySet):
 
     def active(self):
         """Active characters (not retired or deceased)"""
-        return self.filter(status__in=["Un", "Sub", "App"])
+        return self.filter(status__in=ACTIVE_STATUSES)
 
     def retired(self):
         """Retired characters"""

@@ -23,7 +23,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
-from characters.models.core.character import attach_first_groups
+from characters.models.core.character import ACTIVE_STATUSES, attach_first_groups
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.models.core.statistic import Statistic
@@ -419,7 +419,7 @@ class CharacterIndexView(ListView):
                 chron_dict[chron]["retired"].append(char)
             elif char.status == "Dec":
                 chron_dict[chron]["deceased"].append(char)
-            elif char.status in ["Un", "Sub", "App"]:
+            elif char.status in ACTIVE_STATUSES:
                 chron_dict[chron]["active"].append(char)
 
         context["chron_dict"] = chron_dict

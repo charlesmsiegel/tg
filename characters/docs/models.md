@@ -93,7 +93,7 @@ to the `core.models.ModelQuerySet` ones (`visible()`, `for_chronicle()`, `owned_
 | Method | Returns |
 |--------|---------|
 | `npcs()` / `player_characters()` | Filter on `npc` |
-| `active()` | `status` in `Un`, `Sub`, `App` |
+| `active()` | `status` in `ACTIVE_STATUSES`: `Un`, `Rev`, `Sub`, `App` |
 | `retired()` / `deceased()` | `status` `Ret` / `Dec` |
 | `with_group_ordering()` | Annotates `first_group_id` (lowest group id the character belongs to), selects `chronicle`, orders by chronicle, `-first_group_id`, name. Pair it with the module function `attach_first_groups(characters)`, which sets `character.first_group` for every row with one query |
 | `pending_approval_for_user(user)` | `Sub` characters in chronicles the user staffs (`game.security.staffed_chronicles`); staff and superusers also see chronicle-less ones |
