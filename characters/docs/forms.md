@@ -108,7 +108,7 @@ NPC's owner and chronicle from the creating character, marks it `Sub`, and compl
 | Form | Module | Step |
 |------|--------|------|
 | `SpecialtiesForm` | [`specialty.py`](../forms/core/specialty.py) | Specialties (and the sheet's "add specialties" action): one text field with autocomplete suggestions per stat in `specialties_needed` |
-| `CharacterTemplateSelectionForm` | [`template_selection.py`](../forms/core/template_selection.py) | Template picker before a mortal's chargen: approved, public `CharacterTemplate`s for the subclass's `gameline` and `character_type` |
+| `CharacterTemplateSelectionForm` | [`template_selection.py`](../forms/core/template_selection.py) | Template picker before a mortal's chargen: public `CharacterTemplate`s for the subclass's `gameline` and `character_type` that are approved, or official (seeded) and not retired or deceased |
 | `core.forms.language.HumanLanguageForm` | `core` app | Languages |
 
 ### Gameline forms

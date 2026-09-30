@@ -225,4 +225,5 @@ class VtMHumanCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = VtMHuman
     key_property = "creation_status"
+    template_route = "characters:vampire:vtmhuman_template"
     default_redirect = VtMHumanDetailView

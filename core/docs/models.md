@@ -138,21 +138,22 @@ behaviour). Its `type` is `"character_template"`.
   `created_at`, `updated_at`.
 - Unique on (`gameline`, `character_type`, `name`).
 
-`clean()` requires `character_type` and restricts `gameline` to `wod`, `vtm`, `wta`,
-`mta`, `wto`, `ctd` and `dtf`.
+`clean()` requires `character_type` and validates `gameline` against
+`settings.GAMELINE_CHOICES` (`core.validators.validate_gameline`).
 
-Here `gameline` is a model field, not a class attribute. Read `template.gameline`:
-the inherited `get_gameline()` reads the class attribute, so on a template it returns
-the field descriptor rather than the stored code. As a result `get_heading()` returns a
-string built from that descriptor and the `tl` filter `gameline_code` returns `"wod"` for
-every template, so template pages always use the generic theme.
+Here `gameline` is a model field, not a class attribute, so `CharacterTemplate`
+overrides `get_gameline()` to return the stored code; `get_heading()` and the `tl` filter
+`gameline_code` then theme template pages in the template's gameline.
 
 `apply_to_character(character)` copies the template onto a character: `basic_info`
 values of the form `"FK:Archetype:<name>"` are resolved to `Archetype` rows; attributes,
-abilities and powers are set when the character has a matching attribute; backgrounds,
-merits and flaws, languages and specialties are looked up by name and created as rating
-rows (unknown names are skipped). It then saves the character, records a
-`TemplateApplication` and increments `times_used`.
+abilities and powers are set when the character has a matching attribute; backgrounds
+(`BackgroundRating`, keyed by `char`) and merits and flaws (`MeritFlawRating`) are looked
+up by name and created as rating rows, languages are added, and each
+`"Ability (Specialty)"` gets the shared `Specialty` row for that name and the ability's
+`property_name` (created if needed) added to `character.specialties`. Unknown names are
+skipped. It then saves the character, records a `TemplateApplication` and increments
+`times_used`.
 
 Official templates can be edited only by a storyteller scoped to them (see
 [permissions](permissions-and-policies.md#route-policies)).

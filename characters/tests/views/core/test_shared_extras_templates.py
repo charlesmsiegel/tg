@@ -244,8 +244,9 @@ class TemplateSelectionCharacterizationTests(TestCase):
                     status="App",
                     is_public=False,
                 )
+                # A community draft; unapproved official (seeded) templates are offered.
                 CharacterTemplate.objects.create(
-                    name="Unapproved", gameline=gameline, character_type=kind
+                    name="Unapproved", gameline=gameline, character_type=kind, is_official=False
                 )
                 CharacterTemplate.objects.create(
                     name="Wrong type", gameline=gameline, character_type="other", status="App"

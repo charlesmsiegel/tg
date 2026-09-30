@@ -116,6 +116,8 @@ class CtDHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        # Position 0: the template picker (get_success_url) comes before step 1.
+        form.instance.creation_status = 0
         self.object = form.save()
         return super().form_valid(form)
 
@@ -201,4 +203,5 @@ class CtDHumanCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = CtDHuman
     key_property = "creation_status"
+    template_route = "characters:changeling:ctdhuman_template"
     default_redirect = CtDHumanDetailView

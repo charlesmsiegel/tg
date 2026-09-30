@@ -67,6 +67,8 @@ class WtOHumanBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
+        # Position 0: the template picker (get_success_url) comes before step 1.
+        form.instance.creation_status = 0
         self.object = form.save()
         messages.success(
             self.request,
@@ -181,4 +183,5 @@ class WtOHumanCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = WtOHuman
     key_property = "creation_status"
+    template_route = "characters:wraith:wtohuman_template"
     default_redirect = WtOHumanDetailView
