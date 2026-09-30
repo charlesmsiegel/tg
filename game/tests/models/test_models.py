@@ -1890,3 +1890,24 @@ class UserSceneReadStatusIndexTests(TestCase):
         indexes = UserSceneReadStatus._meta.indexes
         index_field_sets = [tuple(idx.fields) for idx in indexes]
         self.assertIn(("user", "scene"), index_field_sets)
+
+
+class TestGamelineColumnChoices(TestCase):
+    """Gameline columns accept every configured gameline, Orpheus included."""
+
+    def test_choices_come_from_settings(self):
+        from django.conf import settings
+
+        from core.models import CharacterTemplate
+
+        for model in (Scene, SettingElement, ObjectType, CharacterTemplate):
+            with self.subTest(model=model.__name__):
+                field = model._meta.get_field("gameline")
+                self.assertEqual(list(field.choices), list(settings.GAMELINE_CHOICES))
+
+    def test_orpheus_setting_element_validates(self):
+        element = SettingElement(
+            name="The Spirit Chain", description="Ghosts for hire.", gameline="orp"
+        )
+        element.save()
+        self.assertEqual(element.get_gameline_display(), "Orpheus")

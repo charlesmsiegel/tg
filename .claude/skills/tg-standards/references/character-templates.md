@@ -10,7 +10,7 @@ can be applied to a new character or turned into an NPC. The model is documented
 `CharacterTemplate(Model)` ([`core/models.py`](../../../../core/models.py)) is a player
 object: it has `owner`, `chronicle`, `status`, `visibility` and the approval workflow.
 Unlike other `Model` subclasses it stores `gameline` as a **column**
-(`choices=GameLine.CHOICES`, default `"wod"`) next to `character_type` (the character
+(`choices=settings.GAMELINE_CHOICES`, default `"wod"`) next to `character_type` (the character
 `type`, such as `"vampire"`).
 
 | Field | Content |

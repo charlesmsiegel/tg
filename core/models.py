@@ -790,7 +790,7 @@ class CharacterTemplate(Model):
     # Template-specific fields
     gameline = models.CharField(
         max_length=3,
-        choices=GameLine.CHOICES,
+        choices=settings.GAMELINE_CHOICES,
         default=GameLine.WOD,
     )
     character_type = models.CharField(

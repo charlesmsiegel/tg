@@ -1,6 +1,7 @@
 import re
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -31,7 +32,7 @@ class ObjectType(ValidatedSaveMixin, models.Model):
     gameline = models.CharField(
         default="",
         max_length=100,
-        choices=GameLine.CHOICES,
+        choices=settings.GAMELINE_CHOICES,
     )
 
     class Meta:
@@ -71,7 +72,7 @@ class SettingElement(ValidatedSaveMixin, models.Model):
     description = models.TextField(default="")
     gameline = models.CharField(
         max_length=10,
-        choices=GameLine.CHOICES,
+        choices=settings.GAMELINE_CHOICES,
         default=GameLine.WOD,
         db_index=True,
         help_text="Game line this setting element belongs to",
@@ -497,7 +498,7 @@ class Scene(models.Model):
     date_of_scene = models.DateField(default=now, null=True, blank=True)
     gameline = models.CharField(
         max_length=10,
-        choices=GameLine.CHOICES,
+        choices=settings.GAMELINE_CHOICES,
         default=GameLine.WOD,
         db_index=True,
         help_text="Game line this scene is primarily focused on",
