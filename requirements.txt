@@ -1,9 +1,6 @@
 Django>=5.2.9
 django-polymorphic==4.1.0
-django-tinymce4-lite==1.8.0
 django-debug-toolbar==6.1.0
-# Security: Pin requests to fix CVE-2026-25645
-requests>=2.33.0
 # python==3.10 - note for setting up environment, it should be 3.10
 # Security: Pin pillow to fix CVE out-of-bounds write when loading PSD images
 pillow>=12.1.1
@@ -13,7 +10,6 @@ pytest-django==4.9.0
 coverage==7.6.0
 djlint==1.36.4
 selenium==4.27.1
-numpy==2.2.2
 # Security: Pin bleach to fix GHSA-8rfp-98v4-mmr6 (URI scheme allowlist bypass via
 # Unicode > U+00A0), GHSA-gj48-438w-jh9v (formaction URI schemes), GHSA-g75f-g53v-794x
 # (linkify email regex CPU exhaustion)

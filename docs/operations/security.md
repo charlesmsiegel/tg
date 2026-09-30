@@ -205,7 +205,7 @@ test and lint tools together, and uses two kinds of specifier:
   `channels-redis`, `daphne`, `django-redis`, `redis` and `bleach`. These change only when
   someone edits the file.
 - **Minimum versions (`>=`)** for Django itself and for packages raised to fix a vulnerability
-  (`requests`, `pillow`, `pytest`, `python-dotenv`, `setuptools`, `cryptography`, `urllib3`,
+  (`pillow`, `pytest`, `python-dotenv`, `setuptools`, `cryptography`, `urllib3`,
   `h11`, `tornado`, `black`). A fresh install takes the newest release above the floor.
 
 Every security-motivated pin or floor has a `# Security:` comment above it naming the advisory

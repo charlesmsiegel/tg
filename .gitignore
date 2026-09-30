@@ -87,7 +87,7 @@ local_settings.py
 
 .env
 db.sqlite3
-db_test.sqlite3
+db_test*.sqlite3
 
 .venv/
 venv/
@@ -117,7 +117,7 @@ dl/
 mcp_servers/
 generated_stuff/
 .mcp.json
-db_test.sqlite3-journal
+db_test*.sqlite3-journal
 .worktrees/
 online_game.sqlite3:Zone.Identifier
 online_game.sqlite3
