@@ -45,3 +45,32 @@ class AuditXPSpendingPendingDaysTests(TestCase):
     def test_threshold_follows_option(self):
         self.age_spend(5)
         self.assertIn("older than 3 days", self.run_command("--pending-days", "3"))
+
+
+class AuditXPSpendingBalanceTests(TestCase):
+    """``xp`` is already net of filed spends: the audit must not subtract them again."""
+
+    def setUp(self):
+        owner = User.objects.create_user("owner", password="x")
+        self.character = Human.objects.create(name="Spender", owner=owner, status="App", xp=2)
+        for approved, cost in (("Approved", 5), ("Pending", 3)):
+            XPSpendingRequest.objects.create(
+                character=self.character,
+                trait_name="Alertness",
+                trait_type="ability",
+                trait_value=1,
+                cost=cost,
+                approved=approved,
+            )
+
+    def run_command(self):
+        out = StringIO()
+        call_command("audit_xp_spending", "--show-all", stdout=out)
+        return out.getvalue()
+
+    def test_filed_spends_are_not_counted_twice(self):
+        out = self.run_command()
+        self.assertNotIn("NEGATIVE XP", out)
+        self.assertNotIn("exceed", out)
+        self.assertIn("Earned: 10", out)
+        self.assertIn("Remaining: 2", out)

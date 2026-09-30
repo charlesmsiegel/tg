@@ -2,7 +2,6 @@
 Management command to audit XP spending and detect discrepancies.
 
 Checks for:
-- XP calculation discrepancies (earned vs spent)
 - Unapproved XP spends older than threshold
 - Characters with negative XP
 - Impossible trait progressions
@@ -84,11 +83,11 @@ class Command(BaseCommand):
         issues = []
         warnings = []
 
-        # Calculate XP totals using XPSpendingRequest model
-        total_earned = char.xp
-
-        # Get spending data from xp_spendings relation
+        # ``xp`` is the unspent balance: a spend's cost is deducted when it is filed
+        # (a denial refunds it), so approved and pending costs are already taken out.
         from django.db.models import Sum
+
+        available = char.xp
 
         approved_count = char.xp_spendings.filter(approved="Approved").count()
         pending_count = char.xp_spendings.filter(approved="Pending").count()
@@ -99,20 +98,14 @@ class Command(BaseCommand):
         total_pending = (
             char.xp_spendings.filter(approved="Pending").aggregate(total=Sum("cost"))["total"] or 0
         )
-
-        remaining = total_earned - total_approved
-        after_pending = remaining - total_pending
+        total_earned = available + total_approved + total_pending
 
         # Check for negative XP
-        if remaining < 0:
+        if available < 0:
             issues.append(
-                f"NEGATIVE XP: Earned {total_earned}, Approved {total_approved}, "
-                f"Remaining {remaining}"
+                f"NEGATIVE XP: Balance {available} after {total_approved} approved "
+                f"and {total_pending} pending"
             )
-
-        # Check if approving pending would cause negative
-        if after_pending < 0:
-            warnings.append(f"Pending spends ({total_pending}) exceed remaining XP ({remaining})")
 
         # Check for pending spends nobody has decided on
         stale_count = char.xp_spendings.filter(
@@ -138,7 +131,7 @@ class Command(BaseCommand):
                 "earned": total_earned,
                 "approved": total_approved,
                 "pending": total_pending,
-                "remaining": remaining,
+                "remaining": available,
                 "approved_count": approved_count,
                 "pending_count": pending_count,
                 "issues": issues,
