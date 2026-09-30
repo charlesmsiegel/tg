@@ -506,3 +506,42 @@ class TestSphereAreteFreebiValidation(TestCase):
         self.assertTrue(result.success)
         self.mage.refresh_from_db()
         self.assertEqual(self.mage.forces, 2)
+
+
+class TestVampireDisciplineFreebies(TestCase):
+    """Every Discipline costs 7 freebies per dot, in clan or out."""
+
+    def setUp(self):
+        from characters.models.vampire.clan import VampireClan
+        from characters.models.vampire.discipline import Discipline
+
+        self.user = User.objects.create_user(username="kindred_owner")
+        self.potence = Discipline.objects.create(name="Potence", property_name="potence")
+        self.auspex = Discipline.objects.create(name="Auspex", property_name="auspex")
+        clan = VampireClan.objects.create(name="Brujah")
+        clan.disciplines.add(self.potence)
+        self.vampire = Vampire.objects.create(
+            name="Test Kindred", owner=self.user, clan=clan, freebies=15
+        )
+
+    def test_in_clan_and_out_of_clan_disciplines_cost_seven(self):
+        service = VampireFreebieSpendingService(self.vampire)
+        for discipline in (self.potence, self.auspex):
+            with self.subTest(discipline=discipline.name):
+                result = service.spend("Discipline", discipline)
+                self.assertTrue(result.success, result.error)
+                self.assertEqual(result.cost, 7)
+        self.vampire.refresh_from_db()
+        self.assertEqual((self.vampire.potence, self.vampire.auspex), (1, 1))
+        self.assertEqual(self.vampire.freebies, 1)
+
+    def test_ghoul_discipline_costs_seven(self):
+        from characters.models.vampire.ghoul import Ghoul
+
+        ghoul = Ghoul.objects.create(name="Test Ghoul", owner=self.user, freebies=7)
+        starting_potence = ghoul.potence
+        result = FreebieSpendingServiceFactory.get_service(ghoul).spend("Discipline", self.potence)
+        self.assertTrue(result.success, result.error)
+        self.assertEqual(result.cost, 7)
+        ghoul.refresh_from_db()
+        self.assertEqual((ghoul.potence, ghoul.freebies), (starting_potence + 1, 0))

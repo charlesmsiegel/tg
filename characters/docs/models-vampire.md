@@ -88,8 +88,8 @@ pair: `active_virtue_1`, `active_virtue_2` (and `*_name`), `active_virtue_fields
 
 `get_disciplines()` returns `{name: rating}` for Disciplines above zero.
 `get_clan_disciplines()` lists the clan's `Discipline` rows; `is_clan_discipline()` accepts
-a property name or a `Discipline`. In-clan and out-of-clan costs differ; see
-[Costs and rules](costs-and-rules.md).
+a property name or a `Discipline`. In-clan and out-of-clan XP costs differ; freebie points
+cost 7 per dot for any Discipline. See [Costs and rules](costs-and-rules.md).
 
 ### Legacy spending hooks
 
