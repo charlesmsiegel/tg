@@ -554,6 +554,15 @@ class WeekDetailView(LoginRequiredMixin, DetailView):
         # Separate pending and approved requests
         context["pending_requests"] = context["xp_requests"].filter(approved=False)
         context["approved_requests"] = context["xp_requests"].filter(approved=True)
+        # The viewer's characters who played this week and have filed no request yet.
+        filed = set(
+            WeeklyXPRequest.objects.filter(week=self.object).values_list("character_id", flat=True)
+        )
+        context["characters_to_file"] = [
+            character
+            for character in context["weekly_characters"]
+            if character.owner_id == self.request.user.pk and character.pk not in filed
+        ]
 
         # Week navigation on the cover
         end_date = self.object.end_date

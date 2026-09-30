@@ -186,6 +186,13 @@ requests. Then the finished scenes and the characters who played this week.
             {% else %}
                 {% include "core/tl/empty.html" with text="No XP requests for this week." %}
             {% endif %}
+            {% if characters_to_file %}
+                <div class="tl-actions">
+                    {% for character in characters_to_file %}
+                        <a class="tl-btn tl-btn--ghost tl-btn--sm" href="{% url 'game:weekly_xp_request:create' object.pk character.pk %}">Request XP for {{ character.name }}</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </section>
     {% endif %}
     <section class="tl-section tl-section--serif">
