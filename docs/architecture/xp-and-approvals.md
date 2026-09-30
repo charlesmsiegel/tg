@@ -169,8 +169,9 @@ For each `(character, week)` pair:
    raises `ValueError` if it is already approved, sets `approved`, and adds `total_xp()`
    (1 XP per true category) to the character.
 
-The management command `process_weekly_xp` can create the week and a finishing-only
-request for every participating non-NPC character, optionally approving them
+The management command `process_weekly_xp` can create the week, record its
+participating non-NPC characters on `Week.characters`, and create a finishing-only
+request for each, optionally approving them through `WeeklyXPRequest.approve()`
 (`--auto-approve`); see [Management commands](../reference/management-commands.md).
 
 ### Story XP

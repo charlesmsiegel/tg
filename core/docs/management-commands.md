@@ -106,10 +106,11 @@ bulk-approved.
 
 `--week-ending YYYY-MM-DD` (default: the most recent Sunday). Creates the `Week` if it
 does not exist, finds non-NPC `Human` characters in scenes finished during the seven
-days before (by latest post date), and creates a `WeeklyXPRequest` with `finishing=True`
-for each character that has none for the week. `--auto-approve` approves each request
-and adds its XP. `--dry-run` creates nothing. `--notify` only prints a message that
-notifications are not implemented; nothing is sent.
+days before (by latest post date), adds them to `Week.characters` (which the XP queues
+read), and creates a `WeeklyXPRequest` with `finishing=True` for each character that has
+none for the week. `--auto-approve` approves each request through
+`WeeklyXPRequest.approve()`. `--dry-run` creates nothing. `--notify` only prints the
+number of new requests; nothing is sent.
 
 ### `sync_character_status`
 
@@ -182,8 +183,9 @@ transaction it creates users from the file (with unusable passwords; existing us
 skipped; `--remap-users` renames them), creates a new chronicle from the exported name,
 theme, mood, year and headings, adds the storytellers, and attaches setting elements
 (matched or created by name). Characters, items, locations, scenes, journals and XP
-requests are only counted: the command prints that they need manual review and does not
-create them.
+requests are only counted: the command prints a `Not imported (recreate them by hand)`
+line with their counts and does not create them. A full import (polymorphic characters,
+items and locations with their relations) is not implemented.
 
 ## Validation and reports
 

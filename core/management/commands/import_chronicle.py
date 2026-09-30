@@ -1,7 +1,10 @@
 """
-Management command to import a chronicle from JSON export.
+Management command to import a chronicle from an export_chronicle JSON file.
 
-Imports all data exported by export_chronicle command.
+Imports only the chronicle record (name, theme, mood, year, headings), its
+storytellers, its setting elements and, unless --skip-users, missing users (with
+unusable passwords). Characters, items, locations, scenes, journals and XP requests
+in the file are counted and reported but not imported.
 """
 
 import json
@@ -15,7 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = "Import a chronicle from JSON file"
+    help = (
+        "Import a chronicle record, its storytellers, setting elements and users from an "
+        "export_chronicle file. Characters, items, locations, scenes, journals and XP "
+        "requests are NOT imported."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -89,7 +96,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("\n✓ Import complete!\n"))
 
     def import_data(self, data, options, user_map):
-        """Import all data."""
+        """Import users, the chronicle and its setting elements."""
         # Import users first if included and not skipped
         if "users" in data and not options["skip_users"]:
             self.import_users(data["users"], user_map)
@@ -101,29 +108,7 @@ class Command(BaseCommand):
         if "setting_elements" in data:
             self.import_setting_elements(data["setting_elements"], chronicle)
 
-        # Import locations (needed for scenes)
-        if "locations" in data:
-            self.import_locations(data["locations"], chronicle)
-
-        # Import characters
-        if "characters" in data:
-            self.import_characters(data["characters"], chronicle)
-
-        # Import items
-        if "items" in data:
-            self.import_items(data["items"], chronicle)
-
-        # Import scenes
-        if "scenes" in data:
-            self.import_scenes(data["scenes"], chronicle)
-
-        # Import journals
-        if "journals" in data:
-            self.import_journals(data["journals"], chronicle)
-
-        # Import XP requests
-        if "xp_requests" in data:
-            self.import_xp_requests(data["xp_requests"])
+        self.report_not_imported(data)
 
     def import_users(self, users_data, user_map):
         """Import users, applying username remapping if provided."""
@@ -198,50 +183,19 @@ class Command(BaseCommand):
             )
             chronicle.common_knowledge_elements.add(element)
 
-    def import_characters(self, characters_data, chronicle):
-        """Import characters."""
-        self.stdout.write(f"Importing {len(characters_data)} characters...")
-
-        # Note: This is simplified. Full implementation would need to handle
-        # polymorphic types and relationships properly
-        for char_data in characters_data:
-            fields = char_data["fields"]
-            fields["chronicle"] = chronicle.id
-            # Actual deserialization would happen here
-
-        self.stdout.write(
-            self.style.WARNING("  Character import is complex and requires manual review")
-        )
-
-    def import_items(self, items_data, chronicle):
-        """Import items."""
-        self.stdout.write(f"Importing {len(items_data)} items...")
-        # Similar to characters, simplified
-        self.stdout.write(self.style.WARNING("  Item import is complex and requires manual review"))
-
-    def import_locations(self, locations_data, chronicle):
-        """Import locations."""
-        self.stdout.write(f"Importing {len(locations_data)} locations...")
-        # Similar to characters, simplified
-        self.stdout.write(
-            self.style.WARNING("  Location import is complex and requires manual review")
-        )
-
-    def import_scenes(self, scenes_data, chronicle):
-        """Import scenes."""
-        self.stdout.write(f"Importing {len(scenes_data)} scenes...")
-        # Simplified - would need to handle relationships
-        self.stdout.write(
-            self.style.WARNING("  Scene import is complex and requires manual review")
-        )
-
-    def import_journals(self, journals_data, chronicle):
-        """Import journals."""
-        self.stdout.write(f"Importing {len(journals_data)} journals...")
-
-    def import_xp_requests(self, xp_data):
-        """Import XP requests."""
-        weekly = xp_data.get("weekly", [])
-        story = xp_data.get("story", [])
-
-        self.stdout.write(f"Importing {len(weekly)} weekly + {len(story)} story XP requests...")
+    def report_not_imported(self, data):
+        """Say which sections of the file this command does not import."""
+        xp_requests = data.get("xp_requests", {})
+        counts = {
+            "characters": len(data.get("characters", [])),
+            "items": len(data.get("items", [])),
+            "locations": len(data.get("locations", [])),
+            "scenes": len(data.get("scenes", [])),
+            "journals": len(data.get("journals", [])),
+            "XP requests": len(xp_requests.get("weekly", [])) + len(xp_requests.get("story", [])),
+        }
+        skipped = ", ".join(f"{count} {name}" for name, count in counts.items() if count)
+        if skipped:
+            self.stdout.write(
+                self.style.WARNING(f"Not imported (recreate them by hand): {skipped}")
+            )
