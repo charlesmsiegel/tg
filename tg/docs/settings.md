@@ -10,7 +10,8 @@ settings and variables is the [settings reference](../../docs/reference/settings
 
 Every entry point sets `DJANGO_SETTINGS_MODULE=tg.settings` if it is not already set
 (`manage.py`, `tg/asgi.py`, `tg/wsgi.py`). `tg.settings` is a package whose
-[`__init__.py`](../settings/__init__.py) reads `DJANGO_ENVIRONMENT`, lower-cases it and:
+[`__init__.py`](../settings/__init__.py) loads the `.env` file, then reads
+`DJANGO_ENVIRONMENT`, lower-cases it and:
 
 | `DJANGO_ENVIRONMENT` | Result |
 |----------------------|--------|
@@ -22,18 +23,16 @@ Both environment modules begin with `from .base import *` and then override or e
 what they need.
 
 ```bash
-export DJANGO_ENVIRONMENT=production   # in the process environment, not in .env
+export DJANGO_ENVIRONMENT=production   # or a DJANGO_ENVIRONMENT=production line in .env
 ```
 
 ### `.env` files
 
-[`base.py`](../settings/base.py) calls `python-dotenv`'s `load_dotenv()`, which loads a
-`.env` file (see [`.env.example`](../../.env.example)) into the environment without
-overriding variables that are already set. It runs when `base.py` is imported, which is
-after `__init__.py` has read `DJANGO_ENVIRONMENT`. A `DJANGO_ENVIRONMENT` line in `.env`
-therefore does not choose the settings module; set that variable in the real
-environment. Every other variable in `.env` is read normally, because the environment
-modules read them after `base.py` has loaded the file.
+[`__init__.py`](../settings/__init__.py) calls `python-dotenv`'s `load_dotenv()` on the
+`.env` file at the repository root (see [`.env.example`](../../.env.example)) before it
+reads anything, so every variable, `DJANGO_ENVIRONMENT` included, may be set there. It
+does not override variables that are already set, so the real environment wins over
+`.env`.
 
 ## `base.py`
 
@@ -115,7 +114,7 @@ The file handlers need a `logs/` directory under `BASE_DIR`.
 
 | Variable | Read by | Default |
 |----------|---------|---------|
-| `DJANGO_ENVIRONMENT` | `__init__.py` | `development` |
+| `DJANGO_ENVIRONMENT` | `__init__.py` (after loading `.env`) | `development` |
 | `SECRET_KEY` | development (optional), production (required) | insecure key in development |
 | `DJANGO_ALLOWED_HOSTS` | both | `localhost,127.0.0.1` in development; required in production |
 | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT` | base | see `base.py` |

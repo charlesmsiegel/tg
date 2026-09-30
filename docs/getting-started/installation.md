@@ -37,7 +37,7 @@ see [Testing](../development/testing.md#browser-tests).
 
 ## Optional: create a `.env` file
 
-Settings read environment variables, and [`tg/settings/base.py`](../../tg/settings/base.py)
+Settings read environment variables, and [`tg/settings/__init__.py`](../../tg/settings/__init__.py)
 calls `load_dotenv()`, so values in a `.env` file at the repository root are picked up.
 Development works with no `.env` at all. If you want one:
 

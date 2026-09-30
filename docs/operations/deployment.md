@@ -35,13 +35,11 @@ journal files beside it), `logs/`, `media/` (uploads) and `collected_static/` (w
 
 The value is compared case-insensitively.
 
-**Set `DJANGO_ENVIRONMENT` in the process environment, not only in `.env`.** The `.env` file
-is loaded by `load_dotenv()` at the top of [`tg/settings/base.py`](../../tg/settings/base.py),
-and `base.py` is imported by the environment module *after* `__init__.py` has already read
-`DJANGO_ENVIRONMENT`. A value that exists only in `.env` is therefore ignored, and the
-development settings (with `DEBUG = True`) load. Every other variable on this page can live
-in `.env`. `load_dotenv()` does not override variables already present in the environment,
-so values set by the process manager win over `.env`.
+`DJANGO_ENVIRONMENT` may be set in the process environment or in `.env`: `__init__.py`
+loads the `.env` file at the repository root with `load_dotenv()` before it reads any
+variable, so every variable on this page can live there. `load_dotenv()` does not override
+variables already present in the environment, so values set by the process manager win
+over `.env`.
 
 Both environment modules start with `from .base import *`, so everything in `base.py`
 applies to production unless `production.py` overrides it.
@@ -53,7 +51,7 @@ root (gitignored) and fill it in. The variables the settings read in production:
 
 | Variable | Read in | Required | Default | Effect |
 |----------|---------|----------|---------|--------|
-| `DJANGO_ENVIRONMENT` | `settings/__init__.py` | Yes (process env) | `development` | Selects the settings module (above). |
+| `DJANGO_ENVIRONMENT` | `settings/__init__.py` | Yes | `development` | Selects the settings module (above). |
 | `SECRET_KEY` | `production.py` | Yes | none | Read with `os.environ["SECRET_KEY"]`; a missing value raises `KeyError` at startup. |
 | `DJANGO_ALLOWED_HOSTS` | `production.py` | Yes | none | Comma-separated host names. Empty raises `ValueError`. Also used by the WebSocket origin check. |
 | `CSRF_TRUSTED_ORIGINS` | `production.py` | No | empty list | Comma-separated origins with scheme, e.g. `https://example.com`. |

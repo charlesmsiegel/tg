@@ -27,7 +27,7 @@ variables see the [settings reference](../docs/reference/settings.md).
 
 | Path | Responsibility |
 |------|----------------|
-| [`settings/__init__.py`](settings/__init__.py) | Chooses development or production settings from `DJANGO_ENVIRONMENT` (default `development`); any other value raises `ValueError` |
+| [`settings/__init__.py`](settings/__init__.py) | Loads `.env`, then chooses development or production settings from `DJANGO_ENVIRONMENT` (default `development`); any other value raises `ValueError` |
 | [`settings/base.py`](settings/base.py) | Shared settings: apps, middleware, templates and context processors, SQLite database with `ATOMIC_REQUESTS`, static and media paths, e-mail, `GAMELINES`/`GAMELINE_CHOICES`, logging, channel layer, test runner |
 | [`settings/development.py`](settings/development.py) | `DEBUG = True`, default secret key, console e-mail, optional Django Debug Toolbar, SQL logging, local-memory cache |
 | [`settings/production.py`](settings/production.py) | `DEBUG = False`, required `SECRET_KEY` and `DJANGO_ALLOWED_HOSTS`, HTTPS and cookie security, Redis cache, sessions and channel layer, hashed static files, rotating log files |

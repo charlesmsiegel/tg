@@ -13,29 +13,23 @@ package, with a small number of values taken from environment variables.
 
 1. `manage.py`, [`tg/asgi.py`](../../tg/asgi.py) and [`tg/wsgi.py`](../../tg/wsgi.py) set
    `DJANGO_SETTINGS_MODULE` to `tg.settings` unless it is already set.
-2. [`tg/settings/__init__.py`](../../tg/settings/__init__.py) reads `DJANGO_ENVIRONMENT`
-   from the process environment (default `development`, compared lower-case) and
+2. [`tg/settings/__init__.py`](../../tg/settings/__init__.py) first calls
+   `load_dotenv()` on the `.env` file at the repository root, which copies its variables
+   into `os.environ`.
+3. It then reads `DJANGO_ENVIRONMENT` (default `development`, compared lower-case) and
    star-imports `development.py` or `production.py`. Any other value, including an empty
    string, raises `ValueError`, so a typo stops the process instead of silently running
    the wrong configuration.
-3. Both environment modules begin with `from .base import *`.
-   [`base.py`](../../tg/settings/base.py) calls `load_dotenv()` at the top, which reads a
-   `.env` file into `os.environ`, and then defines the shared settings.
-4. The environment module overrides what differs, reading its own variables from
+4. Both environment modules begin with `from .base import *`, which defines the shared
+   settings, and then override what differs, reading their own variables from
    `os.environ`.
 
-Two consequences follow from that order:
-
-- **`.env` cannot choose the environment.** `DJANGO_ENVIRONMENT` is read in step 2,
-  before `.env` is loaded in step 3. Set it in the real environment (shell, service
-  unit, container definition).
-- **`.env` can supply everything else**, including production secrets, because both
-  environment modules read their variables after `load_dotenv()` has run.
-
-`load_dotenv()` is called with no arguments: it searches for `.env` starting in
-`tg/settings/` and walking up the directory tree, so the file at the repository root is
-found whatever the working directory. It does not override variables that are already
-set in the environment. The file is listed in [`.gitignore`](../../.gitignore).
+Because `.env` is loaded before anything is read, it can supply every variable,
+`DJANGO_ENVIRONMENT` and production secrets included. `load_dotenv()` does not override
+variables that are already set, so a value in the real environment (shell, service unit,
+container definition) wins over the same line in `.env`. The path is fixed to the
+repository root, so the file is found whatever the working directory. It is listed in
+[`.gitignore`](../../.gitignore).
 
 Boolean variables are compared with the exact string `"True"`: `True` enables,
 anything else (`true`, `1`, `yes`) disables.
@@ -47,7 +41,7 @@ anything else (`true`, `1`, `yes`) disables.
 | Variable | Read in | Default | Purpose |
 |----------|---------|---------|---------|
 | `DJANGO_SETTINGS_MODULE` | `manage.py`, `tg/asgi.py`, `tg/wsgi.py` | `tg.settings` | Standard Django variable. Leave it at the default and use `DJANGO_ENVIRONMENT`. |
-| `DJANGO_ENVIRONMENT` | `tg/settings/__init__.py` | `development` | `development` or `production`. Not honoured from `.env`. |
+| `DJANGO_ENVIRONMENT` | `tg/settings/__init__.py` | `development` | `development` or `production`. May be set in `.env`. |
 
 ### Core
 
@@ -108,7 +102,6 @@ its entries match the tables above. These do not:
 
 | Entry | What actually happens |
 |-------|-----------------------|
-| `DJANGO_ENVIRONMENT=development` | Has no effect from `.env` (see [How configuration works](#how-configuration-works)). |
 | `DJANGO_DEBUG=True` | Nothing reads it. `DEBUG` is hard-coded: `True` in `development.py`, `False` in `production.py`. |
 | `PASSWORD_RESET_TIMEOUT=259200` | Works, but the comment above it gives the default as 259200 (three days). The code default is 3600 (one hour); copying the file unchanged lengthens reset links to three days. `core.tests.test_settings.SettingsSecurityTest.test_password_reset_timeout_is_one_hour` then fails. Delete the line to keep the default. |
 | `SECRET_KEY=django-insecure-...` | Overrides the development fallback key with another insecure one. Harmless in development; replace it in production. |
@@ -122,7 +115,7 @@ With `DJANGO_ENVIRONMENT=production`:
 
 | Must set | Why |
 |----------|-----|
-| `DJANGO_ENVIRONMENT=production` in the real environment | Otherwise development settings load, with `DEBUG = True`. |
+| `DJANGO_ENVIRONMENT=production` (environment or `.env`) | Otherwise development settings load, with `DEBUG = True`. |
 | `SECRET_KEY` | Startup fails without it. |
 | `DJANGO_ALLOWED_HOSTS` | Startup fails without it. |
 | `REDIS_URL` (or a Redis server at `127.0.0.1:6379`) | Cache, sessions and the websocket channel layer. The cache ignores Redis errors (`IGNORE_EXCEPTIONS`), so a missing Redis does not crash pages, but sessions cannot be stored and live chat cannot broadcast. |
