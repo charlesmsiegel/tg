@@ -478,3 +478,17 @@ class TestJSONFieldDefaultBehavior(TestCase):
         human1.spent_freebies.append("test")
         self.assertEqual(human1.spent_freebies, ["test"])
         self.assertEqual(human2.spent_freebies, [])
+
+
+class TestCharacterQuerySetStatuses(TestCase):
+    """active() covers every in-play or in-progress status."""
+
+    def test_active_includes_sheets_returned_for_revision(self):
+        user = User.objects.create_user(username="status_owner")
+        by_status = {}
+        for status in ("Un", "Rev", "Sub", "App", "Ret", "Dec"):
+            character = Character.objects.create(name=status, owner=user)
+            Character.objects.filter(pk=character.pk).update(status=status)
+            by_status[status] = character.pk
+        active = set(Character.objects.active().values_list("pk", flat=True))
+        self.assertEqual(active, {by_status[s] for s in ("Un", "Rev", "Sub", "App")})
