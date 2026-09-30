@@ -140,11 +140,15 @@ make sure the package `__init__` imports it.
 ## Legacy model hooks
 
 Several models still carry older spending methods: `Human.spend_xp(trait)` /
-`spend_freebies(trait)` called with a single trait name, their gameline overrides, and
-per-category `*_freebies(form)` methods (`attribute_freebies`, `discipline_freebies`, ...).
-Application code does not call them; the services above are the supported path. When
-`Human.spend_xp()` is called with keyword arguments it delegates to
-`Character.spend_xp()`, which is what the XP handlers use.
+`spend_freebies(trait)` called with a single trait name, gameline `spend_freebies(trait)`
+overrides, and per-category `*_freebies(form)` methods (`attribute_freebies`,
+`discipline_freebies`, ...). Application code does not call them; the services above are
+the supported path. The XP handlers call `character.spend_xp(trait_name=..., cost=...)`
+with keyword arguments, which `Human.spend_xp()` delegates to `Character.spend_xp()`, so a
+gameline model must not override `spend_xp` with a single-argument signature: that
+override would shadow the keyword path and every XP spend for the type would raise
+`TypeError` (`characters/tests/services/test_xp_spending_gamelines.py`). Only
+`Mage.spend_xp()` overrides it, and it keeps the keyword form.
 
 ## See also
 

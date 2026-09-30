@@ -93,11 +93,11 @@ a property name or a `Discipline`. In-clan and out-of-clan costs differ; see
 
 ### Legacy spending hooks
 
-`spend_xp(trait)` and `spend_freebies(trait)` extend the `Human` versions with Disciplines
-(capped by `get_discipline_max()`), virtues (cap 5), `humanity` and `path_rating`
-(cap 10). `discipline_freebies()`, `virtue_freebies()`, `humanity_freebies()` and
-`path_rating_freebies()` are the per-category form hooks. `xp_frequencies()` and
-`freebie_frequencies()` return category weightings; application code does not call them.
+`spend_freebies(trait)` extends the `Human` version with Disciplines (capped by
+`get_discipline_max()`), virtues (cap 5), `humanity` and `path_rating` (cap 10).
+`discipline_freebies()`, `virtue_freebies()` and `path_rating_freebies()` are the
+per-category form hooks. `freebie_frequencies()` returns category weightings; application
+code does not call these.
 The request-and-approval flow uses the [spending services](services.md) instead.
 
 ## Ghoul

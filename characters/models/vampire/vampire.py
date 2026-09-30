@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from core.constants import CharacterStatus
 from core.linked_stat import LinkedStat
 
@@ -462,13 +462,6 @@ class Vampire(VtMHuman):
         value = current_rating + 1
         return trait, value, cost
 
-    def humanity_freebies(self, form):
-        """Spend freebies on Humanity."""
-        cost = 1
-        self.humanity += 1
-        self.freebies -= cost
-        return "Humanity", self.humanity, cost
-
     def path_rating_freebies(self, form):
         """Spend freebies on Path rating."""
         cost = 1
@@ -539,126 +532,6 @@ class Vampire(VtMHuman):
             setattr(self, virtue_name, value)
         else:
             raise ValueError(f"Unknown virtue: {virtue_name}")
-
-    def xp_frequencies(self):
-        """Return frequency distribution for XP spending (for random character generation)."""
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 13,
-            "willpower": 1,
-            "discipline": 35,
-            "virtue": 3,
-            "humanity": 1,
-            "path_rating": 1,
-        }
-
-    def spend_xp(self, trait):
-        """Spend XP on a trait."""
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Check if trait is a discipline
-        discipline_fields = [
-            "celerity",
-            "fortitude",
-            "potence",
-            "auspex",
-            "dominate",
-            "dementation",
-            "presence",
-            "animalism",
-            "protean",
-            "obfuscate",
-            "chimerstry",
-            "necromancy",
-            "obtenebration",
-            "quietus",
-            "serpentis",
-            "thaumaturgy",
-            "vicissitude",
-            "daimoinon",
-            "melpominee",
-            "mytherceria",
-            "obeah",
-            "temporis",
-            "thanatosis",
-            "valeren",
-            "visceratika",
-        ]
-
-        if trait in discipline_fields:
-            current_value = getattr(self, trait)
-
-            # Determine if it's clan or out-of-clan
-            from characters.models.vampire.discipline import Discipline
-
-            try:
-                discipline_obj = Discipline.objects.get(property_name=trait)
-                is_clan = self.is_clan_discipline(discipline_obj)
-
-                if current_value == 0:
-                    cost = get_xp_cost("new_discipline")
-                elif is_clan:
-                    cost = get_xp_cost("clan_discipline") * (current_value + 1)
-                else:
-                    cost = get_xp_cost("out_of_clan_discipline") * (current_value + 1)
-
-                if cost <= self.xp:
-                    from core.utils import add_dot
-
-                    # Use generation-based maximum for disciplines
-                    if add_dot(self, trait, self.get_discipline_max()):
-                        self.xp -= cost
-                        self.add_to_spend(trait, getattr(self, trait), cost)
-                        return True
-                    return False
-                return False
-            except Discipline.DoesNotExist:
-                return False
-
-        # Handle virtues
-        if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
-            current_value = getattr(self, trait)
-            cost = get_xp_cost("virtue") * (current_value + 1)
-            if cost <= self.xp:
-                from core.utils import add_dot
-
-                if add_dot(self, trait, 5):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
-                    return True
-                return False
-            return False
-
-        # Handle humanity
-        if trait == "humanity":
-            cost = get_xp_cost("humanity") * (self.humanity + 1)
-            if cost <= self.xp:
-                from core.utils import add_dot
-
-                if add_dot(self, "humanity", 10):
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.humanity, cost)
-                    return True
-                return False
-            return False
-
-        # Handle path rating
-        if trait == "path_rating":
-            cost = get_xp_cost("path_rating") * (self.path_rating + 1)
-            if cost <= self.xp:
-                from core.utils import add_dot
-
-                if add_dot(self, "path_rating", 10):
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.path_rating, cost)
-                    return True
-                return False
-            return False
-
-        return trait
 
     def freebie_frequencies(self):
         """Return frequency distribution for freebie spending (for random character generation)."""

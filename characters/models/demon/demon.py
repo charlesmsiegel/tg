@@ -1,9 +1,9 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, transaction
+from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
@@ -324,85 +324,6 @@ class Demon(LoreBlock, DtFHuman):
     def total_pacts(self):
         """Get total number of active pacts."""
         return self.get_pacts().filter(active=True).count()
-
-    def xp_frequencies(self):
-        """XP spending frequencies for random spending."""
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 10,
-            "willpower": 1,
-            "lore": 35,
-            "faith": 15,
-            "virtue": 3,
-        }
-
-    @transaction.atomic
-    def spend_xp(self, trait):
-        """
-        Spend XP on a trait atomically.
-
-        All XP spending is wrapped in a transaction to prevent race conditions.
-        """
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Lock the row to prevent concurrent spending
-        demon = Demon.objects.select_for_update().get(pk=self.pk)
-
-        # Faith
-        if trait == "faith":
-            cost = get_xp_cost("faith") * demon.faith
-            if cost <= demon.xp:
-                if demon.add_faith():
-                    demon.xp -= cost
-                    demon.add_to_spend(trait, demon.faith, cost)
-                    demon.save(update_fields=["xp", "faith", "spent_xp"])
-                    return True
-            return False
-
-        # Lores
-        if trait in demon.get_lores():
-            current_rating = getattr(demon, trait)
-            if demon.house and trait in [
-                f"lore_of_{lore.property_name}" for lore in demon.house.lores.all()
-            ]:
-                cost = get_xp_cost("house_lore") * (current_rating + 1)
-            else:
-                cost = get_xp_cost("other_lore") * (current_rating + 1)
-
-            if cost <= demon.xp:
-                if demon.add_lore(trait):
-                    demon.xp -= cost
-                    demon.add_to_spend(trait, getattr(demon, trait), cost)
-                    demon.save()
-                    return True
-            return False
-
-        # Virtues
-        if trait in ["conviction", "courage", "conscience"]:
-            cost = get_xp_cost("virtue") * getattr(demon, trait)
-            if cost <= demon.xp:
-                if add_dot(demon, trait, 5):
-                    demon.xp -= cost
-                    demon.add_to_spend(trait, getattr(demon, trait), cost)
-                    demon.save()
-                    return True
-            return False
-
-        # Torment reduction
-        if trait == "reduce_torment":
-            cost = get_xp_cost("reduce_torment")
-            if cost <= demon.xp:
-                if demon.reduce_torment():
-                    demon.xp -= cost
-                    demon.add_to_spend("torment reduction", demon.torment, cost)
-                    demon.save()
-                    return True
-            return False
-
-        return trait
 
     def freebie_frequencies(self):
         """Freebie spending frequencies for random spending."""

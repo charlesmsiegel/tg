@@ -235,13 +235,6 @@ class TestMageXPMethods(TestCase):
         self.mage.forces = 2
         self.mage.save()
 
-    def test_xp_frequencies(self):
-        """Test xp_frequencies method."""
-        freq = self.mage.xp_frequencies()
-        self.assertIn("sphere", freq)
-        self.assertIn("arete", freq)
-        self.assertIn("attribute", freq)
-
     def test_xp_cost_arete(self):
         """Test XP cost for arete."""
         # Arete costs 8 * current rating

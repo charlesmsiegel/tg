@@ -1,6 +1,6 @@
 from django.db import models
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
@@ -360,79 +360,6 @@ class Changeling(CtDHuman):
         self.freebies -= cost
         self.spent_freebies.append(self.freebie_spend_record(trait, "glamour", value, cost))
         return True
-
-    def xp_frequencies(self):
-        """Return frequency distribution for XP spending (for random character generation)."""
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 13,
-            "willpower": 1,
-            "art": 30,
-            "realm": 15,
-            "glamour": 3,
-            "banality": 1,
-        }
-
-    def spend_xp(self, trait):
-        """Spend XP on a trait."""
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Check if trait is an art
-        arts_list = list(self.get_arts().keys())
-
-        if trait in arts_list:
-            current_value = getattr(self, trait)
-            cost = get_xp_cost("art") * (current_value + 1)
-
-            if cost <= self.xp:
-                if self.add_art(trait):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
-                    return True
-                return False
-            return False
-
-        # Check if trait is a realm
-        realms_list = list(self.get_realms().keys())
-
-        if trait in realms_list:
-            current_value = getattr(self, trait)
-            cost = get_xp_cost("realm") * (current_value + 1)
-
-            if cost <= self.xp:
-                if self.add_realm(trait):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
-                    return True
-                return False
-            return False
-
-        # Handle glamour
-        if trait == "glamour":
-            cost = get_xp_cost("glamour") * (self.glamour + 1)
-            if cost <= self.xp:
-                if self.add_glamour():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.glamour, cost)
-                    return True
-                return False
-            return False
-
-        # Handle banality
-        if trait == "banality":
-            cost = get_xp_cost("banality") * (self.banality + 1)
-            if cost <= self.xp:
-                if self.add_banality():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.banality, cost)
-                    return True
-                return False
-            return False
-
-        return trait
 
     def freebie_frequencies(self):
         """Return frequency distribution for freebie spending (for random character generation)."""

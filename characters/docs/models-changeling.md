@@ -64,7 +64,7 @@ lists.
   5 here).
 - `art_rows()` and `realm_rows()` feed the sheet.
 - Legacy spend hooks: `art_freebies()`, `realm_freebies()`, `glamour_freebies()`,
-  `spend_xp()`, `spend_freebies()`.
+  `spend_freebies()`.
 
 ## Inanimae
 

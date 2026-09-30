@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-from characters.costs import get_freebie_cost
 from core.linked_stat import linked_stat_fields
 
 from .creed import Creed
@@ -159,82 +158,6 @@ class Hunter(HtRHuman):
         if self.creed:
             return self.creed.primary_virtue
         return self.primary_virtue
-
-    def spend_xp(self, trait):
-        """Handle Hunter-specific XP spending"""
-        result = super().spend_xp(trait)
-
-        # Custom logic for Edges
-        edge_names = [
-            "discern",
-            "burden",
-            "balance",
-            "expose",
-            "investigate",
-            "witness",
-            "prosecute",
-            "illuminate",
-            "ward",
-            "cleave",
-            "hide",
-            "blaze",
-            "radiate",
-            "vengeance",
-            "demand",
-            "confront",
-            "donate",
-            "becalm",
-            "respire",
-            "rejuvenate",
-            "redeem",
-        ]
-
-        if trait in edge_names:
-            current_value = getattr(self, trait, 0)
-            # Edges cost current rating x3 XP
-            cost = (current_value + 1) * 3
-            return {"success": True, "cost": cost, "trait": trait}
-
-        return result
-
-    def spend_freebies(self, trait):
-        """Handle Hunter-specific freebie spending"""
-        result = super().spend_freebies(trait)
-
-        # Custom logic for Virtues
-        if trait in ["conviction", "vision", "zeal"]:
-            return {"success": True, "cost": get_freebie_cost("virtue")}
-
-        # Custom logic for Edges
-        edge_names = [
-            "discern",
-            "burden",
-            "balance",
-            "expose",
-            "investigate",
-            "witness",
-            "prosecute",
-            "illuminate",
-            "ward",
-            "cleave",
-            "hide",
-            "blaze",
-            "radiate",
-            "vengeance",
-            "demand",
-            "confront",
-            "donate",
-            "becalm",
-            "respire",
-            "rejuvenate",
-            "redeem",
-        ]
-
-        if trait in edge_names:
-            # Edge freebie cost: 7 freebies per dot
-            return {"success": True, "cost": 7}
-
-        return result
 
     def get_absolute_url(self):
         return reverse("characters:hunter:hunter", kwargs={"pk": self.pk})
