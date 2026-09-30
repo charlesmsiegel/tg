@@ -6,20 +6,26 @@ All sensitive values MUST be provided via environment variables.
 """
 
 import os
+from email.utils import parseaddr
+
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F403, F401
+from .base import env_list
 
 # SECURITY WARNING: SECRET_KEY must be set in environment variables for production
 # This will raise an ImproperlyConfigured error if SECRET_KEY is not set
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("SECRET_KEY must be set in production environment")
 
 # SECURITY WARNING: DEBUG must be False in production
 DEBUG = False
 
 # ALLOWED_HOSTS must be configured via environment variable
 # Example: DJANGO_ALLOWED_HOSTS=example.com,www.example.com,api.example.com
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
-if not ALLOWED_HOSTS or ALLOWED_HOSTS == [""]:
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
+if not ALLOWED_HOSTS:
     raise ValueError("DJANGO_ALLOWED_HOSTS must be set in production environment")
 
 # Security Settings
@@ -62,9 +68,7 @@ CSRF_COOKIE_NAME = "csrftoken"
 
 # Trusted origins for CSRF (for cross-origin requests)
 # Set this to your actual domain(s)
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
-if CSRF_TRUSTED_ORIGINS == [""]:
-    CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
 
 # Session Security
 # ================
@@ -143,8 +147,10 @@ STORAGES = {
 
 # Consider using a CDN or cloud storage for static/media files in production
 # For AWS S3 example, install django-storages and boto3, then configure:
-# STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# STORAGES = {
+#     "default": {"BACKEND": "storages.backends.s3.S3Storage"},
+#     "staticfiles": {"BACKEND": "storages.backends.s3.S3Storage"},
+# }
 # AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 # AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 # AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
@@ -208,19 +214,26 @@ for logger_name in ["tg", "accounts", "characters", "game", "items", "locations"
 # Admin Email Notifications
 # =========================
 # Configure ADMINS to receive error notifications via email
-ADMINS = []
-admin_emails = os.environ.get("ADMIN_EMAILS", "")
-if admin_emails:
-    for email in admin_emails.split(","):
-        email = email.strip()
-        if email:
-            # Format: "Name <email@example.com>" or just "email@example.com"
-            if "<" in email:
-                ADMINS.append(tuple(email.split("<")[0].strip(), email.split("<")[1].rstrip(">")))
-            else:
-                ADMINS.append(("Admin", email))
+# ADMIN_EMAILS is comma-separated; each entry is "email@example.com" or
+# "Name <email@example.com>".
+ADMINS = [
+    (name or "Admin", address)
+    for name, address in map(parseaddr, env_list("ADMIN_EMAILS"))
+    if address
+]
 
 MANAGERS = ADMINS
+
+# Mail unhandled request errors (500s) to ADMINS, as Django's default logging does.
+# The "django" and "django.request" loggers above replace Django's defaults, so the
+# handler has to be added back explicitly.
+LOGGING["handlers"]["mail_admins"] = {  # noqa: F405
+    "level": "ERROR",
+    "class": "django.utils.log.AdminEmailHandler",
+    "filters": ["require_debug_false"],
+}
+for logger_name in ["django", "django.request"]:
+    LOGGING["loggers"][logger_name]["handlers"].append("mail_admins")  # noqa: F405
 
 # Cache Configuration
 # ===================
@@ -263,17 +276,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Performance Optimizations
-# =========================
-
-# Template caching
-if not DEBUG:  # noqa: F405
-    TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa: F405
-        (
-            "django.template.loaders.cached.Loader",
-            [
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
-            ],
-        ),
-    ]
+# Template caching needs no setting: with DEBUG = False and no "loaders" option, Django
+# wraps the filesystem and app-directories loaders in the cached loader. (Setting
+# "loaders" while base.py has APP_DIRS = True is an ImproperlyConfigured error.)

@@ -96,17 +96,16 @@ configured app packages so that the record reaches the files; use `logger.except
 ## Admins and error email
 
 `production.py` builds `ADMINS` from `ADMIN_EMAILS` (comma-separated) and sets
-`MANAGERS = ADMINS`. A plain address becomes `("Admin", address)`. The `Name <address>` form
-does not work: the code passes two arguments to `tuple()`, which raises `TypeError` when the
-settings load, so the site will not start. Use plain addresses.
+`MANAGERS = ADMINS`. Each entry is a plain address, which becomes `("Admin", address)`, or
+`Name <address>`, which becomes `("Name", address)`.
 
-Setting `ADMINS` does not by itself produce error email. Django sends 500 reports through the
-`mail_admins` handler attached to the `django` logger in its default configuration; this
-project's `LOGGING` replaces the `django` and `django.request` handlers without including
-`mail_admins`, and nothing in the code calls `mail_admins()`. Unhandled errors are recorded in
-`logs/error.log` and on the console only. If you want email, add an
-`django.utils.log.AdminEmailHandler` to `django.request` in `production.py`, and make sure
-`EMAIL_BACKEND` and `SERVER_EMAIL` are set.
+The project's `LOGGING` replaces Django's default `django` and `django.request` handlers, so
+`production.py` adds Django's `mail_admins` handler (`django.utils.log.AdminEmailHandler`,
+level `ERROR`, only when `DEBUG` is off) back to both loggers. Every unhandled request error
+(a 500) is then emailed to `ADMINS` with its traceback, as well as written to
+`logs/error.log` and the console. The mail is sent from `SERVER_EMAIL` through
+`EMAIL_BACKEND`, so both must be set for it to arrive; with `ADMIN_EMAILS` empty nothing is
+sent.
 
 ## What to monitor
 

@@ -7,6 +7,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.template.backends.django import DjangoTemplates
+from django.template.loaders.cached import Loader as CachedLoader
 from django.test import SimpleTestCase, TestCase
 
 import tg
@@ -130,6 +133,14 @@ class SettingsEnvironmentTest(SimpleTestCase):
         module = load_settings({"DJANGO_ENVIRONMENT": "development"}, dotenv=PRODUCTION_ENV)
         self.assertTrue(module.DEBUG)
 
+    def test_development_allowed_hosts_are_trimmed(self):
+        module = load_settings(
+            {"DJANGO_ENVIRONMENT": "development", "DJANGO_ALLOWED_HOSTS": "localhost, tg.test"}
+        )
+        self.assertEqual(module.ALLOWED_HOSTS, ["localhost", "tg.test"])
+        module = load_settings({"DJANGO_ENVIRONMENT": None, "DJANGO_ALLOWED_HOSTS": None})
+        self.assertEqual(module.ALLOWED_HOSTS, ["localhost", "127.0.0.1"])
+
     def test_dotenv_is_read_from_the_repository_root(self):
         load_settings({"DJANGO_ENVIRONMENT": None})
         self.assertEqual(load_settings.dotenv_paths, [Path(settings.BASE_DIR) / ".env"])
@@ -146,3 +157,77 @@ class ProductionSettingsTest(SimpleTestCase):
     def test_conn_max_age_from_environment(self):
         module = load_settings({**PRODUCTION_ENV, "DB_CONN_MAX_AGE": "30"})
         self.assertEqual(module.DATABASES["default"]["CONN_MAX_AGE"], 30)
+
+    def test_missing_secret_key_is_improperly_configured(self):
+        for value in (None, ""):
+            with self.subTest(SECRET_KEY=value):
+                with self.assertRaisesRegex(ImproperlyConfigured, "SECRET_KEY"):
+                    load_settings({**PRODUCTION_ENV, "SECRET_KEY": value})
+
+    def test_allowed_hosts_are_trimmed(self):
+        module = load_settings(
+            {
+                **PRODUCTION_ENV,
+                "DJANGO_ALLOWED_HOSTS": "example.com, www.example.com ,",
+                "CSRF_TRUSTED_ORIGINS": "https://example.com, https://www.example.com",
+            }
+        )
+        self.assertEqual(module.ALLOWED_HOSTS, ["example.com", "www.example.com"])
+        self.assertEqual(
+            module.CSRF_TRUSTED_ORIGINS, ["https://example.com", "https://www.example.com"]
+        )
+
+    def test_missing_allowed_hosts_raises(self):
+        for value in (None, "", " , "):
+            with self.subTest(DJANGO_ALLOWED_HOSTS=value):
+                with self.assertRaisesRegex(ValueError, "DJANGO_ALLOWED_HOSTS"):
+                    load_settings({**PRODUCTION_ENV, "DJANGO_ALLOWED_HOSTS": value})
+
+    def test_template_engine_builds_with_cached_loader_regression(self):
+        """Production templates load (a "loaders" option beside APP_DIRS raised)."""
+        module = load_settings(PRODUCTION_ENV)
+        config = module.TEMPLATES[0]
+        backend = DjangoTemplates(
+            {
+                "NAME": "production",
+                "DIRS": config["DIRS"],
+                "APP_DIRS": config["APP_DIRS"],
+                "OPTIONS": {**config["OPTIONS"], "debug": module.DEBUG},
+            }
+        )
+        loader = backend.engine.template_loaders[0]
+        self.assertIsInstance(loader, CachedLoader)
+        self.assertIn(
+            "django.template.loaders.app_directories.Loader",
+            [f"{type(inner).__module__}.{type(inner).__name__}" for inner in loader.loaders],
+        )
+        self.assertTrue(backend.get_template("core/tl_base.html"))
+
+    def test_admin_emails_accept_names_regression(self):
+        """``Name <address>`` entries used to crash the import with TypeError."""
+        module = load_settings(
+            {**PRODUCTION_ENV, "ADMIN_EMAILS": "Jane Doe <jane@example.com>, ops@example.com,"}
+        )
+        expected = [("Jane Doe", "jane@example.com"), ("Admin", "ops@example.com")]
+        self.assertEqual(module.ADMINS, expected)
+        self.assertEqual(module.MANAGERS, expected)
+
+    def test_no_admin_emails(self):
+        module = load_settings({**PRODUCTION_ENV, "ADMIN_EMAILS": None})
+        self.assertEqual(module.ADMINS, [])
+
+    def test_request_errors_are_mailed_to_admins_regression(self):
+        """500s reach ADMINS: the project LOGGING had dropped Django's mail_admins handler."""
+        module = load_settings(PRODUCTION_ENV)
+        handler = module.LOGGING["handlers"]["mail_admins"]
+        self.assertEqual(handler["class"], "django.utils.log.AdminEmailHandler")
+        self.assertEqual(handler["level"], "ERROR")
+        self.assertIn("require_debug_false", handler["filters"])
+        for name in ("django", "django.request"):
+            with self.subTest(logger=name):
+                self.assertIn("mail_admins", module.LOGGING["loggers"][name]["handlers"])
+
+    def test_production_logging_does_not_leak_into_development(self):
+        load_settings(PRODUCTION_ENV)
+        module = load_settings({"DJANGO_ENVIRONMENT": "development"})
+        self.assertNotIn("mail_admins", module.LOGGING["handlers"])

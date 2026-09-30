@@ -53,9 +53,9 @@ settings.GAMELINES.get(code, {}).get("short", code)
 
 | Setting | Development | Production | Env var | Purpose |
 |---------|-------------|------------|---------|---------|
-| `SECRET_KEY` | env, else a fixed `django-insecure-...` key | env, required (`KeyError` if missing) | `SECRET_KEY` | Signing key. |
+| `SECRET_KEY` | env, else a fixed `django-insecure-...` key | env, required (`ImproperlyConfigured` if missing or empty) | `SECRET_KEY` | Signing key. |
 | `DEBUG` | `True` | `False` | none | Debug mode. Not configurable by environment variable. |
-| `ALLOWED_HOSTS` | env split on `,`, default `localhost,127.0.0.1` | env split on `,`, required (`ValueError` if empty) | `DJANGO_ALLOWED_HOSTS` | Accepted `Host` headers; also the websocket origin allow-list. `[::1]` is deliberately absent in development. |
+| `ALLOWED_HOSTS` | env split on `,` and trimmed, default `localhost,127.0.0.1` | env split on `,` and trimmed, required (`ValueError` if empty) | `DJANGO_ALLOWED_HOSTS` | Accepted `Host` headers; also the websocket origin allow-list. `[::1]` is deliberately absent in development. |
 | `DEBUG_PROPAGATE_EXCEPTIONS` | `False` | Django default (`False`) | none | |
 | `INSTALLED_APPS` | base + `debug_toolbar` (if importable) | base | none | Base order: `daphne`, the `django.contrib` apps (`admin`, `auth`, `contenttypes`, `sessions`, `messages`, `staticfiles`), `channels`, `accounts`, `characters`, `game`, `tg_schema`, `items`, `locations`, `polymorphic`, `core`, `widgets`, `django.contrib.humanize`. `daphne` must precede `staticfiles` so its `runserver` wins. |
 | `MIDDLEWARE` | `DebugToolbarMiddleware` + base | base | none | Base order: `SecurityMiddleware`, `SessionMiddleware`, `CommonMiddleware`, `CsrfViewMiddleware`, `AuthenticationMiddleware`, `core.middleware.authorization.AuthorizationMiddleware`, `MessageMiddleware`, `XFrameOptionsMiddleware`, `core.middleware.auth_error_handler.AuthErrorHandlerMiddleware`. See [Authorization](../architecture/authorization.md). |
@@ -73,7 +73,7 @@ settings.GAMELINES.get(code, {}).get("short", code)
 | `DIRS` | `[]` | same |
 | `APP_DIRS` | `True` | `True` (from base) |
 | `OPTIONS["context_processors"]` | `debug`, `request`, `auth`, `messages`, `core.context_processors.all_chronicles`, `accounts.context_processors.theme_context`, `accounts.context_processors.notification_count` | same |
-| `OPTIONS["loaders"]` | not set (Django chooses) | `cached.Loader` wrapping `filesystem.Loader` and `app_directories.Loader`, set in a `if not DEBUG:` block at the end of `production.py` |
+| `OPTIONS["loaders"]` | not set (Django chooses) | not set: with `DEBUG = False` Django uses `cached.Loader` wrapping `filesystem.Loader` and `app_directories.Loader` |
 
 Templates live in each app's `templates/` directory; there are no project-level template
 directories.
@@ -179,7 +179,7 @@ Development sets none of these, so Django's defaults apply there.
 | `CSRF_COOKIE_HTTPONLY` | `False`, so page JavaScript can read the token | none |
 | `CSRF_COOKIE_SAMESITE` | `Strict` | none |
 | `CSRF_COOKIE_NAME` | `csrftoken` | none |
-| `CSRF_TRUSTED_ORIGINS` | env split on `,`; empty list when unset | `CSRF_TRUSTED_ORIGINS` |
+| `CSRF_TRUSTED_ORIGINS` | env split on `,` and trimmed; empty list when unset | `CSRF_TRUSTED_ORIGINS` |
 
 `SECURE_BROWSER_XSS_FILTER` is deliberately not set;
 `core.tests.test_settings` checks that it stays unset or false. More on the security
@@ -199,7 +199,7 @@ posture in [Security operations](../operations/security.md).
 | `EMAIL_TIMEOUT` | env, default `30` | same | `EMAIL_TIMEOUT` |
 | `DEFAULT_FROM_EMAIL` | env, default `noreply@tellurian-games.com` | same | `DEFAULT_FROM_EMAIL` |
 | `SERVER_EMAIL` | env, default `DEFAULT_FROM_EMAIL` | same | `SERVER_EMAIL` |
-| `ADMINS` | Django default (empty) | `("Admin", address)` per comma-separated address | `ADMIN_EMAILS` |
+| `ADMINS` | Django default (empty) | `(name, address)` per comma-separated `address` or `Name <address>` entry; the name defaults to `Admin` | `ADMIN_EMAILS` |
 | `MANAGERS` | Django default (empty) | same list as `ADMINS` | `ADMIN_EMAILS` |
 
 ## Logging
@@ -220,13 +220,14 @@ Handlers:
 | `error_file` | `FileHandler`, `ERROR`, `logs/error.log`, `detailed` | `RotatingFileHandler`, `ERROR`, `logs/error.log`, 10 MB × 10 |
 | `warning_file` | `FileHandler`, `WARNING`, `logs/warning.log`, `verbose` | `RotatingFileHandler`, `WARNING`, `logs/warning.log`, 5 MB × 5 |
 | `null` | `NullHandler` | same |
+| `mail_admins` | not defined | `AdminEmailHandler`, `ERROR`, only when not `DEBUG`: emails `ADMINS` |
 
 Loggers (`propagate` is `False` for all):
 
 | Logger | Handlers | Development level | Production level |
 |--------|----------|-------------------|------------------|
-| `django` | `console`, `file` | `INFO` | `WARNING` |
-| `django.request` | `error_file`, `console` | `ERROR` | `ERROR` |
+| `django` | `console`, `file`, plus `mail_admins` in production | `INFO` | `WARNING` |
+| `django.request` | `error_file`, `console`, plus `mail_admins` in production | `ERROR` | `ERROR` |
 | `django.security` | `error_file`, `console` | `WARNING` | `WARNING` |
 | `django.template` | `console` | `INFO` | `INFO` |
 | `django.db.backends` | development: `console_debug`; production: `null` | `DEBUG` | `INFO` |
