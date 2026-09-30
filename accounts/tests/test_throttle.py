@@ -44,6 +44,23 @@ class AuthThrottleTests(TestCase):
         response = self.login(password="right-password", REMOTE_ADDR="203.0.113.9")
         self.assertEqual(response.status_code, 302)
 
+    @override_settings(AUTH_THROTTLE_CLIENT_LIMIT=3)
+    def test_rotating_usernames_hits_the_per_client_limit(self):
+        for name in ("a", "b", "c"):
+            self.assertEqual(self.login(username=name).status_code, 200)
+        self.assertThrottled(self.login(username="d", password="right-password"))
+        response = self.login(password="right-password", REMOTE_ADDR="203.0.113.9")
+        self.assertEqual(response.status_code, 302)
+
+    @override_settings(AUTH_THROTTLE_CLIENT_LIMIT=2)
+    def test_rotating_emails_hits_the_per_client_limit_for_password_reset(self):
+        for email in ("a@example.com", "b@example.com"):
+            self.client.post(reverse("password_reset"), {"email": email})
+        mail.outbox.clear()
+        response = self.client.post(reverse("password_reset"), {"email": "player@example.com"})
+        self.assertThrottled(response)
+        self.assertEqual(mail.outbox, [])
+
     def test_limit_resets_with_the_next_window(self):
         with patch("accounts.throttle.time.time", return_value=1000.0):
             self.login()

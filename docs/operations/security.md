@@ -86,8 +86,10 @@ for scene chat.
   minimum length, common passwords, all-numeric), configured in `base.py`.
 - Password-reset links expire after `PASSWORD_RESET_TIMEOUT` seconds (default 3600).
 - POSTs to `accounts/login/`, `accounts/signup/` and `accounts/password_reset/` are throttled
-  in the cache: by default 10 per client address (and username or email) per five minutes,
-  then `429` until the window ends (`AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_WINDOW`; see
+  in the cache: by default 10 per client address (and username or email) and, for log in
+  and reset, 50 per address whatever account is named, per five minutes, then `429` until
+  the window ends (`AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`,
+  `AUTH_THROTTLE_WINDOW`; see
   [Authentication flows](../../accounts/docs/authentication.md#throttling)). The client
   address is only the visitor's if Daphne runs with `--proxy-headers` behind the proxy.
   There is no account lockout, and `admin/login/` is not throttled; rate-limit it at the

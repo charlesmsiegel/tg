@@ -109,6 +109,7 @@ active. `BASE_DIR` is the repository root.
 | `LOGOUT_REDIRECT_URL` | `"core:home"` | none | |
 | `PASSWORD_RESET_TIMEOUT` | `3600` (one hour) | `PASSWORD_RESET_TIMEOUT` | Lifetime of password-reset links in seconds. |
 | `AUTH_THROTTLE_LIMIT` | `10` | `AUTH_THROTTLE_LIMIT` | POSTs to log in, sign up or password reset allowed per client address (and username or email) per window (`accounts.throttle`). |
+| `AUTH_THROTTLE_CLIENT_LIMIT` | `50` | `AUTH_THROTTLE_CLIENT_LIMIT` | POSTs to log in or password reset allowed per client address per window, whatever username or email they name. |
 | `AUTH_THROTTLE_WINDOW` | `300` | `AUTH_THROTTLE_WINDOW` | Throttle window in seconds. |
 
 ## Internationalisation

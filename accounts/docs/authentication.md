@@ -40,7 +40,7 @@ Related settings in [`tg/settings/base.py`](../../tg/settings/base.py):
 | `DEFAULT_FROM_EMAIL` | env `DEFAULT_FROM_EMAIL`, default `noreply@tellurian-games.com` |
 | `EMAIL_BACKEND` | env `EMAIL_BACKEND`, default the console backend |
 | `AUTH_PASSWORD_VALIDATORS` | Django's four default validators |
-| `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_WINDOW` | env, default `10` posts per `300` seconds (see [Throttling](#throttling)) |
+| `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`, `AUTH_THROTTLE_WINDOW` | env, default `10` posts per account and `50` per address per `300` seconds (see [Throttling](#throttling)) |
 
 See [settings](../../docs/reference/settings.md) for the email settings in full.
 
@@ -55,12 +55,16 @@ cache, keyed on the view (`signup`, `login`, `password_reset`), the client addre
 300 seconds) the view answers `429` with an empty form and the message "Too many
 attempts. Please wait a few minutes and try again." The form is not run, so no password
 is checked, no account is created and no email is sent. GET requests are not counted.
+Log in and password reset also count every post from the address, whatever username or
+email it names, against `AUTH_THROTTLE_CLIENT_LIMIT` (default 50), so rotating accounts
+from one address does not escape the throttle. The windows are fixed, so a burst that
+spans a window boundary can reach twice a limit.
 
 - The counters live in the default cache (Redis in production). If the cache cannot
   count, the attempt is allowed.
 - Behind a reverse proxy, `REMOTE_ADDR` is the proxy's address unless Daphne runs with
-  `--proxy-headers`. Without it every visitor shares one address: log-in and reset
-  limits still apply per account, but the sign-up limit becomes site-wide.
+  `--proxy-headers`. Without it every visitor shares one address, so the sign-up limit
+  and the per-address log-in and reset limits become site-wide.
 - `client.login()` and `force_login()` in tests bypass the views and are never counted.
 - The admin login (`/admin/login/`) and password change are not throttled.
 
