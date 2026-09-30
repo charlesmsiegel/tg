@@ -80,3 +80,10 @@ class PactVisibilityTests(TestCase):
         self.client.force_login(self.staff)
         response = self.client.get(self.list_url)
         self.assertEqual(set(response.context["object_list"]), {self.pact, self.other_pact})
+
+    def test_staff_see_a_pact_without_parties(self):
+        orphan = Pact.objects.create(terms="Orphaned bargain")
+        self.client.force_login(self.staff)
+        self.assertContains(self.client.get(orphan.get_absolute_url()), "Orphaned bargain")
+        self.client.force_login(self.head_st)
+        self.assertEqual(self.client.get(orphan.get_absolute_url()).status_code, 404)
