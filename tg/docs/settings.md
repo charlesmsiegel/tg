@@ -53,7 +53,7 @@ Settings shared by both environments. The main groups:
 | Logging | Formatters, handlers writing to `logs/debug.log`, `logs/error.log`, `logs/warning.log`, and loggers for Django and each project app |
 | Channels | `CHANNEL_LAYERS` with `InMemoryChannelLayer` |
 | Tests | `TEST_RUNNER = "tg.test_runner.LocalMigrationTestRunner"` |
-| Other | `LANGUAGE_CODE = "en-us"`, `TIME_ZONE = "America/Los_Angeles"`, `USE_TZ = True`, `DEFAULT_AUTO_FIELD = BigAutoField`, `TINYMCE_DEFAULT_CONFIG` (no installed app reads it) |
+| Other | `LANGUAGE_CODE = "en-us"`, `TIME_ZONE = "America/Los_Angeles"`, `USE_TZ = True`, `DEFAULT_AUTO_FIELD = BigAutoField` |
 
 `base.py` sets no `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` or `CACHES`; the environment
 modules do.

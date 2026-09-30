@@ -65,7 +65,7 @@ With `--parallel`, Django builds `db_test.sqlite3` once and copies it for each w
 `db_test_1.sqlite3`, `db_test_2.sqlite3` and so on (Django's SQLite backend inserts the
 worker number before the extension). The copies are deleted when the run ends, unless
 you pass `--keepdb`; an interrupted run leaves them behind, and the next run overwrites
-them.
+them. `.gitignore` ignores all of them (`db_test*.sqlite3` and their `-journal` files).
 
 Tests that need exclusive resources are written to work in parallel workers: the scene
 chat browser test starts its Daphne server with `subprocess` rather than

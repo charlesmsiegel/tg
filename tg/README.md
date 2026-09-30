@@ -36,10 +36,6 @@ variables see the [settings reference](../docs/reference/settings.md).
 | [`wsgi.py`](wsgi.py) | `application` for WSGI servers (HTTP only) |
 | [`test_runner.py`](test_runner.py) | `LocalMigrationTestRunner` |
 
-`tg/settings.py.backup` is an old single-file settings module kept in the repository. It
-is not importable as `tg.settings` (the `settings/` package takes that name) and nothing
-loads it.
-
 ## How it connects to other apps
 
 - `settings/base.py` installs the project apps (`accounts`, `characters`, `game`,

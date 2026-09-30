@@ -25,7 +25,6 @@ column overrides it. "Django default" means the project does not set it.
 | `GAMELINES` | base | dict, below | The gamelines the site knows: code → `name`, `short`, `app_name`. Read throughout the code as `settings.GAMELINES`. |
 | `GAMELINE_CHOICES` | base | `[(code, GAMELINES[code]["name"]), ...]` in `GAMELINES` order | Choices for `gameline` model fields and validation (`core.validators`). |
 | `CHARGEN_PARTIAL_LIMIT` | not set; default `60` via `getattr` | integer | Maximum character-creation htmx partial requests per user, per character, per minute (`characters.views.core.chargen_mixins`); requests over the limit get an empty 204. Tests override it. |
-| `TINYMCE_DEFAULT_CONFIG` | base | editor options dict | Defined for django-tinymce, but `tinymce` is not in `INSTALLED_APPS` and no code reads it. |
 
 `GAMELINES`:
 
