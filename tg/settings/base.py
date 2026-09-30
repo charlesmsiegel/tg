@@ -344,7 +344,8 @@ LOGGING = {
             "level": "ERROR",
             "propagate": False,
         },
-        # Django database logger (can be noisy, set to INFO to see queries)
+        # Django database logger: SQL statements are logged at DEBUG, and only while DEBUG is
+        # on. development.py prints them when DJANGO_LOG_SQL=True.
         "django.db.backends": {
             "handlers": ["null"],
             "level": "INFO",

@@ -25,11 +25,9 @@ python manage.py test --parallel 4 --failfast -v 2
 ```
 
 Tests run with the development settings unless `DJANGO_ENVIRONMENT` says otherwise. The
-settings module calls `load_dotenv()`, so a `.env` file affects tests too: a `.env`
-copied unchanged from [`.env.example`](../../.env.example) sets
-`PASSWORD_RESET_TIMEOUT=259200`, and
-`core.tests.test_settings.SettingsSecurityTest.test_password_reset_timeout_is_one_hour`
-then fails. See [Configuration](../getting-started/configuration.md#envexample).
+settings package calls `load_dotenv()`, so a `.env` file affects tests too, including a
+`DJANGO_ENVIRONMENT` line in it. See
+[Configuration](../getting-started/configuration.md#envexample).
 
 ## How the test database is built
 

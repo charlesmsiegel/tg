@@ -76,8 +76,8 @@ gameline = models.CharField(max_length=3, choices=settings.GAMELINE_CHOICES, def
 - If `debug_toolbar` can be imported: adds it to `INSTALLED_APPS` and its middleware
   first, sets `INTERNAL_IPS`, and shows the toolbar only to signed-in staff or superusers
   (`show_toolbar_callback`).
-- Logging: SQL queries (`django.db.backends`) at `DEBUG` to the console, project loggers at
-  `DEBUG` with the verbose console handler.
+- Logging: project loggers at `DEBUG` with the verbose console handler; SQL queries
+  (`django.db.backends`) to the console only when `DJANGO_LOG_SQL=True`.
 - `CACHES`: `LocMemCache`, 5-minute default timeout, 1000 entries.
 
 ## `production.py`
@@ -122,6 +122,7 @@ The file handlers need a `logs/` directory under `BASE_DIR`.
 | `DJANGO_ALLOWED_HOSTS` | both | `localhost,127.0.0.1` in development; required in production |
 | `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT` | base | see `base.py` |
 | `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SECURE_HSTS_INCLUDE_SUBDOMAINS`, `SECURE_HSTS_PRELOAD`, `CSRF_TRUSTED_ORIGINS`, `SESSION_COOKIE_AGE`, `SESSION_EXPIRE_AT_BROWSER_CLOSE`, `DB_CONN_MAX_AGE`, `ADMIN_EMAILS`, `REDIS_URL` | production | see `production.py` |
+| `DJANGO_LOG_SQL` | development | `False` |
 
 Boolean variables are true only when their value is exactly `True`. The
 [settings reference](../../docs/reference/settings.md) describes each one.
