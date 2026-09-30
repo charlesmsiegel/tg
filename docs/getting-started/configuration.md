@@ -70,6 +70,15 @@ mail always prints to the console whatever these say.
 | `SERVER_EMAIL` | value of `DEFAULT_FROM_EMAIL` | Sender of error mail to `ADMINS`. |
 | `PASSWORD_RESET_TIMEOUT` | `3600` | Lifetime of password-reset links, in seconds (integer). |
 
+### Log-in throttle (all environments)
+
+Read in `base.py`; see [Authentication flows](../../accounts/docs/authentication.md#throttling).
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `AUTH_THROTTLE_LIMIT` | `10` | POSTs to log in, sign up or password reset allowed per client address (and username or email) per window; the next ones get `429`. |
+| `AUTH_THROTTLE_WINDOW` | `300` | Length of the throttle window, in seconds. |
+
 ### Production only
 
 Read in `production.py`; ignored in development.

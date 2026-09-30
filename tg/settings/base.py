@@ -141,6 +141,12 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "core:home"
 LOGOUT_REDIRECT_URL = "core:home"
 
+# Throttle for POSTs to log in, sign up and password reset (accounts.throttle): at most
+# AUTH_THROTTLE_LIMIT per client address (and username or email) per window of
+# AUTH_THROTTLE_WINDOW seconds; further posts get 429 until the window ends.
+AUTH_THROTTLE_LIMIT = int(os.environ.get("AUTH_THROTTLE_LIMIT", "10"))
+AUTH_THROTTLE_WINDOW = int(os.environ.get("AUTH_THROTTLE_WINDOW", "300"))
+
 # Email Configuration
 # ====================
 # Production email settings (configure via environment variables)

@@ -118,11 +118,12 @@ see [game XP](../../game/docs/xp.md).
 
 | View | Base | Notes |
 |------|------|-------|
-| `SignUp` | `MessageMixin`, `CreateView` | `CustomUserCreationForm`, template `accounts/signup.html`, redirects to `core:home` |
-| `CustomLoginView` | `LoginView` | `CustomAuthenticationForm`, default template `registration/login.html`; always redirects to the user's profile |
-| `CustomPasswordResetView` | `PasswordResetView` | Page `accounts/auth/password_reset_form.html`, email `accounts/registration/password_reset_email.txt` and `.html` |
+| `SignUp` | `AuthThrottleMixin`, `MessageMixin`, `CreateView` | `CustomUserCreationForm`, template `accounts/signup.html`, redirects to `core:home` |
+| `CustomLoginView` | `AuthThrottleMixin`, `LoginView` | `CustomAuthenticationForm`, default template `registration/login.html`; always redirects to the user's profile |
+| `CustomPasswordResetView` | `AuthThrottleMixin`, `PasswordResetView` | Page `accounts/auth/password_reset_form.html`, email `accounts/registration/password_reset_email.txt` and `.html` |
 
-Details, including why the templates are not under `registration/`, are in
+All three answer `429` to POSTs past the throttle limit. Details, including the throttle
+and why the templates are not under `registration/`, are in
 [authentication](authentication.md).
 
 ## Adding a profile action
