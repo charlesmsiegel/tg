@@ -223,51 +223,49 @@
         }
 
         /**
-         * Re-index forms after removal to maintain proper ordering.
-         * This is only needed for forms without DELETE checkboxes.
+         * Re-index forms after a new (unsaved) form is removed from the DOM, so the
+         * remaining forms are numbered 0..n-1 and TOTAL_FORMS is n. Rows hidden
+         * because their DELETE box is checked are still submitted, so they keep a
+         * number too; otherwise Django would drop the highest-numbered row.
          */
         reindexForms(prefix) {
             const formsetInfo = this.formsets[prefix];
             if (!formsetInfo) return;
 
-            const forms = formsetInfo.container.querySelectorAll('[data-formset-form]') ||
-                         formsetInfo.container.querySelectorAll('.form-row') ||
-                         formsetInfo.container.querySelectorAll(':scope > div');
+            const container = formsetInfo.container;
+            // querySelectorAll always returns a (truthy) NodeList: fall back on length.
+            let forms = container.querySelectorAll('[data-formset-form]');
+            if (!forms.length) forms = container.querySelectorAll('.form-row');
+            if (!forms.length) forms = container.querySelectorAll(':scope > div');
 
-            let visibleIndex = 0;
-            forms.forEach((form, i) => {
-                // Skip hidden/deleted forms
-                if (form.style.display === 'none') return;
+            // String.raw keeps the backslash: in a plain template literal `\d` is just "d".
+            const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pattern = new RegExp(String.raw`${escaped}-\d+`);
+
+            forms.forEach((form, index) => {
+                const renumber = value => value.replace(pattern, `${prefix}-${index}`);
 
                 // Update all name and id attributes
                 form.querySelectorAll('[name], [id]').forEach(el => {
-                    if (el.name) {
-                        el.name = el.name.replace(new RegExp(`${prefix}-\d+`), `${prefix}-${visibleIndex}`);
-                    }
-                    if (el.id) {
-                        el.id = el.id.replace(new RegExp(`${prefix}-\d+`), `${prefix}-${visibleIndex}`);
-                    }
+                    if (el.name) el.name = renumber(el.name);
+                    if (el.id) el.id = renumber(el.id);
                 });
 
                 // Update for= attributes on labels
                 form.querySelectorAll('label[for]').forEach(label => {
-                    label.setAttribute('for',
-                        label.getAttribute('for').replace(new RegExp(`${prefix}-\d+`), `${prefix}-${visibleIndex}`)
-                    );
+                    label.setAttribute('for', renumber(label.getAttribute('for')));
                 });
 
                 // Update data-prefix attributes
                 form.querySelectorAll('[data-prefix]').forEach(el => {
-                    el.dataset.prefix = el.dataset.prefix.replace(new RegExp(`${prefix}-\d+`), `${prefix}-${visibleIndex}`);
+                    el.dataset.prefix = renumber(el.dataset.prefix);
                 });
-
-                visibleIndex++;
             });
 
             // Update TOTAL_FORMS
             const totalFormsInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
             if (totalFormsInput) {
-                totalFormsInput.value = visibleIndex;
+                totalFormsInput.value = forms.length;
             }
         }
 
