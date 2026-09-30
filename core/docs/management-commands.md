@@ -24,7 +24,7 @@ the database owner.
 | [`process_weekly_xp`](#process_weekly_xp) | Yes | Create a `Week` and weekly XP requests |
 | [`sync_character_status`](#sync_character_status) | Yes | Remove retired and deceased characters from groups, chantries and scenes |
 | [`cleanup_old_weeks`](#cleanup_old_weeks) | Yes | Delete old `Week` rows |
-| [`cleanup_orphaned_data`](#cleanup_orphaned_data) | Yes | Delete unowned drafts, empty scenes, unused setting elements |
+| [`cleanup_orphaned_data`](#cleanup_orphaned_data) | Yes | Delete orphaned XP requests and, optionally, unowned drafts, empty scenes, unused setting elements |
 | [`find_duplicate_objects`](#find_duplicate_objects) | Optional | Report (and optionally delete) duplicate objects |
 | [`archive_inactive_chronicles`](#archive_inactive_chronicles) | Optional | Report, export and rename inactive chronicles |
 | [`export_chronicle`](#export_chronicle) | No (writes a file) | Export a chronicle to JSON |
@@ -60,9 +60,10 @@ Filtering is by file-name substring, so `--gameline vtm` does not select a file 
 ### `populate_test_chronicle`
 
 `--chronicle ID` (required), `--characters N` (default 10), `--scenes N` (default 15).
-Creates or reuses a `test_player` user (password `test123` when created), `N` core
-`Human` characters with random names, concepts, statuses and XP, and `N` scenes. The
-`--gameline` option is accepted but not used: every character is a core `Human`.
+Creates or reuses a `test_player` user (password `test123` when created), `N`
+characters with random names, concepts, statuses and XP, and `N` scenes. `--gameline`
+(default `vtm`) picks the mortal model: `VtMHuman`, `MtAHuman` and so on, or core `Human`
+for `wod`.
 
 ### `reset_demo_data`
 
@@ -116,8 +117,7 @@ notifications are not implemented; nothing is sent.
 For retired (`Ret`) and deceased (`Dec`) characters: removes them from group
 memberships, clears group leadership, removes them from chantry memberships, leadership
 and positions, and with `--remove-from-scenes` from unfinished scenes. Each character is
-processed in its own transaction. `--chronicle ID` narrows the set; `--fix-all` iterates
-every character but still changes only retired and deceased ones. `--dry-run` reports
+processed in its own transaction. `--chronicle ID` narrows the set. `--dry-run` reports
 only. The same cleanup runs automatically when a character's status changes to `Ret` or
 `Dec` through `Character.save()` (see
 [utilities](utilities.md#helpers-in-coreutilspy)); this command repairs older data.
@@ -132,15 +132,17 @@ XP requests. `--dry-run` reports only.
 
 ### `cleanup_orphaned_data`
 
-Deletes characters, items and locations with no owner and status `Un`, and weekly and
-story XP requests with no character. `--include-scenes` also deletes unfinished scenes
-with no posts and no characters; `--include-setting-elements` also deletes setting
-elements used by no chronicle. `--dry-run` reports only.
+Deletes weekly and story XP requests with no character. `--include-unowned-drafts`
+also deletes characters, items and locations in a chronicle with no owner and status
+`Un`; `--include-scenes` also deletes unfinished scenes with no posts and no characters;
+`--include-setting-elements` also deletes setting elements used by no chronicle.
+`--dry-run` reports only.
 
-`--days` (default 30) is parsed but not applied: unowned drafts are deleted whatever
-their age. Objects created as shared (owner `None`, see
+Reference data (owner `None`, status `Un`, no chronicle) never matches. Objects created
+as shared in a chronicle (owner `None`, see
 [mixins](mixins.md#messagemixin-successmessagemixin-errormessagemixin)) that are still
-drafts match too. Always run `--dry-run` first.
+drafts do, and objects have no creation date to filter on, so always run `--dry-run`
+first.
 
 ### `find_duplicate_objects`
 
@@ -151,8 +153,8 @@ than one member. `--type character|item|location|effect|all`, `--chronicle ID`,
 - `--auto-merge` deletes all but one object of a group when every member has the same
   status and description. It keeps the one with the highest status priority, then the
   highest id. Related rows are not merged; they go with the deleted objects.
-- `--delete-empty` (when `--auto-merge` is not set) deletes every member of a group that
-  is `Un` with an empty description, including the last one.
+- `--delete-empty` (when `--auto-merge` is not set) deletes the members of a group that
+  are `Un` with an empty description; when every member is empty it keeps the oldest.
 
 ### `archive_inactive_chronicles`
 

@@ -17,6 +17,20 @@ from django.core.management.base import BaseCommand, CommandError
 from game.models import Chronicle
 
 
+def human_classes():
+    """Map each gameline code to its mortal character model (``vtm`` -> VtMHuman)."""
+    from characters.models.core.human import Human
+
+    classes = {"wod": Human}
+    pending = list(Human.__subclasses__())
+    while pending:
+        model = pending.pop()
+        pending.extend(model.__subclasses__())
+        if not model._meta.abstract and model.type == f"{model.gameline}_human":
+            classes[model.gameline] = model
+    return classes
+
+
 class Command(BaseCommand):
     help = "Populate a test chronicle with realistic data"
 
@@ -42,9 +56,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "--gameline",
             type=str,
-            choices=["vtm", "wta", "mta", "wto", "ctd", "dtf"],
+            choices=sorted(human_classes()),
             default="vtm",
-            help="Gameline for characters (default: vtm)",
+            help="Gameline of the mortal characters to create (default: vtm; wod for core Human)",
         )
 
     def handle(self, *args, **options):
@@ -86,8 +100,9 @@ class Command(BaseCommand):
         self.stdout.write("=" * 70 + "\n")
 
     def create_characters(self, chronicle, user, count, gameline):
-        """Create test characters."""
-        self.stdout.write(f"\nCreating {count} test characters...")
+        """Create test characters of the gameline's mortal model."""
+        model = human_classes()[gameline]
+        self.stdout.write(f"\nCreating {count} test {model.__name__} characters...")
 
         characters = []
 
@@ -133,10 +148,7 @@ class Command(BaseCommand):
             concept = choice(concepts)
             status = choice(statuses)
 
-            # Create character using Human model from core
-            from characters.models.core.human import Human
-
-            char = Human.objects.create(
+            char = model.objects.create(
                 name=name,
                 owner=user,
                 chronicle=chronicle,

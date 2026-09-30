@@ -18,6 +18,7 @@ Works with all objects that inherit from core.models.Model including:
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 
 class Command(BaseCommand):
@@ -49,7 +50,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--delete-empty",
             action="store_true",
-            help="Delete empty unfinished duplicates (name only, no other data)",
+            help=(
+                "Delete empty unfinished duplicates (status Un, no description), "
+                "always keeping at least one object per group"
+            ),
         )
         parser.add_argument(
             "--export",
@@ -242,15 +246,23 @@ class Command(BaseCommand):
             )
 
     def delete_empty_duplicates(self, duplicate_group):
-        """Delete empty unfinished duplicates."""
+        """Delete empty unfinished duplicates, keeping at least one member of the group."""
         objects = duplicate_group["objects"]
+        empty = [
+            obj
+            for obj in objects
+            if obj.status == "Un" and (not obj.description or obj.description.strip() == "")
+        ]
+        if len(empty) == len(objects):
+            # Every member is empty: keep the oldest so the object itself survives.
+            empty.remove(min(empty, key=lambda obj: obj.id))
 
-        for obj in objects:
-            # Only delete if Unfinished, no description, and no other significant data
-            if obj.status == "Un" and (not obj.description or obj.description.strip() == ""):
+        with transaction.atomic():
+            for obj in empty:
+                obj_id = obj.id
                 obj.delete()
                 self.stdout.write(
-                    self.style.SUCCESS(f"  ✓ Deleted empty duplicate: {obj.name} (ID: {obj.id})")
+                    self.style.SUCCESS(f"  ✓ Deleted empty duplicate: {obj.name} (ID: {obj_id})")
                 )
 
     def display_summary(self, all_duplicates):

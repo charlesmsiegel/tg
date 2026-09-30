@@ -31,7 +31,7 @@ Things that hold for all of them:
 | [`process_weekly_xp`](#process_weekly_xp) | core | yes | Create a `Week` and a `WeeklyXPRequest` for each character who played that week. |
 | [`audit_xp_spending`](#audit_xp_spending) | core | CSV only | Report characters whose approved or pending XP spends exceed their XP. |
 | [`cleanup_old_weeks`](#cleanup_old_weeks) | core | yes | Delete old `Week` rows. |
-| [`cleanup_orphaned_data`](#cleanup_orphaned_data) | core | yes | Delete unowned unfinished objects and XP requests without a character. |
+| [`cleanup_orphaned_data`](#cleanup_orphaned_data) | core | yes | Delete XP requests without a character and, optionally, unowned drafts, empty scenes and unused setting elements. |
 | [`archive_inactive_chronicles`](#archive_inactive_chronicles) | core | optional | List inactive chronicles; optionally export and rename them. |
 | [`sync_character_status`](#sync_character_status) | core | yes | Remove retired and deceased characters from groups, chantries and scenes. |
 | [`find_duplicate_objects`](#find_duplicate_objects) | core | optional | Find same-name objects; optionally delete duplicates. |
@@ -107,8 +107,9 @@ When: resetting a development or demo instance.
 ### `populate_test_chronicle`
 
 Adds sample play data to an existing chronicle: gets or creates user `test_player`
-(password `test123` when created), creates `--characters` `Human` characters owned by
-that user with random names, concepts, statuses (weighted to `App`) and 0–50 XP, gets or
+(password `test123` when created), creates `--characters` mortal characters of the
+`--gameline`'s model (`VtMHuman` for `vtm`, `MtAHuman` for `mta`, core `Human` for `wod`
+and so on) owned by that user with random names, concepts, statuses (weighted to `App`) and 0–50 XP, gets or
 creates a location "The Elysium" in the chronicle, and creates `--scenes` scenes on
 consecutive past days, each with two to five of the new characters. All but the last
 three scenes are marked finished with `xp_given=True`.
@@ -118,7 +119,7 @@ three scenes are marked finished with `xp_given=True`.
 | `--chronicle ID` | Required. The chronicle to fill. |
 | `--characters N` | Number of characters (default 10). |
 | `--scenes N` | Number of scenes (default 15). |
-| `--gameline {vtm,wta,mta,wto,ctd,dtf}` | Accepted (default `vtm`) but not used: characters are always `Human`. |
+| `--gameline {ctd,dtf,htr,mta,mtr,vtm,wod,wta,wto}` | Model of the characters (default `vtm`). |
 
 When: trying out chronicle, scene and XP pages locally.
 
@@ -188,8 +189,9 @@ For each character with an `xp` field it sums `XPSpendingRequest` costs by statu
 reports:
 
 - an issue when approved spends exceed earned XP;
-- warnings when pending spends exceed the remaining XP, when a character has more than 15
-  pending or more than 100 approved spends.
+- warnings when pending spends exceed the remaining XP, when pending spends are older than
+  `--pending-days`, when a character has more than 15 pending or more than 100 approved
+  spends.
 
 It then lists unapproved `WeeklyXPRequest` rows (oldest ten by week) and XP requests
 with no character.
@@ -199,7 +201,7 @@ with no character.
 | `--chronicle ID` | Only this chronicle. |
 | `--show-all` | Include characters with no issues (first ten shown). |
 | `--export FILE` | Also write the per-character results to CSV. |
-| `--pending-days N` | Accepted (default 30); the value is stored but no check uses it. |
+| `--pending-days N` | Warn about pending spends created more than `N` days ago (default 30). |
 
 ## Maintenance
 
@@ -217,19 +219,20 @@ XP is unaffected.
 
 ### `cleanup_orphaned_data`
 
-By default deletes:
-
-- every character, item and location with no owner and status `Un`;
-- every `WeeklyXPRequest` and `StoryXPRequest` with no character.
+By default deletes every `WeeklyXPRequest` and `StoryXPRequest` with no character.
 
 | Option | Effect |
 |--------|--------|
+| `--include-unowned-drafts` | Also delete characters, items and locations that belong to a chronicle and have no owner and status `Un`. |
 | `--include-scenes` | Also delete unfinished scenes with no posts and no characters. |
 | `--include-setting-elements` | Also delete `SettingElement` rows linked to no chronicle. |
 | `--dry-run` | List without deleting. |
-| `--days N` | Accepted (default 30) but not applied: objects are deleted whatever their age. |
 
-Run it with `--dry-run` first.
+`--include-unowned-drafts` never touches reference data (weapons, talismans, fetishes and
+other items loaded by `populate_gamedata` have no owner and status `Un` but no
+chronicle). It does match drafts whose owner account was deleted **and** a storyteller's
+shared drafts, which are created with no owner. Objects have no creation date, so there
+is no age threshold. Run it with `--dry-run` first.
 
 ### `archive_inactive_chronicles`
 
@@ -257,7 +260,6 @@ as ambassador or node tender. Each character is processed in its own transaction
 |--------|--------|
 | `--chronicle ID` | Only this chronicle. |
 | `--remove-from-scenes` | Also remove the character from unfinished scenes. |
-| `--fix-all` | Iterate over all characters instead of only retired and deceased ones; characters with other statuses are listed but not changed. |
 | `--dry-run` | Report without changing anything. |
 
 When: after retiring or killing characters in bulk.
@@ -274,7 +276,7 @@ and Mage `Effect`.
 | `--chronicle ID` | Only this chronicle. |
 | `--owner USERNAME` | Only this owner's objects. |
 | `--auto-merge` | In each group, keep the object with the highest status (`App` > `Sub` > `Un` > others, ties to the highest ID) and **delete** the others, but only when every other member has the same status and description as the keeper. Nothing is merged: related rows of the deleted objects go with them according to their `on_delete`. |
-| `--delete-empty` | In each group, delete members with status `Un` and an empty description. Ignored when `--auto-merge` is given. |
+| `--delete-empty` | In each group, delete members with status `Un` and an empty description, keeping the oldest when every member is empty. Ignored when `--auto-merge` is given. |
 | `--export FILE` | Write the groups to CSV. |
 
 Without `--auto-merge` or `--delete-empty` it is read-only.
