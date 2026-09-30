@@ -48,18 +48,16 @@ control. `CachedDetailView` and `CachedListView` apply it for you (see
 | Helper | Use |
 |--------|-----|
 | `CacheKeyGenerator.make_key(category, identifier="", **params)` | Builds `tg:<category>:<identifier>:<k=v...>` (params sorted). `make_model_key`, `make_view_key`, `make_template_key` fix the category |
-| `cache_function(timeout=300, key_prefix="")` | Decorator that caches a function's return value under a key built from its name and `str()` of its arguments. Falsy positional arguments are left out of the key, and a `None` result is never cached |
+| `cache_function(timeout=300, key_prefix="")` | Decorator that caches a function's return value under a key built from its name and `str()` of every argument (falsy ones included). A `None` or other falsy result is cached like any other value |
 | `get_cached_reference_list(model_class, ordering="name", filters=None, timeout=CACHE_TIMEOUT_LONG)` | Evaluates a small reference table once and caches the list. Pass `ordering=None` for models without `name` |
-| `CacheInvalidator.invalidate_model_cache(model_class)` | Deletes `queryset` and `reference_list` keys for the model with `cache.delete_pattern` (Redis); on backends without it, deletes only the base key |
-| `CacheInvalidator.invalidate_related_caches(instance)` | The above for the instance's class and, for polymorphic models, its first base class |
 
 Timeout constants: `CACHE_TIMEOUT_SHORT` (60 s), `CACHE_TIMEOUT_MEDIUM` (300 s),
 `CACHE_TIMEOUT_LONG` (900 s), `CACHE_TIMEOUT_VERY_LONG` (3600 s), `CACHE_TIMEOUT_DAY`
 (86400 s).
 
-Nothing invalidates these caches automatically on save; reference data is expected to
-change rarely and the cached copy lives until its timeout unless you call
-`CacheInvalidator`.
+Nothing invalidates these caches on save; reference data is expected to change rarely and
+the cached copy lives until its timeout. To drop entries at once, see
+[Clearing caches](../../docs/operations/maintenance.md#clearing-caches).
 
 ## htmx helpers
 

@@ -65,7 +65,6 @@ inspection or partial migration, never as a substitute for database backups.
 ## Clearing caches
 
 Cached data expires on its own; nothing invalidates it when the database changes.
-`core.cache.CacheInvalidator` exists but is not called anywhere.
 
 | Cache entry | Key | Lifetime |
 |-------------|-----|----------|

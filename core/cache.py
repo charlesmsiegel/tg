@@ -5,8 +5,10 @@ This module provides utilities for caching expensive operations, particularly
 database queries and view rendering. It includes:
 - Cache key generation utilities
 - A function-result caching decorator
-- Cache invalidation helpers
 - A cached reference-list helper
+- Per-visitor page caching
+
+Nothing here invalidates entries early: cached values live until their timeout expires.
 """
 
 import hashlib
@@ -21,6 +23,9 @@ from django.db.models import Model
 from django.utils.cache import patch_vary_headers
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
+
+# Default for cache.get(): a miss returns this, so a cached None counts as a hit.
+_MISSING = object()
 
 
 class CacheKeyGenerator:
@@ -76,63 +81,13 @@ class CacheKeyGenerator:
         return cls.make_key("template", template_name, **params)
 
 
-class CacheInvalidator:
-    """
-    Manages cache invalidation for models.
-
-    When a model instance is saved or deleted, this class can invalidate
-    related cache entries to ensure data consistency.
-    """
-
-    @staticmethod
-    def invalidate_model_cache(model_class: type[Model]) -> None:
-        """
-        Invalidate all cached data for a specific model.
-
-        This invalidates both queryset caches and reference_list caches
-        to ensure data consistency when models are updated.
-
-        Args:
-            model_class: The model class whose cache should be invalidated
-        """
-        # Invalidate both queryset and reference_list caches
-        for category in ["queryset", "reference_list"]:
-            pattern = f"{CacheKeyGenerator.PREFIX}:{category}:{model_class.__name__}:*"
-            try:
-                cache.delete_pattern(pattern)
-            except AttributeError:
-                # Fallback for cache backends that don't support delete_pattern
-                # In development with LocMemCache, we can't use patterns
-                # so we'll just clear the entire cache for that model's base key
-                base_key = CacheKeyGenerator.make_key(category, model_class.__name__)
-                cache.delete(base_key)
-
-    @staticmethod
-    def invalidate_related_caches(model_instance: Model) -> None:
-        """
-        Invalidate caches related to a specific model instance.
-
-        This is called when a model is saved or deleted.
-        Override in subclasses to invalidate additional related caches.
-
-        Args:
-            model_instance: The model instance that was saved/deleted
-        """
-        CacheInvalidator.invalidate_model_cache(model_instance.__class__)
-
-        # Also invalidate any parent model caches if using polymorphic models
-        if hasattr(model_instance, "get_real_instance_class"):
-            # This is a polymorphic model, invalidate the base class cache too
-            base_class = model_instance.__class__.__bases__[0]
-            if base_class != Model:
-                CacheInvalidator.invalidate_model_cache(base_class)
-
-
 def cache_function(timeout: int = 300, key_prefix: str = "") -> Callable:
     """
     Decorator to cache the result of any function.
 
-    Works with any function return type.
+    Works with any function return type. Every positional and keyword argument is part
+    of the key, falsy ones (``0``, ``""``, ``None``) included, each rendered with ``str()``.
+    A ``None`` result is cached like any other value.
 
     Args:
         timeout: Cache timeout in seconds (default: 5 minutes)
@@ -154,16 +109,12 @@ def cache_function(timeout: int = 300, key_prefix: str = "") -> Callable:
             # Generate cache key based on function name and arguments
             func_name = f"{key_prefix}:{func.__name__}" if key_prefix else func.__name__
 
-            # Convert args and kwargs to a hashable string
-            args_str = ":".join(str(arg) for arg in args if arg)
-            kwargs_str = ":".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
-
-            key_parts = [part for part in [func_name, args_str, kwargs_str] if part]
+            key_parts = [func_name, *(str(arg) for arg in args)]
+            key_parts += [f"{k}={v}" for k, v in sorted(kwargs.items())]
             cache_key = CacheKeyGenerator.make_key("function", ":".join(key_parts))
 
-            # Try to get from cache
-            cached_result = cache.get(cache_key)
-            if cached_result is not None:
+            cached_result = cache.get(cache_key, _MISSING)
+            if cached_result is not _MISSING:
                 return cached_result
 
             # Execute function and cache result
@@ -217,8 +168,7 @@ def get_cached_reference_list(
     Note:
         Cached data will persist for the timeout duration even if the underlying
         database records change. This is appropriate for reference data that
-        changes infrequently. CacheInvalidator.invalidate_model_cache() will
-        clear both queryset and reference_list caches for a model.
+        changes infrequently; nothing clears the entry early.
 
     Example:
         from core.cache import get_cached_reference_list
@@ -234,7 +184,6 @@ def get_cached_reference_list(
         attrs = [a for a in all_attributes if getattr(instance, a.property_name, 0) < 5]
     """
     filters = filters or {}
-    # "reference_list" keys are cleared by CacheInvalidator.invalidate_model_cache()
     cache_key = CacheKeyGenerator.make_key(
         "reference_list", model_class.__name__, ordering=ordering or "none", **filters
     )
