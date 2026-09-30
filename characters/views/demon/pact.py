@@ -9,7 +9,9 @@ from core.permissions import Permission, PermissionManager
 
 
 def user_can_view_pact(user, pact, request=None):
-    """A pact is private to whoever may fully view its demon or its thrall."""
+    """A pact is private to staff and whoever may fully view its demon or its thrall."""
+    if user.is_staff or user.is_superuser:
+        return True
     return any(
         character is not None
         and PermissionManager.user_has_permission(
