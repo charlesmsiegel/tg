@@ -154,9 +154,9 @@ registry, so the declared policy still applies first.
 
 | Class | Module | Behaviour |
 |-------|--------|-----------|
-| `_ItemCreateView` | [`views/core/item.py`](../views/core/item.py) | Login required; adds placeholders; sets `owner` to the current user when empty |
+| `_ItemCreateView` | [`views/core/item.py`](../views/core/item.py) | Login required; adds placeholders. The owner is set only by `prepare_created_object()` (the creator, or none for a storyteller's shared item) |
 | `_ItemUpdateView` | [`views/core/item.py`](../views/core/item.py) | `EditPermissionMixin`. Users with a scoped editor role (`PermissionManager.user_has_scoped_editor_role`: roles `ADMIN`, `CHRONICLE_HEAD_ST` or `CHRONICLE_ST` for the item) get the full form (`name`, `description`); other editors, such as the owner, get `LimitedItemEditForm` |
-| `_VampireArtifactCreateView` | [`views/vampire/__init__.py`](../views/vampire/__init__.py) | Sets `owner` when empty; form is `VampireArtifactForm` |
+| `_VampireArtifactCreateView` | [`views/vampire/__init__.py`](../views/vampire/__init__.py) | Form is `VampireArtifactForm`; the owner comes from `prepare_created_object()` as for other items |
 | `_VampireArtifactUpdateView` | [`views/vampire/__init__.py`](../views/vampire/__init__.py) | Scoped editors get `VampireArtifactForm`; other editors get `LimitedVampireArtifactEditForm` (`description`, `history`) |
 | `_WonderCreateView` | [`views/mage/wonder.py`](../views/mage/wonder.py) | `WonderForm` chooses the concrete class (Charm, Artifact or Talisman) only after validation, so the view builds `form.instance` with `form.save(commit=False)` before calling `prepare_created_object()` |
 | `_WonderDetailView`, `_ArtifactDetailView`, `_CharmDetailView`, `_PeriaptDetailView`, `_TalismanDetailView` | [`views/mage/`](../views/mage/) | Add `resonance`: the item's `WonderResonanceRating` rows ordered by Resonance name |

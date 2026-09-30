@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 
 from game.models import ObjectType
 from items.models.core.item import ItemModel
@@ -33,6 +34,30 @@ class TestItemIndexView(TestCase):
         response = self.client.get(self.url)
         for i in range(10):
             self.assertContains(response, f"Item {i}")
+
+
+class TestItemCreateOwner(TestCase):
+    """U25: the create view keeps prepare_created_object's owner choice."""
+
+    def setUp(self):
+        self.url = reverse("items:create:item")
+
+    def test_player_item_is_owned_by_creator(self):
+        user = get_user_model().objects.create_user("player")
+        self.client.force_login(user)
+        self.client.post(self.url, {"name": "Lantern", "description": "Brass"})
+        self.assertEqual(ItemModel.objects.get(name="Lantern").owner, user)
+
+    def test_shared_item_has_no_owner(self):
+        self.client.force_login(get_user_model().objects.create_user("st", is_staff=True))
+        self.client.post(
+            self.url, {"name": "Shared Lantern", "description": "Brass", "shared": "1"}
+        )
+        self.assertIsNone(ItemModel.objects.get(name="Shared Lantern").owner)
+
+    def test_anonymous_post_is_denied(self):
+        self.client.post(self.url, {"name": "Lantern", "description": "Brass"})
+        self.assertFalse(ItemModel.objects.filter(name="Lantern").exists())
 
 
 class TestItemIndexGrouping(TestCase):
