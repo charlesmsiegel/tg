@@ -109,15 +109,14 @@ there. Production sessions are cache entries that expire by themselves.
 
 ## Data-maintenance commands
 
-All live in [`core/management/commands/`](../../core/management/commands/) except
-`migrate_jsonfield_to_models` ([`game/management/commands/`](../../game/management/commands/)).
+All live in [`core/management/commands/`](../../core/management/commands/).
 Take a backup before running any command marked as writing. Full options are in the
 [management commands reference](../reference/management-commands.md); read-only reports are
 listed in [Logging and monitoring](logging-and-monitoring.md#health-and-audit-commands).
 
 | Command | What it changes | Safety |
 |---------|-----------------|--------|
-| `approve_pending_items` | Approves submitted characters (`status` to `App`), submitted images, freebies of submitted characters, and weekly XP requests (adding their XP to the character). `--type`, `--chronicle`, `--owner` narrow it. | **With no options it approves everything, site-wide, without confirmation.** Run with `--list-only` or `--dry-run` first. Character and freebie approval use bulk `update()`, bypassing the model's validation and `ApprovalService`. The `xp-spends` type reads the removed `spent_xp` field and does nothing. |
+| `approve_pending_items` | Approves submitted characters, submitted images, freebies of submitted characters (with no backstory award), and weekly XP requests (adding their XP), through `ApprovalService` and the model methods the storyteller pages use. `--type`, `--chronicle`, `--owner` narrow it. | Approving needs `--chronicle`, `--owner` or `--all`, plus `--approver USERNAME` whose `APPROVE` permission is checked per object, and asks for confirmation unless `--noinput`. Run with `--list-only` or `--dry-run` first. |
 | `process_weekly_xp` | Creates the `Week` ending `--week-ending` (default: the last Sunday) and a `WeeklyXPRequest` (finishing XP only) for each non-NPC `Human` in scenes finished that week; `--auto-approve` also awards the XP. | Skips requests that already exist. `--dry-run` available. `--notify` only prints a message. |
 | `cleanup_old_weeks` | Deletes `Week` rows older than `--months` (default 6; a month is 30 days). Weekly XP requests keep their row with `week` set to null. | `--dry-run`; `--keep-with-pending` keeps weeks with unapproved requests. |
 | `cleanup_orphaned_data` | Deletes every character, item and location with no owner and status `Un`, and weekly and story XP requests with no character; `--include-scenes` also deletes unfinished scenes with no posts and no characters; `--include-setting-elements` deletes setting elements in no chronicle. | **Deletes by default.** `--days` is accepted but not applied: objects are deleted regardless of age. Run `--dry-run` first. |
@@ -126,7 +125,6 @@ listed in [Logging and monitoring](logging-and-monitoring.md#health-and-audit-co
 | `archive_inactive_chronicles` | `--export-before-archive` runs `export_chronicle` for each inactive chronicle into `chronicle_archives/`; `--mark-inactive` prefixes the name with `[ARCHIVED]`. | Without those flags it only lists. Renaming is the only "archiving"; nothing is hidden or deleted. |
 | `validate_data_integrity --fix`, `validate_character_data --fix` | Clamp out-of-range values; see [Logging and monitoring](logging-and-monitoring.md#health-and-audit-commands). | Run without `--fix` first. |
 | `export_chronicle`, `import_chronicle` | See [Chronicle exports are not backups](#chronicle-exports-are-not-backups). | Export writes a file in the working directory; import creates rows. |
-| `migrate_jsonfield_to_models` | Was written to copy `Character.spent_xp` and `Human.spent_freebies` JSON into `XPSpendingRequest` and `FreebieSpendingRecord` rows. | `Character` no longer has `spent_xp`, so the command stops with a `FieldError` at its first query and changes nothing. |
 | `populate_gamedata` | Creates reference data; see [Reloading reference data](#reloading-reference-data). | Re-runnable. |
 | `populate_test_chronicle --chronicle ID` | Creates fake characters and scenes in an existing chronicle, and a `test_player` user with password `test123`. | Development and test only. |
 | `reset_demo_data --confirm` | In one transaction deletes all weekly and story XP requests, weeks, scenes, characters, items, locations and chronicles, and (unless `--preserve-users`) every non-superuser account; then creates `demo_st` and `demo_player` (with the `--password` value, or a random password it prints) and a demo chronicle. | **Never run on a real installation.** Refuses to run unless `DEBUG` is true or `--force` is given; without `--confirm` it only prints a warning. |

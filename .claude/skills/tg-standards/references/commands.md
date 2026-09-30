@@ -9,7 +9,7 @@ their options in [docs/reference/management-commands.md](../../../../docs/refere
   with `__init__.py` in `management/` and `commands/`. Project-wide maintenance commands
   live in `core/management/commands/` (for example `populate_gamedata`,
   `validate_data_integrity`, `cleanup_orphaned_data`, `export_chronicle`,
-  `reset_db`); `game/management/commands/` holds game-specific ones.
+  `reset_db`); an app-specific command goes in that app's `management/commands/`.
 - Name it `verb_object` in snake_case (`cleanup_old_weeks`, `audit_xp_spending`).
 
 ## Shape

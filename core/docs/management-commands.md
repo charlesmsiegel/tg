@@ -20,7 +20,7 @@ the database owner.
 | [`populate_test_chronicle`](#populate_test_chronicle) | Yes | Fill a chronicle with random test characters and scenes |
 | [`reset_demo_data`](#reset_demo_data) | Yes, destructive | Delete game data and load a demo chronicle |
 | [`reset_db`](#reset_db) | Yes, destructive | Delete `db.sqlite3` and generated migration files (development only) |
-| [`approve_pending_items`](#approve_pending_items) | Yes | Bulk approve submitted characters, images, freebies and XP requests |
+| [`approve_pending_items`](#approve_pending_items) | Yes | Bulk approve submitted characters, images, freebies and weekly XP requests through the approval services |
 | [`process_weekly_xp`](#process_weekly_xp) | Yes | Create a `Week` and weekly XP requests |
 | [`sync_character_status`](#sync_character_status) | Yes | Remove retired and deceased characters from groups, chantries and scenes |
 | [`cleanup_old_weeks`](#cleanup_old_weeks) | Yes | Delete old `Week` rows |
@@ -85,20 +85,22 @@ keeps. It then suggests `makemigrations`, `migrate` and `populate_gamedata`.
 
 ### `approve_pending_items`
 
-Bulk approval outside the web workflow, with no permission checks and no
-`ApprovalService` hooks.
+Bulk approval through the same services as the storyteller pages. Approving needs a
+scope (`--chronicle ID`, `--owner USERNAME` or `--all`) and `--approver USERNAME`, and
+asks for confirmation unless `--noinput`. Each object is checked against the approver's
+`APPROVE` permission; refused or invalid objects are skipped and listed.
 
 | `--type` | Effect |
 |----------|--------|
-| `characters` | `status` `Sub` to `App` for submitted characters (queryset `update`, so no model `save()`) |
-| `images` | `image_status` `sub` to `app` for characters, locations and items with an image |
-| `freebies` | `freebies_approved=True` for submitted characters |
-| `xp-spends` | Looks for a `spent_xp` attribute on characters; characters no longer have it (XP spends are `game.XPSpendingRequest` rows), so this finds nothing |
-| `xp-requests` | Marks unapproved `WeeklyXPRequest`s approved and adds their XP to the character |
+| `characters` | `ApprovalService.approve_object` for submitted characters |
+| `images` | `ApprovalService.approve_image` for characters, locations and items with a submitted image |
+| `freebies` | `Human.award_backstory_freebies(0)` for submitted characters whose freebies are not approved |
+| `xp-requests` | `WeeklyXPRequest.approve()` for unapproved weekly requests (awards the XP) |
 | `all` (default) | All of the above |
 
-Filters: `--chronicle ID`, `--owner USERNAME`. `--list-only` and `--dry-run` change
-nothing. `--auto-approve-images` adds the image step whatever `--type` is.
+`--list-only` and `--dry-run` change nothing and need no scope or approver.
+`--auto-approve-images` adds the image step whatever `--type` is. XP spends are not
+bulk-approved.
 
 ### `process_weekly_xp`
 
@@ -187,10 +189,9 @@ create them.
 ### `validate_character_data`
 
 Checks each character (filter with `--status` and `--chronicle`) for attributes
-outside 0-15, XP consistency, required fields for its status and status consistency, and
-prints the issues (`--verbose` for detail). `--fix` sets negative attributes to 1 and
-saves. Its XP and orphaned-spend checks read a `spent_xp` attribute that characters no
-longer have, so they report nothing.
+outside 0-15, a negative XP balance, more than 20 pending `XPSpendingRequest` rows,
+required fields for its status and status consistency, and prints the issues
+(`--verbose` for detail). `--fix` sets negative attributes to 1 and saves.
 
 ### `validate_data_integrity`
 
