@@ -867,12 +867,6 @@ class TestWraithXPCosts(WraithTestCase):
         cost = get_xp_cost("angst") * 4
         self.assertEqual(cost, 4)  # 1 * 4
 
-    def test_xp_frequencies(self):
-        """xp_frequencies returns correct distribution."""
-        freq = self.wraith.xp_frequencies()
-        self.assertEqual(freq["arcanos"], 37)
-        self.assertEqual(freq["pathos"], 2)
-
 
 class TestWraithFreebieCosts(WraithTestCase):
     """Tests for Wraith freebie cost calculations."""
@@ -917,20 +911,6 @@ class TestWraithFreebieCosts(WraithTestCase):
         self.assertEqual(freq["passion"], 5)
         self.assertEqual(freq["fetter"], 5)
         self.assertEqual(freq["corpus"], 5)
-
-
-class TestWraithSpendXP(WraithTestCase):
-    """Tests for Wraith XP spending."""
-
-    def test_spend_xp_on_arcanos_insufficient_xp(self):
-        """spend_xp fails when insufficient XP."""
-        self.wraith.xp = 5
-        self.wraith.argos = 1
-        self.wraith.save()
-
-        result = self.wraith.spend_xp("argos")
-        self.assertFalse(result)
-        self.assertEqual(self.wraith.argos, 1)
 
 
 class TestWraithSpendFreebies(WraithTestCase):

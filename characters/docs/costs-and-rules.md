@@ -62,8 +62,8 @@ The spending services apply the modifiers (new trait, affinity Sphere, in-clan
 Discipline, Background multiplier); see [Services](services.md). The "Sphere Natural" and
 "Sphere Inept" merit adjustments exist only in the legacy `Mage.spend_xp()` hook.
 Some code prices without these tables: the legacy model hooks (for example
-`Vampire.discipline_freebies()` charges 7 or 10, `Ghoul.discipline_freebies()` 7,
-`Hunter.spend_freebies()` 7 per Edge) and the Mage Arete purchase on the Spheres step,
+`Vampire.discipline_freebies()` charges 7 or 10, `Ghoul.discipline_freebies()` 7) and
+the Mage Arete purchase on the Spheres step,
 which uses `Human.freebie_spend_record()` and so `get_freebie_cost("arete")`.
 
 ## Allocation rules (`characters/rules/allocation.py`)

@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.shadow_archetype import ShadowArchetype
@@ -329,16 +329,6 @@ class Wraith(WtOHuman):
     def has_wraith_history(self):
         return self.death_description != "" and self.age_at_death != 0
 
-    def xp_frequencies(self):
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 13,
-            "willpower": 1,
-            "arcanos": 37,
-            "pathos": 2,
-        }
-
     def freebie_frequencies(self):
         return {
             "attribute": 15,
@@ -602,64 +592,6 @@ class Wraith(WtOHuman):
             "corpus": self.corpus,
             "willpower": self.willpower,
         }
-
-    def spend_xp(self, trait):
-        """Spend XP on a trait."""
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Check if trait is an arcanos
-        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
-
-        if trait in arcanoi_list:
-            current_value = getattr(self, trait)
-            cost = get_xp_cost("arcanos") * (current_value + 1)
-
-            if cost <= self.xp:
-                if self.add_arcanos(trait):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
-                    return True
-                return False
-            return False
-
-        # Handle pathos
-        if trait == "pathos":
-            cost = get_xp_cost("pathos") * (self.pathos + 1)
-            if cost <= self.xp:
-                if self.add_pathos():
-                    self.xp -= cost
-                    self.temporary_pathos = self.pathos
-                    self.add_to_spend(trait, self.pathos, cost)
-                    return True
-                return False
-            return False
-
-        # Handle corpus
-        if trait == "corpus":
-            cost = get_xp_cost("corpus") * (self.corpus + 1)
-            if cost <= self.xp:
-                if self.add_corpus():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.corpus, cost)
-                    return True
-                return False
-            return False
-
-        # Handle angst
-        if trait == "angst":
-            cost = get_xp_cost("angst") * (self.angst + 1)
-            if cost <= self.xp:
-                if self.add_angst():
-                    self.xp -= cost
-                    self.temporary_angst = self.angst
-                    self.add_to_spend(trait, self.angst, cost)
-                    return True
-                return False
-            return False
-
-        return trait
 
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""

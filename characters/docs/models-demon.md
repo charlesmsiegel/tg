@@ -71,7 +71,7 @@ Behaviour:
 - `add_pact(thrall, terms="", faith_payment=0, enhancements=None)` creates a `Pact`;
   `get_pacts()` and `total_pacts()` read them.
 - Legacy spend hooks: `lore_freebies()`, `faith_freebies()`, `virtue_freebies()`,
-  `temporary_faith_freebies()`, `spend_xp()`, `spend_freebies()`.
+  `temporary_faith_freebies()`, `spend_freebies()`.
 
 `LoreRating` (`demon`, `lore`, `rating`; constraint
 `characters_demon_lorerating_rating_range`, 0 to 10) is defined in the same module and

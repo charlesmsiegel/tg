@@ -80,8 +80,8 @@ Behaviour:
 - `increase_rank()` checks the class-level `requirements[auspice][rank + 1]` table
   (per-track minimums or a `total`) and raises rank up to 5.
 - `renown_tracks()` and `renown_incident_list()` feed the sheet.
-- `clean()` rejects Gnosis or Rage below 1. `spend_xp()` / `spend_freebies()` extend the
-  legacy hooks (see [Services](services.md) for the current flow).
+- `clean()` rejects Gnosis or Rage below 1. `spend_freebies()` extends the legacy hook
+  (see [Services](services.md) for the current flow).
 
 ## Kinfolk
 

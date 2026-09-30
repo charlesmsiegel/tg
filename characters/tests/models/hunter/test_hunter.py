@@ -183,51 +183,6 @@ class TestHunter(TestCase):
         self.assertEqual(3 * 2, 6)  # Edge level 2 costs 6 XP
         self.assertEqual(3 * 3, 9)  # Edge level 3 costs 9 XP
 
-    def test_spend_freebies_on_virtue(self):
-        """Test freebie spending on virtues."""
-        result = self.hunter.spend_freebies("conviction")
-
-        self.assertTrue(result["success"])
-        self.assertEqual(result["cost"], 2)
-
-    def test_spend_freebies_on_edge(self):
-        """Test freebie spending on edges."""
-        result = self.hunter.spend_freebies("discern")
-
-        self.assertTrue(result["success"])
-        self.assertEqual(result["cost"], 7)
-
-    def test_spend_freebies_on_all_edges(self):
-        """Test freebie spending works for all edge types."""
-        # Test conviction edges
-        conviction_edges = [
-            "discern",
-            "burden",
-            "balance",
-            "expose",
-            "investigate",
-            "witness",
-            "prosecute",
-        ]
-        for edge in conviction_edges:
-            result = self.hunter.spend_freebies(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
-
-        # Test vision edges
-        vision_edges = ["illuminate", "ward", "cleave", "hide", "blaze", "radiate", "vengeance"]
-        for edge in vision_edges:
-            result = self.hunter.spend_freebies(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
-
-        # Test zeal edges
-        zeal_edges = ["demand", "confront", "donate", "becalm", "respire", "rejuvenate", "redeem"]
-        for edge in zeal_edges:
-            result = self.hunter.spend_freebies(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
-
     def test_get_absolute_url(self):
         """Test get_absolute_url returns correct URL."""
         url = self.hunter.get_absolute_url()
@@ -264,72 +219,6 @@ class TestHunter(TestCase):
     def test_hunter_freebie_step(self):
         """Test Hunter has correct freebie step."""
         self.assertEqual(Hunter.freebie_step, 7)
-
-    def test_spend_xp_on_edge(self):
-        """Test XP spending on edges."""
-        # Set an edge value
-        self.hunter.discern = 2
-        self.hunter.save()
-
-        # Spend XP on edge should return correct result
-        result = self.hunter.spend_xp("discern")
-
-        self.assertTrue(result["success"])
-        self.assertEqual(result["cost"], 9)  # (2+1) * 3 = 9
-        self.assertEqual(result["trait"], "discern")
-
-    def test_spend_xp_on_all_edge_types(self):
-        """Test XP spending works for all edge types."""
-        # Test conviction edges
-        conviction_edges = [
-            "discern",
-            "burden",
-            "balance",
-            "expose",
-            "investigate",
-            "witness",
-            "prosecute",
-        ]
-        for edge in conviction_edges:
-            setattr(self.hunter, edge, 1)
-            self.hunter.save()
-            result = self.hunter.spend_xp(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 6, f"Wrong cost for edge: {edge}")  # (1+1) * 3
-
-        # Test vision edges
-        vision_edges = [
-            "illuminate",
-            "ward",
-            "cleave",
-            "hide",
-            "blaze",
-            "radiate",
-            "vengeance",
-        ]
-        for edge in vision_edges:
-            setattr(self.hunter, edge, 2)
-            self.hunter.save()
-            result = self.hunter.spend_xp(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 9, f"Wrong cost for edge: {edge}")  # (2+1) * 3
-
-        # Test zeal edges
-        zeal_edges = [
-            "demand",
-            "confront",
-            "donate",
-            "becalm",
-            "respire",
-            "rejuvenate",
-            "redeem",
-        ]
-        for edge in zeal_edges:
-            setattr(self.hunter, edge, 0)
-            self.hunter.save()
-            result = self.hunter.spend_xp(edge)
-            self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")  # (0+1) * 3
 
 
 class TestHtRHuman(TestCase):

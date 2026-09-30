@@ -595,33 +595,6 @@ class DemonHistoryTests(TestCase):
         self.assertTrue(self.demon.has_demon_history())
 
 
-class DemonXPTests(TestCase):
-    """Tests for XP-related methods."""
-
-    def setUp(self):
-        """Create test fixtures."""
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.house = DemonHouse.objects.create(
-            name="Devils", celestial_name="Namaru", starting_torment=4
-        )
-        self.demon = Demon.objects.create(name="Test Demon", owner=self.user, xp=100)
-        self.demon.house = self.house
-        self.lore = Lore.objects.create(name="Lore of Flame", property_name="flame")
-        self.lore.houses.add(self.house)
-        self.demon.save()
-
-    def test_xp_frequencies_returns_dict(self):
-        """xp_frequencies returns correct dictionary."""
-        freq = self.demon.xp_frequencies()
-        self.assertIn("attribute", freq)
-        self.assertIn("ability", freq)
-        self.assertIn("background", freq)
-        self.assertIn("willpower", freq)
-        self.assertIn("lore", freq)
-        self.assertIn("faith", freq)
-        self.assertIn("virtue", freq)
-
-
 class DemonFreebieTests(TestCase):
     """Tests for freebie-related methods."""
 

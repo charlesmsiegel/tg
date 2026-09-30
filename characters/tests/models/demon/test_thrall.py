@@ -210,25 +210,6 @@ class ThrallEnhancementTests(TestCase):
         self.assertFalse(result)
 
 
-class ThrallXPTests(TestCase):
-    """Tests for XP-related methods."""
-
-    def setUp(self):
-        """Create test fixtures."""
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.thrall = Thrall.objects.create(name="Test Thrall", owner=self.user, xp=100)
-
-    def test_xp_frequencies_returns_dict(self):
-        """xp_frequencies returns correct dictionary."""
-        freq = self.thrall.xp_frequencies()
-        self.assertIn("attribute", freq)
-        self.assertIn("ability", freq)
-        self.assertIn("background", freq)
-        self.assertIn("willpower", freq)
-        self.assertIn("faith_potential", freq)
-        self.assertIn("virtue", freq)
-
-
 class ThrallFreebieTests(TestCase):
     """Tests for freebie-related methods."""
 

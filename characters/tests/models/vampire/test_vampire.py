@@ -587,15 +587,6 @@ class TestVampireXPCosts(VampireModelTestCase):
         # Cost is 2 * new rating
         self.assertEqual(get_xp_cost("path_rating") * 3, 6)
 
-    def test_xp_frequencies(self):
-        """Test xp_frequencies returns expected distribution."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        freqs = vampire.xp_frequencies()
-        self.assertIn("discipline", freqs)
-        self.assertIn("virtue", freqs)
-        self.assertIn("humanity", freqs)
-        self.assertIn("path_rating", freqs)
-
 
 class TestVampireSireRelationship(VampireModelTestCase):
     """Test sire/childe relationship."""

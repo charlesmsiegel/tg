@@ -1,7 +1,7 @@
-from django.db import models, transaction
+from django.db import models
 from django.urls import reverse
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from characters.models.demon.dtf_human import DtFHuman
 from core.utils import add_dot
 
@@ -105,56 +105,6 @@ class Thrall(DtFHuman):
             self.save()
             return True
         return False
-
-    def xp_frequencies(self):
-        """XP spending frequencies for random spending."""
-        return {
-            "attribute": 20,
-            "ability": 25,
-            "background": 15,
-            "willpower": 5,
-            "faith_potential": 30,
-            "virtue": 5,
-        }
-
-    @transaction.atomic
-    def spend_xp(self, trait):
-        """
-        Spend XP on a trait atomically.
-
-        All XP spending is wrapped in a transaction to prevent race conditions.
-        """
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Lock the row to prevent concurrent spending
-        thrall = Thrall.objects.select_for_update().get(pk=self.pk)
-
-        # Faith Potential
-        if trait == "faith_potential":
-            cost = get_xp_cost("faith_potential") * thrall.faith_potential
-            if cost <= thrall.xp:
-                if thrall.add_faith_potential():
-                    thrall.xp -= cost
-                    thrall.calculate_daily_faith()
-                    thrall.add_to_spend(trait, thrall.faith_potential, cost)
-                    thrall.save()
-                    return True
-            return False
-
-        # Virtues
-        if trait in ["conviction", "courage", "conscience"]:
-            cost = get_xp_cost("virtue") * getattr(thrall, trait)
-            if cost <= thrall.xp:
-                if add_dot(thrall, trait, 5):
-                    thrall.xp -= cost
-                    thrall.add_to_spend(trait, getattr(thrall, trait), cost)
-                    thrall.save()
-                    return True
-            return False
-
-        return trait
 
     def freebie_frequencies(self):
         """Freebie spending frequencies for random spending."""

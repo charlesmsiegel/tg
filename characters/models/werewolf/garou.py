@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-from characters.costs import get_freebie_cost, get_xp_cost
+from characters.costs import get_freebie_cost
 from characters.models.werewolf.camp import Camp
 from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.renownincident import RenownIncident
@@ -463,74 +463,6 @@ class Werewolf(WtAHuman):
 
     def total_fetish_rating(self):
         return sum(x.rank for x in self.fetishes_owned.all())
-
-    def xp_frequencies(self):
-        """Return frequency distribution for XP spending (for random character generation)."""
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 13,
-            "willpower": 1,
-            "gift": 30,
-            "rite": 5,
-            "rage": 2,
-            "gnosis": 3,
-            "renown": 10,
-        }
-
-    def spend_xp(self, trait):
-        """Spend XP on a trait."""
-        output = super().spend_xp(trait)
-        if output in [True, False]:
-            return output
-
-        # Handle gifts
-        if trait == "gift":
-            # This would require a gift object to be passed,
-            # so we'll just return trait for now
-            return trait
-
-        # Handle rites
-        if trait == "rite":
-            # This would require a rite object to be passed,
-            # so we'll just return trait for now
-            return trait
-
-        # Handle rage
-        if trait == "rage":
-            cost = get_xp_cost("rage") * (self.rage + 1)
-            if cost <= self.xp:
-                if self.add_rage():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.rage, cost)
-                    return True
-                return False
-            return False
-
-        # Handle gnosis
-        if trait == "gnosis":
-            cost = get_xp_cost("gnosis") * (self.gnosis + 1)
-            if cost <= self.xp:
-                if self.add_gnosis():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.gnosis, cost)
-                    return True
-                return False
-            return False
-
-        # Handle renown (glory, honor, wisdom)
-        if trait in ["glory", "honor", "wisdom"]:
-            cost = get_xp_cost(trait) * (getattr(self, trait) + 1)
-            if cost <= self.xp:
-                current = getattr(self, trait)
-                setattr(self, trait, current + 1)
-                self.xp -= cost
-                self.add_to_spend(trait, getattr(self, trait), cost)
-                self.save()
-                return True
-            return False
-
-        return trait
 
     def freebie_frequencies(self):
         """Return frequency distribution for freebie spending (for random character generation)."""

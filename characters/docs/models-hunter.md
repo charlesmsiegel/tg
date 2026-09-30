@@ -56,9 +56,7 @@ All Edge fields are `IntegerField`s with default `0`.
   rated Edges under each virtue.
 - `primary_edges()` returns the creed's `primary_virtue` when a creed is set, else the
   character's own `primary_virtue`.
-- `spend_xp(trait)` and `spend_freebies(trait)` return a dict
-  (`{"success": True, "cost": ...}`) for Edges and virtues without changing any rating;
-  for other traits they return the `Human` result. The XP and freebie
+- Hunter has no spending hooks of its own; the XP and freebie
   [spending services](services.md) handle Hunter spends.
 
 ## See also

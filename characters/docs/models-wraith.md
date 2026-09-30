@@ -65,7 +65,7 @@ Class attributes: `background_points = 7`, `passion_points = 10`, `fetter_points
   `spectrehood_date` and turns every Passion dark. `attempt_redemption()` and
   `complete_redemption(psyche_successes, shadow_successes)` reverse it.
   `get_catharsis_info()` and `get_harrowing_info()` summarise the state.
-- Legacy spend hooks: `spend_xp()`, `spend_freebies()`, `arcanos_freebies()`,
+- Legacy spend hooks: `spend_freebies()`, `arcanos_freebies()`,
   `pathos_freebies()`, `passion_freebies()`, `fetter_freebies()`, `corpus_freebies()`.
 
 ### Per-wraith rows

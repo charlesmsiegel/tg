@@ -562,17 +562,6 @@ class Mage(MtAHuman):
     def has_mage_history(self):
         return self.age_of_awakening != 0 and self.avatar_description != ""
 
-    def xp_frequencies(self):
-        return {
-            "attribute": 16,
-            "ability": 20,
-            "background": 13,
-            "willpower": 1,
-            "sphere": 37,
-            "arete": 10,
-            "rote points": 2,
-        }
-
     @transaction.atomic
     def spend_xp(
         self,

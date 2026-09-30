@@ -108,9 +108,10 @@ class Cultist(DtFHuman):
   do. On a base that keeps the
   inherited methods (`WtAHuman`, `MtAHuman`), the type's routes only have to be named after
   `type`.
-- Game rules (XP costs, `spend_xp`, `xp_frequencies`) go on the model or in a service; see
-  `Thrall.spend_xp` for the locked (`select_for_update()` inside `transaction.atomic()`)
-  pattern.
+- Game rules (XP and freebie costs) go in a spending service, not in a `spend_xp`
+  override: the XP handlers call `spend_xp` with keyword arguments, and
+  `Character.spend_xp()` locks the row (`select_for_update()` inside
+  `transaction.atomic()`).
 
 Export it from [`characters/models/demon/__init__.py`](../../characters/models/demon/__init__.py)
 (`from .cultist import Cultist` and the `__all__` entry). `characters/models/__init__.py`
