@@ -77,6 +77,7 @@ Read in `base.py`; see [Authentication flows](../../accounts/docs/authentication
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `AUTH_THROTTLE_LIMIT` | `10` | POSTs to log in, sign up or password reset allowed per client address (and username or email) per window; the next ones get `429`. |
+| `AUTH_THROTTLE_CLIENT_LIMIT` | `50` | POSTs to log in or password reset allowed per client address per window, whatever account they name. |
 | `AUTH_THROTTLE_WINDOW` | `300` | Length of the throttle window, in seconds. |
 
 ### Production only
