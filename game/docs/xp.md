@@ -73,7 +73,9 @@ criterion without its scene. Two endpoints create a request:
 
 - `accounts:weekly_xp_request` (`WeeklyXPRequestView`): the character's owner only.
 - `game:weekly_xp_request:create` (`WeeklyXPRequestCreateView`): the character's owner
-  or staff (`OwnerRequiredMixin`).
+  or staff (`OwnerRequiredMixin`). The week page (`game:week:detail`) links it for each
+  of the viewer's characters who played that week and have no request yet
+  (`characters_to_file`).
 
 Both file through `WeeklyXPRequestForm.submit()`, and both refuse a second request for
 the same character and week with a flash message. The unique constraint
