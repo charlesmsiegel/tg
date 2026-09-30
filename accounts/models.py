@@ -137,10 +137,6 @@ class Profile(ValidatedSaveMixin, models.Model):
         """Return stories that have not had XP awarded."""
         return self.dashboard.xp_story()
 
-    def xp_weekly(self):
-        """Return weeks that have not had XP awarded."""
-        return self.dashboard.xp_weekly()
-
     def characters_to_approve(self):
         """Return characters awaiting this storyteller's approval."""
         return self.dashboard.characters_to_approve()

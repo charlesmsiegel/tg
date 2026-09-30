@@ -32,7 +32,6 @@ from .newsitem import (
     NewsItemListView,
     NewsItemUpdateView,
 )
-from .reference import ReferenceViewSet, create_reference_views
 
 __all__ = [
     "SpecialUserMixin",
@@ -66,6 +65,4 @@ __all__ = [
     "NewsItemDetailView",
     "NewsItemListView",
     "NewsItemUpdateView",
-    "ReferenceViewSet",
-    "create_reference_views",
 ]
