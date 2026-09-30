@@ -59,13 +59,11 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
     note = forms.CharField(max_length=300, required=False)
     display_alt_name = forms.BooleanField(required=False)
 
-    # Conditional field visibility rules
+    # Conditional field visibility rules (widgets.ConditionalFieldsMixin format)
     conditional_fields = {
-        "category": {
-            "example": {"exclude": ["-----", "Integrated Effects"]},
-            "note": {"values": ["New Background"]},
-            "display_alt_name": {"values": ["New Background"]},
-        }
+        "example": {"visible_when": {"category": {"value_in": [NEW, EXISTING]}}},
+        "note": {"visible_when": {"category": {"value_is": NEW}}},
+        "display_alt_name": {"visible_when": {"category": {"value_is": NEW}}},
     }
 
     def __init__(self, *args, **kwargs):

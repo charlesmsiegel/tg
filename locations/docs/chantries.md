@@ -30,7 +30,15 @@ Source: [`locations/models/mage/chantry.py`](../models/mage/chantry.py).
 | `cabals` | M2M `characters.Cabal` |
 
 The chantry's backgrounds are `ChantryBackgroundRating` rows, reached through
-`chantry.backgrounds`.
+`chantry.backgrounds`. `total_background_rating(property_name)` sums them, and the
+`BackgroundBlock` properties (`chantry.allies`, `chantry.resources`...) read it; they are
+read-only, since only the points service may change ratings. `node`, `library` and
+`sanctum` are not such properties (django-polymorphic's accessors for those location
+types hold the names), so call `total_background_rating()` for them. `get_traits()`
+returns every allowed background's rating plus `integrated_effects` (the score);
+`points_spent()` is `total_cost()`; `has_node()` compares the ranks of `nodes` with the
+Node rating; `set_chantry_type()` saves and applies the type's free dots
+(`apply_type_grants()`). `rank` is derived from `total_points` and cannot be set.
 
 `get_independent_members()` returns members who belong to none of the chantry's
 cabals. `Chantry.cleanup_character_organizations(character)` removes a character from
@@ -199,8 +207,11 @@ incomplete rating of its background (`node`, `library`, `allies` or `sanctum`):
   records it: `note` (the object's name), `url`, `linked_object` and `complete = True`.
   When no incomplete rating of that background remains, the chantry advances.
 
-These steps only record the link on the rating; they do not add the new node to
-`chantry.nodes` or set `chantry_library`.
+A model form's instance gets the owner and chronicle before it is first saved, so a
+library's generated books share them. The node step also adds the new node to
+`chantry.nodes`, and the library step sets it as `chantry_library` (`set_library()`,
+which also places the library inside the chantry), so `has_node()`, `has_library()` and
+the refund service see them.
 
 ## Submission and return
 
