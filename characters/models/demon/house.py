@@ -7,7 +7,7 @@ from core.models import Model
 class DemonHouse(Model):
     """Represents one of the seven Houses of the Fallen."""
 
-    type = "house"
+    type = "demon_house"
     gameline = "dtf"
 
     celestial_name = models.CharField(max_length=100, unique=True)

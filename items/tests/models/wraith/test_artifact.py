@@ -193,7 +193,7 @@ class TestWraithArtifactProperties(TestCase):
     def test_type_is_artifact(self):
         """Test type is 'artifact'."""
         artifact = WraithArtifact.objects.create(name="Type Test")
-        self.assertEqual(artifact.type, "artifact")
+        self.assertEqual(artifact.type, "wraith_artifact")
 
     def test_gameline_is_wto(self):
         """Test gameline is 'wto'."""

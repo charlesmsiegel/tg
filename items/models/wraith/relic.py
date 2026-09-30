@@ -4,7 +4,7 @@ from items.models.core import ItemModel
 
 
 class WraithRelic(ItemModel):
-    type = "relic"
+    type = "wraith_relic"
     gameline = "wto"
 
     level = models.IntegerField(default=1)

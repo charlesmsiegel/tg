@@ -22,7 +22,7 @@ class DemonHouseModelTests(TestCase):
 
     def test_type_is_house(self):
         """Test that type is 'house'."""
-        self.assertEqual(self.house.type, "house")
+        self.assertEqual(self.house.type, "demon_house")
 
     def test_gameline_is_dtf(self):
         """Test that gameline is 'dtf'."""
