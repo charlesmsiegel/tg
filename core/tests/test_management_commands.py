@@ -334,13 +334,6 @@ class TestCleanupOrphanedDataCommand(ManagementCommandTestBase):
         self.assertIn("Cleaning up orphaned data", out)
         self.assertIn("DRY RUN", out)
 
-    def test_days_parameter(self):
-        """Test --days parameter controls age threshold."""
-        out, err = self.call_command_capture_output(
-            "cleanup_orphaned_data", "--dry-run", "--days", "7"
-        )
-        self.assertIn("CLEANUP SUMMARY", out)
-
     def test_include_scenes_option(self):
         """Test --include-scenes option includes scene cleanup."""
         out, err = self.call_command_capture_output(

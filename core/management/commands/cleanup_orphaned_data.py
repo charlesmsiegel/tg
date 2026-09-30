@@ -2,17 +2,20 @@
 Management command to clean up orphaned data.
 
 Removes:
-- Characters/items/locations with no owner and status="Un" older than threshold
-- Empty Scene objects with no posts or participants
-- Unused SettingElement objects
-- Orphaned WeeklyXPRequest and StoryXPRequest objects
-"""
+- Orphaned WeeklyXPRequest and StoryXPRequest objects (always)
+- With --include-unowned-drafts: characters/items/locations in a chronicle with no
+  owner and status "Un". Reference data (no owner, status "Un", no chronicle) is never
+  touched, but storyteller-created shared drafts match, so review a --dry-run first.
+- With --include-scenes: empty Scene objects with no posts or participants
+- With --include-setting-elements: unused SettingElement objects
 
-from datetime import timedelta
+Objects carry no creation date, so there is no age threshold.
+"""
 
 from django.core.management.base import BaseCommand
 from django.db.models import Count
-from django.utils.timezone import now
+
+from core.constants import CharacterStatus
 
 
 class Command(BaseCommand):
@@ -20,10 +23,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--days",
-            type=int,
-            default=30,
-            help="Delete unowned objects older than this many days (default: 30)",
+            "--include-unowned-drafts",
+            action="store_true",
+            help=(
+                "Also delete characters, items and locations in a chronicle with no owner "
+                "and status Un (includes storytellers' shared drafts)"
+            ),
         )
         parser.add_argument(
             "--include-scenes",
@@ -43,7 +48,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.dry_run = options["dry_run"]
-        self.cutoff_date = now() - timedelta(days=options["days"])
 
         self.stdout.write(self.style.SUCCESS("\nCleaning up orphaned data...\n"))
         if self.dry_run:
@@ -60,9 +64,10 @@ class Command(BaseCommand):
         }
 
         # Clean up orphaned objects
-        self.cleanup_orphaned_characters()
-        self.cleanup_orphaned_items()
-        self.cleanup_orphaned_locations()
+        if options["include_unowned_drafts"]:
+            self.cleanup_orphaned_characters()
+            self.cleanup_orphaned_items()
+            self.cleanup_orphaned_locations()
         self.cleanup_orphaned_xp_requests()
 
         if options["include_scenes"]:
@@ -74,15 +79,32 @@ class Command(BaseCommand):
         # Display summary
         self.display_summary()
 
+    @staticmethod
+    def orphans(model):
+        """Unowned drafts that belong to a chronicle.
+
+        Reference data (weapons, talismans, fetishes...) is loaded with no owner and
+        status ``Un`` too, but never with a chronicle, so the chronicle keeps it out.
+        Drafts whose owner account was deleted match, and so do a storyteller's
+        shared drafts (``prepare_created_object`` creates those with no owner).
+        """
+        return model.objects.filter(
+            owner__isnull=True,
+            status=CharacterStatus.UNAPPROVED,
+            chronicle__isnull=False,
+        )
+
     def cleanup_orphaned_characters(self):
         """Remove orphaned character objects."""
         from characters.models.core.character import CharacterModel
 
-        orphaned = CharacterModel.objects.filter(owner__isnull=True, status="Un")
+        orphaned = self.orphans(CharacterModel)
 
         count = orphaned.count()
         if count > 0:
-            self.stdout.write(f"\nOrphaned characters (no owner, unfinished): {count}")
+            self.stdout.write(
+                f"\nOrphaned characters (no owner, unfinished, in a chronicle): {count}"
+            )
 
             # Show some examples
             for char in orphaned[:5]:
@@ -100,11 +122,11 @@ class Command(BaseCommand):
         """Remove orphaned item objects."""
         from items.models.core.item import ItemModel
 
-        orphaned = ItemModel.objects.filter(owner__isnull=True, status="Un")
+        orphaned = self.orphans(ItemModel)
 
         count = orphaned.count()
         if count > 0:
-            self.stdout.write(f"\nOrphaned items (no owner, unfinished): {count}")
+            self.stdout.write(f"\nOrphaned items (no owner, unfinished, in a chronicle): {count}")
 
             for item in orphaned[:5]:
                 self.stdout.write(f"  - {item.name or '(unnamed)'} (ID: {item.id})")
@@ -121,11 +143,13 @@ class Command(BaseCommand):
         """Remove orphaned location objects."""
         from locations.models.core.location import LocationModel
 
-        orphaned = LocationModel.objects.filter(owner__isnull=True, status="Un")
+        orphaned = self.orphans(LocationModel)
 
         count = orphaned.count()
         if count > 0:
-            self.stdout.write(f"\nOrphaned locations (no owner, unfinished): {count}")
+            self.stdout.write(
+                f"\nOrphaned locations (no owner, unfinished, in a chronicle): {count}"
+            )
 
             for loc in orphaned[:5]:
                 self.stdout.write(f"  - {loc.name or '(unnamed)'} (ID: {loc.id})")

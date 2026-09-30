@@ -12,6 +12,7 @@ Checks for:
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from characters.models.core.character import CharacterModel
 from game.models import StoryXPRequest, WeeklyXPRequest
@@ -44,7 +45,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        self.pending_threshold = timedelta(days=options["pending_days"])
+        self.pending_days = options["pending_days"]
+        self.pending_cutoff = timezone.now() - timedelta(days=self.pending_days)
         self.show_all = options["show_all"]
 
         # Filter characters based on options
@@ -111,6 +113,13 @@ class Command(BaseCommand):
         # Check if approving pending would cause negative
         if after_pending < 0:
             warnings.append(f"Pending spends ({total_pending}) exceed remaining XP ({remaining})")
+
+        # Check for pending spends nobody has decided on
+        stale_count = char.xp_spendings.filter(
+            approved="Pending", created_at__lt=self.pending_cutoff
+        ).count()
+        if stale_count:
+            warnings.append(f"{stale_count} pending spend(s) older than {self.pending_days} days")
 
         # Check for excessive pending spends
         if pending_count > 15:

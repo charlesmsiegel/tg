@@ -24,11 +24,6 @@ class Command(BaseCommand):
             help="Only process characters in specific chronicle (by ID)",
         )
         parser.add_argument(
-            "--fix-all",
-            action="store_true",
-            help="Fix all characters, not just Retired/Deceased",
-        )
-        parser.add_argument(
             "--remove-from-scenes",
             action="store_true",
             help="Also remove from active scenes",
@@ -43,11 +38,8 @@ class Command(BaseCommand):
         self.dry_run = options["dry_run"]
         self.remove_from_scenes = options["remove_from_scenes"]
 
-        # Build queryset
-        if options["fix_all"]:
-            queryset = CharacterModel.objects.all()
-        else:
-            queryset = CharacterModel.objects.filter(status__in=["Ret", "Dec"])
+        # Only retired and deceased characters have memberships to remove
+        queryset = CharacterModel.objects.filter(status__in=["Ret", "Dec"])
 
         if options["chronicle"]:
             queryset = queryset.filter(chronicle_id=options["chronicle"])
