@@ -320,10 +320,10 @@ class SpecialtiesActionTests(CharacterActionTestBase):
 
 
 class ActionRedirectTargetTests(ActionAudienceMixin, TestCase):
-    """D8: actions land on the type's own sheet, not the generic router, which
-    denies an approved Vampire or Demon (a Step 2 router defect)."""
+    """D8: actions land on the type's own sheet. The generic router used to
+    deny an approved Vampire or Demon; it now renders their sheet too (U1)."""
 
-    def test_retire_redirect_renders_for_router_denied_types(self):
+    def test_retire_redirect_renders_for_vampire_and_demon(self):
         from characters.models.demon.demon import Demon
         from characters.models.vampire.vampire import Vampire
 
@@ -334,7 +334,7 @@ class ActionRedirectTargetTests(ActionAudienceMixin, TestCase):
                     name=f"Redirect {model.__name__}", owner=self.users["owner"], status="App"
                 )
                 generic = reverse("characters:character", kwargs={"pk": character.pk})
-                self.assertEqual(self.client.get(generic).status_code, 403)
+                self.assertEqual(self.client.get(generic).status_code, 200)
                 response = self.client.post(
                     reverse("characters:retire", kwargs={"pk": character.pk}), follow=True
                 )
