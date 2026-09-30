@@ -47,8 +47,8 @@ anything else (`true`, `1`, `yes`) disables.
 
 | Variable | Read in | Default | Purpose |
 |----------|---------|---------|---------|
-| `SECRET_KEY` | `development.py`, `production.py` | development: a fixed insecure key; production: none, required | `SECRET_KEY`. Production reads it with `os.environ["SECRET_KEY"]`, so a missing key stops startup with `KeyError: 'SECRET_KEY'`. |
-| `DJANGO_ALLOWED_HOSTS` | `development.py`, `production.py` | development: `localhost,127.0.0.1`; production: none, required | Comma-separated `ALLOWED_HOSTS`. The value is split on commas without trimming, so write it without spaces. Production raises `ValueError` if it is unset or empty. It also governs the websocket origin check. |
+| `SECRET_KEY` | `development.py`, `production.py` | development: a fixed insecure key; production: none, required | `SECRET_KEY`. In production a missing or empty key stops startup with `ImproperlyConfigured`. |
+| `DJANGO_ALLOWED_HOSTS` | `development.py`, `production.py` | development: `localhost,127.0.0.1`; production: none, required | Comma-separated `ALLOWED_HOSTS`; spaces around entries are trimmed and empty entries dropped. Production raises `ValueError` if no host is left. It also governs the websocket origin check. |
 
 ### E-mail (all environments)
 
@@ -85,7 +85,7 @@ Read in `production.py`; ignored in development.
 | `SESSION_COOKIE_AGE` | `1209600` (two weeks) | Session lifetime in seconds (integer). |
 | `SESSION_EXPIRE_AT_BROWSER_CLOSE` | `False` | End the session when the browser closes. |
 | `DB_CONN_MAX_AGE` | `600` | `CONN_MAX_AGE` for the default database, in seconds (integer). |
-| `ADMIN_EMAILS` | empty | Comma-separated plain addresses (`a@example.com,b@example.com`). Each becomes `("Admin", address)` in `ADMINS`; `MANAGERS` is the same list. |
+| `ADMIN_EMAILS` | empty | Comma-separated addresses, each plain (`a@example.com`) or named (`Jane Doe <jane@example.com>`). Builds `ADMINS` (a plain address is named `Admin`), who receive an email for every unhandled request error; `MANAGERS` is the same list. |
 
 ### Used by tests and scripts, not by the settings
 

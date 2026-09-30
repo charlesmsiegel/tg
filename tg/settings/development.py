@@ -8,6 +8,7 @@ DO NOT use these settings in production.
 import os
 
 from .base import *  # noqa: F403, F401
+from .base import env_list
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # For development, we can use a default key if not provided
@@ -18,7 +19,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 # Note: IPv6 localhost [::1] removed - it breaks Django Channels origin validation
 
 # Development-specific email backend (prints to console)

@@ -10,6 +10,12 @@ from pathlib import Path
 
 # tg/settings/__init__.py loads the .env file before it chooses the settings module.
 
+
+def env_list(name, default=""):
+    """A comma-separated environment variable as a list, spaces and empty items dropped."""
+    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 

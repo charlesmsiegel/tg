@@ -82,8 +82,11 @@ gameline = models.CharField(max_length=3, choices=settings.GAMELINE_CHOICES, def
 
 ## `production.py`
 
-- `SECRET_KEY = os.environ["SECRET_KEY"]`: a missing key fails with `KeyError` at startup.
-- `DEBUG = False`; `DJANGO_ALLOWED_HOSTS` is required (else `ValueError`).
+- `SECRET_KEY` from the environment: a missing or empty key fails with
+  `ImproperlyConfigured` at startup.
+- `DEBUG = False`; `DJANGO_ALLOWED_HOSTS` is required (else `ValueError`). Comma-separated
+  lists (`DJANGO_ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `ADMIN_EMAILS`) are split with
+  `env_list()` from `base.py`, which trims spaces and drops empty items.
 - HTTPS: `SECURE_SSL_REDIRECT` (default on), `SECURE_PROXY_SSL_HEADER` for
   `X-Forwarded-Proto`, HSTS (`SECURE_HSTS_SECONDS` default one year, subdomains and
   preload on by default), secure session and CSRF cookies, `X_FRAME_OPTIONS = "DENY"`,
@@ -99,14 +102,14 @@ gameline = models.CharField(max_length=3, choices=settings.GAMELINE_CHOICES, def
   outage does not raise.
 - Channel layer: `channels_redis` at `REDIS_URL` (default database 0).
 - Logging: rotating files `logs/app.log`, `logs/error.log`, `logs/warning.log`; Django
-  at `WARNING`, project loggers at `INFO`.
-- `ADMINS` and `MANAGERS` from `ADMIN_EMAILS` (comma-separated). A plain address becomes
-  `("Admin", address)`. An entry written as `Name <address>` makes the module raise
-  `TypeError` at import, so list plain addresses.
-- Template loaders: sets `TEMPLATES[0]["OPTIONS"]["loaders"]` to the cached filesystem
-  and app-directories loaders, while `APP_DIRS` stays `True` from `base.py`. Django
-  refuses that combination: building the template engine raises
-  `ImproperlyConfigured("app_dirs must not be set when loaders is defined.")`.
+  at `WARNING`, project loggers at `INFO`; a `mail_admins` handler
+  (`AdminEmailHandler`, `ERROR`) on the `django` and `django.request` loggers, so
+  unhandled request errors are mailed to `ADMINS`.
+- `ADMINS` and `MANAGERS` from `ADMIN_EMAILS` (comma-separated). Each entry is
+  `address` or `Name <address>`; a plain address becomes `("Admin", address)`.
+- Template loaders: not set. With `DEBUG = False` Django wraps the filesystem and
+  app-directories loaders in the cached loader itself. (Setting `loaders` beside
+  `APP_DIRS = True` raises `ImproperlyConfigured`.)
 
 The file handlers need a `logs/` directory under `BASE_DIR`.
 

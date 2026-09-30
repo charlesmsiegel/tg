@@ -52,8 +52,8 @@ root (gitignored) and fill it in. The variables the settings read in production:
 | Variable | Read in | Required | Default | Effect |
 |----------|---------|----------|---------|--------|
 | `DJANGO_ENVIRONMENT` | `settings/__init__.py` | Yes | `development` | Selects the settings module (above). |
-| `SECRET_KEY` | `production.py` | Yes | none | Read with `os.environ["SECRET_KEY"]`; a missing value raises `KeyError` at startup. |
-| `DJANGO_ALLOWED_HOSTS` | `production.py` | Yes | none | Comma-separated host names. Empty raises `ValueError`. Also used by the WebSocket origin check. |
+| `SECRET_KEY` | `production.py` | Yes | none | A missing or empty value raises `ImproperlyConfigured` at startup. |
+| `DJANGO_ALLOWED_HOSTS` | `production.py` | Yes | none | Comma-separated host names (spaces trimmed). Empty raises `ValueError`. Also used by the WebSocket origin check. |
 | `CSRF_TRUSTED_ORIGINS` | `production.py` | No | empty list | Comma-separated origins with scheme, e.g. `https://example.com`. |
 | `SECURE_SSL_REDIRECT` | `production.py` | No | `True` | Redirect HTTP to HTTPS. Only the exact string `True` enables it. |
 | `SECURE_HSTS_SECONDS` | `production.py` | No | `31536000` | HSTS max-age; `0` disables HSTS. |
@@ -211,9 +211,8 @@ missing from the manifest fails to render. Edit static files in `source_static/`
 Uploaded images are stored under `media/` at a path built by `core.utils.filepath` from the
 model's module path and the object's name (see [Security](security.md#uploads)).
 
-`production.py` has a commented-out S3 example. It uses `STATICFILES_STORAGE` and
-`DEFAULT_FILE_STORAGE`, which Django 5.1 removed; on the Django version in
-`requirements.txt` configure object storage through `STORAGES` instead.
+`production.py` has a commented-out S3 example that configures `STORAGES` for
+`django-storages` (not in `requirements.txt`).
 
 ## Schema: generated migrations and `tg_schema`
 
@@ -299,14 +298,15 @@ command still exits successfully, so read its summary. Options (`--gameline`, `-
 
 ## Pre-deploy checklist
 
-- [ ] `DJANGO_ENVIRONMENT=production` is set in the server process's environment.
+- [ ] `DJANGO_ENVIRONMENT=production` is set in the server process's environment or `.env`.
 - [ ] `SECRET_KEY` is a new random value (generate one with
       `python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'`).
 - [ ] `DJANGO_ALLOWED_HOSTS` lists every public host name; `CSRF_TRUSTED_ORIGINS` is set if the
       public origin differs from the proxied host.
 - [ ] `REDIS_URL` points at a reachable Redis that is not exposed to the internet.
 - [ ] `EMAIL_BACKEND` and SMTP variables are set, so password resets are delivered.
-- [ ] `ADMIN_EMAILS`, if set, uses plain addresses only (see
+- [ ] `ADMIN_EMAILS` lists who should receive error email, and `SERVER_EMAIL` is a sender the
+      mail server accepts (see
       [Logging and monitoring](logging-and-monitoring.md#admins-and-error-email)).
 - [ ] The proxy sets `X-Forwarded-Proto`, preserves `Host` and `Origin`, upgrades `/ws/`, serves
       `/static/` and `/media/`, and caps upload size.
