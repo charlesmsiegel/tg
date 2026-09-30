@@ -160,3 +160,54 @@ class TestLibraryUpdateView(TestCase):
         self.client.login(username="st_user", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "locations/mage/library/form.html")
+
+
+class TestLibraryRandomBook(TestCase):
+    """random_book() stocks the library with a generated, named grimoire (U8)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from characters.models.core.ability_block import Ability
+        from characters.models.mage.focus import Instrument, Practice
+        from characters.models.mage.resonance import Resonance
+        from characters.models.mage.sphere import Sphere
+        from core.models import Language, Noun
+        from items.models.core.material import Material
+        from items.models.core.medium import Medium
+
+        cls.faction = MageFaction.objects.create(name="Order of Hermes", founded=1000)
+        practice = Practice.objects.create(name="High Ritual")
+        instrument = Instrument.objects.create(name="Wand")
+        practice.instruments.add(instrument)
+        cls.faction.practices.add(practice)
+        cls.faction.languages.add(Language.objects.create(name="Latin", frequency=5))
+        sphere = Sphere.objects.create(name="Forces", property_name="forces")
+        cls.faction.affinities.add(sphere)
+        practice.abilities.add(Ability.objects.create(name="Occult", property_name="occult"))
+        Material.objects.create(name="Leather", is_hard=False)
+        Material.objects.create(name="Stone", is_hard=True)
+        cls.faction.media.add(
+            Medium.objects.create(name="Codex", length_modifier=1, length_modifier_type="*")
+        )
+        Noun.objects.create(name="mysteries")
+        Noun.objects.create(name="secrets")
+        Resonance.objects.create(name="Dynamic", forces=True)
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="librarian", password="password")
+        self.library = Library.objects.create(
+            name="Test Library", rank=2, owner=self.user, faction=self.faction
+        )
+
+    def test_random_book_adds_named_grimoire(self):
+        self.assertTrue(self.library.random_book())
+        book = self.library.books.get()
+        self.assertNotEqual(book.name, "")
+        self.assertNotEqual(book.name, Grimoire.PLACEHOLDER_NAME)
+        self.assertEqual(book.owner, self.user)
+        self.assertLessEqual(book.rank, self.library.rank)
+
+    def test_increase_rank_without_book_generates_one(self):
+        self.library.increase_rank()
+        self.assertEqual(self.library.rank, 3)
+        self.assertEqual(self.library.num_books(), 1)
