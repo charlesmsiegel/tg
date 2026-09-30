@@ -253,9 +253,8 @@ Run the app's tests with `python manage.py test tg_schema`.
 - A new character model or item/location model has more to register; follow
   [Adding a character type](adding-a-character-type.md) or
   [Adding an item or location type](adding-an-item-or-location-type.md).
-- After `setup_db.sh` or `python manage.py reset_db`, which delete every non-`__init__.py`
-  file in every `*/migrations/` directory including `tg_schema/migrations/`, restore the
-  committed migrations with `git checkout -- tg_schema/migrations` before you commit.
+- `setup_db.sh` and `python manage.py reset_db` delete every non-`__init__.py` file in the
+  local apps' `*/migrations/` directories but keep the committed `tg_schema/migrations/`.
 
 ## Checklist
 

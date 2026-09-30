@@ -130,7 +130,7 @@ listed in [Logging and monitoring](logging-and-monitoring.md#health-and-audit-co
 | `populate_gamedata` | Creates reference data; see [Reloading reference data](#reloading-reference-data). | Re-runnable. |
 | `populate_test_chronicle --chronicle ID` | Creates fake characters and scenes in an existing chronicle, and a `test_player` user with password `test123`. | Development and test only. |
 | `reset_demo_data --confirm` | In one transaction deletes all weekly and story XP requests, weeks, scenes, characters, items, locations and chronicles, and (unless `--preserve-users`) every non-superuser account; then creates `demo_st` and `demo_player` (with the `--password` value, or a random password it prints) and a demo chronicle. | **Never run on a real installation.** Refuses to run unless `DEBUG` is true or `--force` is given; without `--confirm` it only prints a warning. |
-| `reset_db` | Deletes `db.sqlite3` in the working directory and every non-`__init__.py` file in every top-level `*/migrations/` directory, `tg_schema/migrations/` included. | Refuses to run unless `DEBUG` is true. Prompts unless `--yes`. After using it in a checkout, restore the committed files with `git checkout -- tg_schema/migrations`. |
+| `reset_db` | Deletes `db.sqlite3` in the working directory and every non-`__init__.py` file in every top-level `*/migrations/` directory except the committed `tg_schema/migrations/`. | Refuses to run unless `DEBUG` is true. Prompts unless `--yes`. |
 
 ## Reloading reference data
 

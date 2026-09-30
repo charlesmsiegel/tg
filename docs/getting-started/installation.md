@@ -11,7 +11,7 @@ toolbar) is in [Local development](local-development.md).
 | Requirement | Notes |
 |-------------|-------|
 | Python 3.10 | The project targets 3.10: [`requirements.txt`](../../requirements.txt) says so in a comment, and black and ruff are configured with `target-version` `py310` in [`pyproject.toml`](../../pyproject.toml). The black pre-commit hook asks for a `python3.10` interpreter (see [Code style](../development/code-style.md)). Write code that runs on 3.10: no syntax or standard-library APIs from later versions. |
-| git | To clone and to restore files that `setup_db.sh` deletes (see [Seed data](seed-data.md)). |
+| git | To clone the repository. |
 | SQLite | Bundled with Python. It is the only database the settings configure. |
 | Redis | Not needed for development. The production settings use it for the cache, sessions and the websocket channel layer; see [Redis](#redis) below. |
 | A Chromium build, Firefox | Optional, only for the browser tests. See [Testing](../development/testing.md#browser-tests). |
@@ -160,7 +160,7 @@ if it is missing, Django fails to start because the file handlers cannot open th
 | Script | What it does |
 |--------|--------------|
 | [`update.sh`](../../update.sh) | `git pull`, `makemigrations`, `migrate`, `collectstatic`. Use it to bring a checkout up to date. |
-| [`setup_db.sh`](../../setup_db.sh) | Deletes `db.sqlite3` and every migration file, including the committed `tg_schema` ones (`reset_db --yes`), regenerates and applies migrations, recollects static files and runs `populate_gamedata`. Destructive; read [Seed data](seed-data.md#setup_dbsh-and-reset_db) first. |
+| [`setup_db.sh`](../../setup_db.sh) | Deletes `db.sqlite3` and every generated migration file, keeping the committed `tg_schema` ones (`reset_db --yes`), regenerates and applies migrations, recollects static files and runs `populate_gamedata`. Destructive; read [Seed data](seed-data.md#setup_dbsh-and-reset_db) first. |
 
 ## See also
 

@@ -169,7 +169,7 @@ Python scripts under [`populate_db/`](../../populate_db/). The `populate_gamedat
 command ([`core/management/commands/populate_gamedata.py`](../../core/management/commands/populate_gamedata.py))
 finds the scripts recursively and runs them in a fixed order.
 [`setup_db.sh`](../../setup_db.sh) runs `reset_db --yes` (which deletes `db.sqlite3` and every
-migration file except `__init__.py`), then `makemigrations`, `migrate`, `collectstatic` and
+generated migration file, keeping `__init__.py` and the committed `tg_schema` migrations), then `makemigrations`, `migrate`, `collectstatic` and
 `populate_gamedata`; see [Schema migrations](schema-migrations.md) for what that means for the
 committed `tg_schema` migrations. See [Seed data](../getting-started/seed-data.md).
 

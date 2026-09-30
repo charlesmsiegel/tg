@@ -120,15 +120,13 @@ scratch. It runs, in order:
    ([`core/management/commands/reset_db.py`](../../core/management/commands/reset_db.py)),
    which refuses to run unless `DEBUG` is true, deletes `db.sqlite3` in the current
    directory, and deletes every `*.py` file except `__init__.py` in each top-level
-   `<dir>/migrations/` folder;
+   `<dir>/migrations/` folder except `tg_schema/migrations/`;
 2. `python manage.py makemigrations` and `python manage.py migrate`;
 3. `rm -rf collected_static/` and `collectstatic` (answering yes);
 4. `python manage.py populate_gamedata`.
 
-Step 1 deletes files tracked in git: `tg_schema/migrations/0*.py`. The local apps'
-migration folders are git-ignored, but `tg_schema`'s numbered migrations are
-committed. Check `git status` after running the script and restore
-`tg_schema/migrations/` before you commit. Schema history and why local apps have no
+Step 1 deletes only the local apps' generated, git-ignored migrations; it keeps
+`tg_schema`'s committed numbered migrations. Schema history and why local apps have no
 committed migrations are covered in
 [schema migrations](../../docs/architecture/schema-migrations.md).
 
