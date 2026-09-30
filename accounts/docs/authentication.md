@@ -40,8 +40,29 @@ Related settings in [`tg/settings/base.py`](../../tg/settings/base.py):
 | `DEFAULT_FROM_EMAIL` | env `DEFAULT_FROM_EMAIL`, default `noreply@tellurian-games.com` |
 | `EMAIL_BACKEND` | env `EMAIL_BACKEND`, default the console backend |
 | `AUTH_PASSWORD_VALIDATORS` | Django's four default validators |
+| `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_WINDOW` | env, default `10` posts per `300` seconds (see [Throttling](#throttling)) |
 
 See [settings](../../docs/reference/settings.md) for the email settings in full.
+
+## Throttling
+
+`SignUp`, `CustomLoginView` and `CustomPasswordResetView` use
+`accounts.throttle.AuthThrottleMixin`. Every POST counts against a fixed window in the
+cache, keyed on the view (`signup`, `login`, `password_reset`), the client address
+(`REMOTE_ADDR`) and, for log in and password reset, the posted username or email
+(trimmed, case-insensitive). Sign-up counts per address only. Once a key passes
+`AUTH_THROTTLE_LIMIT` posts (default 10) in the current `AUTH_THROTTLE_WINDOW` (default
+300 seconds) the view answers `429` with an empty form and the message "Too many
+attempts. Please wait a few minutes and try again." The form is not run, so no password
+is checked, no account is created and no email is sent. GET requests are not counted.
+
+- The counters live in the default cache (Redis in production). If the cache cannot
+  count, the attempt is allowed.
+- Behind a reverse proxy, `REMOTE_ADDR` is the proxy's address unless Daphne runs with
+  `--proxy-headers`. Without it every visitor shares one address: log-in and reset
+  limits still apply per account, but the sign-up limit becomes site-wide.
+- `client.login()` and `force_login()` in tests bypass the views and are never counted.
+- The admin login (`/admin/login/`) and password change are not throttled.
 
 ## Sign up
 

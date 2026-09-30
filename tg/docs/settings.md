@@ -47,7 +47,7 @@ Settings shared by both environments. The main groups:
 | Database | SQLite at `BASE_DIR / "db.sqlite3"`, test database `db_test.sqlite3`, `ATOMIC_REQUESTS = True` (each request runs in a transaction) |
 | Uploads | `DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE` 5 MB |
 | Static and media | `STATIC_URL = "static/"`, `STATIC_ROOT = collected_static/`, `STATICFILES_DIRS = [source_static/]`, `MEDIA_ROOT = media/`, `MEDIA_URL = "/media/"` |
-| Auth | `LOGIN_URL = "login"`, `LOGIN_REDIRECT_URL` and `LOGOUT_REDIRECT_URL` `"core:home"`, four password validators, `PASSWORD_RESET_TIMEOUT` (default 3600 s) |
+| Auth | `LOGIN_URL = "login"`, `LOGIN_REDIRECT_URL` and `LOGOUT_REDIRECT_URL` `"core:home"`, four password validators, `PASSWORD_RESET_TIMEOUT` (default 3600 s), `AUTH_THROTTLE_LIMIT` / `AUTH_THROTTLE_WINDOW` (10 posts per 300 s to log in, sign up, password reset) |
 | E-mail | `EMAIL_BACKEND` (default console), `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, all from the environment |
 | Gamelines | `GAMELINES` (code to `name`, `short`, `app_name` for `wod`, `vtm`, `wta`, `mta`, `wto`, `ctd`, `dtf`, `mtr`, `htr`, `orp`) and `GAMELINE_CHOICES` built from it |
 | Logging | Formatters, handlers writing to `logs/debug.log`, `logs/error.log`, `logs/warning.log`, and loggers for Django and each project app |
@@ -120,7 +120,7 @@ The file handlers need a `logs/` directory under `BASE_DIR`.
 | `DJANGO_ENVIRONMENT` | `__init__.py` (after loading `.env`) | `development` |
 | `SECRET_KEY` | development (optional), production (required) | insecure key in development |
 | `DJANGO_ALLOWED_HOSTS` | both | `localhost,127.0.0.1` in development; required in production |
-| `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT` | base | see `base.py` |
+| `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT`, `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_WINDOW` | base | see `base.py` |
 | `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SECURE_HSTS_INCLUDE_SUBDOMAINS`, `SECURE_HSTS_PRELOAD`, `CSRF_TRUSTED_ORIGINS`, `SESSION_COOKIE_AGE`, `SESSION_EXPIRE_AT_BROWSER_CLOSE`, `DB_CONN_MAX_AGE`, `ADMIN_EMAILS`, `REDIS_URL` | production | see `production.py` |
 | `DJANGO_LOG_SQL` | development | `False` |
 

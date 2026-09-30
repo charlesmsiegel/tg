@@ -18,6 +18,7 @@ from accounts.forms import (
     SceneXP,
 )
 from accounts.models import Profile
+from accounts.throttle import AuthThrottleMixin
 from characters.models.core import Character
 from core.constants import XPApprovalStatus
 from core.mixins import MessageMixin
@@ -29,9 +30,10 @@ from game.security import can_view_scene, filter_scenes, staffed_chronicles
 from game.spending_approval import require_spending_approver
 
 
-class SignUp(MessageMixin, CreateView):
+class SignUp(AuthThrottleMixin, MessageMixin, CreateView):
     """View for the Sign Up Page"""
 
+    throttle_scope = "signup"
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("core:home")
     template_name = "accounts/signup.html"
@@ -39,7 +41,9 @@ class SignUp(MessageMixin, CreateView):
     error_message = "Failed to create account. Please correct the errors below."
 
 
-class CustomPasswordResetView(PasswordResetView):
+class CustomPasswordResetView(AuthThrottleMixin, PasswordResetView):
+    throttle_scope = "password_reset"
+    throttle_field = "email"
     # Not "registration/...": django.contrib.admin ships templates with those
     # names and sits earlier in INSTALLED_APPS, so they would win.
     template_name = "accounts/auth/password_reset_form.html"
@@ -493,7 +497,9 @@ class ProfileUpdateView(MessageMixin, LoginRequiredMixin, UpdateView):
         return obj
 
 
-class CustomLoginView(LoginView):
+class CustomLoginView(AuthThrottleMixin, LoginView):
+    throttle_scope = "login"
+    throttle_field = "username"
     form_class = CustomAuthenticationForm
 
     def get_success_url(self):

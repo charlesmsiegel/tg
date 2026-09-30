@@ -84,8 +84,13 @@ for scene chat.
 - Passwords are checked by Django's four standard validators (user-attribute similarity,
   minimum length, common passwords, all-numeric), configured in `base.py`.
 - Password-reset links expire after `PASSWORD_RESET_TIMEOUT` seconds (default 3600).
-- The application has no login rate limiting or lockout. Apply rate limits to
-  `accounts/login/`, `accounts/signup/` and `accounts/password_reset/` at the proxy.
+- POSTs to `accounts/login/`, `accounts/signup/` and `accounts/password_reset/` are throttled
+  in the cache: by default 10 per client address (and username or email) per five minutes,
+  then `429` until the window ends (`AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_WINDOW`; see
+  [Authentication flows](../../accounts/docs/authentication.md#throttling)). The client
+  address is only the visitor's if Daphne runs with `--proxy-headers` behind the proxy.
+  There is no account lockout, and `admin/login/` is not throttled; rate-limit it at the
+  proxy if the admin is exposed.
 - Sessions: development uses Django's default database sessions. Production uses
   `django.contrib.sessions.backends.cache` on the Redis cache, so sessions disappear if Redis
   is flushed, restarted without persistence or unreachable (every user is logged out). Session

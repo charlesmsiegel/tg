@@ -151,7 +151,9 @@ DJANGO_ENVIRONMENT=production daphne -b 127.0.0.1 -p 8000 tg.asgi:application
 ```
 
 Useful Daphne options (from `daphne --help`): `-u/--unix-socket` to bind a socket instead of
-a port, `--proxy-headers` to take the client address from `X-Forwarded-For` in its logs,
+a port, `--proxy-headers` to take the client address from `X-Forwarded-For` (use it behind
+a proxy: the log-in throttle counts attempts per client address, see
+[Security](security.md)),
 `--access-log` to choose where the access log goes, and `--websocket-max-message-size` /
 `--websocket-max-frame-size`.
 

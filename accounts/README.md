@@ -33,6 +33,7 @@ Terms such as ST (Storyteller), freebies and chronicle are defined in the
 | [`models.py`](models.py) | `Profile` model: preferences, `is_st` / `is_st_for`, and thin wrappers around the dashboard selectors |
 | [`dashboard.py`](dashboard.py) | `ProfileDashboard`: queue selectors and notification counts for one profile |
 | [`views.py`](views.py) | Sign-up, login, password reset, the profile page and its update form, and the profile action endpoints |
+| [`throttle.py`](throttle.py) | `AuthThrottleMixin`: cache-based throttle on POSTs to sign-up, login and password reset |
 | [`forms.py`](forms.py) | Login and sign-up forms, `ProfileUpdateForm`, `SceneXP`, `StoryXP`, `FreebieAwardForm` |
 | [`urls.py`](urls.py) | URL patterns under `/accounts/` in the `accounts` namespace |
 | [`context_processors.py`](context_processors.py) | `theme_context` and `notification_count` (cached per user for 60 seconds) |
@@ -94,6 +95,7 @@ Tests live in [`tests/`](tests/) and run with `python manage.py test accounts`. 
 | `tests/views/test_profile_actions.py` | Each profile action endpoint |
 | `tests/views/test_auth_redirects.py` | Login and logout redirect settings |
 | `tests/views/test_password_reset.py` | Plain-text and HTML reset email |
+| `tests/test_throttle.py` | Throttling of login, sign-up and password reset |
 | `tests/context_processors/test_context_processors.py` | `theme_context`, `notification_count` |
 | `tests/integration/test_integration.py` | The profile-creation signal |
 
