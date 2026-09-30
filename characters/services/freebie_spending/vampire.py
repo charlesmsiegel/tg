@@ -123,9 +123,9 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
         current_value = getattr(self.character, property_name, 0)
         new_value = current_value + 1
 
-        # Determine if this is a clan discipline or out-of-clan
-        is_clan = self.character.is_clan_discipline(example)
-        cost = get_freebie_cost("discipline" if is_clan else "out_of_clan_discipline")
+        # Freebie points price every Discipline alike; only XP separates
+        # in-clan from out-of-clan.
+        cost = get_freebie_cost("discipline")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
