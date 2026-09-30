@@ -95,8 +95,9 @@ it re-renders this page with the bound form (`ObjectActionView.render_host`), an
 
 Scene actions extend `actions.SceneActionView`: a caller who cannot read the scene gets
 `404`, and every action except closing is refused (`403`) on a finished scene. The
-scene page shows "Close scene" to every signed-in viewer of an open scene; the action
-itself enforces the rule. Details of the scene page, posting, dice commands and read
+scene page shows "Close scene" on an open scene only when its `can_close_scene` context
+flag is set, from `game.views.can_close_scene`, the same rule `SceneCloseView` enforces.
+Details of the scene page, posting, dice commands and read
 markers are in [scenes](scenes.md).
 
 ## Stories

@@ -52,10 +52,12 @@ Keep every id scene-chat.js and the ws extension use: #scene-live, #posts-contai
                 {% include "game/scene/_add_character_field.html" %}
                 <button type="submit" class="tl-btn tl-btn--ghost">+ Add</button>
             </form>
-            <form method="post" action="{% url 'game:scene_close' object.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="tl-btn tl-btn--ghost tl-btn--block">Close scene</button>
-            </form>
+            {% if can_close_scene %}
+                <form method="post" action="{% url 'game:scene_close' object.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="tl-btn tl-btn--ghost tl-btn--block">Close scene</button>
+                </form>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock cover_actions %}
