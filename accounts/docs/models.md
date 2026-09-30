@@ -54,7 +54,7 @@ Each of the following methods delegates to the dashboard method of the same name
 documented in [dashboard.md](dashboard.md):
 
 `st_relations`, `my_characters`, `my_locations`, `my_items`, `xp_requests`, `xp_story`,
-`xp_weekly`, `characters_to_approve`, `items_to_approve`, `locations_to_approve`,
+`characters_to_approve`, `items_to_approve`, `locations_to_approve`,
 `rotes_to_approve`, `objects_to_approve`, `freebies_to_approve`,
 `character_images_to_approve`, `location_images_to_approve`, `item_images_to_approve`,
 `get_updated_journals`, `get_unfulfilled_weekly_xp_requests`,

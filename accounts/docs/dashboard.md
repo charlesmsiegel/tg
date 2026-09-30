@@ -39,7 +39,6 @@ with no chronicle when the user is staff or a superuser.
 | `character_images_to_approve()`, `location_images_to_approve()`, `item_images_to_approve()` | Objects with `image_status="sub"` and a non-empty image, in the user's chronicles |
 | `xp_requests()` | Finished scenes without XP awarded (`Scene.objects.awaiting_xp()`) in the user's chronicles |
 | `xp_story()` | Stories with `xp_given=False` whose chronicle is staffed by the user, plus stories with no chronicle |
-| `xp_weekly()` | Filters `Week` on an `xp_given` field. `Week` has no such field, so calling it raises `FieldError`; nothing in the app calls it. |
 | `get_updated_journals()` | Journals that have at least one entry with an empty `st_message`, limited by `game.security.filter_private_records` to journals the user may read |
 | `get_unfulfilled_weekly_xp_requests_to_approve()` | List of `(character, week)` pairs for characters in the user's chronicles that have an unapproved `WeeklyXPRequest` for a week they are enrolled in |
 | `xp_spend_requests()` | Characters in staffed chronicles with at least one `XPSpendingRequest` whose `approved` is `"Pending"` |

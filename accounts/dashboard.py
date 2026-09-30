@@ -79,9 +79,6 @@ class ProfileDashboard:
             xp_given=False,
         )
 
-    def xp_weekly(self):
-        return Week.objects.filter(xp_given=False)
-
     def characters_to_approve(self):
         return _pending_approval(Character, self.profile.user)
 

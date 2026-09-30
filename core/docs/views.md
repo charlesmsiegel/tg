@@ -193,31 +193,6 @@ posted rows of one formset as dicts, dropping rows with an empty value outside
 `instance=self.object` when the view has one. See the
 [formset widget](../../widgets/docs/widgets.md) for the client side.
 
-## Reference-view factory
-
-[`views/reference.py`](../views/reference.py) builds the four standard views of a
-reference model in one call. No app module uses it at present; it is covered by
-`core/tests/views/test_reference.py`.
-
-```python
-from core.views.reference import create_reference_views
-
-views = create_reference_views(
-    model=Sphere,
-    app_prefix="characters/mage",      # templates: characters/mage/sphere/{detail,list,form}.html
-    fields=["name", "property_name"],
-)
-SphereDetailView = views["detail"]      # CachedDetailView unless cached=False
-```
-
-Options: `model_name`, `ordering` (default `["name"]`), `cached` (default `True`),
-`detail_template`, `list_template`, `form_template`, `extra_context`. The create and
-update views are `LoginRequiredMixin` + `MessageMixin` generic views with generated
-success and error messages. `ReferenceViewSet` does the same declaratively: a subclass
-sets `model`, `app_prefix` and `fields` and gets `detail_view`, `list_view`,
-`create_view` and `update_view` attributes. Generated classes still need entries in the
-route manifest (usually `PUBLIC_READ` for reads, `STAFF_WRITE` for writes).
-
 ## Registry views
 
 Items and locations do not write a view class per model. Each app declares its models in

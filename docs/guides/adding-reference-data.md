@@ -156,9 +156,8 @@ class CovenantUpdateView(MessageMixin, UpdateView):
 - Export the four views from
   [`characters/views/demon/__init__.py`](../../characters/views/demon/__init__.py).
 
-`core/views/reference.py` holds a factory (`create_reference_views`, `ReferenceViewSet`) that
-builds these four classes, but no routed view uses it. Route policies are keyed by the view's
-module and class name, so write the classes out in the gameline module as above.
+Route policies are keyed by the view's module and class name, so write the four classes out
+in the gameline module as above rather than generating them.
 
 ### 3. The "Known by" section (optional)
 
