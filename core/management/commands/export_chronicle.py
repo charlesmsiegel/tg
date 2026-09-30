@@ -44,7 +44,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--include-users",
             action="store_true",
-            help="Include user data (for migration between systems)",
+            help=(
+                "Include the storytellers' and character owners' username, e-mail and "
+                "name (never passwords or permissions)"
+            ),
         )
         parser.add_argument(
             "--exclude-scenes",
@@ -199,8 +202,11 @@ class Command(BaseCommand):
             "story": json.loads(serialize("json", story_requests)),
         }
 
+    # Only what import_chronicle reads: never password hashes, flags or permissions.
+    USER_EXPORT_FIELDS = ("username", "email", "first_name", "last_name")
+
     def export_users(self, chronicle):
-        """Export user data for chronicle STs and character owners."""
+        """Export identity fields of chronicle STs and character owners."""
         from django.contrib.auth.models import User
 
         # Get all STs and character owners
@@ -219,4 +225,4 @@ class Command(BaseCommand):
         users = User.objects.filter(id__in=user_ids)
         self.stdout.write(f"Exporting {users.count()} users...")
 
-        return json.loads(serialize("json", users))
+        return json.loads(serialize("json", users, fields=self.USER_EXPORT_FIELDS))

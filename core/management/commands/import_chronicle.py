@@ -141,10 +141,11 @@ class Command(BaseCommand):
                 )
                 continue
 
-            # Create user
-            User.objects.create(
+            # Create user with an unusable password: the owner resets it to log in
+            User.objects.create_user(
                 username=new_username,
                 email=user_json["fields"].get("email", ""),
+                password=None,
                 first_name=user_json["fields"].get("first_name", ""),
                 last_name=user_json["fields"].get("last_name", ""),
             )

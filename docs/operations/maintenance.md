@@ -55,9 +55,9 @@ database's own dump tool instead; the migration files and `media/` still need ba
 
 `export_chronicle <chronicle_id>` writes one chronicle's chronicle row, characters, items,
 locations, setting elements, scenes, journals and XP requests (and, with `--include-users`,
-the related users) to a JSON file. `import_chronicle <file>` recreates only the chronicle
+the related users' usernames, e-mail addresses and names, never password hashes) to a JSON file. `import_chronicle <file>` recreates only the chronicle
 (name, theme, mood, year, headings), its storytellers, its setting elements and, unless
-`--skip-users`, missing users (created without passwords). Characters, items, locations,
+`--skip-users`, missing users (created with unusable passwords). Characters, items, locations,
 scenes, journals and XP requests in the file are counted and reported, not imported. The
 import runs in one transaction and has `--dry-run` and `--remap-users FILE`. Use the pair for
 inspection or partial migration, never as a substitute for database backups.
@@ -129,7 +129,7 @@ listed in [Logging and monitoring](logging-and-monitoring.md#health-and-audit-co
 | `migrate_jsonfield_to_models` | Was written to copy `Character.spent_xp` and `Human.spent_freebies` JSON into `XPSpendingRequest` and `FreebieSpendingRecord` rows. | `Character` no longer has `spent_xp`, so the command stops with a `FieldError` at its first query and changes nothing. |
 | `populate_gamedata` | Creates reference data; see [Reloading reference data](#reloading-reference-data). | Re-runnable. |
 | `populate_test_chronicle --chronicle ID` | Creates fake characters and scenes in an existing chronicle, and a `test_player` user with password `test123`. | Development and test only. |
-| `reset_demo_data --confirm` | In one transaction deletes all weekly and story XP requests, weeks, scenes, characters, items, locations and chronicles, and (unless `--preserve-users`) every non-superuser account; then creates `demo_st` and `demo_player` with password `demo123` and a demo chronicle. | **Never run on a real installation.** It has no `DEBUG` check; without `--confirm` it only prints a warning. |
+| `reset_demo_data --confirm` | In one transaction deletes all weekly and story XP requests, weeks, scenes, characters, items, locations and chronicles, and (unless `--preserve-users`) every non-superuser account; then creates `demo_st` and `demo_player` (with the `--password` value, or a random password it prints) and a demo chronicle. | **Never run on a real installation.** Refuses to run unless `DEBUG` is true or `--force` is given; without `--confirm` it only prints a warning. |
 | `reset_db` | Deletes `db.sqlite3` in the working directory and every non-`__init__.py` file in every top-level `*/migrations/` directory, `tg_schema/migrations/` included. | Refuses to run unless `DEBUG` is true. Prompts unless `--yes`. After using it in a checkout, restore the committed files with `git checkout -- tg_schema/migrations`. |
 
 ## Reloading reference data

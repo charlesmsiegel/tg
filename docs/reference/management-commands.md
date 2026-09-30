@@ -87,20 +87,23 @@ When: only in development, normally through [`setup_db.sh`](../../setup_db.sh). 
 
 ### `reset_demo_data`
 
-Without `--confirm` it prints a warning and exits. With it, inside one transaction:
-deletes every `WeeklyXPRequest`, `StoryXPRequest`, `Week`, `Scene`, character, item,
-location and `Chronicle`; deletes every non-superuser `User` unless `--preserve-users`;
-then creates users `demo_st` and `demo_player` (password `demo123`, if they do not
-exist) and the chronicle "Demo Chronicle: Nights of Seattle" with `demo_st` as
-storyteller.
+Raises `CommandError` unless `DEBUG` is true or `--force` is given. Without `--confirm`
+it prints a warning and exits. With it, inside one transaction: deletes every
+`WeeklyXPRequest`, `StoryXPRequest`, `Week`, `Scene`, character, item, location and
+`Chronicle`; deletes every non-superuser `User` unless `--preserve-users`; then creates
+users `demo_st` and `demo_player` if they do not exist, and the chronicle "Demo
+Chronicle: Nights of Seattle" with `demo_st` as storyteller. New demo accounts get the
+`--password` value or, by default, a random password that the command prints once;
+existing accounts keep theirs.
 
 | Option | Effect |
 |--------|--------|
 | `--confirm` | Required to do anything. |
 | `--preserve-users` | Keep existing user accounts. |
+| `--password TEXT` | Password for newly created demo accounts (default: random, printed). |
+| `--force` | Run even when `DEBUG` is false. Never use it on a real installation. |
 
-It does not check `DEBUG`: it works the same against a production database. Reference
-data (loaded by `populate_gamedata`) is kept.
+Reference data (loaded by `populate_gamedata`) is kept.
 
 When: resetting a development or demo instance.
 
@@ -382,7 +385,7 @@ scenes, journals of its characters, and weekly and story XP requests of its char
 | `--output FILE` | Output path. Default: `chronicle_<id>_<name with non-alphanumerics as _>_<YYYY-MM-DD>.json` in the current directory. |
 | `--pretty` | Indent the JSON. |
 | `--exclude-scenes` | Leave out scenes and journals. |
-| `--include-users` | Add the chronicle's storytellers and character owners as serialized `User` rows. These include every `User` field, password hashes among them; treat the file as sensitive. |
+| `--include-users` | Add the chronicle's storytellers and character owners as serialized `User` rows with only `username`, `email`, `first_name` and `last_name` (no password hashes, flags or permissions). The file still holds e-mail addresses; treat it as personal data. |
 
 ### `import_chronicle`
 
@@ -390,7 +393,8 @@ Reads an `export_chronicle` file, prints a summary and, unless `--dry-run`, in o
 transaction:
 
 - creates users from the `users` section that do not exist yet (username, e-mail, first
-  and last name only; no password is set), unless `--skip-users`;
+  and last name only, with an unusable password: they reset it to log in), unless
+  `--skip-users`;
 - creates a new `Chronicle` from the name, theme, mood, year and headings, and adds the
   listed storytellers that exist;
 - gets or creates `SettingElement` rows by name and links them to the chronicle.
