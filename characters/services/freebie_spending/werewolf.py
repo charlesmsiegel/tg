@@ -93,7 +93,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
             )
 
         # Apply the change
-        self.character.rites.add(example)
+        self.character.rites_known.add(example)
         self.character.save()
 
         # Record and deduct
@@ -323,7 +323,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
 
             rite = Rite.objects.filter(name=freebie_request.trait_name).first()
             if rite:
-                self.character.rites.remove(rite)
+                self.character.rites_known.remove(rite)
             return FreebieApplyResult(
                 success=True,
                 trait=freebie_request.trait_name,
@@ -532,3 +532,6 @@ FreebieSpendingServiceFactory.register("gurahl", GurahlFreebieSpendingService)
 FreebieSpendingServiceFactory.register("mokole", MokoleFreebieSpendingService)
 FreebieSpendingServiceFactory.register("nuwisha", NuwishaFreebieSpendingService)
 FreebieSpendingServiceFactory.register("ratkin", RatkinFreebieSpendingService)
+# Breeds with no rules of their own beyond the shared Fera traits.
+for _breed in ("ajaba", "ananasi", "grondr", "kitsune", "nagah", "rokea"):
+    FreebieSpendingServiceFactory.register(_breed, FeraFreebieSpendingService)

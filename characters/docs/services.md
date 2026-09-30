@@ -103,7 +103,7 @@ and XP category lists differ slightly where noted):
 | `vampire`, `ghoul`, `revenant` | `Vampire...`, `Ghoul...`, `Revenant...` | Discipline, Virtue; XP: Morality; freebies: Humanity, Path Rating |
 | `wta_human`, `kinfolk` | `WtAHuman...`, `Kinfolk...` | none |
 | `werewolf` | `Garou...` | Gift, Rite, Rage, Gnosis; freebies also Glory, Honor, Wisdom |
-| `fera`, `bastet`, `corax`, `gurahl`, `mokole`, `nuwisha`, `ratkin` | `Fera...` and one subclass per breed | As `werewolf` |
+| `fera` and every breed (`ajaba` ... `rokea`) | `Fera...`; `bastet`, `corax`, `gurahl`, `mokole`, `nuwisha`, `ratkin` have a subclass each | As `werewolf` (Rites go to `rites_known`) |
 | `mta_human` | `MtAHuman...` | none |
 | `mage` | `Mage...` | Sphere, Arete, Practice, Tenet, Resonance, Rote Points; XP: Remove Tenet; freebies: Quintessence |
 | `companion` | `Companion...` | Advantage, Charm |
@@ -118,8 +118,8 @@ and XP category lists differ slightly where noted):
 | `mtr_human` | `MtRHuman...` | none |
 | `mummy` | `Mummy...` | Hekau, Sekhem, Balance |
 
-No service is registered for `ajaba`, `ananasi`, `grondr`, `kitsune`, `nagah`, `rokea`,
-`fomor`, `drone`, `autumn_person` or `spirit_character`; they get the `Human...` services.
+No service is registered for `fomor`, `drone`, `autumn_person` or `spirit_character`;
+they get the `Human...` services.
 
 To add a type: subclass the closest service, add `@handler` / `@applier` methods, call
 `XPSpendingServiceFactory.register(...)` (and the freebie equivalent) in the module, and

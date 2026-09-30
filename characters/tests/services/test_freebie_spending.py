@@ -16,6 +16,7 @@ from characters.services.freebie_spending import (
     MageFreebieSpendingService,
     VampireFreebieSpendingService,
 )
+from characters.services.xp_spending import XPSpendingServiceFactory
 from game.models import Chronicle, FreebieSpendingRecord
 
 
@@ -545,3 +546,97 @@ class TestVampireDisciplineFreebies(TestCase):
         self.assertEqual(result.cost, 7)
         ghoul.refresh_from_db()
         self.assertEqual((ghoul.potence, ghoul.freebies), (starting_potence + 1, 0))
+
+
+class TestEveryFeraBreedSpendsFeraTraits(TestCase):
+    """Every Changing Breed buys Gifts, Rage and Gnosis through the Fera services."""
+
+    BREEDS = (
+        "ajaba",
+        "ananasi",
+        "bastet",
+        "corax",
+        "grondr",
+        "gurahl",
+        "kitsune",
+        "mokole",
+        "nagah",
+        "nuwisha",
+        "ratkin",
+        "rokea",
+    )
+
+    def test_every_breed_is_served_by_a_fera_service(self):
+        from characters.services.freebie_spending import FeraFreebieSpendingService
+        from characters.services.xp_spending import FeraXPSpendingService
+
+        for breed in self.BREEDS:
+            with self.subTest(breed=breed):
+                self.assertTrue(
+                    issubclass(
+                        FreebieSpendingServiceFactory._service_map[breed],
+                        FeraFreebieSpendingService,
+                    )
+                )
+                self.assertTrue(
+                    issubclass(XPSpendingServiceFactory._service_map[breed], FeraXPSpendingService)
+                )
+
+    def test_every_breed_buys_rage_with_freebies(self):
+        from django.apps import apps
+
+        user = User.objects.create_user(username="fera_owner")
+        for breed in self.BREEDS:
+            with self.subTest(breed=breed):
+                model = next(
+                    m
+                    for m in apps.get_app_config("characters").get_models()
+                    if getattr(m, "type", None) == breed
+                )
+                fera = model.objects.create(name=f"Test {breed}", owner=user, rage=1)
+                result = FreebieSpendingServiceFactory.get_service(fera).spend("Rage")
+                self.assertTrue(result.success, result.error)
+                fera.refresh_from_db()
+                self.assertEqual(fera.rage, 2)
+
+
+class TestWerewolfRiteSpending(TestCase):
+    """Rites land in rites_known, for Garou and Fera alike."""
+
+    def setUp(self):
+        from characters.models.werewolf.bastet import Bastet
+        from characters.models.werewolf.garou import Werewolf
+        from characters.models.werewolf.rite import Rite
+
+        self.user = User.objects.create_user(username="rite_owner")
+        self.rite = Rite.objects.create(name="Rite of Cleansing", level=1)
+        self.characters = [
+            model.objects.create(name=model.__name__, owner=self.user, xp=10)
+            for model in (Werewolf, Bastet)
+        ]
+
+    def test_freebie_rite_spend_learns_the_rite(self):
+        for character in self.characters:
+            with self.subTest(type=character.type):
+                service = FreebieSpendingServiceFactory.get_service(character)
+                result = service.spend("Rite", self.rite)
+                self.assertTrue(result.success, result.error)
+                self.assertIn(self.rite, character.rites_known.all())
+
+    def test_approved_xp_rite_request_learns_the_rite(self):
+        from game.models import XPSpendingRequest
+
+        for character in self.characters:
+            with self.subTest(type=character.type):
+                request = XPSpendingRequest.objects.create(
+                    character=character,
+                    trait_name=self.rite.name,
+                    trait_type="rite",
+                    trait_value=1,
+                    cost=3,
+                    approved="Pending",
+                )
+                service = XPSpendingServiceFactory.get_service(character)
+                result = service.apply(request, self.user)
+                self.assertTrue(result.success)
+                self.assertIn(self.rite, character.rites_known.all())
