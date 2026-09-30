@@ -548,8 +548,8 @@ class Wraith(WtOHuman):
                 passion.is_dark_passion = False
                 passion.save()
 
-            # Reduce Angst
-            self.angst = max(0, self.angst - (psyche_successes - shadow_successes))
+            # Reduce Angst; every wraith keeps a Shadow, so permanent Angst stays at 1+
+            self.angst = max(1, self.angst - (psyche_successes - shadow_successes))
             self.temporary_angst = max(
                 0, self.temporary_angst - (psyche_successes - shadow_successes) * 2
             )
