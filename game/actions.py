@@ -18,7 +18,7 @@ from game.forms import (
 )
 from game.models import Chronicle, Journal, JournalEntry, Scene
 from game.security import can_read_private_record, can_view_scene, readable_chronicles
-from game.views import ChronicleDetailView, can_create_scene
+from game.views import ChronicleDetailView, can_close_scene, can_create_scene
 
 # Scenes -------------------------------------------------------------------
 
@@ -43,9 +43,7 @@ class SceneCloseView(SceneActionView):
     lock = True
 
     def has_permission(self, subject):
-        return PermissionManager.can_manage_scope(
-            self.request.user, subject.chronicle, subject.gameline, self.request
-        )
+        return can_close_scene(self.request.user, subject, self.request)
 
     def perform(self, form):
         if self.object.finished:

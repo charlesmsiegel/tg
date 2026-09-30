@@ -104,6 +104,11 @@ def can_create_scene(user, chronicle, request=None):
     )
 
 
+def can_close_scene(user, scene, request=None):
+    """Storytellers scoped to the scene's chronicle and gameline (and staff) close scenes."""
+    return PermissionManager.can_manage_scope(user, scene.chronicle, scene.gameline, request)
+
+
 def current_week(today=None):
     """The Week whose span (``start_date`` through ``end_date``, inclusive) holds today."""
     today = today or timezone.localdate()
@@ -286,6 +291,10 @@ class SceneDetailView(DetailView):
             context["unread"] = self.read_latest(
                 user, context["posts"], has_earlier, context["cast"]
             )
+        # The Close scene button shows only to those SceneCloseView would let close it.
+        context["can_close_scene"] = not scene.finished and can_close_scene(
+            user, scene, self.request
+        )
         if user.is_authenticated and not scene.finished:
             context["post_characters"] = list(PostForm(user=user, scene=scene).character_queryset)
             context["add_characters"] = list(
