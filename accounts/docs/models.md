@@ -31,10 +31,8 @@ custom user model. It inherits `core.base.ValidatedSaveMixin`, so every `save()`
 
 - `theme` must be one of the keys in `ThemeChoices.CHOICES` (also available as the
   `theme_list` property).
-- `preferred_heading` must be one of a fixed list in `clean()`: `wod_heading`,
-  `vtm_heading`, `wta_heading`, `mta_heading`, `ctd_heading`, `wto_heading`. This list is
-  narrower than `HeadingChoices.CHOICES`, which also offers `dtf_heading`; a profile saved
-  with `dtf_heading` fails validation.
+- `preferred_heading` must be one of the keys in `HeadingChoices.CHOICES` (`dtf_heading`
+  included).
 - `user` must be set.
 
 ### Storyteller helpers
