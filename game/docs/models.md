@@ -253,9 +253,10 @@ A player's weekly XP claim for one character and week.
 - `total_xp()` is the number of true criteria, `finishing` included (0 to 5).
 - `approve(xp_data=None)` is atomic: it locks the row, raises `ValueError` if the row
   was not saved or is already approved, applies any updated fields from `xp_data`, marks
-  it approved and adds `total_xp()` to the character's `xp`. Returns the XP added.
-- Indexed on `(character, week)` and `approved`. There is no unique constraint on
-  `(character, week)`; the create views check for an existing request themselves.
+  it approved and adds `total_xp()` to the character's `xp` under a row lock on the
+  character. Returns the XP added.
+- Indexed on `(character, week)` and `approved`. Unique on `(week, character)`
+  (constraint `unique_weekly_xp_request`; `tg_schema` 0010 removed older duplicates).
 
 ## Spending records
 

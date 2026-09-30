@@ -205,6 +205,24 @@ A release changes the schema when it alters model fields, constraints or tables,
    m.make_scene_read_status_unique(None, SimpleNamespace(connection=connection))"
    ```
 
+   `0010_unique_weekly_xp_request` does the same for weekly XP requests (one per week and
+   character; it keeps the approved, else the oldest, copy of each duplicate):
+
+   ```bash
+   python manage.py shell -c "
+   from django.db.models import Count
+   from game.models import WeeklyXPRequest as W
+   print(W.objects.exclude(week=None).exclude(character=None).values('week', 'character')
+         .annotate(n=Count('id')).filter(n__gt=1).count())"
+
+   python manage.py shell -c "
+   import importlib
+   from types import SimpleNamespace
+   from django.db import connection
+   m = importlib.import_module('tg_schema.migrations.0010_unique_weekly_xp_request')
+   m.make_weekly_xp_request_unique(None, SimpleNamespace(connection=connection))"
+   ```
+
 6. `python manage.py migrate --plan` to see what will run, then `python manage.py migrate`. The
    host's generated migrations apply first and `tg_schema` migrations after them, in migration
    graph order; a `tg_schema` migration finds its column already present and does nothing, or

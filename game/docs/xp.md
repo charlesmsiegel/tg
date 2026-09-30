@@ -72,20 +72,23 @@ character played in:
 criterion without its scene. Two endpoints create a request:
 
 - `accounts:weekly_xp_request` (`WeeklyXPRequestView`): the character's owner only.
-  It does not check for an existing request, so a repeated POST creates a second row.
 - `game:weekly_xp_request:create` (`WeeklyXPRequestCreateView`): the character's owner
-  or staff (`OwnerRequiredMixin`). It refuses a second request for the same character
-  and week with a flash message.
+  or staff (`OwnerRequiredMixin`).
 
-There is no database constraint on `(character, week)`. Only that check and the
-dashboard's "no request yet" filter keep requests unique; `accounts:weekly_xp_approval`
-loads the pair with `get_object_or_404(WeeklyXPRequest, character=..., week=...)`, which
-raises `MultipleObjectsReturned` when duplicates exist.
+Both file through `WeeklyXPRequestForm.submit()`, and both refuse a second request for
+the same character and week with a flash message. The unique constraint
+`unique_weekly_xp_request` on `(week, character)` (added to existing databases by
+`tg_schema` 0010, which removed older duplicates) settles a double submit: the losing
+save fails and is reported the same way. `accounts:weekly_xp_approval` loads the pair's
+pending request, if any, before an approved one.
 
 **Approval.** `WeeklyXPRequest.approve(xp_data=None)` runs in a transaction: it locks
 the row, raises `ValueError` if the request is unsaved or already approved, applies any
-criteria and scenes in `xp_data`, sets `approved=True` and adds `total_xp()` (the count
-of true criteria, 1 to 5) to the character's `xp`. It returns the XP added.
+criteria and scenes in `xp_data`, sets `approved=True`, then locks the character row
+(`select_for_update`) and adds `total_xp()` (the count of true criteria, 1 to 5) to its
+`xp`, so a concurrent award or spend is not overwritten. It returns the XP added. The
+single-request endpoints report a request approved meanwhile by another storyteller
+with a flash message.
 
 | Endpoint | Caller check | Notes |
 |----------|--------------|-------|

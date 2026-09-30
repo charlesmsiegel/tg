@@ -193,8 +193,14 @@ class FreebieAwardView(LoginRequiredMixin, View):
         verify_st_for_chronicle(request, char.chronicle, "freebie approval", char.get_gameline())
         form = FreebieAwardForm(request.POST, character=char)
         if form.is_valid():
-            form.save()
-            messages.success(request, f"Freebies awarded to '{char.name}'!")
+            try:
+                form.save()
+            except ValidationError as exc:
+                # e.g. freebies already approved (stale tab, double submit, second ST)
+                for message in exc.messages:
+                    messages.error(request, message)
+            else:
+                messages.success(request, f"Freebies awarded to '{char.name}'!")
         else:
             messages.error(request, "Failed to award freebies. Please check your input.")
         return redirect("accounts:profile", pk=request.user.profile.pk)
@@ -212,8 +218,12 @@ class WeeklyXPRequestView(LoginRequiredMixin, View):
             raise PermissionDenied("You can only submit requests for your own characters.")
         form = WeeklyXPRequestForm(request.POST, week=week, character=char)
         if form.is_valid():
-            form.player_save()
-            messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
+            if form.submit() is None:
+                messages.error(
+                    request, f"A weekly XP request for '{char.name}' was already submitted."
+                )
+            else:
+                messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
         else:
             messages.error(request, "Failed to submit XP request. Please check your input.")
         return profile_tab_redirect(request, "experience")
@@ -228,7 +238,15 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=character_pk)
         require_spending_approver(request.user, char)
-        xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
+        # One request per (week, character) since tg_schema 0010; prefer a pending one
+        # so a database that still holds duplicates can't raise MultipleObjectsReturned.
+        xp_request = (
+            WeeklyXPRequest.objects.filter(character=char, week=week)
+            .order_by("approved", "pk")
+            .first()
+        )
+        if xp_request is None:
+            raise Http404("No weekly XP request for this character and week.")
         form = WeeklyXPRequestForm(request.POST, week=week, character=char, instance=xp_request)
         if form.is_valid():
             try:
@@ -330,20 +348,19 @@ class ProfileView(LoginRequiredMixin, DetailView):
             ]
             pairs = self.object.get_unfulfilled_weekly_xp_requests_to_approve()
             # One query for every pending request instead of one per (character, week) row.
-            pending = {
-                (r.character_id, r.week_id): r
-                for r in WeeklyXPRequest.objects.filter(
-                    character__in=[c for c, _w in pairs], week__in=[w for _c, w in pairs]
-                )
-            }
+            # Each pair comes from a pending request, so the map holds one for every pair;
+            # should duplicates predate tg_schema 0010, the oldest wins and a pair shows once.
+            pending = {}
+            for r in WeeklyXPRequest.objects.filter(
+                approved=False,
+                character__in=[c for c, _w in pairs],
+                week__in=[w for _c, w in pairs],
+            ).order_by("pk"):
+                pending.setdefault((r.character_id, r.week_id), r)
             context["weekly_xp_request_forms_to_approve"] = [
-                WeeklyXPRequestForm(
-                    character=c,
-                    week=w,
-                    instance=pending.get((c.pk, w.pk))
-                    or get_object_or_404(WeeklyXPRequest, character=c, week=w),
-                )
+                WeeklyXPRequestForm(character=c, week=w, instance=pending.pop((c.pk, w.pk)))
                 for c, w in pairs
+                if (c.pk, w.pk) in pending
             ]
         if "weekly_xp_request_forms" not in context:
             context["weekly_xp_request_forms"] = [

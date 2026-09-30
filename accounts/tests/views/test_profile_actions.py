@@ -1,12 +1,14 @@
 """Tests for profile action views (extracted from ProfileView POST handlers)."""
 
 from datetime import date
+from unittest import mock
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 from characters.models.core.human import Human
+from game.forms import WeeklyXPRequestForm
 from game.models import (
     Chronicle,
     Gameline,
@@ -323,6 +325,21 @@ class TestFreebieAwardView(TestCase):
         self.assertEqual(self.char.freebies, initial_freebies)
         self.assertFalse(self.char.freebies_approved)
 
+    def test_repeated_award_is_reported_not_a_server_error(self):
+        """A second award (stale tab, double submit) flashes the reason and awards nothing."""
+        initial_freebies = self.char.freebies
+        self.client.login(username="stuser", password="password")
+        url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
+        self.client.post(url, {"backstory_freebies": 5})
+        response = self.client.post(url, {"backstory_freebies": 5}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "Freebies have already been approved for this character",
+            [str(m) for m in response.context["messages"]],
+        )
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.freebies, initial_freebies + 5)
+
 
 class TestWeeklyXPRequestView(TestCase):
     """Test weekly XP request submission."""
@@ -361,6 +378,44 @@ class TestWeeklyXPRequestView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             WeeklyXPRequest.objects.filter(character=self.char, week=self.week).exists()
+        )
+
+    def test_repeated_submit_files_one_request(self):
+        """A double submit is refused with a message instead of filing a duplicate."""
+        self.client.login(username="player", password="password")
+        url = reverse(
+            "accounts:weekly_xp_request",
+            kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
+        )
+        self.client.post(url, {})
+        response = self.client.post(url, {}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "A weekly XP request for 'Char' was already submitted.",
+            [str(m) for m in response.context["messages"]],
+        )
+        self.assertEqual(
+            WeeklyXPRequest.objects.filter(character=self.char, week=self.week).count(), 1
+        )
+
+    def test_concurrent_submit_losing_the_constraint_is_reported(self):
+        """The request filed between the check and the insert wins; no 500, no duplicate."""
+        original = WeeklyXPRequestForm.player_save
+
+        def racing_player_save(form, commit=True):
+            WeeklyXPRequest.objects.create(character=self.char, week=self.week)
+            return original(form, commit=commit)
+
+        self.client.login(username="player", password="password")
+        url = reverse(
+            "accounts:weekly_xp_request",
+            kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
+        )
+        with mock.patch.object(WeeklyXPRequestForm, "player_save", racing_player_save):
+            response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            WeeklyXPRequest.objects.filter(character=self.char, week=self.week).count(), 1
         )
 
     def test_non_owner_cannot_submit(self):
