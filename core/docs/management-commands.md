@@ -43,18 +43,17 @@ the database owner.
 
 Runs the Python scripts under `populate_db/` (recursively) with `exec`, each in its own
 transaction. Order: files directly in `populate_db/`, then `core/`, then other folders
-alphabetically, then `chronicles/` last. A failing file is reported and the rest still
-run.
+alphabetically, then `chronicles/` last. A failing file is reported, the rest still
+run, and the command then raises `CommandError`.
 
 | Option | Effect |
 |--------|--------|
-| `--gameline CODE` | Keep files whose name contains `CODE`, plus files whose name contains no gameline word (`vampire`, `vtm`, `mage`, `mta`...) |
+| `--gameline GAMELINE` | Keep shared files plus the gameline's: its folder, and files with its code or name as a word of their name (`vtm` or `vampire`, `mtr` or `mummy`...) |
 | `--only TEXT` / `--skip TEXT` | Keep / drop files whose name contains `TEXT` |
 | `--dry-run` | List the files and stop |
 | `--verbose` | Print each file and tracebacks |
 
-Filtering is by file-name substring, so `--gameline vtm` does not select a file named
-`vampire_*.py`. See [seed data](../../docs/getting-started/seed-data.md) and the
+`--only` and `--skip` filter by file-name substring. See [seed data](../../docs/getting-started/seed-data.md) and the
 [populate_db app](../../populate_db/README.md).
 
 ### `populate_test_chronicle`

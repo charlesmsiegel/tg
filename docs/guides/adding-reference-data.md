@@ -291,8 +291,9 @@ oathbound.add_source("Demon: The Fallen", 150)
 - Use `get_or_create` so a second run changes nothing.
 - A script may import names from another script (`populate_db.demon.demon_lores` imports the
   House objects from `populate_db.demon.demon_houses`).
-- Load only this file with `python manage.py populate_gamedata --only covenants`; `--only`,
-  `--skip` and `--gameline` match against the file name, and `--dry-run` lists what would load.
+- Load only this file with `python manage.py populate_gamedata --only covenants`; `--only` and
+  `--skip` match against the file name, `--gameline` against the folder and name words, and
+  `--dry-run` lists what would load.
 
 Reference types need no `game.models.ObjectType` row. `populate_db/objects.py` has rows for
 many existing reference types; if you add one, also add its name to `EXCLUDED_TYPES` in

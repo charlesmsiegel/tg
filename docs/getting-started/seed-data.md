@@ -45,8 +45,7 @@ Book.objects.get_or_create(
 - A script that raises rolls back only its own writes. The command prints
   `✗ <path>: <error>`, logs the traceback to the `core.management.commands.populate_gamedata`
   logger, and **carries on** with the next file. The summary at the end counts successes
-  and failures. The command exits with status 0 even when files failed, so read the
-  summary.
+  and failures, and the command then exits with an error when any file failed.
 - `--verbose` prints the traceback of each failure as well.
 
 ### Scripts that import other scripts
@@ -118,27 +117,21 @@ python manage.py populate_gamedata --dry-run
 | `--verbose` | Print `Loading <path>... ✓` per file and a traceback for each failure. |
 | `--only TEXT` | Keep only files whose **file stem** contains `TEXT` (case-insensitive). |
 | `--skip TEXT` | Drop files whose file stem contains `TEXT` (case-insensitive). |
-| `--gameline TEXT` | Keep files whose file stem contains `TEXT`, plus every file that is not "gameline-specific" (below). |
+| `--gameline GAMELINE` | Keep the files of one gameline plus every shared file (below). Takes a code or its name. |
 
-All three filters look only at the file name without `.py`, never at the directory.
+`--only` and `--skip` look only at the file name without `.py`, never at the directory.
 `--only rituals`, for example, loads the nine Demon ritual scripts and
 `vampire/linear_magic_rituals.py`. The filters apply in the order `--gameline`, `--only`,
 `--skip`. Filtering does not stop imports: a kept script still runs any script it
 imports.
 
-A file is gameline-specific when its stem contains one of `vampire`, `werewolf`,
-`mage`, `wraith`, `changeling`, `demon`, `vtm`, `wta`, `mta`, `wto`, `ctd` or `dtf`
-(`Command.is_gameline_specific`). Consequences:
-
-- Use the long names. `--gameline vampire` keeps `vampire/vampire_clans.py` and the other
-  `vampire_*` files. `--gameline vtm` matches no file name, so it drops every file whose
-  stem names a gameline (`vampire_clans`, `demon_lores`, `mage_spirits`, `magefactions`,
-  `wraith_guilds`, `vampire_templates` and so on) and loads only the generic ones,
-  although the option's help text lists the short codes.
-- Most per-gameline scripts have generic stems (`werewolf/tribes.py`,
-  `mage/spheres.py`, `changeling/kiths.py`) and load with every `--gameline` value.
-- `mummy` and `hunter` are not in the list, so Mummy files are never treated as
-  gameline-specific.
+A file belongs to a gameline when it sits in that gameline's folder (`vampire/`,
+`mummy/`...) or a word of its name, split on `_`, is the gameline's code or name
+(`character_templates/vampire_templates.py`). The codes and names come from
+`settings.GAMELINES` (`Command.file_gamelines`). Every other file is shared and always
+kept. So `--gameline vtm` and `--gameline vampire` both keep everything under `vampire/`
+and `character_templates/vampire_templates.py`, drop `mage/spheres.py` and the other
+gamelines' folders, and keep the top-level files and `character_templates/__init__.py`.
 
 For a partial reload, `--only` with a distinctive stem is the more predictable filter:
 

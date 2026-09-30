@@ -6,12 +6,25 @@ and provides more control over data loading.
 """
 
 import logging
+import re
 from pathlib import Path
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
+
+
+def gameline_words():
+    """Map each gameline code to the words that mark a file as its own.
+
+    A code matches itself and its ``app_name`` (``vtm`` -> ``vtm``, ``vampire``), which is
+    also the name of its folder under ``populate_db/``. ``wod`` is shared data.
+    """
+    return {
+        code: {code, info["app_name"]} for code, info in settings.GAMELINES.items() if code != "wod"
+    }
 
 
 class Command(BaseCommand):
@@ -22,7 +35,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--gameline",
             type=str,
-            help="Only load data for specific gameline (vtm, wta, mta, wto, ctd, dtf)",
+            help=(
+                "Only load shared data plus one gameline's data; takes a code or name "
+                "(vtm or vampire, wta or werewolf, mta or mage, ...)"
+            ),
         )
         parser.add_argument(
             "--only",
@@ -96,7 +112,7 @@ class Command(BaseCommand):
             raise CommandError(f"No .py files found in {populate_dir}")
 
         # Filter files based on options
-        files_to_load = self.filter_files(all_files, options)
+        files_to_load = self.filter_files(all_files, options, populate_dir)
 
         if not files_to_load:
             self.stdout.write(self.style.WARNING("No files match the specified filters"))
@@ -140,17 +156,30 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f"Failed to load: {error_count} file(s)"))
         self.stdout.write("=" * 60 + "\n")
 
-    def filter_files(self, files, options):
+        if error_count > 0:
+            raise CommandError(f"{error_count} populate_db script(s) failed")
+
+    def resolve_gameline(self, value):
+        """Return the gameline code for a code or name, or raise CommandError."""
+        words = gameline_words()
+        value = value.lower()
+        for code, names in words.items():
+            if value in names:
+                return code
+        valid = ", ".join(sorted(words))
+        raise CommandError(f"Unknown gameline {value!r}; use a code ({valid}) or its name")
+
+    def filter_files(self, files, options, populate_dir):
         """Filter files based on command-line options."""
         filtered = list(files)
 
-        # Filter by gameline
+        # Filter by gameline: keep shared files and the chosen gameline's files
         if options["gameline"]:
-            gameline = options["gameline"].lower()
+            gameline = self.resolve_gameline(options["gameline"])
             filtered = [
                 f
                 for f in filtered
-                if gameline in f.stem.lower() or not self.is_gameline_specific(f)
+                if not (gamelines := self.file_gamelines(f, populate_dir)) or gameline in gamelines
             ]
 
         # Filter by --only option
@@ -165,24 +194,17 @@ class Command(BaseCommand):
 
         return filtered
 
-    def is_gameline_specific(self, file):
-        """Check if a file is specific to a gameline."""
-        gamelines = [
-            "vampire",
-            "werewolf",
-            "mage",
-            "wraith",
-            "changeling",
-            "demon",
-            "vtm",
-            "wta",
-            "mta",
-            "wto",
-            "ctd",
-            "dtf",
-        ]
-        stem = file.stem.lower()
-        return any(gl in stem for gl in gamelines)
+    def file_gamelines(self, file, populate_dir):
+        """Gameline codes a file belongs to: by its folder, or a word of its name.
+
+        ``vampire/linear_magic_path.py`` and ``character_templates/vampire_templates.py``
+        are both ``vtm``; ``abilities.py`` names no gameline and is shared.
+        """
+        parts = file.relative_to(populate_dir).parts
+        words = set(re.split(r"[^a-z0-9]+", file.stem.lower()))
+        if len(parts) > 1:
+            words.add(parts[0].lower())
+        return {code for code, names in gameline_words().items() if words & names}
 
     def load_file(self, file, populate_dir, verbose=False):
         """Execute a populate script file."""
