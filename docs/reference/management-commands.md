@@ -6,7 +6,7 @@ developers and operators running maintenance by hand or from a scheduler. Option
 checked against `python manage.py help <command>`; the standard Django options
 (`--settings`, `--verbosity`, `--traceback`, `--no-color` and so on) are omitted.
 
-All twenty-one live in [`core/management/commands/`](../../core/management/commands/).
+All twenty live in [`core/management/commands/`](../../core/management/commands/).
 
 Things that hold for all of them:
 
