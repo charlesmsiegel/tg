@@ -837,6 +837,14 @@ class TestWraithRedemption(WraithTestCase):
         self.assertEqual(self.wraith.angst, 2)  # Reduced by 3 (5-2)
         self.assertEqual(self.wraith.temporary_angst, 2)  # Reduced by 6 (3*2)
 
+    def test_complete_redemption_keeps_permanent_angst_at_one(self):
+        """A large redemption margin leaves Angst at 1, which clean() requires."""
+        self.wraith.angst = 2
+        result = self.wraith.complete_redemption(psyche_successes=6, shadow_successes=0)
+        self.assertTrue(result["success"])
+        self.wraith.refresh_from_db()
+        self.assertEqual(self.wraith.angst, 1)
+
     def test_complete_redemption_failure(self):
         """complete_redemption fails when shadow wins."""
         result = self.wraith.complete_redemption(psyche_successes=2, shadow_successes=5)

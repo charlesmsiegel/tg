@@ -63,7 +63,8 @@ Class attributes: `background_points = 7`, `passion_points = 10`, `fetter_points
   `trigger_harrowing()`, `resolve_harrowing(result)` (`failure` calls `become_spectre()`,
   `catharsis` lowers Angst). `become_spectre()` sets `character_type = "spectre"`, stamps
   `spectrehood_date` and turns every Passion dark. `attempt_redemption()` and
-  `complete_redemption(psyche_successes, shadow_successes)` reverse it.
+  `complete_redemption(psyche_successes, shadow_successes)` reverse it; a successful
+  redemption lowers permanent Angst by the margin, but never below 1.
   `get_catharsis_info()` and `get_harrowing_info()` summarise the state.
 - Legacy spend hooks: `spend_freebies()`, `arcanos_freebies()`,
   `pathos_freebies()`, `passion_freebies()`, `fetter_freebies()`, `corpus_freebies()`.
