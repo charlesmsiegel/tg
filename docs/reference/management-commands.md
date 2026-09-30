@@ -310,7 +310,7 @@ Runs eight numbered checks and prints what it finds. With `--fix` it repairs the
 | Check | Fix |
 |-------|-----|
 | `Character.xp` below 0 | Set to 0. |
-| `status` not in `Un`, `Sub`, `App`, `Ret`, `Dec` | Set to `Un`. `Rev` (returned for revisions, a valid `CharacterStatus`) is not in that list, so it is reported and, with `--fix`, reset to `Un`. |
+| `status` not a `core.constants.CharacterStatus` code (`Un`, `Rev`, `Sub`, `App`, `Dec`, `Ret`) | Set to `Un`. |
 | `Human` attributes outside 1–10 | Clamp to 1 or 10. |
 | 19 `Human` abilities (`alertness` ... `science`) outside 0–10 | Clamp to 0 or 10. |
 | `willpower` outside 1–10, `temporary_willpower` outside 0–10, temporary above permanent | Clamp; temporary above permanent is set equal to permanent with `save()`. |
@@ -326,7 +326,7 @@ Runs eight numbered checks and prints what it finds. With `--fix` it repairs the
 ### `monitor_validation`
 
 Read-only. Collects: integrity counts (characters with negative XP; with a status
-outside `Un`, `Sub`, `App`, `Ret`, `Dec`, which includes `Rev`; `Human` attributes
+that is not a `CharacterStatus` code; `Human` attributes
 outside 1–10 and abilities outside 0–10; temporary willpower above permanent),
 `XPSpendingRequest`
 totals and approval rate (all time), scenes played within `--period` hours and how many

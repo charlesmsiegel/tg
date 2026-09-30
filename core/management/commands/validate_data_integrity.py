@@ -14,6 +14,7 @@ from django.db.models import F
 
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from core.constants import CharacterStatus
 from game.models import Scene, STRelationship
 
 
@@ -116,12 +117,12 @@ class Command(BaseCommand):
     def check_invalid_status(self, fix, verbose):
         """Check for characters with invalid status values.
 
-        Valid statuses are: Un (Unfinished), Sub (Submitted), App (Approved),
-        Ret (Retired), Dec (Deceased).
+        Valid statuses are the codes in core.constants.CharacterStatus.CHOICES,
+        including Rev (returned for revisions).
         """
         self.stdout.write(self.style.HTTP_INFO("\n2. Checking for invalid status values..."))
 
-        valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]
+        valid_statuses = [code for code, _label in CharacterStatus.CHOICES]
         invalid_status_chars = Character.objects.exclude(status__in=valid_statuses)
         count = invalid_status_chars.count()
 

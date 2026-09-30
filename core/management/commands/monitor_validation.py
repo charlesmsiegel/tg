@@ -24,6 +24,7 @@ from django.utils import timezone
 
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from core.constants import CharacterStatus
 from game.models import Scene
 
 
@@ -88,7 +89,7 @@ class Command(BaseCommand):
         issues = {
             "negative_xp": Character.objects.filter(xp__lt=0).count(),
             "invalid_status": Character.objects.exclude(
-                status__in=["Un", "Sub", "App", "Ret", "Dec"]
+                status__in=[code for code, _label in CharacterStatus.CHOICES]
             ).count(),
             "attributes_out_of_range": self.count_attribute_issues(),
             "abilities_out_of_range": self.count_ability_issues(),
