@@ -135,6 +135,7 @@ class ParadoxRealmForm(forms.ModelForm):
 
             if commit:
                 realm.save()
+                self.save_m2m()
 
                 # Save the formsets
                 self.obstacle_formset.instance = realm

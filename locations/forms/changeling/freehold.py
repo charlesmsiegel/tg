@@ -183,5 +183,6 @@ class FreeholdForm(forms.ModelForm):
 
         if commit:
             freehold.save()
+            self.save_m2m()
 
         return freehold

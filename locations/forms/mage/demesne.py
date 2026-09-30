@@ -39,6 +39,7 @@ class DemesneForm(forms.ModelForm):
         demesne.rank = self.cleaned_data.get("rank")
         if commit:
             demesne.save()
+            self.save_m2m()
             self.reality_zone.name = demesne.name
             self.reality_zone.save()
             demesne.reality_zone = self.reality_zone

@@ -5,6 +5,7 @@ from django.test import TestCase
 from characters.models.mage.focus import Practice
 from characters.models.mage.resonance import Resonance
 from locations.forms.mage.node import NodeForm, NodeResonanceRatingForm
+from locations.models.core.location import LocationModel
 
 
 class TestNodeResonanceRatingForm(TestCase):
@@ -240,6 +241,16 @@ class TestNodeFormSave(TestCase):
                     "clean() was not called first"
                 )
             raise
+
+    def test_save_keeps_contained_within(self):
+        """The form saves its contained_within selection (U9)."""
+        parent = LocationModel.objects.create(name="Old Town")
+        data = self._get_valid_form_data()
+        data["contained_within"] = [parent.pk]
+        form = NodeForm(data=data)
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        node = form.save()
+        self.assertEqual(list(node.contained_within.all()), [parent])
 
     def test_save_creates_node_after_validation(self):
         """Test that save creates a node after proper validation."""
