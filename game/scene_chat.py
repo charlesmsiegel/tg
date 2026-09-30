@@ -88,13 +88,18 @@ def broadcast(scene_id, event_type, **data):
     """Tell the scene's connections about a committed change.
 
     Sent after commit so no one renders a row that may still roll back; a
-    channel layer failure is logged and never fails the change itself.
+    channel layer failure is logged on this module's logger (not on
+    ``django.db.backends``, where ``on_commit(robust=True)`` would put it and
+    the production settings discard it) and never fails the change itself.
     """
     event = {"type": event_type, **data}
 
     def send():
-        layer = get_channel_layer()
-        if layer is not None:
-            async_to_sync(layer.group_send)(group_name(scene_id), event)
+        try:
+            layer = get_channel_layer()
+            if layer is not None:
+                async_to_sync(layer.group_send)(group_name(scene_id), event)
+        except Exception:
+            logger.exception("Scene %s broadcast of %s failed", scene_id, event_type)
 
-    transaction.on_commit(send, robust=True)
+    transaction.on_commit(send)

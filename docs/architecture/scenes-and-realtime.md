@@ -258,8 +258,8 @@ The client sends JSON text frames; binary frames, invalid JSON and frames larger
 ### Group events carry ids, not markup
 
 `broadcast(scene_id, event_type, **data)` sends an event to the scene's group with
-`transaction.on_commit(..., robust=True)`, so nobody renders a row that may still roll back
-and a channel-layer failure is logged without failing the change. The events are:
+`transaction.on_commit(...)`, so nobody renders a row that may still roll back. A
+channel-layer failure is caught and logged on `game.scene_chat` without failing the change. The events are:
 
 | Event type | Data | Sent by | Consumer handler |
 |------------|------|---------|------------------|

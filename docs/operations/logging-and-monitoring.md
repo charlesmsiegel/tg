@@ -60,9 +60,10 @@ Consequences worth knowing:
 - Development sets `django.db.backends` to `DEBUG` on `console_debug`, but that handler's level
   is `INFO`, so SQL statements (logged at `DEBUG`) are not printed.
 - `django.db.backends` also carries errors from `transaction.on_commit(..., robust=True)`
-  callbacks (Django logs them on `django.db.backends.base`). In production that logger goes to
-  `null`, so a failed scene-chat broadcast after a post
-  ([`game/scene_chat.py`](../../game/scene_chat.py)) leaves no log entry.
+  callbacks (Django logs them on `django.db.backends.base`), and in production that logger
+  goes to `null`. Code whose on-commit failures matter logs them itself: a failed scene-chat
+  broadcast ([`game/scene_chat.py`](../../game/scene_chat.py)) is logged on
+  `game.scene_chat`.
 - Loggers that are not configured (`daphne`, `channels`, `django.server`, third-party
   libraries) propagate to the root logger, which has no handlers; Python then prints their
   `WARNING` and higher records to stderr. Daphne's access log is separate and controlled by its
@@ -77,6 +78,7 @@ matching the first component of the module path (`game.consumers` by `game`, and
 |--------|-------|----------------|
 | [`game/consumers.py`](../../game/consumers.py) | `INFO` | A user connected to or disconnected from a scene socket |
 | [`game/consumers.py`](../../game/consumers.py) | `ERROR` (`exception`) | An unexpected error while handling a scene socket message |
+| [`game/scene_chat.py`](../../game/scene_chat.py) | `ERROR` (`exception`) | A scene broadcast could not be sent to the channel layer |
 | [`accounts/context_processors.py`](../../accounts/context_processors.py) | `WARNING` | The notification count for the nav could not be computed (the page renders with 0) |
 | [`core/views/character_template.py`](../../core/views/character_template.py) | `ERROR` | Character template import failed; creating an NPC from a template failed |
 | [`core/utils.py`](../../core/utils.py) | `ERROR` | A registered cleanup handler failed while retiring a character |
@@ -85,7 +87,8 @@ matching the first component of the module path (`game.consumers` by `game`, and
 | [`core/management/commands/import_chronicle.py`](../../core/management/commands/import_chronicle.py) | `ERROR` | A chronicle import rolled back |
 | [`core/management/commands/archive_inactive_chronicles.py`](../../core/management/commands/archive_inactive_chronicles.py) | `ERROR` | Exporting a chronicle before archiving failed |
 
-`game/scene_chat.py` and `characters/views/mage/mage.py` create module loggers but do not log.
+A failed scene broadcast does not fail the post or action that sent it.
+`characters/views/mage/mage.py` creates a module logger but does not log.
 Unhandled exceptions in views are logged by Django on `django.request` at `ERROR`, which is what
 fills `logs/error.log` in normal operation.
 

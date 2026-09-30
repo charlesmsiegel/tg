@@ -106,9 +106,10 @@ answered with "Could not process message.".
 ## Group events
 
 Actions announce committed changes with `scene_chat.broadcast(scene_id, event_type,
-**data)`. It registers a `transaction.on_commit(..., robust=True)` callback that calls
-`group_send` on the channel layer, so no event describes a row that may still roll back,
-and a channel-layer failure is logged without failing the action.
+**data)`. It registers a `transaction.on_commit` callback that calls `group_send` on the
+channel layer, so no event describes a row that may still roll back. A channel-layer
+failure is caught and logged with its traceback on the `game.scene_chat` logger (so it
+reaches the `game` log handlers in every environment) without failing the action.
 
 Events carry ids, never markup. Each consumer re-checks its own viewer with
 `visible_scene()` (`can_view_scene`) and renders the event for that viewer, so a

@@ -127,8 +127,9 @@ What happens when Redis is unavailable:
   more slowly.
 - Sessions cannot be read or stored: every visitor is anonymous and logins do not persist.
 - The scene-chat WebSocket cannot join or broadcast to its group. A post saved over HTTP still
-  commits; its broadcast runs in a robust `transaction.on_commit` callback
-  ([`game/scene_chat.py`](../../game/scene_chat.py)) whose failure does not fail the post.
+  commits; its broadcast runs in a `transaction.on_commit` callback
+  ([`game/scene_chat.py`](../../game/scene_chat.py)) whose failure is logged to
+  `logs/error.log` and does not fail the post.
 
 Development needs no Redis: it uses `LocMemCache`, database sessions and
 `InMemoryChannelLayer` ([Installation](../getting-started/installation.md#redis)).
