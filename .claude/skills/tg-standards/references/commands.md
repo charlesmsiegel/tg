@@ -60,8 +60,10 @@ class Command(BaseCommand):
   exception.
 - **Bound the work**: iterate large querysets with `.iterator()` or in batches, and join
   what the loop reads (`select_related`, `prefetch_related`).
-- **Destructive commands** refuse in production: `reset_db` raises `CommandError` unless
-  `settings.DEBUG` and asks for confirmation unless `--yes`.
+- **Destructive commands** refuse in production: `reset_db` and `reset_demo_data` raise
+  `CommandError` unless `settings.DEBUG` (`reset_demo_data --force` overrides), and they
+  ask for confirmation (`--yes`, `--confirm`). Bulk writes that bypass a storyteller
+  (`approve_pending_items`) need an explicit scope and confirmation (`--noinput`).
 - **Never change the schema in a command.** Columns, tables, constraints and backfills that
   existing databases need are `tg_schema` migrations ([schema-changes.md](schema-changes.md)).
 - **Game data** loads through `populate_gamedata`, which runs every script under
