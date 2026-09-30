@@ -138,8 +138,9 @@ on the row and `formset:added` (`detail = {prefix, index, form}`) on the contain
 
 **Remove** finds the row (`[data-formset-form]`, or a few fallbacks). If the row has a
 `-DELETE` checkbox (a saved record), it ticks it and hides the row, so Django deletes the
-record on save. Otherwise it removes the row and sets `TOTAL_FORMS` to the number of
-rows still displayed; the remaining rows keep the indexes in their names and ids. It
+record on save. Otherwise it removes the row, renumbers every remaining row (hidden
+deleted rows included, since they are still submitted) to `0..n-1` in their `name`,
+`id`, `label[for]` and `data-prefix` values, and sets `TOTAL_FORMS` to `n`. It
 dispatches `formset:removed` (`detail = {prefix, form, deleted}`) on `document`.
 
 API: `FormsetManager.init()`, `FormsetManager.addForm(prefix)`,
