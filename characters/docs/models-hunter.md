@@ -25,11 +25,10 @@ and `Hunter` override `get_update_url()` and `get_creation_url()` to name these 
 
 [`htrhuman.py`](../models/hunter/htrhuman.py).
 
-- Extra ability columns (all primary): talents `dodge`, `awareness`, `leadership`;
-  skills `animal_ken`, `larceny`, `performance`, `repair`, `survival`; knowledges
-  `finance`, `law`, `occult`, `politics`, `technology`. `dodge` is listed in `talents` and
-  `primary_abilities` but no model defines a `dodge` field, so `get_talents()` (and any
-  helper that walks the talent list) raises `AttributeError` on these types.
+- Extra ability columns (all primary): talents `awareness`, `leadership`; skills
+  `animal_ken`, `larceny`, `performance`, `repair`, `survival`; knowledges `finance`,
+  `law`, `occult`, `politics`, `technology`. Like the other lines' 20th-anniversary lists
+  it has no `dodge` (there is no such field).
 - `allowed_backgrounds`: `allies`, `contacts`, `influence`, `mentor`, `resources`,
   `status_background`. `allies`, `influence`, `resources` and `status_background` are
   also real `IntegerField` columns, which attribute access reads instead of the
