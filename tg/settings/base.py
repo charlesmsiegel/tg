@@ -97,6 +97,8 @@ DATABASES = {
 # Limit upload sizes to prevent denial-of-service attacks
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
+# Largest image a user may upload (core.validators.validate_image_upload_size).
+MAX_IMAGE_UPLOAD_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 # Password validation

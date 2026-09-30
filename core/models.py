@@ -16,7 +16,11 @@ from polymorphic.query import PolymorphicQuerySet
 from core.base import ValidatedSaveMixin
 from core.constants import CharacterStatus, GameLine, ImageStatus
 from core.utils import filepath
-from core.validators import validate_gameline, validate_non_empty_name
+from core.validators import (
+    validate_gameline,
+    validate_image_upload_size,
+    validate_non_empty_name,
+)
 from game.models import Chronicle
 
 logger = logging.getLogger(__name__)
@@ -397,7 +401,9 @@ class Model(PermissionMixin, PolymorphicModel):
     sources = models.ManyToManyField(BookReference, blank=True)
     description = models.TextField(default="", blank=True)
     public_info = models.TextField(default="", blank=True)
-    image = models.ImageField(upload_to=filepath, blank=True, null=True)
+    image = models.ImageField(
+        upload_to=filepath, blank=True, null=True, validators=[validate_image_upload_size]
+    )
     image_status = models.CharField(
         max_length=3,
         choices=ImageStatus.CHOICES,
@@ -555,11 +561,43 @@ class Model(PermissionMixin, PolymorphicModel):
         if errors:
             raise ValidationError(errors)
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._remember_image()
+        return instance
+
+    def refresh_from_db(self, using=None, fields=None, from_queryset=None):
+        super().refresh_from_db(using=using, fields=fields, from_queryset=from_queryset)
+        if fields is None or {"image", "image_status"} & set(fields):
+            self._remember_image()
+
+    def _remember_image(self):
+        """Note the stored image and its status, to spot a replaced image on save."""
+        if "image" in self.__dict__ and "image_status" in self.__dict__:
+            self._stored_image = (self._image_name(), self.image_status)
+
+    def _image_name(self):
+        image = self.__dict__.get("image")
+        return (getattr(image, "name", image) or "") if image else ""
+
+    def _reset_replaced_image_status(self):
+        """A new image needs approval again unless this save also sets its status."""
+        stored = getattr(self, "_stored_image", None)
+        if stored is None or "image" not in self.__dict__:
+            return
+        stored_name, stored_status = stored
+        name = self._image_name()
+        if name and name != stored_name and self.image_status == stored_status:
+            self.image_status = ImageStatus.SUBMITTED
+
     def save(self, *args, **kwargs):
         """Ensure validation runs on save unless skip_validation=True."""
+        self._reset_replaced_image_status()
         if not kwargs.pop("skip_validation", False):
             self.full_clean()
         super().save(*args, **kwargs)
+        self._remember_image()
 
 
 class NewsItem(ValidatedSaveMixin, models.Model):

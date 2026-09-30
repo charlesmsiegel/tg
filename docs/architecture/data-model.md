@@ -24,7 +24,7 @@ Fields every `Model` subclass gets:
 | `display` | `BooleanField`, default `True` | Filter flag used by `ModelQuerySet.visible()`. |
 | `sources` | M2M `core.BookReference` | Book and page citations; `add_source(book_title, page_number)` creates them. |
 | `description`, `public_info`, `st_notes` | `TextField` | Free text. `public_info` is the only text shown on anonymous public cards. |
-| `image`, `image_status` | `ImageField`; `CharField(3)`, choices `ImageStatus.CHOICES` (`un`, `sub`, `app`), default `"sub"` | Uploaded image and its approval state. Public cards show the image only when `image_status == "app"`. |
+| `image`, `image_status` | `ImageField`; `CharField(3)`, choices `ImageStatus.CHOICES` (`un`, `sub`, `app`), default `"sub"` | Uploaded image and its approval state. Public cards show the image only when `image_status == "app"`. Replacing the image resets the status to `"sub"` on save; new uploads are limited to `MAX_IMAGE_UPLOAD_SIZE`. |
 | `freebies_approved` | `BooleanField` | Set by storytellers during character creation. |
 | `visibility` (from `PermissionMixin`) | `CharField(3)`: `PUB`, `PRI`, `CHR`, `CUS`; default `PRI` | Controls which objects appear in public card lists; see [Authorization](authorization.md#public-cards-and-the-visibility-field). |
 | `observers` (from `PermissionMixin`) | `GenericRelation` to `core.Observer` | Users granted observer access; `add_observer()` / `remove_observer()`. |

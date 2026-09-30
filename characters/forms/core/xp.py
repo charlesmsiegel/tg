@@ -6,6 +6,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from core.validators import validate_image_upload_size
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
@@ -26,7 +27,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
     value = ChainedChoiceField(parent_field="example", choices_map={}, required=False)
     note = forms.CharField(max_length=300, required=False)
     pooled = forms.BooleanField(required=False)
-    image_field = forms.ImageField(required=False)
+    image_field = forms.ImageField(required=False, validators=[validate_image_upload_size])
 
     def __init__(self, *args, **kwargs):
         self.character = kwargs.pop("character", None)

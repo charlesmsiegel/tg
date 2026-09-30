@@ -1,5 +1,6 @@
 import logging
 import random
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +46,17 @@ def dice(dicepool, difficulty=6, specialty=False):
 
 
 def filepath(instance, filename):
+    """Upload path: the model's module path, a random token and the object's name.
+
+    Files under ``/media/`` are served to anyone who has the URL, approved or not, so the
+    token keeps a new upload's path from being guessed from the object's name. Files
+    already stored keep the names saved on their rows.
+    """
     s = str(instance.__class__).split(" ")[-1][:-1][1:-1]
     s = "/".join([x for x in s.split(".") if x != "models"])
     # Sanitize instance.name to prevent path traversal attacks
-    safe_name = instance.name.replace("..", "").replace("/", "_").replace("\\", "_")
-    s += "/" + safe_name
+    safe_name = instance.name.replace("..", "").replace("/", "_").replace("\\", "_")[:40]
+    s += f"/{secrets.token_hex(8)}_{safe_name}"
     s += "." + filename.split(".")[-1]
     s = s.lower().replace(" ", "_")
     return s

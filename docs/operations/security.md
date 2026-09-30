@@ -33,6 +33,7 @@ sets none of the HTTPS or cookie options.
 | `CSRF_COOKIE_HTTPONLY` | `False` | See below. |
 | `CSRF_TRUSTED_ORIGINS` | from env | Extra origins allowed to POST. |
 | `DATA_UPLOAD_MAX_MEMORY_SIZE` | 5 MB (`base.py`) | Caps non-file request data; also the scene WebSocket message limit. |
+| `MAX_IMAGE_UPLOAD_SIZE` | 5 MB (`base.py`) | Largest image upload the forms and models accept. |
 
 Run `python manage.py check --deploy` with the production environment to have Django check
 these; see the [deployment checklist](deployment.md#pre-deploy-checklist).
@@ -165,18 +166,24 @@ the abstract base in [`core/models.py`](../../core/models.py):
 
 - Files are validated by Django's `ImageField` (Pillow must be able to open them, and the
   extension must be an image type Pillow supports).
-- The stored path comes from `core.utils.filepath`: the model's module path plus the object's
-  name, with `..`, `/` and `\` removed from the name, lower-cased, keeping the uploaded
-  extension. Django's storage adds a suffix if the name is taken.
+- The stored path comes from `core.utils.filepath`: the model's module path, a random
+  16-hex-digit token, then the object's name (first 40 characters, with `..`, `/` and `\`
+  removed), lower-cased, keeping the uploaded extension. Files uploaded before the token was
+  added keep their stored names. Django's storage adds a suffix if the name is taken.
 - `image_status` is `sub` (Submitted) by default, `app` once a storyteller approves it through
   `accounts.views.ImageApprovalView` (which calls `verify_st_for_chronicle`, then
   `core.services.approval.ApprovalService.approve_image`). Templates show an image only when
   `image_status == "app"`.
+- Replacing an object's image sets `image_status` back to `sub` (`core.models.Model.save`),
+  unless the same save sets `image_status` itself, so a new image always needs approval.
 - Approval controls display, not access to the file. Files are written to `media/` as soon as
   they are uploaded, and the proxy serves everything under `/media/`, so an unapproved image is
-  reachable by anyone who knows or guesses its path. Replacing an object's image does not reset
-  `image_status`.
-- Django applies no size limit to uploaded files; set one at the proxy.
+  reachable by anyone who has its URL; the random token keeps the URL from being guessed from
+  the object's name, but serving unapproved images privately needs a view or proxy rule.
+- `core.validators.validate_image_upload_size` (on the model field and the Mage sheet and NPC
+  profile form fields) rejects a new upload larger than `MAX_IMAGE_UPLOAD_SIZE` (5 MB,
+  `base.py`). Django still reads the whole request first, so also cap the body size at the
+  proxy.
 
 Character-template import (`core.forms.character_template`) accepts a JSON file upload; it is
 parsed, not stored in `media/`.

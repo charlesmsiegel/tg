@@ -186,9 +186,10 @@ The repository contains no proxy configuration. Whatever you use must:
   `static(settings.MEDIA_URL, ...)`, which returns no patterns when `DEBUG` is `False`, and
   nothing in the project serves static files outside the development server.
 - **Limit request body size.** `DATA_UPLOAD_MAX_MEMORY_SIZE` (5 MB) caps non-file form data,
-  and the scene consumer uses the same value as its message limit, but Django applies no
-  size limit to uploaded files (`FILE_UPLOAD_MAX_MEMORY_SIZE` only decides when an upload
-  spills to a temporary file).
+  and the scene consumer uses the same value as its message limit. Image uploads larger than
+  `MAX_IMAGE_UPLOAD_SIZE` (5 MB) fail validation, but only after Django has received them
+  (`FILE_UPLOAD_MAX_MEMORY_SIZE` only decides when an upload spills to a temporary file), so
+  cap the request body at the proxy too.
 - If the public origin differs from the `Host` the application sees, list it in
   `CSRF_TRUSTED_ORIGINS`.
 
@@ -210,7 +211,7 @@ missing from the manifest fails to render. Edit static files in `source_static/`
 `<app>/static/`, never in `collected_static/`.
 
 Uploaded images are stored under `media/` at a path built by `core.utils.filepath` from the
-model's module path and the object's name (see [Security](security.md#uploads)).
+model's module path, a random token and the object's name (see [Security](security.md#uploads)).
 
 `production.py` has a commented-out S3 example that configures `STORAGES` for
 `django-storages` (not in `requirements.txt`).
