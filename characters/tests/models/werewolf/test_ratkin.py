@@ -45,8 +45,7 @@ class TestRatkin(TestCase):
         """Test setting rodens (rat) breed."""
         self.assertTrue(self.ratkin.set_breed("rodens"))
         self.assertEqual(self.ratkin.breed, "rodens")
-        # Note: code has "rodent" which doesn't match "rodens"
-        # Gnosis remains 0 due to typo in model
+        self.assertEqual(self.ratkin.gnosis, 5)
 
     def test_has_aspect(self):
         """Test aspect check."""
@@ -80,6 +79,11 @@ class TestRatkin(TestCase):
         self.assertTrue(self.ratkin.set_aspect("shadow_seer"))
         self.assertEqual(self.ratkin.aspect, "shadow_seer")
         self.assertEqual(self.ratkin.rage, 2)
+
+    def test_set_aspect_knife_skulker(self):
+        """Knife-Skulkers start with the warrior's Rage."""
+        self.assertTrue(self.ratkin.set_aspect("knife_skulker"))
+        self.assertEqual(self.ratkin.rage, 4)
 
     def test_set_aspect_engineers(self):
         """Test setting engineers aspect."""

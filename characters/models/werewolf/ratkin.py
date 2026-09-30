@@ -65,7 +65,7 @@ class Ratkin(Fera):
             self.set_gnosis(1)
         elif breed == "metis":
             self.set_gnosis(3)
-        elif breed == "rodent":
+        elif breed == "rodens":
             self.set_gnosis(5)
 
         self.save()
@@ -81,23 +81,12 @@ class Ratkin(Fera):
         )
 
         # Set starting Rage by aspect (varies)
-        if aspect in ["warrior", "knife_skull"]:
+        if aspect in ["warrior", "knife_skulker"]:
             self.set_rage(4)
         elif aspect in ["tunnel_runner", "plague_lord"]:
             self.set_rage(3)
         else:
             self.set_rage(2)
 
-        self.save()
-        return True
-
-    def has_colony(self):
-        return self.colony != ""
-
-    def set_colony(self, colony):
-        self.colony = colony
-        self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(shifter="ratkin", condition=colony)[0]
-        )
         self.save()
         return True
