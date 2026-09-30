@@ -168,18 +168,20 @@ on the trait. When: clearing a backlog by hand, with `--list-only` first.
 
 Creates the `Week` ending on the given Sunday if it does not exist, finds the non-NPC
 `Human` characters in finished scenes whose latest post is dated between seven days
-before the end date and the end date (both inclusive), and creates a `WeeklyXPRequest` (`finishing=True`) for each one
-that has none for that week.
+before the end date and the end date (both inclusive) (`Week.weekly_characters()`),
+adds them to `Week.characters`, and creates a `WeeklyXPRequest` (`finishing=True`) for
+each one that has none for that week. `Week.characters` is what the player and
+storyteller XP queues read, so the new requests appear there.
 
 | Option | Effect |
 |--------|--------|
-| `--week-ending YYYY-MM-DD` | The week's end date. Default: `game.models.get_next_sunday(today)`, which is the coming Sunday, or today when today is a Sunday (the help text says "last Sunday"). Pass the date explicitly to process a finished week. |
-| `--auto-approve` | Create the requests approved and call `character.add_xp()` with each request's total. |
-| `--notify` | Prints that notifications are not implemented; sends nothing. |
+| `--week-ending YYYY-MM-DD` | The week's end date. Default: the most recent Sunday (today when today is a Sunday). |
+| `--auto-approve` | Approve each new request with `WeeklyXPRequest.approve()`, which awards its XP. |
+| `--notify` | Print how many requests were created; nothing is sent (storytellers see them in their queue). |
 | `--dry-run` | Report without creating the week or requests. |
 
-For an existing week it uses `Week.weekly_characters()`. Safe to re-run: existing
-requests are skipped.
+Safe to re-run: existing requests are skipped, and characters missing from an existing
+week's `characters` are added.
 
 When: weekly, by hand or from a scheduler, if requests are not created in the app.
 

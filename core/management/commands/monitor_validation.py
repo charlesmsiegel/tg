@@ -11,7 +11,7 @@ Can be run as a cron job or monitoring service.
 
 Usage:
     python manage.py monitor_validation                    # Run checks and report
-    python manage.py monitor_validation --alert             # Send alerts on issues
+    python manage.py monitor_validation --alert             # Print an alert block on issues
     python manage.py monitor_validation --json              # JSON output for monitoring tools
 """
 
@@ -35,7 +35,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--alert",
             action="store_true",
-            help="Send alerts if issues detected",
+            help=(
+                "Print an alert block when health is degraded (nothing is sent; feed the "
+                "output or --json to your own alerting)"
+            ),
         )
         parser.add_argument(
             "--json",
@@ -80,9 +83,9 @@ class Command(BaseCommand):
         else:
             self.display_report(metrics)
 
-        # Send alerts if needed
+        # Print the alert block if needed
         if alert_mode and metrics["status"] != "healthy":
-            self.send_alerts(metrics)
+            self.print_alert(metrics)
 
     def check_data_integrity(self):
         """Check for data integrity issues."""
@@ -330,10 +333,8 @@ class Command(BaseCommand):
             self.stdout.write("   - Run: python manage.py validate_data_integrity --fix")
             self.stdout.write("   - Review recent data changes for source of issues")
 
-    def send_alerts(self, metrics):
-        """Send alerts for degraded health."""
-        # This is a placeholder - implement actual alerting
-        # (e.g., email, Slack, PagerDuty, etc.)
+    def print_alert(self, metrics):
+        """Print an alert block for degraded health; delivery is left to the caller."""
 
         alert_message = f"""
 ALERT: Validation System Health Degraded
@@ -354,9 +355,3 @@ Run to fix:
 """
 
         self.stdout.write(self.style.ERROR("\n[ALERT] " + alert_message))
-
-        # TODO: Implement actual alerting mechanism
-        # - Send email via Django's send_mail()
-        # - Post to Slack webhook
-        # - Trigger PagerDuty incident
-        # - Log to monitoring system

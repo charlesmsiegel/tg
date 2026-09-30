@@ -51,3 +51,10 @@ class ExportChronicleUsersTests(TestCase):
         self.assertEqual(imported.email, "st@example.com")
         self.assertFalse(imported.has_usable_password())
         self.assertEqual(len(data["users"]), 2)
+
+    def test_import_reports_what_it_does_not_import(self):
+        self.export()
+        out = StringIO()
+        call_command("import_chronicle", self.path, "--skip-users", stdout=out)
+        self.assertIn("Not imported (recreate them by hand): 1 characters", out.getvalue())
+        self.assertEqual(Human.objects.filter(name="PC").count(), 1)
