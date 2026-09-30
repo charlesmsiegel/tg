@@ -31,6 +31,14 @@ class TestHtRHumanDetailView(TestCase):
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/hunter/htrhuman/detail.html")
 
+    def test_detail_view_shows_the_ability_block(self):
+        """The sheet renders the Hunter ability columns (none name a missing field)."""
+        HtRHuman.objects.filter(pk=self.human.pk).update(leadership=3)
+        self.client.login(username="Player", password="password")
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/shared/human/ability_block_display.html")
+        self.assertContains(response, 'id="abilities"')
+
 
 class TestHtRHumanCreateView(TestCase):
     """Test the HtRHuman create view."""

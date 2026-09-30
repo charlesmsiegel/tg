@@ -244,7 +244,6 @@ class TestHtRHuman(TestCase):
             "alertness",
             "athletics",
             "brawl",
-            "dodge",
             "empathy",
             "expression",
             "intimidation",
@@ -254,6 +253,15 @@ class TestHtRHuman(TestCase):
             "leadership",
         ]
         self.assertEqual(self.human.talents, expected_talents)
+
+    def test_htrhuman_ability_lists_name_real_fields(self):
+        """Every listed ability is a field, so the sheet helpers can read it."""
+        talents = self.human.get_talents()
+        self.assertIn("awareness", talents)
+        self.assertEqual(
+            set(self.human.primary_abilities),
+            {**talents, **self.human.get_skills(), **self.human.get_knowledges()}.keys(),
+        )
 
     def test_htrhuman_skills(self):
         """Test HtRHuman has correct skills."""
