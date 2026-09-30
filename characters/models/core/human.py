@@ -20,6 +20,22 @@ from core.utils import add_dot, get_short_gameline_name
 _willpower = linked_stat_fields("willpower", default=3, min_permanent=1)
 
 
+# Broad Abilities that need a specialty from the first dot (every trait needs one at 4+).
+SPECIALTY_AT_ONE_DOT = (
+    "arts",
+    "athletics",
+    "crafts",
+    "firearms",
+    "larceny",
+    "melee",
+    "academics",
+    "esoterica",
+    "lore",
+    "politics",
+    "science",
+)
+
+
 class Human(
     AbilityBlock,
     HealthBlock,
@@ -395,18 +411,7 @@ class Human(
         return Specialty.objects.filter(stat=stat).exclude(pk__in=self.specialties.all())
 
     def add_specialty(self, specialty):
-        if getattr(self, specialty.stat) < 4 and specialty.stat not in [
-            "arts",
-            "athletics",
-            "crafts",
-            "firearms",
-            "melee",
-            "academics",
-            "occult",
-            "lore",
-            "politics",
-            "science",
-        ]:
+        if getattr(self, specialty.stat) < 4 and specialty.stat not in SPECIALTY_AT_ONE_DOT:
             return False
         if specialty in self.specialties.all():
             return False
@@ -419,21 +424,7 @@ class Human(
         high_abilities = list(self.filter_abilities(minimum=4))
 
         specialty_required_abilities = [
-            x
-            for x in self.filter_abilities(minimum=1)
-            if x
-            in [
-                "arts",
-                "athletics",
-                "crafts",
-                "firearms",
-                "melee",
-                "academics",
-                "occult",
-                "lore",
-                "politics",
-                "science",
-            ]
+            x for x in self.filter_abilities(minimum=1) if x in SPECIALTY_AT_ONE_DOT
         ]
 
         # Combine all stats that require specialties (these are stat name strings)
@@ -486,21 +477,7 @@ class Human(
         stats1 = [
             x
             for x in stats
-            if getattr(self, x.property_name, 0) >= 1
-            and x.property_name
-            in [
-                "arts",
-                "athletics",
-                "crafts",
-                "firearms",
-                "larceny",
-                "melee",
-                "academics",
-                "esoterica",
-                "lore",
-                "politics",
-                "science",
-            ]
+            if getattr(self, x.property_name, 0) >= 1 and x.property_name in SPECIALTY_AT_ONE_DOT
         ]
 
         stats = stats1 + stats4

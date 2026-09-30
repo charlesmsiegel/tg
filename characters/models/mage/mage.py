@@ -8,6 +8,7 @@ from django.db.models import CheckConstraint, Q
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
+from characters.models.core.human import SPECIALTY_AT_ONE_DOT
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import (
@@ -536,21 +537,7 @@ class Mage(MtAHuman):
         stats1 = [
             x
             for x in stats
-            if getattr(self, x.property_name, 0) >= 1
-            and x.property_name
-            in [
-                "arts",
-                "athletics",
-                "crafts",
-                "firearms",
-                "larceny",
-                "melee",
-                "academics",
-                "esoterica",
-                "lore",
-                "politics",
-                "science",
-            ]
+            if getattr(self, x.property_name, 0) >= 1 and x.property_name in SPECIALTY_AT_ONE_DOT
         ]
 
         stats = stats1 + stats4
