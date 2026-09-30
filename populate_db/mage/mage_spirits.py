@@ -14,7 +14,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=4,
     essence=15,
     display=True,
-)[0].add_source("M20 Core", 549)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 549)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Blast", "Tracking", "Realm Sense"])
 )
@@ -31,7 +31,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=6,
     essence=21,
     display=True,
-)[0].add_source("M20 Core", 549)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 549)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -57,7 +57,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=27,
     display=True,
-)[0].add_source("M20 Core", 549)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 549)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -88,7 +88,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=5,
     essence=16,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(SpiritCharm.objects.filter(name__in=["Materialize", "Blast", "Create Fire"]))
 x.description = "Minor spirit of fire and heat, embodies flame and combustion."
 x.save()
@@ -100,7 +100,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=23,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=["Materialize", "Blast", "Create Fire", "Armor", "Shapeshift"]
@@ -116,7 +116,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=6,
     essence=14,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(SpiritCharm.objects.filter(name__in=["Materialize", "Healing", "Cleanse the Blight"]))
 x.description = "Minor spirit of water, embodies flow and adaptation."
 x.save()
@@ -128,7 +128,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=20,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=["Materialize", "Healing", "Cleanse the Blight", "Shapeshift", "Flood"]
@@ -144,7 +144,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=5,
     essence=15,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(SpiritCharm.objects.filter(name__in=["Materialize", "Armor", "Umbraquake"]))
 x.description = "Minor spirit of earth and stone, embodies stability and endurance."
 x.save()
@@ -156,7 +156,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=21,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -178,7 +178,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=16,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(SpiritCharm.objects.filter(name__in=["Materialize", "Create Wind", "Updraft"]))
 x.description = "Minor spirit of air and wind, embodies movement and freedom."
 x.save()
@@ -190,7 +190,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=9,
     essence=22,
     display=True,
-)[0].add_source("M20 Core", 368)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 368)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=["Materialize", "Create Wind", "Updraft", "Blast", "Shapeshift"]
@@ -209,7 +209,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=9,
     essence=19,
     display=True,
-)[0].add_source("M20 Core", 558)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 558)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Airt Sense", "Mind Speech", "Realm Sense"])
 )
@@ -225,7 +225,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=6,
     essence=22,
     display=True,
-)[0].add_source("M20 Core", 558)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 558)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Armor", "Blast", "Tracking", "Influence"])
 )
@@ -239,7 +239,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=15,
     display=True,
-)[0].add_source("M20 Core", 558)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 558)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Healing", "Influence", "Mind Speech"])
 )
@@ -253,7 +253,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=17,
     display=True,
-)[0].add_source("M20 Core", 558)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 558)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Possession", "Airt Sense", "Short Out"])
 )
@@ -267,7 +267,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=20,
     display=True,
-)[0].add_source("M20 Core", 558)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 558)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=["Materialize", "Shapeshift", "Tracking", "Cleanse the Blight"]
@@ -286,7 +286,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=18,
     display=True,
-)[0].add_source("M20 Core", 608)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 608)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Materialize", "Armor", "Tracking", "Realm Sense"])
 )
@@ -300,7 +300,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=9,
     essence=24,
     display=True,
-)[0].add_source("M20 Core", 608)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 608)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -326,7 +326,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=21,
     display=True,
-)[0].add_source("M20 Core", 330)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 330)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Mind Speech", "Influence", "Materialize", "Airt Sense"])
 )
@@ -340,7 +340,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=7,
     essence=18,
     display=True,
-)[0].add_source("M20 Core", 330)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 330)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=["Mind Speech", "Realm Sense", "Materialize", "Solidify Reality"]
@@ -356,7 +356,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=9,
     essence=22,
     display=True,
-)[0].add_source("M20 Core", 330)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 330)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Mind Speech", "Shapeshift", "Materialize", "Tracking"])
 )
@@ -370,7 +370,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=19,
     display=True,
-)[0].add_source("M20 Core", 330)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 330)
 x.charms.set(
     SpiritCharm.objects.filter(name__in=["Mind Speech", "Airt Sense", "Materialize", "Tracking"])
 )
@@ -446,7 +446,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=9,
     essence=22,
     display=True,
-)[0].add_source("M20 Core", 559)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 559)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -468,7 +468,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=10,
     essence=25,
     display=True,
-)[0].add_source("M20 Core", 559)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 559)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[
@@ -490,7 +490,7 @@ x = SpiritCharacter.objects.get_or_create(
     gnosis=8,
     essence=26,
     display=True,
-)[0].add_source("M20 Core", 559)
+)[0].add_source("Mage: the Ascension 20th Anniversary Edition", 559)
 x.charms.set(
     SpiritCharm.objects.filter(
         name__in=[

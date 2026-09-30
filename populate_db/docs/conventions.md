@@ -151,6 +151,10 @@ Specialty.objects.get_or_create(name="Long Jumping", stat="strength")[0].add_sou
 The title must match a `name` in `00_books.py` exactly, including capitalisation. A
 title that does not match creates a new `Book` with only a name and the model
 defaults (`gameline="wod"`, `edition="1e"`), which then appears as a separate book.
+`core/tests/management/commands/test_populate_gamedata_sources.py` fails when a cited
+title (an `add_source()` argument or a `source_book=` value) names no book in
+`00_books.py`; its `AMBIGUOUS_TITLES` lists the few bare Tradition Book titles that do not
+say which edition they cite.
 
 ## See also
 

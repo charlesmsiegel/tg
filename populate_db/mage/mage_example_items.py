@@ -54,7 +54,7 @@ carpet.description = (
     "An enchanted Persian carpet that flies at the will of its owner. "
     "Can carry up to 4 passengers at speeds up to 100 mph."
 )
-carpet.add_source("M20 Core", 656)
+carpet.add_source("Mage: the Ascension 20th Anniversary Edition", 656)
 carpet.set_rank(4)
 carpet.add_resonance(Resonance.objects.get_or_create(name="Swift")[0])
 carpet.add_resonance(Resonance.objects.get_or_create(name="Mystical")[0])
@@ -123,7 +123,7 @@ potion = Talisman.objects.get_or_create(
 potion.description = (
     "An alchemical potion that heals 2 health levels of lethal damage when consumed. " "Single use."
 )
-potion.add_source("M20 Core", 656)
+potion.add_source("Mage: the Ascension 20th Anniversary Edition", 656)
 potion.set_rank(2)
 potion.quintessence_max = 3
 potion.save()
@@ -154,7 +154,7 @@ mirror.description = (
     "A polished obsidian mirror that allows remote viewing anywhere on Earth. "
     "Uses Correspondence 3, Time 2 for past viewing."
 )
-mirror.add_source("M20 Core", 656)
+mirror.add_source("Mage: the Ascension 20th Anniversary Edition", 656)
 mirror.set_rank(3)
 mirror.save()
 
@@ -169,7 +169,7 @@ ring.description = (
     "A silver ring inscribed with protective runes. Grants +2 dice to soak "
     "and can activate a shield once per day (Forces 2)."
 )
-ring.add_source("M20 Core", 656)
+ring.add_source("Mage: the Ascension 20th Anniversary Edition", 656)
 ring.set_rank(2)
 ring.save()
 
@@ -187,7 +187,7 @@ excalibur.description = (
     "Deals aggravated damage, grants +3 to all combat pools, and radiates an "
     "aura of divine authority (Prime 5, Forces 3, Mind 3)."
 )
-excalibur.add_source("M20 Core", 658)
+excalibur.add_source("Mage: the Ascension 20th Anniversary Edition", 658)
 excalibur.set_rank(5)
 excalibur.add_resonance(Resonance.objects.get_or_create(name="Noble")[0])
 excalibur.add_resonance(Resonance.objects.get_or_create(name="Powerful")[0])
@@ -246,7 +246,7 @@ whistle.description = (
     "A carved bone whistle that summons friendly spirits when blown. "
     "Contains a minor air spirit."
 )
-whistle.add_source("M20 Core", 658)
+whistle.add_source("Mage: the Ascension 20th Anniversary Edition", 658)
 whistle.set_rank(2)
 whistle.save()
 
@@ -263,7 +263,7 @@ ghostblade.description = (
     "A sword bound with a spirit that allows it to harm incorporeal entities. "
     "Deals aggravated damage to ghosts and spirits."
 )
-ghostblade.add_source("M20 Core", 658)
+ghostblade.add_source("Mage: the Ascension 20th Anniversary Edition", 658)
 ghostblade.set_rank(3)
 ghostblade.save()
 
@@ -426,7 +426,7 @@ doissetep_stone.description = (
     "Contains immense Quintessence and can anchor Horizon Realms. "
     "Radiates powerful Hermetic resonance (Prime 5, Spirit 5, All Spheres 3)."
 )
-doissetep_stone.add_source("M20 Core", 612)
+doissetep_stone.add_source("Mage: the Ascension 20th Anniversary Edition", 612)
 doissetep_stone.set_rank(5)
 doissetep_stone.add_resonance(Resonance.objects.get_or_create(name="Ancient")[0])
 doissetep_stone.add_resonance(Resonance.objects.get_or_create(name="Powerful")[0])
@@ -444,6 +444,6 @@ detector.description = (
     "A device that detects approaching Avatar Storms and Paradox buildups. "
     "Essential for safe Umbral travel (Spirit 3, Prime 2, Entropy 1)."
 )
-detector.add_source("M20 Core", 534)
+detector.add_source("Mage: the Ascension 20th Anniversary Edition", 534)
 detector.set_rank(3)
 detector.save()

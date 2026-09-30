@@ -62,7 +62,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Demon: The Fallen Core", 178)
+)[0].add_source("Demon: the Fallen", 178)
 
 # Template 2: Corrupted Artist
 artist = CharacterTemplate.objects.get_or_create(
@@ -120,7 +120,7 @@ artist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Demon: The Fallen Core", 179)
+)[0].add_source("Demon: the Fallen", 179)
 
 # Template 3: Angelic Warrior
 warrior = CharacterTemplate.objects.get_or_create(
@@ -179,7 +179,7 @@ warrior = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Demon: The Fallen Core", 180)
+)[0].add_source("Demon: the Fallen", 180)
 
 # Template 4: Tempter
 tempter = CharacterTemplate.objects.get_or_create(
@@ -238,7 +238,7 @@ tempter = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Demon: The Fallen Core", 181)
+)[0].add_source("Demon: the Fallen", 181)
 
 # Template 5: Healer
 healer = CharacterTemplate.objects.get_or_create(
@@ -297,4 +297,4 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Demon: The Fallen Core", 182)
+)[0].add_source("Demon: the Fallen", 182)

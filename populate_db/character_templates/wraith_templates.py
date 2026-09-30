@@ -62,7 +62,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Wraith: The Oblivion 20th Anniversary", 132)
+)[0].add_source("Wraith: the Oblivion 20th Anniversary Edition", 132)
 
 # Template 2: Vengeful Spirit
 vengeful = CharacterTemplate.objects.get_or_create(
@@ -122,7 +122,7 @@ vengeful = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Wraith: The Oblivion 20th Anniversary", 133)
+)[0].add_source("Wraith: the Oblivion 20th Anniversary Edition", 133)
 
 # Template 3: Guardian Spirit
 guardian = CharacterTemplate.objects.get_or_create(
@@ -182,7 +182,7 @@ guardian = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Wraith: The Oblivion 20th Anniversary", 134)
+)[0].add_source("Wraith: the Oblivion 20th Anniversary Edition", 134)
 
 # Template 4: Lost Soul
 lost = CharacterTemplate.objects.get_or_create(
@@ -241,7 +241,7 @@ lost = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Wraith: The Oblivion 20th Anniversary", 135)
+)[0].add_source("Wraith: the Oblivion 20th Anniversary Edition", 135)
 
 # Template 5: Scholar of Death
 scholar = CharacterTemplate.objects.get_or_create(
@@ -299,4 +299,4 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Wraith: The Oblivion 20th Anniversary", 136)
+)[0].add_source("Wraith: the Oblivion 20th Anniversary Edition", 136)

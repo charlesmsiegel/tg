@@ -62,7 +62,7 @@ warrior = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 95)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 95)
 
 # Template 2: Theurge Mystic
 mystic = CharacterTemplate.objects.get_or_create(
@@ -122,7 +122,7 @@ mystic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 96)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 96)
 
 # Template 3: Ragabash Trickster
 trickster = CharacterTemplate.objects.get_or_create(
@@ -182,7 +182,7 @@ trickster = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 97)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 97)
 
 # Template 4: Philodox Judge
 judge = CharacterTemplate.objects.get_or_create(
@@ -241,7 +241,7 @@ judge = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 98)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 98)
 
 # Template 5: Galliard Bard
 bard = CharacterTemplate.objects.get_or_create(
@@ -300,4 +300,4 @@ bard = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 99)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 99)

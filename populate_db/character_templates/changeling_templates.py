@@ -64,7 +64,7 @@ dreamer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Changeling: The Dreaming 20th Anniversary", 145)
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 145)
 
 # Template 2: Wilder Artist
 artist = CharacterTemplate.objects.get_or_create(
@@ -124,7 +124,7 @@ artist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Changeling: The Dreaming 20th Anniversary", 146)
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 146)
 
 # Template 3: Grump Crafter
 crafter = CharacterTemplate.objects.get_or_create(
@@ -185,7 +185,7 @@ crafter = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Changeling: The Dreaming 20th Anniversary", 147)
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 147)
 
 # Template 4: Knight Errant
 knight = CharacterTemplate.objects.get_or_create(
@@ -246,7 +246,7 @@ knight = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Changeling: The Dreaming 20th Anniversary", 148)
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 148)
 
 # Template 5: Street Urchin
 urchin = CharacterTemplate.objects.get_or_create(
@@ -307,4 +307,4 @@ urchin = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Changeling: The Dreaming 20th Anniversary", 149)
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 149)

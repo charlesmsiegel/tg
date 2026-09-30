@@ -68,7 +68,7 @@ brujah_brawler = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 95)
+)[0].add_source("Vampire: The Masquerade (Revised)", 95)
 
 # Tremere Scholar
 tremere_scholar = CharacterTemplate.objects.get_or_create(
@@ -181,7 +181,7 @@ toreador_artist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 92)
+)[0].add_source("Vampire: The Masquerade (Revised)", 92)
 
 # ========================================
 # WEREWOLF: TRIBE-SPECIFIC TEMPLATES
@@ -244,7 +244,7 @@ glass_walker_hacker = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 112)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 112)
 
 # Red Talon Predator
 red_talon_predator = CharacterTemplate.objects.get_or_create(
@@ -299,7 +299,7 @@ red_talon_predator = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Werewolf: The Apocalypse Revised", 119)
+)[0].add_source("Werewolf: the Apocalypse (Revised Edition)", 119)
 
 # ========================================
 # MAGE: TRADITION-SPECIFIC TEMPLATES
@@ -362,7 +362,7 @@ verbena_herbalist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 78)
+)[0].add_source("Mage: the Ascension (Revised)", 78)
 
 # Order of Hermes Magus
 order_hermes_magus = CharacterTemplate.objects.get_or_create(
@@ -420,7 +420,7 @@ order_hermes_magus = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 65)
+)[0].add_source("Mage: the Ascension (Revised)", 65)
 
 # Akashic Brotherhood Monk
 akashic_monk = CharacterTemplate.objects.get_or_create(
@@ -477,4 +477,4 @@ akashic_monk = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 60)
+)[0].add_source("Mage: the Ascension (Revised)", 60)

@@ -70,8 +70,10 @@ activist = Archetype.objects.get_or_create(
 
 `add_source()` returns the object, so the call can be chained as above.
 
-Copy the title from a `name=` in [`00_books.py`](../00_books.py). A title that does
-not match exactly creates a separate `Book` with default values. `add_source()` is
+Copy the title from a `name=` in [`00_books.py`](../00_books.py), even where that name
+has a typo (`Swashbucker's Handbook`). A title that does not match exactly creates a
+separate `Book` with default values, and
+`core/tests/management/commands/test_populate_gamedata_sources.py` fails. `add_source()` is
 safe to repeat: it reuses the book and the book reference.
 
 ## Add a book
