@@ -61,7 +61,8 @@ from one address does not escape the throttle. The windows are fixed, so a burst
 spans a window boundary can reach twice a limit.
 
 - The counters live in the default cache (Redis in production). If the cache cannot
-  count, the attempt is allowed.
+  count, the attempt is allowed. `check --deploy` warns (`accounts.W001`) when the default
+  cache is per process (`LocMemCache`, `DummyCache`), since each worker would count alone.
 - Behind a reverse proxy, `REMOTE_ADDR` is the proxy's address unless Daphne runs with
   `--proxy-headers`. Without it every visitor shares one address, so the sign-up limit
   and the per-address log-in and reset limits become site-wide.
