@@ -20,7 +20,7 @@ from characters.forms.mage.numina import (
 from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.human import Human
+from characters.models.core.human import SPECIALTY_AT_ONE_DOT, Human
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
     LinearMagicPath,
@@ -320,20 +320,7 @@ class SorcererSpecialtiesView(HumanSpecialtiesView):
             x
             for x in stats
             if getattr(character, x.property_name, 0) >= 1
-            and x.property_name
-            in [
-                "arts",
-                "athletics",
-                "crafts",
-                "firearms",
-                "larceny",
-                "melee",
-                "academics",
-                "esoterica",
-                "lore",
-                "politics",
-                "science",
-            ]
+            and x.property_name in SPECIALTY_AT_ONE_DOT
         ]
         stats.extend([x for x in LinearMagicPath.objects.all() if character.path_rating(x) >= 4])
         return [x.property_name for x in stats]

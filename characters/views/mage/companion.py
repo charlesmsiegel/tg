@@ -11,6 +11,7 @@ from characters.forms.mage.freebies import CompanionFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
+from characters.models.core.human import SPECIALTY_AT_ONE_DOT
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.faction import MageFaction
 from characters.models.werewolf.charm import SpiritCharm
@@ -266,20 +267,7 @@ class CompanionSpecialtiesView(HumanSpecialtiesView):
             x
             for x in stats
             if getattr(character, x.property_name, 0) >= 1
-            and x.property_name
-            in [
-                "arts",
-                "athletics",
-                "crafts",
-                "firearms",
-                "larceny",
-                "melee",
-                "academics",
-                "esoterica",
-                "lore",
-                "politics",
-                "science",
-            ]
+            and x.property_name in SPECIALTY_AT_ONE_DOT
         ]
         return [x.property_name for x in stats]
 

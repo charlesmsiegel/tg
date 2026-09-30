@@ -802,6 +802,25 @@ class TestHuman(TestCase):
         self.assertFalse(result)
         self.assertEqual(self.character.strength, 5)
 
+    def test_specialty_helpers_agree_on_the_one_dot_abilities(self):
+        """needed_specialties, has_specialties and add_specialty use one list."""
+        from characters.models.core.ability_block import Ability
+        from characters.models.mage.mtahuman import MtAHuman
+
+        for name in ("larceny", "occult"):
+            Ability.objects.get_or_create(property_name=name, defaults={"name": name.title()})
+        mortal = MtAHuman.objects.create(name="Sleeper", owner=self.user, larceny=1, occult=1)
+        self.assertEqual(mortal.needed_specialties(), ["larceny"])
+        self.assertFalse(mortal.has_specialties())
+        self.assertFalse(
+            mortal.add_specialty(Specialty.objects.create(name="Tarot", stat="occult"))
+        )
+        self.assertTrue(
+            mortal.add_specialty(Specialty.objects.create(name="Locks", stat="larceny"))
+        )
+        self.assertTrue(mortal.has_specialties())
+        self.assertEqual(mortal.needed_specialties(), [])
+
 
 class TestHumanDetailView(TestCase):
     def setUp(self) -> None:
