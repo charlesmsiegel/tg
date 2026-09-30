@@ -292,7 +292,7 @@ release that changes the schema.
 directories alphabetically), each in its own transaction. The scripts create reference data
 (books, abilities, clans, spheres, templates and so on) with `get_or_create`, so re-running is
 safe for unchanged data. A failing script is reported and logged and the rest continue; the
-command still exits successfully, so read its summary. Options (`--gameline`, `--only`,
+command then exits with an error. Options (`--gameline`, `--only`,
 `--skip`, `--dry-run`, `--verbose`) are in the
 [management commands reference](../reference/management-commands.md), and the data itself in
 [Seed data](../getting-started/seed-data.md).

@@ -100,9 +100,9 @@ the stored row instead (for example in the shell) and change the script to match
 1. Choose the folder: the top level for data every gameline uses, otherwise the
    gameline's folder. The loader finds every `.py` file under `populate_db/`; no
    registration or `__init__.py` is needed.
-2. Name the file in lowercase snake case. Include the gameline word (`vampire`,
-   `werewolf`, `mage`, `wraith`, `changeling`, `demon`) in the name if you want
-   `--gameline` to treat it as gameline-specific.
+2. Name the file in lowercase snake case. A file in a gameline folder belongs to that
+   gameline for `--gameline`; outside one (for example in `character_templates/`), make
+   the gameline's name or code a word of the file name (`vampire_templates.py`).
 3. Start with the model imports, then import the scripts whose rows you need.
 4. Write `get_or_create` calls as above, binding shared objects to module-level names.
 5. Check where it lands in the order and that it runs:

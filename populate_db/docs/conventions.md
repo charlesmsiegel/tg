@@ -16,7 +16,7 @@ editing a data script, human or agent. How the loader runs the files is in
   does not match the models they load.
 - File names are lowercase snake case. Many gameline files repeat the gameline in the
   name (`vampire_clans.py`, `demon_lores.py`, `mage_templates.py`); the loader's
-  `--gameline` filter matches on that name, not on the folder (see
+  `--gameline` filter matches the folder and whole words of that name (see
   [loading](loading.md#filtering)).
 
 ### Ordering prefixes

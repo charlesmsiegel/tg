@@ -58,14 +58,15 @@ order, each in its own transaction. Full description, ordering and filter behavi
 
 | Option | Effect |
 |--------|--------|
-| `--gameline TEXT` | Keep scripts whose file stem contains `TEXT`, plus scripts whose stem names no gameline. Matches the long names (`vampire`, `mage`...); the short codes in the help text match no file names. |
+| `--gameline GAMELINE` | Keep shared scripts plus one gameline's. Takes a code or its name (`vtm` or `vampire`, `mtr` or `mummy`...); an unknown value is a `CommandError`. A script belongs to a gameline when it sits in that gameline's folder or a word of its name is the code or name (`character_templates/vampire_templates.py`). |
 | `--only TEXT` | Keep scripts whose file stem contains `TEXT`. |
 | `--skip TEXT` | Drop scripts whose file stem contains `TEXT`. |
 | `--dry-run` | List the scripts that would run, in order. |
 | `--verbose` | Per-file progress and a traceback for each failure. |
 
 Side effects: creates and updates reference rows; never deletes. A failing script is
-reported and skipped; the command still exits with status 0.
+reported and the rest still run; the command then fails (`CommandError`, non-zero exit
+status) naming how many scripts failed.
 
 When: after creating a database, and after pulling changes to `populate_db/`.
 

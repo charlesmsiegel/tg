@@ -11,7 +11,7 @@ loader.
 Source: [`core/management/commands/populate_gamedata.py`](../../core/management/commands/populate_gamedata.py).
 
 ```bash
-python manage.py populate_gamedata [--gameline TEXT] [--only TEXT] [--skip TEXT] [--dry-run] [--verbose]
+python manage.py populate_gamedata [--gameline GAMELINE] [--only TEXT] [--skip TEXT] [--dry-run] [--verbose]
 ```
 
 Run it from the repository root. The command looks for the directory
@@ -20,7 +20,7 @@ Run it from the repository root. The command looks for the directory
 
 | Option | Effect |
 |--------|--------|
-| `--gameline TEXT` | Keep files whose name (without `.py`) contains `TEXT`, plus every file whose name contains no gameline word. See [filtering](#filtering). |
+| `--gameline GAMELINE` | Keep one gameline's files, by code or name, plus every shared file. See [filtering](#filtering). |
 | `--only TEXT` | Keep files whose name contains `TEXT` (case-insensitive substring) |
 | `--skip TEXT` | Drop files whose name contains `TEXT` (case-insensitive substring) |
 | `--dry-run` | Print the files that would load, in order, and stop without touching the database |
@@ -31,20 +31,21 @@ Django's own `-v/--verbosity` is separate and does not change this command's out
 
 ### Filtering
 
-All three filters compare against the file's stem (its name without directory or
-`.py`), lower-cased. They never look at the folder a file is in.
+`--gameline` takes a gameline code or its name from `settings.GAMELINES` (`mta` or
+`mage`, `mtr` or `mummy`...); anything else raises `CommandError`. A file belongs to a
+gameline when its top folder under `populate_db/` is the gameline's name, or when a word
+of its stem (split on `_` and other non-alphanumerics) is the code or name. Files that
+belong to no gameline are shared and always kept. In practice:
 
-`--gameline` treats a file as gameline-specific when its stem contains any of
-`vampire`, `werewolf`, `mage`, `wraith`, `changeling`, `demon`, `vtm`, `wta`, `mta`,
-`wto`, `ctd` or `dtf`. It keeps gameline-specific files whose stem contains the value
-you pass, and every file that is not gameline-specific. In practice:
+- `--gameline mage` (or `mta`) keeps everything under `mage/`, including
+  `mage/spheres.py`, plus `character_templates/mage_templates.py` and every top-level
+  file; it drops `vampire/vampire_clans.py`, `werewolf/tribes.py` and
+  `character_templates/vampire_templates.py`.
+- `magefactions.py` belongs to Mage through its folder: name words must match whole, so
+  a top-level file called `magefactions.py` would be shared.
 
-- `--gameline mage` keeps `mage/mage_example_rotes.py` and
-  `character_templates/mage_templates.py`, drops `vampire/vampire_clans.py` and
-  `demon/demon_lores.py`, and still keeps `mage/spheres.py`, `werewolf/tribes.py` and
-  every top-level file, because their stems name no gameline.
-- The gameline codes in the option's help text (`vtm`, `mta`, ...) appear in no file
-  name, so `--gameline mta` drops every file with a gameline word in its stem.
+`--only` and `--skip` compare against the file's stem (its name without directory or
+`.py`), lower-cased, and never look at the folder.
 
 `--only` and `--skip` match substrings too: `--only rotes` selects `mage/rotes.py` and
 `mage/mage_example_rotes.py`; `--only practices` selects `practices_INC.py`,
@@ -101,8 +102,8 @@ with transaction.atomic():
   back, including rows written by other scripts it imported during that run.
 - A failure is printed ("✗ <file>: <error>"), logged with its traceback, and counted;
   the command continues with the next file.
-- At the end it prints how many files loaded and how many failed. The command exits
-  normally even when files failed, so check the summary rather than the exit status.
+- At the end it prints how many files loaded and how many failed, then raises
+  `CommandError` (non-zero exit status) when any failed.
 
 Imported scripts are cached in `sys.modules` for the rest of the process. If a script
 fails after importing another one, that import's rows are rolled back but the module
