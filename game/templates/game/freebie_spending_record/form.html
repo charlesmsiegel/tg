@@ -6,6 +6,11 @@
 {% block form_eyebrow %}{% if object.pk %}Edit · Freebie spending record{% else %}Spend freebies{% endif %}{% endblock form_eyebrow %}
 {% block form_title %}{{ character.name }}{% endblock form_title %}
 {% block fields %}
+    {% if object.pk %}
+        <p class="tl-note">The cost ({{ object.cost }} freebies) stays as filed; a denial refunds it.</p>
+    {% else %}
+        <p class="tl-note">The cost comes out of {{ character.name }}'s {{ character.freebies }} unspent freebie points when the record is filed.</p>
+    {% endif %}
     <div class="tl-formgrid tl-formgrid--2">
         {% include "game/tl/fields.html" %}
     </div>

@@ -193,7 +193,8 @@ character's own XP form, `characters.forms.core.xp.XPForm` or
 |------|-------|--------|---------|
 | `XPSpendingRequestCorrectionForm` | `XPSpendingRequest` | `trait_name`, `trait_type`, `trait_value` (never `cost`) | `XPSpendingRequestUpdateView` |
 | `XPSpendingRequestApprovalForm` | `XPSpendingRequest` | `approved` as a select of `XPApprovalStatus.CHOICES` | The decision form on the request's detail page. It offers `Pending` too, but `XPSpendingRequestApproveView` answers `400` to anything but `Approved` or `Denied`. |
-| `FreebieSpendingRecordForm` | `FreebieSpendingRecord` | `trait_name`, `trait_type`, `trait_value`, `cost` | `FreebieSpendingRecordCreateView` and `UpdateView`; takes `character=` and sets it on save |
+| `FreebieSpendingRecordForm` | `FreebieSpendingRecord` | `trait_name`, `trait_type`, `trait_value`, `cost` (0 or more) | `FreebieSpendingRecordCreateView`, which files the record through `game.freebie_records.file_freebie_record` (the cost is deducted from the pool); takes `character=` |
+| `FreebieSpendingRecordCorrectionForm` | `FreebieSpendingRecord` | `trait_name`, `trait_type`, `trait_value` (never `cost`) | `FreebieSpendingRecordUpdateView` |
 
 ## See also
 
