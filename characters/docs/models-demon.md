@@ -102,7 +102,8 @@ up; `has_virtues()` matches the Demon rule; `get_pacts()`, `get_active_pacts()`,
 
 [`pact.py`](../models/demon/pact.py). The through model between `Demon` and `Thrall`:
 `demon` and `thrall` (`CASCADE`), `terms`, `faith_payment`, `enhancements`
-(`JSONField(list)`), `active` (default `True`).
+(`JSONField(list)`), `active` (default `True`). A pact is visible only to users who may
+fully view its demon or its thrall (`characters.views.demon.pact.user_can_view_pact`).
 
 ## Earthbound
 
