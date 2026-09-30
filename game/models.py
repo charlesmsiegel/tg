@@ -1311,11 +1311,14 @@ class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
         locked.approved = True
         xp_increase = locked.total_xp()
 
-        # Award XP to the character
-        if locked.character:
-            character = locked.character.get_real_instance()
+        # Award XP to the character, locked and re-read so a concurrent award or
+        # spend is not overwritten (the same pattern as core.xp_utils).
+        if locked.character_id:
+            from characters.models.core import Character
+
+            character = Character.objects.select_for_update().get(pk=locked.character_id)
             character.xp += xp_increase
-            character.save()
+            character.save(update_fields=["xp"])
 
         locked.save()
         self.approved = True
