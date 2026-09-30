@@ -33,7 +33,11 @@ Six mortal types also have a template picker (`<type>_template`):
 `CharacterTemplateSelectView` renders only while `creation_status` is `0` (position zero
 is "outside the numbered registry"); for any other value it redirects straight to the
 `<type>_creation` router. Of these Basics views, `VtMHumanBasicsView` redirects to
-`vtmhuman_creation` directly; the other five redirect to their template route.
+`vtmhuman_creation` directly; the other five save the new character at
+`creation_status = 0` and redirect to their template route. Choosing a template (or none)
+sets `creation_status = 1`. Their creation routers name the picker in `template_route`, so
+an owner who opens an unstarted (`0`) draft through the character URL is sent back to the
+picker.
 
 ## Workflows by type
 

@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import CreateView, UpdateView
 
 from characters.chargen import get_workflow
@@ -280,15 +282,30 @@ class HumanCharacterCreationView(DictView):
     model_class = Human
     key_property = "creation_status"
     default_redirect = HumanDetailView
+    # Route name of the type's template picker (creation_status 0), if it has one.
+    template_route = None
 
     def is_valid_key(self, obj, key):
         return key in self.view_mapping and obj.status in {"Un", "Rev"}
 
     def get_default_redirect(self, request, *args, **kwargs):
+        subject = kwargs.get("subject")
+        # The owner of an unstarted draft resumes at the template picker, which
+        # sits before the numbered workflow and so has no view_mapping key.
+        if (
+            self.template_route
+            and subject is not None
+            and subject.creation_status == 0
+            and subject.status in {"Un", "Rev"}
+            and subject.owner_id == request.user.pk
+        ):
+            target = reverse(self.template_route, kwargs={"pk": subject.pk})
+            if is_fragment_request(request):
+                return vary_on_htmx(hx_redirect(target))
+            return redirect(target)
         # A step fragment was requested for a character that has left the
         # wizard (or that this user may only view): render the real page.
         if is_fragment_request(request):
-            subject = kwargs.get("subject")
             target = subject.get_absolute_url() if subject is not None else request.path
             return vary_on_htmx(hx_redirect(target))
         return super().get_default_redirect(request, *args, **kwargs)

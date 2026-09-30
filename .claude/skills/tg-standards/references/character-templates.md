@@ -25,10 +25,14 @@ Unlike other `Model` subclasses it stores `gameline` as a **column**
 
 `Meta.unique_together = [["gameline", "character_type", "name"]]`.
 
-`apply_to_character(character)` sets the fields, creates `BackgroundRating`,
-`MeritFlawRating` and `Specialty` rows with `get_or_create`, adds languages, saves the
-character, records a `TemplateApplication` and increments `times_used`. Names that match
-no row are skipped silently.
+`apply_to_character(character)` sets the fields, creates `BackgroundRating` (`char=`)
+and `MeritFlawRating` (`character=`) rows with `get_or_create`, links the shared
+`Specialty(name, stat=<ability property_name>)` rows through `character.specialties`, adds
+languages, saves the character, records a `TemplateApplication` and increments
+`times_used`. Names that match no row are skipped silently.
+
+`gameline` is a column, so `CharacterTemplate.get_gameline()` returns it (the inherited
+version reads the class attribute); headings and `gameline_code` follow it.
 
 ## Rules
 
@@ -46,22 +50,25 @@ no row are skipped silently.
   quick NPC `LOGIN` (the quick NPC view requires `can_manage_scope` for the template's
   chronicle and gameline). An **official** template (`is_official=True`) needs a scoped
   editor for every `OBJECT_*` write (`core/access_policy.py`).
-- **Selection offers approved public templates only.**
+- **Selection offers vetted public templates only.**
   `characters.forms.core.template_selection.CharacterTemplateSelectionForm` filters
-  `gameline`, `character_type`, `is_public=True`, `status="App"`; subclasses set the
-  `gameline` and `character_type` class attributes.
+  `gameline`, `character_type`, `is_public=True`, and `status="App"` or `is_official=True`
+  (not `Ret`/`Dec`): seeded templates keep the default status, and no web form can set
+  `is_official` (create and import force it to `False`). Subclasses set the `gameline` and `character_type` class
+  attributes.
 - **The selection step is position 0**, outside the numbered chargen workflow:
   `characters.views.core.template_selection.CharacterTemplateSelectView` serves only the
   owner's `Un`/`Rev` character with `creation_status == 0`, applies the template, sets
   `creation_status = 1` and redirects to `creation_route`. Gameline subclasses set
   `model`, `form_class`, `template_name` and `creation_route`, and are routed in the
-  gameline's `detail.py` (`characters:vampire:vtmhuman_template`).
+  gameline's `detail.py` (`characters:vampire:vtmhuman_template`). A Basics view that
+  redirects to the picker must save the character at `creation_status = 0`, and the
+  type's creation router sets `template_route` so an unstarted draft returns to it.
 - **Seed data** lives in `populate_db/character_templates/<gameline>_templates.py` and uses
   `CharacterTemplate.objects.get_or_create(name=..., gameline=..., defaults={...})`;
   `populate_gamedata` loads it.
-- `CharacterTemplate.clean()` lists valid gamelines in code (`wod`, `vtm`, `wta`, `mta`,
-  `wto`, `ctd`, `dtf`); a template for `htr` or `mtr` fails validation until that list
-  follows `settings.GAMELINES`.
+- `CharacterTemplate.clean()` validates `gameline` with `core.validators.validate_gameline`
+  (every key of `settings.GAMELINES`).
 
 ## Views and URLs
 
@@ -78,7 +85,8 @@ template).
 - [ ] Application runs in a transaction; tests assert the character's values and the
   `TemplateApplication` row.
 - [ ] Official templates still require a scoped editor to change.
-- [ ] Selection shows only approved, public templates of the right gameline and type.
+- [ ] Selection shows only vetted (approved or official), public templates of the right
+  gameline and type.
 - [ ] Seed scripts use `get_or_create` and a valid gameline.
 
 ## See also

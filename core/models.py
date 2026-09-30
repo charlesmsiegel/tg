@@ -892,7 +892,7 @@ class CharacterTemplate(Model):
             try:
                 background = Background.objects.get(name=bg_data["name"])
                 BackgroundRating.objects.get_or_create(
-                    character=character,
+                    char=character,
                     bg=background,
                     defaults={"rating": bg_data.get("rating", 0)},
                 )
@@ -935,13 +935,13 @@ class CharacterTemplate(Model):
                 specialty_name = specialty_str.split("(")[1].split(")")[0].strip()
                 try:
                     ability = Ability.objects.get(name=ability_name)
-                    Specialty.objects.get_or_create(
-                        character=character,
-                        skill=ability,
-                        defaults={"name": specialty_name},
-                    )
                 except Ability.DoesNotExist:
-                    pass
+                    continue
+                # Specialty is a shared (name, stat) row the character links to.
+                specialty, _ = Specialty.objects.get_or_create(
+                    name=specialty_name, stat=ability.property_name
+                )
+                character.specialties.add(specialty)
 
         # Save character
         character.save()
@@ -962,15 +962,17 @@ class CharacterTemplate(Model):
         if not self.character_type or not self.character_type.strip():
             errors["character_type"] = "Character type is required"
 
-        # Validate gameline is in valid choices (already done in Model, but verify)
-        valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
-        if self.gameline not in valid_gamelines:
-            errors["gameline"] = (
-                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
-            )
+        try:
+            validate_gameline(self.gameline)
+        except ValidationError as e:
+            errors["gameline"] = e.messages[0]
 
         if errors:
             raise ValidationError(errors)
+
+    def get_gameline(self):
+        """The template's own gameline column (the class attribute is the field)."""
+        return self.gameline or GameLine.WOD
 
     # Note: save() method inherited from Model base class already calls full_clean()
 
