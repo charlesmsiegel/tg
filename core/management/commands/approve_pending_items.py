@@ -1,34 +1,40 @@
 """
 Management command for bulk approval of pending items.
 
-Allows STs to bulk approve:
-- Characters (status change from Sub to App)
-- Images (image_status change from sub to app)
-- Freebies (freebies_approved flag)
-- XP spend requests
-- Weekly/Story XP requests
+Approves, through the same services and model methods as the storyteller pages:
+- Characters (``ApprovalService.approve_object``: status Sub to App)
+- Images (``ApprovalService.approve_image``: image_status sub to app)
+- Freebies (``Human.award_backstory_freebies(0)``: freebies_approved)
+- Weekly XP requests (``WeeklyXPRequest.approve``: approved, XP awarded)
+
+Every write names a scope (--chronicle, --owner or --all) and an --approver who
+must hold the approve permission on each object; objects the approver may not
+approve are skipped and reported. It asks for confirmation unless --noinput.
+XP spends are not handled: each needs a storyteller decision on the trait.
 """
 
 from django.contrib.auth.models import User
-from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.management.base import BaseCommand, CommandError
+
+from core.constants import CharacterStatus, ImageStatus
+from core.permissions import Permission, PermissionManager
 
 
 class Command(BaseCommand):
-    help = "Bulk approve pending items for storytellers"
+    help = (
+        "Bulk approve pending characters, images, freebies and weekly XP requests "
+        "through the approval services. Writes need --chronicle, --owner or --all "
+        "and --approver."
+    )
+
+    TYPES = ["characters", "images", "freebies", "xp-requests"]
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--type",
             type=str,
-            choices=[
-                "characters",
-                "images",
-                "freebies",
-                "xp-spends",
-                "xp-requests",
-                "all",
-            ],
+            choices=[*self.TYPES, "all"],
             default="all",
             help="Type of items to approve (default: all)",
         )
@@ -43,9 +49,19 @@ class Command(BaseCommand):
             help="Only approve items from specific user (username)",
         )
         parser.add_argument(
+            "--all",
+            action="store_true",
+            help="Approve across every chronicle and owner (required without a scope)",
+        )
+        parser.add_argument(
+            "--approver",
+            type=str,
+            help="Username approving the items; must be allowed to approve each one",
+        )
+        parser.add_argument(
             "--auto-approve-images",
             action="store_true",
-            help="Automatically approve all submitted images",
+            help="Also process images whatever --type says",
         )
         parser.add_argument(
             "--list-only",
@@ -57,324 +73,212 @@ class Command(BaseCommand):
             action="store_true",
             help="Show what would be approved without actually approving",
         )
+        parser.add_argument(
+            "--noinput",
+            "--no-input",
+            action="store_false",
+            dest="interactive",
+            help="Do not ask for confirmation",
+        )
 
     def handle(self, *args, **options):
-        self.dry_run = options["dry_run"] or options["list_only"]
         self.list_only = options["list_only"]
+        self.dry_run = options["dry_run"] or self.list_only
+        self.options = options
+
+        self.owner = None
+        if options["owner"]:
+            self.owner = self.get_user(options["owner"], "--owner")
+
+        approver = None
+        if not self.dry_run:
+            if not (options["chronicle"] or options["owner"] or options["all"]):
+                raise CommandError(
+                    "Approving needs a scope: pass --chronicle ID, --owner USERNAME or --all "
+                    "(or use --list-only / --dry-run)"
+                )
+            if not options["approver"]:
+                raise CommandError("Approving needs --approver USERNAME")
+        if options["approver"]:
+            approver = self.get_user(options["approver"], "--approver")
 
         self.stdout.write(self.style.SUCCESS("\nPending Approvals\n"))
-
         if self.dry_run and not self.list_only:
             self.stdout.write(self.style.WARNING("[DRY RUN MODE]\n"))
 
-        # Track approvals
-        self.approved = {
-            "characters": 0,
-            "images": 0,
-            "freebies": 0,
-            "xp_spends": 0,
-            "weekly_xp": 0,
-            "story_xp": 0,
-        }
+        types = self.TYPES if options["type"] == "all" else [options["type"]]
+        if options["auto_approve_images"] and "images" not in types:
+            types = [*types, "images"]
 
-        # Determine which types to process
-        approval_type = options["type"]
+        sections = [
+            (label, items, approve)
+            for label, items, approve in (self.collect(item_type) for item_type in types)
+            if items
+        ]
+        for label, items, _approve in sections:
+            self.list_items(label, items)
+        total = sum(len(items) for _label, items, _approve in sections)
 
-        if approval_type in ["characters", "all"]:
-            self.approve_characters(options)
-
-        if approval_type in ["images", "all"] or options["auto_approve_images"]:
-            self.approve_images(options)
-
-        if approval_type in ["freebies", "all"]:
-            self.approve_freebies(options)
-
-        if approval_type in ["xp-spends", "all"]:
-            self.approve_xp_spends(options)
-
-        if approval_type in ["xp-requests", "all"]:
-            self.approve_xp_requests(options)
-
-        # Display summary
-        self.display_summary()
-
-    def approve_characters(self, options):
-        """Approve submitted characters."""
-        from characters.models.core.character import CharacterModel
-
-        queryset = CharacterModel.objects.filter(status="Sub")
-
-        if options["chronicle"]:
-            queryset = queryset.filter(chronicle_id=options["chronicle"])
-
-        if options["owner"]:
-            try:
-                user = User.objects.get(username=options["owner"])
-                queryset = queryset.filter(owner=user)
-            except User.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f"User {options['owner']} not found"))
+        self.approved = {}
+        self.skipped = []
+        if total and not self.dry_run:
+            if options["interactive"] and not self.confirm(total, approver):
+                self.stdout.write(self.style.WARNING("Operation cancelled."))
                 return
+            for label, items, approve in sections:
+                self.approve_all(label, items, approve, approver)
 
-        count = queryset.count()
+        self.display_summary(total)
 
-        if count > 0:
-            self.stdout.write(self.style.WARNING(f"\nSubmitted Characters: {count}"))
+    def get_user(self, username, option):
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise CommandError(f"{option}: user {username} not found") from None
 
-            for char in queryset[:10]:
-                owner_name = char.owner.username if char.owner else "No owner"
-                chronicle_name = char.chronicle.name if char.chronicle else "No chronicle"
-                self.stdout.write(
-                    f"  - {char.name} (ID: {char.id}, Owner: {owner_name}, Chronicle: {chronicle_name})"
-                )
+    def confirm(self, total, approver):
+        answer = input(f"Approve {total} item(s) as {approver.username}? [y/N]: ")
+        return answer.strip().lower() in {"y", "yes"}
 
-            if count > 10:
-                self.stdout.write(f"  ... and {count - 10} more")
+    def scoped(self, queryset):
+        if self.options["chronicle"]:
+            queryset = queryset.filter(chronicle_id=self.options["chronicle"])
+        if self.owner:
+            queryset = queryset.filter(owner=self.owner)
+        return queryset
 
-            if not self.list_only:
-                if not self.dry_run:
-                    queryset.update(status="App")
-                    self.approved["characters"] = count
-                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} character(s)"))
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(f"  [DRY RUN] Would approve {count} character(s)")
-                    )
+    def collect(self, item_type):
+        """Return (label, items, approve callable) for one --type."""
+        return {
+            "characters": self.collect_characters,
+            "images": self.collect_images,
+            "freebies": self.collect_freebies,
+            "xp-requests": self.collect_xp_requests,
+        }[item_type]()
 
-    def approve_images(self, options):
-        """Approve submitted images."""
-        from characters.models.core.character import CharacterModel
-        from items.models.core.item import ItemModel
-        from locations.models.core.location import LocationModel
+    def collect_characters(self):
+        from characters.models.core.character import Character
+        from core.services.approval import ApprovalService
 
-        # Combine all model types
-        all_models = []
+        characters = self.scoped(
+            Character.objects.filter(status=CharacterStatus.SUBMITTED).select_related(
+                "owner", "chronicle"
+            )
+        )
 
-        for model_class in [CharacterModel, ItemModel, LocationModel]:
-            queryset = model_class.objects.filter(image_status="sub").exclude(image="")
+        def approve(character, approver):
+            ApprovalService.approve_object("character", character.pk, approver)
 
-            if options["chronicle"]:
-                queryset = queryset.filter(chronicle_id=options["chronicle"])
+        return "Submitted Characters", list(characters), approve
 
-            if options["owner"]:
-                try:
-                    user = User.objects.get(username=options["owner"])
-                    queryset = queryset.filter(owner=user)
-                except User.DoesNotExist:
-                    continue
+    def collect_images(self):
+        from core.services.approval import ApprovalService
 
-            all_models.extend(list(queryset))
-
-        count = len(all_models)
-
-        if count > 0:
-            self.stdout.write(self.style.WARNING(f"\nPending Images: {count}"))
-
-            for obj in all_models[:10]:
-                owner_name = obj.owner.username if obj.owner else "No owner"
-                self.stdout.write(
-                    f"  - {obj.name} (ID: {obj.id}, Type: {obj.type}, Owner: {owner_name})"
-                )
-
-            if count > 10:
-                self.stdout.write(f"  ... and {count - 10} more")
-
-            if not self.list_only:
-                if not self.dry_run:
-                    # Use atomic transaction for bulk image approval
-                    with transaction.atomic():
-                        for obj in all_models:
-                            obj.image_status = "app"
-                            obj.save()
-                    self.approved["images"] = count
-                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} image(s)"))
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(f"  [DRY RUN] Would approve {count} image(s)")
-                    )
-
-    def approve_freebies(self, options):
-        """Approve freebie spends."""
-        from characters.models.core.character import CharacterModel
-
-        queryset = CharacterModel.objects.filter(freebies_approved=False, status="Sub")
-
-        if options["chronicle"]:
-            queryset = queryset.filter(chronicle_id=options["chronicle"])
-
-        if options["owner"]:
-            try:
-                user = User.objects.get(username=options["owner"])
-                queryset = queryset.filter(owner=user)
-            except User.DoesNotExist:
-                return
-
-        count = queryset.count()
-
-        if count > 0:
-            self.stdout.write(self.style.WARNING(f"\nPending Freebie Approvals: {count}"))
-
-            for char in queryset[:10]:
-                owner_name = char.owner.username if char.owner else "No owner"
-                self.stdout.write(f"  - {char.name} (ID: {char.id}, Owner: {owner_name})")
-
-            if count > 10:
-                self.stdout.write(f"  ... and {count - 10} more")
-
-            if not self.list_only:
-                if not self.dry_run:
-                    queryset.update(freebies_approved=True)
-                    self.approved["freebies"] = count
-                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} freebie spend(s)"))
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(f"  [DRY RUN] Would approve {count} freebie spend(s)")
-                    )
-
-    def approve_xp_spends(self, options):
-        """Approve pending XP spends in character spent_xp fields."""
-        from characters.models.core.character import CharacterModel
-
-        queryset = CharacterModel.objects.all()
-
-        if options["chronicle"]:
-            queryset = queryset.filter(chronicle_id=options["chronicle"])
-
-        if options["owner"]:
-            try:
-                user = User.objects.get(username=options["owner"])
-                queryset = queryset.filter(owner=user)
-            except User.DoesNotExist:
-                return
-
-        # Count total pending spends
-        total_pending = 0
-        characters_with_pending = []
-
-        for char in queryset:
-            if hasattr(char, "spent_xp"):
-                pending_spends = [
-                    spend for spend in char.spent_xp if spend.get("approved") == "Pending"
-                ]
-                if pending_spends:
-                    total_pending += len(pending_spends)
-                    characters_with_pending.append((char, pending_spends))
-
-        if total_pending > 0:
-            self.stdout.write(
-                self.style.WARNING(
-                    f"\nPending XP Spends: {total_pending} across {len(characters_with_pending)} character(s)"
-                )
+        objects = []
+        for model_type, model in ApprovalService.IMAGE_MODEL_MAP.items():
+            queryset = model.objects.filter(image_status=ImageStatus.SUBMITTED).exclude(image="")
+            objects.extend(
+                (model_type, obj) for obj in self.scoped(queryset.select_related("owner"))
             )
 
-            for char, spends in characters_with_pending[:5]:
-                total_cost = sum(spend.get("cost", 0) for spend in spends)
-                self.stdout.write(
-                    f"  - {char.name} (ID: {char.id}): {len(spends)} spend(s), {total_cost} XP"
-                )
+        def approve(entry, approver):
+            model_type, obj = entry
+            self.check_permission(approver, obj)
+            ApprovalService.approve_image(model_type, obj.pk)
 
-            if len(characters_with_pending) > 5:
-                self.stdout.write(f"  ... and {len(characters_with_pending) - 5} more characters")
+        return "Pending Images", objects, approve
 
-            if not self.list_only:
-                if not self.dry_run:
-                    # Use atomic transaction for bulk XP spend approval
-                    with transaction.atomic():
-                        for char, _spends in characters_with_pending:
-                            for spend in char.spent_xp:
-                                if spend.get("approved") == "Pending":
-                                    spend["approved"] = "Approved"
-                            char.save()
-                    self.approved["xp_spends"] = total_pending
-                    self.stdout.write(
-                        self.style.SUCCESS(f"  ✓ Approved {total_pending} XP spend(s)")
-                    )
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(f"  [DRY RUN] Would approve {total_pending} XP spend(s)")
-                    )
+    def collect_freebies(self):
+        from characters.models.core.human import Human
 
-    def approve_xp_requests(self, options):
-        """Approve weekly and story XP requests."""
+        humans = self.scoped(
+            Human.objects.filter(
+                status=CharacterStatus.SUBMITTED, freebies_approved=False
+            ).select_related("owner")
+        )
+
+        def approve(human, approver):
+            self.check_permission(approver, human)
+            # The storyteller page awards backstory freebies; bulk approval awards none.
+            human.award_backstory_freebies(0)
+
+        return "Pending Freebie Approvals", list(humans), approve
+
+    def collect_xp_requests(self):
         from characters.models.core.character import CharacterModel
         from game.models import WeeklyXPRequest
 
-        # Build character filter
-        char_filter = {}
-        if options["chronicle"]:
-            char_filter["chronicle_id"] = options["chronicle"]
+        requests = WeeklyXPRequest.objects.filter(approved=False).select_related(
+            "character", "week"
+        )
+        if self.options["chronicle"] or self.owner:
+            requests = requests.filter(character__in=self.scoped(CharacterModel.objects.all()))
 
-        if options["owner"]:
+        def approve(request, approver):
+            if request.character is None:
+                raise ValidationError("request has no character")
+            self.check_permission(approver, request.character)
+            request.approve()
+
+        return "Pending Weekly XP Requests", list(requests), approve
+
+    @staticmethod
+    def check_permission(approver, obj):
+        if not PermissionManager.user_has_permission(approver, obj, Permission.APPROVE):
+            raise PermissionDenied(f"{approver.username} may not approve this")
+
+    @staticmethod
+    def describe(item):
+        if isinstance(item, tuple):
+            model_type, obj = item
+            owner = obj.owner.username if obj.owner else "No owner"
+            return f"{obj.name} (ID: {obj.id}, Type: {model_type}, Owner: {owner})"
+        if hasattr(item, "week_id"):
+            character = item.character.name if item.character else "Unknown"
+            week = str(item.week) if item.week else "Unknown week"
+            return f"{character}: {week} ({item.total_xp()} XP)"
+        owner = item.owner.username if item.owner else "No owner"
+        return f"{item.name} (ID: {item.id}, Owner: {owner})"
+
+    def list_items(self, label, items):
+        self.stdout.write(self.style.WARNING(f"\n{label}: {len(items)}"))
+        for item in items[:10]:
+            self.stdout.write(f"  - {self.describe(item)}")
+        if len(items) > 10:
+            self.stdout.write(f"  ... and {len(items) - 10} more")
+        if self.dry_run and not self.list_only:
+            self.stdout.write(self.style.WARNING(f"  [DRY RUN] Would approve {len(items)}"))
+
+    def approve_all(self, label, items, approve, approver):
+        count = 0
+        for item in items:
             try:
-                user = User.objects.get(username=options["owner"])
-                char_filter["owner"] = user
-            except User.DoesNotExist:
-                return
+                approve(item, approver)
+            except (PermissionDenied, ValidationError, ValueError) as exc:
+                self.skipped.append(f"{self.describe(item)}: {exc}")
+            else:
+                count += 1
+        self.approved[label] = count
+        self.stdout.write(self.style.SUCCESS(f"  ✓ {label}: approved {count}"))
 
-        # Get character IDs
-        if char_filter:
-            character_ids = CharacterModel.objects.filter(**char_filter).values_list(
-                "id", flat=True
-            )
-            weekly_requests = WeeklyXPRequest.objects.filter(
-                approved=False, character_id__in=character_ids
-            )
-        else:
-            weekly_requests = WeeklyXPRequest.objects.filter(approved=False)
-
-        weekly_count = weekly_requests.count()
-
-        if weekly_count > 0:
-            self.stdout.write(self.style.WARNING(f"\nPending Weekly XP Requests: {weekly_count}"))
-
-            for req in weekly_requests[:10]:
-                char_name = req.character.name if req.character else "Unknown"
-                week_str = str(req.week) if req.week else "Unknown week"
-                self.stdout.write(f"  - {char_name}: {week_str} ({req.total_xp()} XP)")
-
-            if weekly_count > 10:
-                self.stdout.write(f"  ... and {weekly_count - 10} more")
-
-            if not self.list_only:
-                if not self.dry_run:
-                    # Approve and award XP atomically
-                    with transaction.atomic():
-                        for req in weekly_requests:
-                            req.approved = True
-                            req.save()
-                            if req.character:
-                                req.character.add_xp(req.total_xp())
-
-                    self.approved["weekly_xp"] = weekly_count
-                    self.stdout.write(
-                        self.style.SUCCESS(f"  ✓ Approved {weekly_count} weekly XP request(s)")
-                    )
-                else:
-                    self.stdout.write(
-                        self.style.WARNING(
-                            f"  [DRY RUN] Would approve {weekly_count} weekly XP request(s)"
-                        )
-                    )
-
-    def display_summary(self):
+    def display_summary(self, total):
         """Display approval summary."""
         self.stdout.write("\n" + "=" * 70)
         self.stdout.write(self.style.SUCCESS("APPROVAL SUMMARY"))
         self.stdout.write("=" * 70)
 
-        total = sum(self.approved.values())
-
         if total == 0:
-            if self.list_only:
-                self.stdout.write("No pending items found")
-            else:
-                self.stdout.write(self.style.SUCCESS("Nothing to approve!"))
+            self.stdout.write("No pending items found")
+        elif self.dry_run:
+            self.stdout.write(f"Pending: {total} item(s)")
         else:
-            for category, count in self.approved.items():
-                if count > 0:
-                    self.stdout.write(f"{category.replace('_', ' ').title()}: {count}")
-
-            self.stdout.write("=" * 70)
-            self.stdout.write(self.style.SUCCESS(f"Total approved: {total} item(s)"))
+            for label, count in self.approved.items():
+                self.stdout.write(f"{label}: {count}")
+            self.stdout.write(self.style.SUCCESS(f"Total approved: {sum(self.approved.values())}"))
+            if self.skipped:
+                self.stdout.write(self.style.WARNING(f"Skipped: {len(self.skipped)}"))
+                for reason in self.skipped:
+                    self.stdout.write(f"  - {reason}")
 
         self.stdout.write("=" * 70 + "\n")
 

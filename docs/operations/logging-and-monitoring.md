@@ -140,19 +140,13 @@ and can run from cron. The complete option lists are in the
 |---------|---------|--------|
 | `monitor_validation` | Counts of characters with negative XP, invalid status, attributes outside 1–10, abilities outside 0–10, temporary Willpower above permanent; XP spending request totals and approval rate; finished scenes awaiting XP in the last `--period` hours (default 24); character status breakdown. Computes a 0–100 health score (`degraded` below 90). `--json` gives machine-readable output. | Nothing. `--alert` only prints an extra alert block when degraded; it sends nothing. The exit status is 0 either way. |
 | `validate_data_integrity` | Negative XP, invalid status, attribute and ability ranges, Willpower constraints, age and apparent age ranges, duplicate `STRelationship` rows; counts of scenes with and awaiting XP | Only with `--fix`, which clamps or nulls out-of-range values (mostly bulk `update()`, bypassing model validation), resets invalid status to `Un`, and deletes duplicate `STRelationship` rows keeping the first |
-| `validate_character_data` | Attribute bounds, required fields for the character's status, status consistency; `--status`, `--chronicle` | Only with `--fix`, which sets negative attributes to 1 |
+| `validate_character_data` | Attribute bounds, negative XP balance, more than 20 pending XP spends, required fields for the character's status, status consistency; `--status`, `--chronicle` | Only with `--fix`, which sets negative attributes to 1 |
 | `audit_user_permissions` | Chronicles and their storytellers, `STRelationship` rows without a chronicle; with `--check-profiles`, how many profiles set lines, veils and Discord ID | A CSV file only with `--export FILE` |
 | `audit_xp_spending` | For submitted and approved characters: `xp` compared with the cost of their approved and pending `XPSpendingRequest` rows (negative balance, pending over balance, unusually many spends); unapproved and orphaned weekly and story XP requests. `--pending-days` is accepted but not used. | A CSV file only with `--export FILE` |
 | `generate_st_report` | Per chronicle: storytellers, submitted characters, pending images, pending freebies, pending weekly XP requests, open scenes, character status counts. `--st-username` or `--chronicle` narrows it. | A file only with `--output FILE` |
 | `generate_chronicle_summary <chronicle_id>` | A summary and statistics for one chronicle, as `text`, `html` or `markdown` | A file only with `--output FILE` |
 | `find_duplicate_objects` | Characters, items, locations or effects sharing a name; `--export FILE` writes CSV | **Deletes** with `--auto-merge` or `--delete-empty`; see [Maintenance](maintenance.md#data-maintenance-commands) |
 | `archive_inactive_chronicles --list-only` | Chronicles whose newest scene date is older than `--days` (default 90), or that have no dated scene, and that also have no open scene or no submitted or approved character | Nothing with `--list-only`; see [Maintenance](maintenance.md#data-maintenance-commands) for the other flags |
-
-Some of these commands still contain checks written for the per-character `spent_xp` JSON field,
-which no longer exists on `Character` (XP spends are `game.models.XPSpendingRequest` rows).
-Those checks are skipped because the attribute is absent: `validate_character_data` reports
-no XP-consistency or orphaned-spend issues. `monitor_validation` reads `XPSpendingRequest`
-directly and is not affected.
 
 ## See also
 

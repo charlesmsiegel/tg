@@ -6,8 +6,7 @@ developers and operators running maintenance by hand or from a scheduler. Option
 checked against `python manage.py help <command>`; the standard Django options
 (`--settings`, `--verbosity`, `--traceback`, `--no-color` and so on) are omitted.
 
-Twenty-one commands live in [`core/management/commands/`](../../core/management/commands/)
-and one in [`game/management/commands/`](../../game/management/commands/).
+All twenty-one live in [`core/management/commands/`](../../core/management/commands/).
 
 Things that hold for all of them:
 
@@ -44,7 +43,6 @@ Things that hold for all of them:
 | [`generate_st_report`](#generate_st_report) | core | file only | Pending approvals, active scenes and character counts per chronicle. |
 | [`export_chronicle`](#export_chronicle) | core | file only | Export a chronicle and related rows to JSON. |
 | [`import_chronicle`](#import_chronicle) | core | yes | Create a chronicle (and optionally users) from an export file. |
-| [`migrate_jsonfield_to_models`](#migrate_jsonfield_to_models) | game | yes | Convert `spent_xp` / `spent_freebies` JSON lists into rows. |
 
 Commands from installed packages that you may also use: `runserver` (replaced by
 Daphne's ASGI server, see [Local development](../getting-started/local-development.md)),
@@ -131,13 +129,23 @@ these commands shortcut.
 
 ### `approve_pending_items`
 
-Lists and approves pending items across all chronicles, or one chronicle or owner.
+Lists pending items and approves them through the same services and model methods as
+the storyteller pages. Listing (`--list-only`, `--dry-run`) works site-wide with no
+further options. Approving needs a scope (`--chronicle`, `--owner` or `--all`) and an
+`--approver`, and asks `Approve N item(s) as USER? [y/N]` unless `--noinput`; otherwise
+it raises `CommandError`. Each object is checked against the approver's `APPROVE`
+permission (staff, or a storyteller of the object's chronicle and gameline); objects the
+approver may not approve, or that fail validation, are skipped and listed in the
+summary.
 
 | Option | Effect |
 |--------|--------|
-| `--type {characters,images,freebies,xp-spends,xp-requests,all}` | What to process (default `all`). |
+| `--type {characters,images,freebies,xp-requests,all}` | What to process (default `all`). |
 | `--chronicle ID` | Only objects in this chronicle. |
-| `--owner USERNAME` | Only objects owned by this user. An unknown user skips each section. |
+| `--owner USERNAME` | Only objects owned by this user. An unknown user is a `CommandError`. |
+| `--all` | Approve across every chronicle and owner. |
+| `--approver USERNAME` | The user approving; required to approve. |
+| `--noinput`, `--no-input` | Skip the confirmation. |
 | `--auto-approve-images` | Also process images whatever `--type` says. |
 | `--list-only` | List pending items; change nothing. |
 | `--dry-run` | Say what would be approved; change nothing. |
@@ -146,14 +154,13 @@ What each type does:
 
 | Type | Action |
 |------|--------|
-| `characters` | Characters with status `Sub` → `App` (`QuerySet.update`). |
-| `images` | Characters, items and locations with `image_status="sub"` and an image → `image_status="app"` (saved one by one). |
-| `freebies` | `Sub` characters with `freebies_approved=False` → `True` (`QuerySet.update`). |
-| `xp-spends` | Looks for a `spent_xp` attribute on each character; no character model has one (XP spends are `game.models.XPSpendingRequest` rows), so this finds nothing. |
-| `xp-requests` | Unapproved `WeeklyXPRequest` rows → `approved=True`, then calls `character.add_xp(request.total_xp())`, all in one transaction. Story XP requests are not processed. |
+| `characters` | Submitted characters, through `ApprovalService.approve_object` (status `Sub` → `App`, group pooled backgrounds updated). |
+| `images` | Characters, items and locations with `image_status="sub"` and an image, through `ApprovalService.approve_image`. |
+| `freebies` | Submitted `Human` characters with `freebies_approved=False`, through `award_backstory_freebies(0)`: approved with no backstory freebies. Award freebies from the storyteller page instead when some are due. |
+| `xp-requests` | Unapproved `WeeklyXPRequest` rows, through `WeeklyXPRequest.approve()`, which awards the XP. Story XP requests are not processed. |
 
-This bypasses the approval views, their checks and their records (who approved, when).
-When: clearing a backlog by hand, typically with `--list-only` first.
+XP spends (`XPSpendingRequest`) are not bulk-approved: each needs a storyteller decision
+on the trait. When: clearing a backlog by hand, with `--list-only` first.
 
 ### `process_weekly_xp`
 
@@ -282,8 +289,9 @@ Checks every character (optionally filtered) and reports:
 - missing name; missing concept on `Sub` or `App` characters; missing owner on `App`
   characters;
 - retired or deceased characters still in unfinished scenes;
-- XP checks that look for a `spent_xp` attribute, which no character model has, so they
-  report nothing.
+- a negative `xp` balance (`xp` is the unspent balance: a spend deducts its cost when it
+  is requested);
+- more than 20 pending `XPSpendingRequest` rows on one character.
 
 | Option | Effect |
 |--------|--------|
@@ -407,20 +415,6 @@ and reported but **not imported**.
 | `--dry-run` | Print the summary only. |
 | `--skip-users` | Do not create users. |
 | `--remap-users FILE` | JSON object mapping old usernames to new ones, applied to created users and storytellers. |
-
-## Data conversion
-
-### `migrate_jsonfield_to_models`
-
-Intended to convert each character's `spent_xp` JSON list into
-`game.models.XPSpendingRequest` rows and each `Human`'s `spent_freebies` list into
-`FreebieSpendingRecord` rows, skipping entries that already have a matching row.
-`Character` has no `spent_xp` field, so the first step's query raises `FieldError` and
-the command stops before writing anything.
-
-| Option | Effect |
-|--------|--------|
-| `--dry-run` | Report without saving. |
 
 ## See also
 

@@ -48,7 +48,6 @@ Terms such as ST, gameline, freebies and botch are defined in the
 | [`text.py`](text.py) | `straighten_quotes`: typographic quotes to ASCII in posts |
 | [`signals.py`](signals.py) | Creates a `Journal` for every new character |
 | [`admin.py`](admin.py) | Django admin registrations for every model |
-| [`management/commands/`](management/commands/) | `migrate_jsonfield_to_models` |
 | [`templates/game/`](templates/game/) | Spread pages and partials for everything above |
 | [`static/game/js/`](static/game/js/) | `scene-chat.js`, `week-detail.js`, `xp-spend.js` |
 | [`tests/`](tests/) | Model, view, action, form, consumer, browser and URL tests |
@@ -88,7 +87,6 @@ applied by the `tg_schema` app (see
 | [docs/forms.md](docs/forms.md) | Every form |
 | [docs/templates.md](docs/templates.md) | Templates, partials and scripts |
 | [docs/admin.md](docs/admin.md) | Django admin configuration |
-| [docs/management-commands.md](docs/management-commands.md) | `migrate_jsonfield_to_models` |
 
 ## Tests
 

@@ -3,15 +3,21 @@ Management command to validate character data integrity.
 
 Checks for:
 - Attribute bounds (typically 1-10)
-- XP calculation consistency
+- Negative XP balance (XP is deducted when a spend is requested)
 - Required fields based on status
-- Orphaned spent_xp entries
-- Polymorphic relationship integrity
+- Large numbers of pending XPSpendingRequest rows
+- Retired/deceased characters in active scenes
 """
 
 from django.core.management.base import BaseCommand
+from django.db.models import Count
 
 from characters.models.core.character import CharacterModel
+from core.constants import XPApprovalStatus
+from game.models import XPSpendingRequest
+
+# More pending XP spends than this on one character is reported.
+PENDING_SPEND_LIMIT = 20
 
 
 class Command(BaseCommand):
@@ -61,9 +67,18 @@ class Command(BaseCommand):
             "attribute_bounds": [],
             "xp_inconsistencies": [],
             "missing_required_fields": [],
-            "orphaned_xp_spends": [],
+            "pending_xp_spends": [],
             "status_inconsistencies": [],
         }
+
+        self.pending_spends = dict(
+            XPSpendingRequest.objects.filter(
+                approved=XPApprovalStatus.PENDING, character__in=queryset
+            )
+            .values("character_id")
+            .annotate(count=Count("id"))
+            .values_list("character_id", "count")
+        )
 
         # Validate each character
         for char in queryset:
@@ -84,8 +99,8 @@ class Command(BaseCommand):
         # Check required fields based on status
         self.check_required_fields(char)
 
-        # Check spent_xp orphans
-        self.check_orphaned_xp_spends(char)
+        # Check pending XP spends
+        self.check_pending_xp_spends(char)
 
         # Check status consistency
         self.check_status_consistency(char)
@@ -129,26 +144,17 @@ class Command(BaseCommand):
                             )
 
     def check_xp_consistency(self, char):
-        """Check that XP calculations are consistent."""
-        if not hasattr(char, "xp") or not hasattr(char, "spent_xp"):
-            return
+        """Report a negative XP balance.
 
-        # Calculate total spent XP
-        total_spent = sum(
-            spend.get("cost", 0) for spend in char.spent_xp if spend.get("approved") == "Approved"
-        )
-
-        # Check for negative XP situations
-        remaining_xp = char.xp - total_spent
-
-        if remaining_xp < 0:
+        ``xp`` is the unspent balance: ``Character.spend_xp`` deducts the cost when the
+        spend is requested, so a consistent character never goes below zero.
+        """
+        xp = getattr(char, "xp", None)
+        if xp is not None and xp < 0:
             self.issues["xp_inconsistencies"].append(
                 {
                     "character": char,
-                    "earned": char.xp,
-                    "spent": total_spent,
-                    "remaining": remaining_xp,
-                    "issue": f"Character has negative XP: earned {char.xp}, spent {total_spent}",
+                    "issue": f"Character has a negative XP balance: {xp}",
                 }
             )
 
@@ -177,23 +183,15 @@ class Command(BaseCommand):
                 }
             )
 
-    def check_orphaned_xp_spends(self, char):
-        """Check for spent_xp entries that don't correspond to actual traits."""
-        if not hasattr(char, "spent_xp"):
-            return
-
-        # Count pending spends
-        pending_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Pending"]
-
-        # Check for very old pending spends (potential orphans)
-        # Note: This is a simple check - a more sophisticated version would
-        # verify that the trait actually exists on the character
-        if len(pending_spends) > 20:
-            self.issues["orphaned_xp_spends"].append(
+    def check_pending_xp_spends(self, char):
+        """Report characters with an unusually long queue of pending XP spends."""
+        pending = self.pending_spends.get(char.pk, 0)
+        if pending > PENDING_SPEND_LIMIT:
+            self.issues["pending_xp_spends"].append(
                 {
                     "character": char,
-                    "pending_count": len(pending_spends),
-                    "issue": f"Character has {len(pending_spends)} pending XP spends (possible orphaned entries)",
+                    "pending_count": pending,
+                    "issue": f"Character has {pending} pending XP spends (possible stale entries)",
                 }
             )
 
