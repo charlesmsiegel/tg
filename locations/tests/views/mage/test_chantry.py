@@ -354,3 +354,60 @@ class TestChantryFactionalNames(TestCase):
         """Test Technocracy uses Construct."""
         names = Chantry.factional_names["Technocratic Union"]
         self.assertIn("Construct", names)
+
+
+class TestLoadExamplesView(TestCase):
+    """The background-options endpoint answers only the chantry's editors."""
+
+    url = "/locations/mage/ajax/load_chantry_examples/"
+
+    def setUp(self):
+        from characters.models.core.background_block import Background
+        from locations.models.mage.chantry import ChantryBackgroundRating
+        from locations.tests.views.mage.chantry_fixtures import add_chantry_actors
+
+        add_chantry_actors(self)
+        self.outsider = User.objects.create_user("chantry_outsider")
+        self.chantry = Chantry.objects.create(
+            name="Guarded", owner=self.player, chronicle=self.chronicle, total_points=10
+        )
+        bg, _ = Background.objects.get_or_create(
+            property_name="library", defaults={"name": "Library"}
+        )
+        self.rating = ChantryBackgroundRating.objects.create(
+            chantry=self.chantry, bg=bg, rating=2, note="Secret archive"
+        )
+
+    def get(self, object_id, category="Existing Background"):
+        return self.client.get(self.url, {"object": object_id, "category": category})
+
+    def test_editors_get_the_existing_ratings(self):
+        for user in (self.player, self.st, self.staff):
+            with self.subTest(user=user.username):
+                self.client.force_login(user)
+                response = self.get(self.chantry.pk)
+                self.assertEqual(response.status_code, 200)
+                values = [option["value"] for option in response.json()["options"]]
+                self.assertEqual(values, [self.rating.pk])
+
+    def test_non_editors_get_the_same_404_as_a_missing_chantry(self):
+        missing_pk = Chantry.objects.order_by("-pk").first().pk + 1000
+        for user in (self.outsider, self.other_st, self.vampire_st):
+            with self.subTest(user=user.username):
+                self.client.force_login(user)
+                hidden = self.get(self.chantry.pk)
+                missing = self.get(missing_pk)
+                self.assertEqual(hidden.status_code, 404)
+                self.assertEqual(missing.status_code, 404)
+                self.assertEqual(hidden["Content-Type"], missing["Content-Type"])
+                self.assertEqual(len(hidden.content), len(missing.content))
+                self.assertNotContains(hidden, "Secret archive", status_code=404)
+
+    def test_malformed_object_id_is_404(self):
+        self.client.force_login(self.player)
+        for object_id in ("", "abc", "-1", "١"):
+            with self.subTest(object_id=object_id):
+                self.assertEqual(self.get(object_id).status_code, 404)
+
+    def test_anonymous_user_is_refused(self):
+        self.assertNotEqual(self.get(self.chantry.pk).status_code, 200)
