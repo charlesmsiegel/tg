@@ -1,7 +1,5 @@
 """Tests for cache utilities in core/cache.py."""
 
-from unittest.mock import Mock, patch
-
 from django.core.cache import cache
 from django.db.models import Model
 from django.test import TestCase
@@ -12,7 +10,6 @@ from core.cache import (
     CACHE_TIMEOUT_MEDIUM,
     CACHE_TIMEOUT_SHORT,
     CACHE_TIMEOUT_VERY_LONG,
-    CacheInvalidator,
     CacheKeyGenerator,
     cache_function,
     get_cached_reference_list,
@@ -103,69 +100,6 @@ class CacheKeyGeneratorTest(TestCase):
         self.assertEqual(CacheKeyGenerator.PREFIX, "tg")
 
 
-class CacheInvalidatorTest(TestCase):
-    """Tests for CacheInvalidator class."""
-
-    def setUp(self):
-        """Clear cache before each test."""
-        cache.clear()
-
-    def test_invalidate_model_cache_with_delete_pattern(self):
-        """Test invalidate_model_cache with pattern deletion support."""
-        # Set some cache values
-        cache.set("tg:queryset:FakeModel:status=App", "value1")
-        cache.set("tg:queryset:FakeModel:status=Un", "value2")
-        cache.set("tg:reference_list:FakeModel:ordering=name", "value3")
-
-        # Use create=True to allow patching non-existent attribute
-        with patch.object(cache, "delete_pattern", create=True) as mock_delete_pattern:
-            CacheInvalidator.invalidate_model_cache(FakeModel)
-            # Should be called twice: once for queryset, once for reference_list
-            self.assertEqual(mock_delete_pattern.call_count, 2)
-            mock_delete_pattern.assert_any_call("tg:queryset:FakeModel:*")
-            mock_delete_pattern.assert_any_call("tg:reference_list:FakeModel:*")
-
-    def test_invalidate_model_cache_fallback_without_delete_pattern(self):
-        """Test invalidate_model_cache falls back when delete_pattern not supported."""
-        # Set cache values for both categories
-        queryset_key = CacheKeyGenerator.make_model_key(FakeModel)
-        reference_list_key = CacheKeyGenerator.make_key("reference_list", FakeModel.__name__)
-        cache.set(queryset_key, "test_value1")
-        cache.set(reference_list_key, "test_value2")
-
-        # Mock delete_pattern to raise AttributeError (create=True for non-existent attribute)
-        with patch.object(cache, "delete_pattern", side_effect=AttributeError, create=True):
-            with patch.object(cache, "delete") as mock_delete:
-                CacheInvalidator.invalidate_model_cache(FakeModel)
-                # Should be called twice: once for queryset, once for reference_list
-                self.assertEqual(mock_delete.call_count, 2)
-                mock_delete.assert_any_call(queryset_key)
-                mock_delete.assert_any_call(reference_list_key)
-
-    def test_invalidate_related_caches(self):
-        """Test invalidate_related_caches calls invalidate_model_cache."""
-        instance = Mock(spec=FakeModel)
-        instance.__class__ = FakeModel
-
-        with patch.object(CacheInvalidator, "invalidate_model_cache") as mock_invalidate:
-            CacheInvalidator.invalidate_related_caches(instance)
-            mock_invalidate.assert_called_once_with(FakeModel)
-
-    def test_invalidate_related_caches_with_polymorphic_model(self):
-        """Test invalidate_related_caches handles polymorphic models."""
-        # Create a mock instance that simulates polymorphic behavior
-        # The instance needs a non-Model base class for the second invalidate to trigger
-        instance = Mock(spec=FakeModel)
-        instance.__class__ = FakeModel
-        instance.get_real_instance_class = Mock(return_value=FakeModel)
-
-        with patch.object(CacheInvalidator, "invalidate_model_cache") as mock_invalidate:
-            CacheInvalidator.invalidate_related_caches(instance)
-            # FakeModel inherits directly from Model, so only one call happens
-            # (the check `base_class != Model` prevents the second call)
-            mock_invalidate.assert_called_once_with(FakeModel)
-
-
 class CacheFunctionDecoratorTest(TestCase):
     """Tests for cache_function decorator."""
 
@@ -234,8 +168,8 @@ class CacheFunctionDecoratorTest(TestCase):
         self.assertEqual(my_calculation.__name__, "my_calculation")
         self.assertEqual(my_calculation.__doc__, "Calculation docstring.")
 
-    def test_cache_function_handles_none_return(self):
-        """Test cache_function handles None return values correctly."""
+    def test_cache_function_caches_none_return(self):
+        """A None result is cached, so the function is not called again."""
         call_count = 0
 
         @cache_function(timeout=60)
@@ -244,16 +178,37 @@ class CacheFunctionDecoratorTest(TestCase):
             call_count += 1
             return None
 
-        result1 = return_none()
-        self.assertIsNone(result1)
+        self.assertIsNone(return_none())
+        self.assertIsNone(return_none())
         self.assertEqual(call_count, 1)
 
-        # None is a valid cached value, but cache.get returns None for missing keys
-        # This test verifies the behavior
-        result2 = return_none()
-        # Second call - cache returns None which is same as "not found"
-        # So function will be called again
-        self.assertIsNone(result2)
+    def test_cache_function_caches_falsy_return(self):
+        """Falsy results such as [] are cached too."""
+        call_count = 0
+
+        @cache_function(timeout=60)
+        def return_empty():
+            nonlocal call_count
+            call_count += 1
+            return []
+
+        self.assertEqual(return_empty(), [])
+        self.assertEqual(return_empty(), [])
+        self.assertEqual(call_count, 1)
+
+    def test_cache_function_keys_include_falsy_args(self):
+        """Falsy arguments are part of the key, so f(0) and f() do not share an entry."""
+
+        @cache_function(timeout=60)
+        def echo(*args, **kwargs):
+            return args, kwargs
+
+        self.assertEqual(echo(), ((), {}))
+        self.assertEqual(echo(0), ((0,), {}))
+        self.assertEqual(echo(""), (("",), {}))
+        self.assertEqual(echo(1, 0), ((1, 0), {}))
+        self.assertEqual(echo(1), ((1,), {}))
+        self.assertEqual(echo(flag=False), ((), {"flag": False}))
 
 
 class GetCachedReferenceListTest(TestCase):
@@ -345,37 +300,6 @@ class GetCachedReferenceListTest(TestCase):
         self.assertEqual(result_active[0].username, "active")
         self.assertEqual(len(result_inactive), 1)
         self.assertEqual(result_inactive[0].username, "inactive")
-
-    def test_cache_invalidation_clears_reference_list(self):
-        """Test that CacheInvalidator.invalidate_model_cache clears reference lists."""
-        from django.contrib.auth.models import User
-
-        User.objects.create_user(username="test", password="test123")
-
-        # First call - cache it
-        result1 = get_cached_reference_list(User, ordering="username")
-        self.assertEqual(len(result1), 1)
-
-        # Create new record
-        User.objects.create_user(username="test2", password="test123")
-
-        # Before invalidation - should still return cached result
-        result2 = get_cached_reference_list(User, ordering="username")
-        self.assertEqual(len(result2), 1)  # Still cached
-
-        # Mock delete_pattern to simulate Redis cache behavior (which supports patterns)
-        # LocMemCache doesn't support delete_pattern, so we need to mock it
-        with patch.object(cache, "delete_pattern", create=True) as mock_delete_pattern:
-            CacheInvalidator.invalidate_model_cache(User)
-            # Verify delete_pattern was called for reference_list category
-            mock_delete_pattern.assert_any_call("tg:reference_list:User:*")
-
-        # Manually clear cache to simulate what delete_pattern would do
-        cache.clear()
-
-        # After invalidation - should get fresh data
-        result3 = get_cached_reference_list(User, ordering="username")
-        self.assertEqual(len(result3), 2)  # Should include new record
 
 
 class CacheTimeoutConstantsTest(TestCase):

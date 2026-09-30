@@ -41,7 +41,6 @@ Rules for caching a page, a function result or a reference list. The concepts ar
 | `core.cache.cache_function(timeout, key_prefix)` | Memoize a pure function of its arguments (`CharacterDetailView.get_character_scenes`) |
 | `core.cache.get_cached_reference_list(Model, ordering="name", filters=None)` | A small reference table as a list, for forms that iterate it often (`chained_freebies.py`) |
 | `core.cache.CacheKeyGenerator.make_key(category, identifier, **params)` | Keys of the form `tg:<category>:<identifier>:<k=v...>` for hand-written `cache.get/set` |
-| `core.cache.CacheInvalidator.invalidate_model_cache(Model)` | Drop `queryset` and `reference_list` keys for a model (pattern delete on Redis only) |
 | Timeouts | `CACHE_TIMEOUT_SHORT` (60), `MEDIUM` (300), `LONG` (900), `VERY_LONG` (3600), `DAY` (86400) |
 
 Rules:
@@ -50,9 +49,10 @@ Rules:
   reading from the cache (the character sheet caches a character's scenes, then filters
   them for the request's audience).
 - Key on every argument that changes the result. `cache_function` builds its key from
-  `str()` of truthy positional arguments and sorted keyword arguments; pass ids, not model
-  instances, and avoid falsy positional arguments (they are left out of the key).
-- A cached `None` is treated as a miss.
+  `str()` of every positional argument and the sorted keyword arguments; pass ids, not
+  model instances (arguments with the same `str()` share an entry).
+- A `None` or other falsy result is cached like any other value.
+- Nothing invalidates cached data early; the timeout is the staleness bound.
 - Reference lists are stale for up to their timeout after an edit; acceptable for game
   data loaded by `populate_db`, not for player data.
 - Do not use template fragment caching (`{% cache %}`) for anything that depends on the

@@ -11,7 +11,7 @@ query, or change a template that cached pages render.
 | Cache | Where | Key | Lifetime | Invalidation |
 |-------|-------|-----|----------|--------------|
 | Reference pages | `core.cache.cache_page_per_visitor` on reference detail and list views and the home page | URL, plus the visitor's cookies unless the visitor shares the anonymous copy | 15 minutes (home page: 5) | None; entries expire |
-| Chargen reference lists | `core.cache.get_cached_reference_list` in [`characters/forms/core/chained_freebies.py`](../../characters/forms/core/chained_freebies.py) | `tg:reference_list:<Model>:ordering=…` | 15 minutes | `CacheInvalidator.invalidate_model_cache`, which nothing calls automatically |
+| Chargen reference lists | `core.cache.get_cached_reference_list` in [`characters/forms/core/chained_freebies.py`](../../characters/forms/core/chained_freebies.py) | `tg:reference_list:<Model>:ordering=…` | 15 minutes | None |
 | A character's scenes | `core.cache.cache_function` on `get_character_scenes` in [`characters/views/core/character.py`](../../characters/views/core/character.py) | `tg:function:character_scenes:get_character_scenes:<id>` | 5 minutes | None |
 | Notification count | `accounts.context_processors.notification_count` | `notification_count_<user id>` | 60 seconds | None |
 | Chargen partial throttle | `characters.views.core.chargen_mixins.ChargenStepMixin.partial_throttled` | `chargen-partial:<user>:<character>:<minute>` | 120 seconds | Not needed: a per-minute counter; above `CHARGEN_PARTIAL_LIMIT` (read with `getattr`, default 60, not set in the settings files) partial requests get `204` |
@@ -102,11 +102,13 @@ small reference tables that a form iterates over several times. The chained free
 ### `cache_function`
 
 `cache_function(timeout=300, key_prefix="")` caches a function's return value under
-`tg:function:[<key_prefix>:]<function name>[:<args>][:<kwargs>]`, built from `str()` of each
-argument. Keep in mind:
+`tg:function:[<key_prefix>:]<function name>[:<arg>…][:<k>=<v>…]`, built from `str()` of every
+argument, falsy ones (`0`, `""`, `None`) included. Keep in mind:
 
-- Falsy positional arguments (`0`, `""`, `None`) are left out of the key.
-- A `None` result is never served from cache, because `None` is how a miss is detected.
+- A `None` or other falsy result is cached like any other value; a miss is detected with a
+  sentinel default, not by testing for `None`.
+- Arguments with the same `str()` share an entry (`None` and `"None"`), so pass ids or other
+  plain values, not objects.
 - Cache only data that is safe to share between users. `CharacterDetailView.get_character_scenes`
   caches the list of scenes a character appears in, then filters it for the current viewer with
   `game.security.filter_scenes` on every request, so a cached list never widens what a viewer
@@ -122,18 +124,8 @@ argument. Keep in mind:
 
 ## Invalidation
 
-`CacheInvalidator` in [`core/cache.py`](../../core/cache.py) provides:
-
-- `invalidate_model_cache(model_class)`: deletes keys matching
-  `tg:queryset:<ModelName>:*` and `tg:reference_list:<ModelName>:*` with the backend's
-  `delete_pattern` (available on `django_redis`). On a backend without `delete_pattern`, such as
-  `LocMemCache`, it deletes only the exact keys `tg:queryset:<ModelName>` and
-  `tg:reference_list:<ModelName>`, which `get_cached_reference_list` never writes, so in
-  development cached reference lists stay until they expire.
-- `invalidate_related_caches(instance)`: `invalidate_model_cache` for the instance's class and,
-  for polymorphic instances, its immediate parent class.
-
-No signal handler or service calls either method. The project's signal handlers
+Nothing invalidates cached data early; `core.cache` has no invalidation helper. The project's
+signal handlers
 ([`accounts/signals.py`](../../accounts/signals.py), [`game/signals.py`](../../game/signals.py))
 create profiles and journals and do not touch the cache. All cached data therefore lives until
 its timeout: an edit to a reference page shows up within 15 minutes, a chargen reference list
@@ -206,8 +198,7 @@ still correct; it is simply not shared between anonymous visitors.
 - Mark per-viewer fragments of a cached page `Cache-Control: private`, as `KnownByMixin` does.
 - Cache data, not permission decisions. When a cached result feeds a page, apply the viewer's
   permission filter after reading it from the cache, as `get_character_scenes` does.
-- Build keys with `CacheKeyGenerator` so they follow the `tg:<category>:…` scheme that
-  `CacheInvalidator` understands.
+- Build keys with `CacheKeyGenerator` so they follow the `tg:<category>:…` scheme.
 - Choose a timeout you can live with as the staleness bound, because nothing invalidates cached
   data on save.
 - Add a test in the style of `core/tests/test_cache_per_visitor.py` that renders the page as one
