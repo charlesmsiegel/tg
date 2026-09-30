@@ -135,7 +135,7 @@ make sure the package `__init__` imports it.
 | [`mage_xp.py`](../services/mage_xp.py) | `spend_mage_xp(mage, cleaned_data, rote_data=None)` | `MageXPSpendView` | `Image` stores the upload, `Rote` calls `learn_rote()`, anything else spends through the locked XP service |
 | [`mage_chargen.py`](../services/mage_chargen.py) | `set_starting_practices(focus_form)` | `MageFocusView` | Saves the Focus form and one `PracticeRating` per chosen practice in one transaction |
 | [`sorcerer_chargen.py`](../services/sorcerer_chargen.py) | `set_starting_numina(sorcerer, rows, *, with_practice)` | `SorcererPsychicView`, `SorcererPathView` | Creates `PathRating` rows (no practice or ability for psychic phenomena), sets Willpower to `STARTING_WILLPOWER` (5) and freebies to `STARTING_FREEBIES` (21) |
-| [`demon_chargen.py`](../services/demon_chargen.py) | `apply_apocalyptic_form(demon, low_traits, high_traits)` | `DemonApocalypticFormView` | Gets or creates the `ApocalypticForm` named `"<demon name>'s Apocalyptic Form"`, sets both trait lists and links it; the caller advances and saves |
+| [`demon_chargen.py`](../services/demon_chargen.py) | `apply_apocalyptic_form(demon, low_traits, high_traits)` | `DemonApocalypticFormView` | Edits the demon's own `ApocalypticForm`, or creates one named `"<demon name>'s Apocalyptic Form"` when it has none or its form is shared with another demon, an Earthbound or a Visage default; sets both trait lists and links it; the caller advances and saves |
 
 ## Legacy model hooks
 
