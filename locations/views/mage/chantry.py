@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.forms import ModelForm
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
@@ -169,12 +169,21 @@ ChantryUpdateView = registry.view("locations.Chantry", "update")
 
 
 class LoadExamplesView(View):
+    """Background options for a chantry's point-spend step; only its editors may ask.
+
+    A chantry the user cannot edit gets the same 404 as a missing one, so the options
+    (and the chantry's existing ratings) never leak to other players.
+    """
+
     def get(self, request, *args, **kwargs):
         from core.ajax import dropdown_options_response
 
-        category_choice = request.GET.get("category")
-        object_id = request.GET.get("object")
-        m = get_object_or_404(Chantry, pk=object_id)
+        object_id = request.GET.get("object", "")
+        if not object_id.isascii() or not object_id.isdecimal():
+            raise Http404
+        m = get_object_or_404(Chantry, pk=int(object_id))
+        if not PermissionManager.user_can_edit(request.user, m, request=request):
+            raise Http404
 
         category_choice = request.GET.get("category")
         if category_choice == "New Background":

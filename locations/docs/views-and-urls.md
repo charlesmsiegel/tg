@@ -49,7 +49,7 @@ declared policy in `RegistryViewMixin.dispatch()`; other routes are checked by
 | `CHARGEN_STEP` | The chantry wizard steps and freehold wizard steps | `EDIT_FULL` required and the object's `status` must be `Un` or `Rev`; otherwise 404 |
 | `ROUTER` | `GenericLocationDetailView`, `ChantryCreationView`, `FreeholdCreationView` | No check at the router; the target view is authorized |
 | `PUBLIC_INDEX` | `LocationIndexView` | Anyone; the view decides what to show |
-| `LOGIN` | `LoadExamplesView` | Login required |
+| `LOGIN` | `LoadExamplesView` | Login required; the view then requires `EDIT_FULL` on the chantry and answers 404 otherwise, as for a missing one |
 
 As for items, non-staff users always receive the public list, so per-type list
 templates render only for staff.
@@ -117,7 +117,7 @@ staff. The form submits with GET to `core:object_type_redirect` with
 | `/locations/mage/create/chantry/` | `locations:mage:create:chantry` | `ChantryBasicsView` | Chantry wizard entry |
 | `/locations/changeling/create/freehold/` | `locations:changeling:create:freehold` | `FreeholdBasicsView` | Freehold wizard entry |
 | `/locations/changeling/update/freehold/<pk>/` | `locations:changeling:update:freehold` | `FreeholdCreationView` | Freehold wizard router |
-| `/locations/mage/ajax/load_chantry_examples/` | `locations:mage:ajax:load_chantry_examples` | `LoadExamplesView` | JSON options (`?category=New Background` or `Existing Background`, `&object=<chantry pk>`) of backgrounds the chantry can afford |
+| `/locations/mage/ajax/load_chantry_examples/` | `locations:mage:ajax:load_chantry_examples` | `LoadExamplesView` | JSON options (`?category=New Background` or `Existing Background`, `&object=<chantry pk>`) of backgrounds the chantry can afford; only the chantry's editors, others get 404 |
 | `/locations/mage/<type>/` | `locations:mage:<type>` | The type's list view | Aliases of every Mage list without `list/` in the path |
 | `/locations/hunter/safehouse/`, `/locations/hunter/hunting-ground/` | `locations:hunter:safehouse-list`, `locations:hunter:hunting-ground-list` | The Hunter list views | List aliases |
 
