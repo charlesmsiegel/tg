@@ -113,7 +113,9 @@ fields render hidden when they do not apply.
 Views ([`views/changeling/freehold.py`](../views/changeling/freehold.py)):
 
 - `_FreeholdCreateView` (`FormView`) calls `prepare_created_object()` (owner and
-  status) and saves the form.
+  status), defaults `owned_by` to the creator's first character when none was chosen
+  (as the wizard's first step does) and saves the form. `save()` also saves
+  `contained_within`.
 - `_FreeholdUpdateView` (`UpdateView`, `EditPermissionMixin`) and
   `_FreeholdDetailView` add `feature_points` and `holdings_required` to the context.
 
