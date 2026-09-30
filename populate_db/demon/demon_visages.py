@@ -455,7 +455,7 @@ bel = create_visage_with_form(
         trait_increased_size,
         trait_dread_gaze_devils,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=176,
 )
 
@@ -476,7 +476,7 @@ nusku = create_visage_with_form(
         trait_increased_size,
         trait_fiery_blood_devils,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=178,
 )
 
@@ -497,7 +497,7 @@ qingu = create_visage_with_form(
         trait_corrosive_spit_devils,
         trait_horns,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=180,
 )
 
@@ -519,7 +519,7 @@ dagan = create_visage_with_form(
         trait_viscous_flesh_scourges,
         trait_extra_limbs,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=182,
 )
 
@@ -540,7 +540,7 @@ anshar = create_visage_with_form(
         trait_improved_initiative,
         trait_claws_teeth,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=184,
 )
 
@@ -561,7 +561,7 @@ ellil = create_visage_with_form(
         trait_quills_scourges,
         trait_caustic_bile_scourges,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=185,
 )
 
@@ -583,7 +583,7 @@ kishar = create_visage_with_form(
         trait_spikes_malefactors,
         trait_ichor_malefactors,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=188,
 )
 
@@ -604,7 +604,7 @@ antu = create_visage_with_form(
         trait_mirage_malefactors,
         trait_relentless_malefactors,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=189,
 )
 
@@ -625,7 +625,7 @@ mummu = create_visage_with_form(
         trait_magnetic_field_malefactors,
         trait_iron_skin_malefactors,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=191,
 )
 
@@ -647,7 +647,7 @@ ninsun = create_visage_with_form(
         trait_extra_limbs,
         trait_sibilant_whispers_fiends,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=194,
 )
 
@@ -668,7 +668,7 @@ nedu = create_visage_with_form(
         trait_enhanced_dodge_fiends,
         trait_casts_no_reflection,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=196,
 )
 
@@ -689,7 +689,7 @@ shamash = create_visage_with_form(
         trait_chimerical_attack_fiends,
         trait_casts_no_reflection,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=198,
 )
 
@@ -711,7 +711,7 @@ ishhara = create_visage_with_form(
         trait_extra_limbs,
         trait_casts_no_reflection,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=199,
 )
 
@@ -732,7 +732,7 @@ adad = create_visage_with_form(
         trait_shark_hide_defilers,
         trait_ink_cloud_defilers,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=201,
 )
 
@@ -753,7 +753,7 @@ mammetum = create_visage_with_form(
         trait_venom_defilers,
         trait_extra_actions,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=203,
 )
 
@@ -775,7 +775,7 @@ zaltu = create_visage_with_form(
         trait_extra_limbs,
         trait_chameleon_skin_devourers,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=205,
 )
 
@@ -796,7 +796,7 @@ ninurtu = create_visage_with_form(
         trait_extra_limbs,
         trait_toxins_devourers,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=207,
 )
 
@@ -817,7 +817,7 @@ aruru = create_visage_with_form(
         trait_gaping_maw,
         trait_regeneration,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=209,
 )
 
@@ -839,7 +839,7 @@ namtar = create_visage_with_form(
         trait_aura_of_entropy_slayers,
         trait_damage_resistance,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=211,
 )
 
@@ -860,7 +860,7 @@ nergal = create_visage_with_form(
         trait_aura_of_dread_slayers,
         trait_damage_resistance,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=213,
 )
 
@@ -881,6 +881,6 @@ ereshkigal = create_visage_with_form(
         trait_voice_of_the_grave_slayers,
         trait_dread_gaze_slayers,
     ],
-    source_book="Demon: The Fallen",
+    source_book="Demon: the Fallen",
     source_page=215,
 )

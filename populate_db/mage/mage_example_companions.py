@@ -50,7 +50,7 @@ black_cat.stealth = 4
 black_cat.survival = 2
 black_cat.arcane = 2
 black_cat.essence = 6
-black_cat.add_source("M20 Core", 335)
+black_cat.add_source("Mage: the Ascension 20th Anniversary Edition", 335)
 black_cat.save()
 black_cat.add_advantage(nightsight, 1)
 black_cat.add_advantage(claws, 3)
@@ -121,7 +121,7 @@ owl.stealth = 4
 owl.survival = 2
 owl.arcane = 2
 owl.essence = 6
-owl.add_source("M20 Core", 335)
+owl.add_source("Mage: the Ascension 20th Anniversary Edition", 335)
 owl.save()
 owl.add_advantage(wings, 4)
 owl.add_advantage(nightsight, 1)
@@ -156,7 +156,7 @@ snake.stealth = 4
 snake.survival = 3
 snake.arcane = 1
 snake.essence = 5
-snake.add_source("M20 Core", 335)
+snake.add_source("Mage: the Ascension 20th Anniversary Edition", 335)
 snake.save()
 snake.add_advantage(claws, 5)  # Venomous fangs
 snake.add_advantage(flexibility, 2)
@@ -223,7 +223,7 @@ fire_spirit.rage = 6
 fire_spirit.essence = 8
 fire_spirit.gnosis = 5
 fire_spirit.arcane = 2
-fire_spirit.add_source("M20 Core", 336)
+fire_spirit.add_source("Mage: the Ascension 20th Anniversary Edition", 336)
 fire_spirit.save()
 fire_spirit.add_advantage(empathic_bond, 2)
 fire_spirit.charms.set(SpiritCharm.objects.filter(name__in=["Blast", "Materialize"]))
@@ -253,7 +253,7 @@ air_spirit.rage = 3
 air_spirit.essence = 7
 air_spirit.gnosis = 6
 air_spirit.arcane = 3
-air_spirit.add_source("M20 Core", 336)
+air_spirit.add_source("Mage: the Ascension 20th Anniversary Edition", 336)
 air_spirit.save()
 air_spirit.add_advantage(alacrity, 4)
 air_spirit.add_advantage(empathic_bond, 2)
@@ -401,7 +401,7 @@ acolyte.research = 3
 acolyte.science = 2
 acolyte.arcane = 1
 acolyte.avatar = 1
-acolyte.add_source("M20 Core", 337)
+acolyte.add_source("Mage: the Ascension 20th Anniversary Edition", 337)
 acolyte.save()
 
 # Consors (Awakened Companion)
@@ -435,7 +435,7 @@ consors.stealth = 2
 consors.streetwise = 2
 consors.arcane = 2
 consors.avatar = 2
-consors.add_source("M20 Core", 337)
+consors.add_source("Mage: the Ascension 20th Anniversary Edition", 337)
 consors.save()
 
 # Technocratic Assistant

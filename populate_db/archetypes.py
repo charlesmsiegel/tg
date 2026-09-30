@@ -315,11 +315,11 @@ visionary = Archetype.objects.get_or_create(name="Visionary")[0].add_source(
 )
 zealot = Archetype.objects.get_or_create(name="Zealot")[0].add_source("Demon: the Fallen", 136)
 damned_soul = Archetype.objects.get_or_create(name="Damned Soul")[0].add_source(
-    "Dammned and Deceived", 60
+    "Damned and Decieved", 60
 )
 narcissist = Archetype.objects.get_or_create(name="Narcissist")[0].add_source(
-    "Dammned and Deceived", 60
+    "Damned and Decieved", 60
 )
 proselytizer = Archetype.objects.get_or_create(name="Proselytizer")[0].add_source(
-    "Dammned and Deceived", 61
+    "Damned and Decieved", 61
 )

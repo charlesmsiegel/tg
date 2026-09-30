@@ -988,7 +988,7 @@ rote = Rote.objects.get_or_create(
     ability=athletics,
 )[0]
 rote.description = "Instant short-range teleportation for tactical advantage."
-rote.add_source("How Do You Do That", 127)
+rote.add_source("How Do You Do That?", 127)
 
 rote = Rote.objects.get_or_create(
     name="Peer Into Mind",
@@ -1038,7 +1038,7 @@ rote = Rote.objects.get_or_create(
     ability=cosmology,
 )[0]
 rote.description = "Open a temporary portal connecting two locations."
-rote.add_source("How Do You Do That", 128)
+rote.add_source("How Do You Do That?", 128)
 
 rote = Rote.objects.get_or_create(
     name="Beast Form",
@@ -1048,7 +1048,7 @@ rote = Rote.objects.get_or_create(
     ability=occult,
 )[0]
 rote.description = "Transform into an animal shape while retaining human mind."
-rote.add_source("How Do You Do That", 34)
+rote.add_source("How Do You Do That?", 34)
 
 rote = Rote.objects.get_or_create(
     name="Draw Upon the Wellspring",

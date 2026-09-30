@@ -19,7 +19,7 @@ altar_knife = Relic.objects.get_or_create(
     dice_pool=0,
     difficulty=0,
 )[0]
-altar_knife.add_source("Demon: Earthbound", 105)
+altar_knife.add_source("Earthbound", 105)
 
 enhanced_body_armor = Relic.objects.get_or_create(
     name="Enhanced Body Armor (Earthbound)",
@@ -30,7 +30,7 @@ enhanced_body_armor = Relic.objects.get_or_create(
     dice_pool=0,
     difficulty=0,
 )[0]
-enhanced_body_armor.add_source("Demon: Earthbound", 106)
+enhanced_body_armor.add_source("Earthbound", 106)
 
 false_id = Relic.objects.get_or_create(
     name="False ID (Earthbound Enhanced)",
@@ -41,7 +41,7 @@ false_id = Relic.objects.get_or_create(
     dice_pool=4,
     difficulty=0,
 )[0]
-false_id.add_source("Demon: Earthbound", 107)
+false_id.add_source("Earthbound", 107)
 
 unscaled_eyes = Relic.objects.get_or_create(
     name="Unscaled Eyes",
@@ -52,7 +52,7 @@ unscaled_eyes = Relic.objects.get_or_create(
     dice_pool=4,
     difficulty=0,
 )[0]
-unscaled_eyes.add_source("Demon: Earthbound", 107)
+unscaled_eyes.add_source("Earthbound", 107)
 
 # EARTHBOUND ENCHANTED ITEMS
 
@@ -65,7 +65,7 @@ celestial_gauntlets = Relic.objects.get_or_create(
     dice_pool=5,
     difficulty=6,
 )[0]
-celestial_gauntlets.add_source("Demon: Earthbound", 108)
+celestial_gauntlets.add_source("Earthbound", 108)
 
 veil_of_secrets = Relic.objects.get_or_create(
     name="Veil of Secrets",
@@ -76,7 +76,7 @@ veil_of_secrets = Relic.objects.get_or_create(
     dice_pool=10,
     difficulty=6,
 )[0]
-veil_of_secrets.add_source("Demon: Earthbound", 108)
+veil_of_secrets.add_source("Earthbound", 108)
 
 pain_of_the_ages = Relic.objects.get_or_create(
     name="Pain of the Ages",
@@ -87,7 +87,7 @@ pain_of_the_ages = Relic.objects.get_or_create(
     dice_pool=7,
     difficulty=6,
 )[0]
-pain_of_the_ages.add_source("Demon: Earthbound", 109)
+pain_of_the_ages.add_source("Earthbound", 109)
 
 press_of_voices = Relic.objects.get_or_create(
     name="Press of Voices",
@@ -98,7 +98,7 @@ press_of_voices = Relic.objects.get_or_create(
     dice_pool=8,
     difficulty=0,
 )[0]
-press_of_voices.add_source("Demon: Earthbound", 109)
+press_of_voices.add_source("Earthbound", 109)
 
 # EARTHBOUND DEMONIC ITEMS
 
@@ -111,7 +111,7 @@ black_whip_of_ruin = Relic.objects.get_or_create(
     dice_pool=0,
     difficulty=0,
 )[0]
-black_whip_of_ruin.add_source("Demon: Earthbound", 110)
+black_whip_of_ruin.add_source("Earthbound", 110)
 
 infernal_grimoire_limited = Relic.objects.get_or_create(
     name="Infernal Grimoire (Limited)",
@@ -122,7 +122,7 @@ infernal_grimoire_limited = Relic.objects.get_or_create(
     dice_pool=7,
     difficulty=6,
 )[0]
-infernal_grimoire_limited.add_source("Demon: Earthbound", 110)
+infernal_grimoire_limited.add_source("Earthbound", 110)
 
 infernal_grimoire_informative = Relic.objects.get_or_create(
     name="Infernal Grimoire (Informative)",
@@ -133,7 +133,7 @@ infernal_grimoire_informative = Relic.objects.get_or_create(
     dice_pool=9,
     difficulty=6,
 )[0]
-infernal_grimoire_informative.add_source("Demon: Earthbound", 111)
+infernal_grimoire_informative.add_source("Earthbound", 111)
 
 infernal_grimoire_comprehensive = Relic.objects.get_or_create(
     name="Infernal Grimoire (Comprehensive)",
@@ -144,7 +144,7 @@ infernal_grimoire_comprehensive = Relic.objects.get_or_create(
     dice_pool=12,
     difficulty=6,
 )[0]
-infernal_grimoire_comprehensive.add_source("Demon: Earthbound", 111)
+infernal_grimoire_comprehensive.add_source("Earthbound", 111)
 
 childs_companion = Relic.objects.get_or_create(
     name="Child's Companion",
@@ -155,7 +155,7 @@ childs_companion = Relic.objects.get_or_create(
     dice_pool=6,
     difficulty=0,
 )[0]
-childs_companion.add_source("Demon: Earthbound", 111)
+childs_companion.add_source("Earthbound", 111)
 
 ghost_coin = Relic.objects.get_or_create(
     name="Ghost Coin",
@@ -166,4 +166,4 @@ ghost_coin = Relic.objects.get_or_create(
     dice_pool=10,
     difficulty=0,
 )[0]
-ghost_coin.add_source("Demon: Earthbound", 113)
+ghost_coin.add_source("Earthbound", 113)

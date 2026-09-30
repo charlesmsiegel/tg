@@ -63,7 +63,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 87)
+)[0].add_source("Vampire: The Masquerade (Revised)", 87)
 
 # Template 2: Socialite (Toreador/Ventrue)
 socialite = CharacterTemplate.objects.get_or_create(
@@ -122,7 +122,7 @@ socialite = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 88)
+)[0].add_source("Vampire: The Masquerade (Revised)", 88)
 
 # Template 3: Street Preacher (Brujah/Gangrel)
 preacher = CharacterTemplate.objects.get_or_create(
@@ -181,7 +181,7 @@ preacher = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 89)
+)[0].add_source("Vampire: The Masquerade (Revised)", 89)
 
 # Template 4: Criminal (Giovanni/Nosferatu)
 criminal = CharacterTemplate.objects.get_or_create(
@@ -241,7 +241,7 @@ criminal = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 90)
+)[0].add_source("Vampire: The Masquerade (Revised)", 90)
 
 # Template 5: Scholar (Tremere/Ventrue)
 scholar = CharacterTemplate.objects.get_or_create(
@@ -300,4 +300,4 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Vampire: The Masquerade Revised", 91)
+)[0].add_source("Vampire: The Masquerade (Revised)", 91)

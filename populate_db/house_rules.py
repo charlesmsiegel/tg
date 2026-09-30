@@ -114,4 +114,4 @@ HouseRule.objects.get_or_create(
     description="""An individual mage can never accumulate more successes on an effect than Arete x Willpower. To go beyond that they must work with others.""",
     chronicle=None,
     gameline="mta",
-)[0].add_source("Mage: the Ascension Revised Edition", 150)
+)[0].add_source("Mage: the Ascension (Revised)", 150)

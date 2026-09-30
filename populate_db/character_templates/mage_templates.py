@@ -68,7 +68,7 @@ hacker = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 93)
+)[0].add_source("Mage: the Ascension (Revised)", 93)
 
 # Template 2: Hermetic Researcher
 hermetic = CharacterTemplate.objects.get_or_create(
@@ -134,7 +134,7 @@ hermetic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 91)
+)[0].add_source("Mage: the Ascension (Revised)", 91)
 
 # Template 3: Verbena Healer
 healer = CharacterTemplate.objects.get_or_create(
@@ -198,7 +198,7 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 96)
+)[0].add_source("Mage: the Ascension (Revised)", 96)
 
 # Template 4: Akashic Brother Martial Artist
 akashic = CharacterTemplate.objects.get_or_create(
@@ -264,7 +264,7 @@ akashic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 89)
+)[0].add_source("Mage: the Ascension (Revised)", 89)
 
 # Template 5: Cult of Ecstasy DJ
 cultist = CharacterTemplate.objects.get_or_create(
@@ -330,4 +330,4 @@ cultist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0].add_source("Mage: The Ascension Revised", 90)
+)[0].add_source("Mage: the Ascension (Revised)", 90)

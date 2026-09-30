@@ -285,7 +285,7 @@ oathbound = Covenant.objects.get_or_create(
     oath="Keep the word given at the Fall.",
 )[0]
 oathbound.houses.add(devils, fiends)
-oathbound.add_source("Demon: The Fallen", 150)
+oathbound.add_source("Demon: the Fallen", 150)
 ```
 
 - Use `get_or_create` so a second run changes nothing.
