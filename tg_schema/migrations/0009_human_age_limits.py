@@ -3,22 +3,30 @@
 Fresh databases take these checks from the live model. Legacy databases can
 still have the older age and apparent-age limits, so replace the named checks
 without depending on local character migration files (which are gitignored).
+The model and its fields are looked up by name when this runs: a later release
+that renames or removes them owns the change, so this migration skips them.
 """
 
 from django.db import migrations, models
 
+from tg_schema.schema import live_field, live_model, table_names
+
+CHECKS = (
+    ("age", "characters_human_reasonable_age"),
+    ("apparent_age", "characters_human_reasonable_apparent_age"),
+)
+
 
 def widen_age_limits(apps, schema_editor):
-    from characters.models.core.human import Human
-
-    checks = (
-        ("age", "characters_human_reasonable_age"),
-        ("apparent_age", "characters_human_reasonable_apparent_age"),
-    )
-    table = Human._meta.db_table
-    with schema_editor.connection.cursor() as cursor:
-        existing = schema_editor.connection.introspection.get_constraints(cursor, table)
-    for field, name in checks:
+    Human = live_model("characters.Human")
+    connection = schema_editor.connection
+    if Human is None or Human._meta.db_table not in table_names(connection):
+        return
+    with connection.cursor() as cursor:
+        existing = connection.introspection.get_constraints(cursor, Human._meta.db_table)
+    for field, name in CHECKS:
+        if live_field(Human, field) is None:
+            continue
         constraint = models.CheckConstraint(
             condition=models.Q(**{f"{field}__isnull": True})
             | (models.Q(**{f"{field}__gte": 0}) & models.Q(**{f"{field}__lte": 65535})),
