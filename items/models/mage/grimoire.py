@@ -21,6 +21,10 @@ from items.models.mage.wonder import Wonder
 class Grimoire(Wonder):
     type = "grimoire"
 
+    # Name a generated grimoire carries until random_name() replaces it: the
+    # book must be saved (and so validated) before its spheres exist to name it.
+    PLACEHOLDER_NAME = "Untitled Grimoire"
+
     abilities = models.ManyToManyField(Ability, blank=True)
     spheres = models.ManyToManyField(Sphere, blank=True)
     date_written = models.IntegerField(default=-5000)
@@ -388,7 +392,7 @@ class Grimoire(Wonder):
 
     def random_name(self):
         name = ""
-        if not self.has_name():
+        if not self.has_name() or self.name == self.PLACEHOLDER_NAME:
             while Grimoire.objects.filter(name=name).exists() or name == "":
                 sphere = random.choice(self.spheres.all())
                 noun = Noun.objects.order_by("?").first().name.title()
