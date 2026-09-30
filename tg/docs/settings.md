@@ -45,7 +45,7 @@ Settings shared by both environments. The main groups:
 | Request pipeline | `MIDDLEWARE` including `core.middleware.authorization.AuthorizationMiddleware` right after `AuthenticationMiddleware` and `core.middleware.auth_error_handler.AuthErrorHandlerMiddleware` last; `ROOT_URLCONF = "tg.urls"`; `WSGI_APPLICATION`, `ASGI_APPLICATION` |
 | Templates | `DjangoTemplates` with `APP_DIRS = True` and the context processors `core.context_processors.all_chronicles`, `accounts.context_processors.theme_context`, `accounts.context_processors.notification_count` |
 | Database | SQLite at `BASE_DIR / "db.sqlite3"`, test database `db_test.sqlite3`, `ATOMIC_REQUESTS = True` (each request runs in a transaction) |
-| Uploads | `DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE` 5 MB |
+| Uploads | `DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE` 5 MB; `MAX_IMAGE_UPLOAD_SIZE` 5 MB (largest image upload) |
 | Static and media | `STATIC_URL = "static/"`, `STATIC_ROOT = collected_static/`, `STATICFILES_DIRS = [source_static/]`, `MEDIA_ROOT = media/`, `MEDIA_URL = "/media/"` |
 | Auth | `LOGIN_URL = "login"`, `LOGIN_REDIRECT_URL` and `LOGOUT_REDIRECT_URL` `"core:home"`, four password validators, `PASSWORD_RESET_TIMEOUT` (default 3600 s), `AUTH_THROTTLE_LIMIT` / `AUTH_THROTTLE_WINDOW` (10 posts per 300 s to log in, sign up, password reset) |
 | E-mail | `EMAIL_BACKEND` (default console), `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, all from the environment |

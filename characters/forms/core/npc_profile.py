@@ -25,6 +25,7 @@ from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
+from core.validators import validate_image_upload_size
 from game.models import Chronicle
 from game.security import readable_chronicles
 from widgets import ConditionalFieldsMixin
@@ -270,6 +271,7 @@ class NPCProfileForm(ConditionalFieldsMixin, forms.Form):
     image = forms.ImageField(
         label="Portrait Image",
         required=False,
+        validators=[validate_image_upload_size],
         widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}),
     )
 

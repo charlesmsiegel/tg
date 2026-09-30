@@ -97,6 +97,7 @@ active. `BASE_DIR` is the repository root.
 |---------|--------------|---------|
 | `DATA_UPLOAD_MAX_MEMORY_SIZE` | `5 * 1024 * 1024` (5 MB) | Maximum request body, excluding file uploads. |
 | `FILE_UPLOAD_MAX_MEMORY_SIZE` | `5 * 1024 * 1024` (5 MB) | Uploads above this are streamed to a temporary file. |
+| `MAX_IMAGE_UPLOAD_SIZE` | `5 * 1024 * 1024` (5 MB) | Largest image upload accepted (`core.validators.validate_image_upload_size`). |
 
 ## Authentication and passwords
 

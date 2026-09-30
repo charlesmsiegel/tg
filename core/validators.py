@@ -43,3 +43,19 @@ def validate_gameline(value):
             f"Invalid gameline '{value}'. Must be one of: {', '.join(valid_gamelines)}",
             code="invalid_choice",
         )
+
+
+def validate_image_upload_size(value):
+    """Reject a newly uploaded image larger than ``settings.MAX_IMAGE_UPLOAD_SIZE``.
+
+    Files already stored are not re-checked, so saving an object never has to read its
+    existing image from storage.
+    """
+    if not value or getattr(value, "_committed", False):
+        return
+    limit = settings.MAX_IMAGE_UPLOAD_SIZE
+    size = getattr(value, "size", None)
+    if size is not None and size > limit:
+        raise ValidationError(
+            f"Images may be at most {limit // (1024 * 1024)} MB.", code="file_too_large"
+        )

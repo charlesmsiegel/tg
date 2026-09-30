@@ -550,12 +550,20 @@ class TestLanguageUpdateView(TestCase):
 
 
 class TestFilePath(TestCase):
+    # Model path, a 16-hex-digit random token, then the sanitized name.
+    PREFIX = "characters/core/human/human/"
+
+    def assertUploadPath(self, path, name):
+        self.assertRegex(path, rf"^{self.PREFIX}[0-9a-f]{{16}}_{name}\.jpg$")
+
     def test_filepath_parsing(self):
         m = Human.objects.create(name="Test Human")
-        self.assertEqual(
-            filepath(m, "test.jpg"),
-            "characters/core/human/human/test_human.jpg",
-        )
+        self.assertUploadPath(filepath(m, "test.jpg"), "test_human")
+
+    def test_filepath_is_not_predictable_from_the_name(self):
+        m = Human.objects.create(name="Test Human")
+        self.assertNotEqual(filepath(m, "test.jpg"), filepath(m, "test.jpg"))
+        self.assertNotEqual(filepath(m, "test.jpg"), f"{self.PREFIX}test_human.jpg")
 
     def test_filepath_sanitizes_path_traversal(self):
         """Test that path traversal attempts are sanitized."""
@@ -564,18 +572,18 @@ class TestFilePath(TestCase):
         self.assertNotIn("..", result)
         self.assertNotIn("/etc/", result)
         # The .. is stripped and / becomes _, so ../../etc/passwd -> __etc_passwd
-        self.assertEqual(result, "characters/core/human/human/__etc_passwd.jpg")
+        self.assertUploadPath(result, "__etc_passwd")
 
     def test_filepath_sanitizes_forward_slashes(self):
         """Test that forward slashes in names are replaced with underscores."""
         m = Human.objects.create(name="path/to/evil")
         result = filepath(m, "test.jpg")
         self.assertNotIn("/to/", result)
-        self.assertEqual(result, "characters/core/human/human/path_to_evil.jpg")
+        self.assertUploadPath(result, "path_to_evil")
 
     def test_filepath_sanitizes_backslashes(self):
         """Test that backslashes in names are replaced with underscores."""
         m = Human.objects.create(name="path\\to\\evil")
         result = filepath(m, "test.jpg")
         self.assertNotIn("\\", result)
-        self.assertEqual(result, "characters/core/human/human/path_to_evil.jpg")
+        self.assertUploadPath(result, "path_to_evil")
