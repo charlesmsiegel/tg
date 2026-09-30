@@ -207,6 +207,18 @@ class DemonFaithTests(TestCase):
         self.assertFalse(result)
         self.assertEqual(self.demon.faith, 10)
 
+    def test_faith_xp_spend_deducts_xp_and_files_a_request(self):
+        """Buying Faith with XP deducts the cost and files a pending request."""
+        from characters.services.xp_spending import XPSpendingServiceFactory
+
+        Demon.objects.filter(pk=self.demon.pk).update(faith=3, xp=40)
+        self.demon.refresh_from_db()
+        result = XPSpendingServiceFactory.get_service(self.demon).spend("Faith")
+        self.assertTrue(result.success, result.error)
+        self.demon.refresh_from_db()
+        self.assertEqual(self.demon.xp, 40 - result.cost)
+        self.assertTrue(self.demon.xp_spendings.filter(trait_value=4).exists())
+
 
 class DemonTormentTests(TestCase):
     """Tests for Torment-related methods."""
