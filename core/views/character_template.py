@@ -299,9 +299,9 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, View):
         """Get the appropriate character model based on template character_type"""
         # Map character types to their model classes
         character_type_map = {
-            "mage": ("characters.models.mage.mtahuman", "MtAHuman"),
+            "mage": ("characters.models.mage.mage", "Mage"),
             "vampire": ("characters.models.vampire.vampire", "Vampire"),
-            "werewolf": ("characters.models.werewolf.werewolf", "Werewolf"),
+            "werewolf": ("characters.models.werewolf.garou", "Werewolf"),
             "changeling": ("characters.models.changeling.changeling", "Changeling"),
             "wraith": ("characters.models.wraith.wraith", "Wraith"),
             "demon": ("characters.models.demon.demon", "Demon"),

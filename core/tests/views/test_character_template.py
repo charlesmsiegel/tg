@@ -569,3 +569,42 @@ class CharacterTemplateQuickNPCViewTest(TestCase):
         # It may or may not return None depending on whether MtAHuman exists
         # Just verify it doesn't raise an exception
         self.assertTrue(result is None or result is not None)
+
+    def test_every_supported_type_maps_to_the_model_of_that_type(self):
+        view = CharacterTemplateQuickNPCView()
+        for character_type in ("mage", "vampire", "werewolf", "changeling", "wraith", "demon"):
+            with self.subTest(character_type=character_type):
+                self.template.character_type = character_type
+                model = view.get_character_model(self.template)
+                self.assertIsNotNone(model)
+                self.assertEqual(model.type, character_type)
+
+    def test_quick_npc_from_mage_and_werewolf_templates(self):
+        from characters.models.core.character import Character
+
+        self.client.login(username="st_user", password="testpass123")
+        werewolf_template = CharacterTemplate.objects.create(
+            name="Werewolf Template",
+            gameline="wta",
+            character_type="werewolf",
+            concept="Test Garou",
+            chronicle=self.chronicle,
+            owner=self.st_user,
+        )
+        STRelationship.objects.create(
+            user=self.st_user,
+            chronicle=self.chronicle,
+            gameline=Gameline.objects.create(name="Werewolf"),
+        )
+        self.template.powers = {"arete": 2, "forces": 2}
+        self.template.save()
+        for template, expected_type in ((self.template, "mage"), (werewolf_template, "werewolf")):
+            with self.subTest(character_type=expected_type):
+                self.client.post(
+                    reverse("core:character_template_create_npc", kwargs={"pk": template.pk})
+                )
+                character = Character.objects.get(name=f"{template.concept} (NPC)")
+                self.assertEqual(character.type, expected_type)
+                self.assertTrue(character.npc)
+        mage = Character.objects.get(name="Test NPC (NPC)")
+        self.assertEqual((mage.arete, mage.forces), (2, 2))
