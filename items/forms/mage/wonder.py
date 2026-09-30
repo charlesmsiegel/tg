@@ -139,6 +139,10 @@ class WonderForm(forms.Form):
         if rank is None:
             raise forms.ValidationError("Rank cannot be none")
         points = rank * 3
+        # A blank Arete is None (allowed for Artifacts); cost it as equal to rank.
+        arete = cleaned_data.get("arete")
+        if arete is None:
+            arete = rank
 
         if cleaned_data.get("arete") is None and cleaned_data.get("wonder_type") != "artifact":
             raise forms.ValidationError("Charms and Talismans must have Arete ratings")
@@ -146,10 +150,7 @@ class WonderForm(forms.Form):
         if not self.resonance_formset.is_valid():
             raise forms.ValidationError("Please correct the resonance errors below")
 
-        if (
-            cleaned_data.get("arete", 0) < cleaned_data.get("rank")
-            and cleaned_data.get("wonder_type") != "artifact"
-        ):
+        if arete < rank and cleaned_data.get("wonder_type") != "artifact":
             raise forms.ValidationError(
                 "Charms and Talismans need Arete rating at least equal to rank"
             )
@@ -187,9 +188,7 @@ class WonderForm(forms.Form):
 
         total_cost = total_resonance_rating - cleaned_data.get("rank")
         if cleaned_data.get("wonder_type") != "talisman":
-            total_cost += cleaned_data.get("arete", cleaned_data.get("rank")) - cleaned_data.get(
-                "rank"
-            )
+            total_cost += arete - rank
         for form in self.effect_formset:
             total_cost += form.cost()
 

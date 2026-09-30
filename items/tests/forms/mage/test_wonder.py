@@ -159,23 +159,14 @@ class TestWonderFormValidation(TestCase):
         self.assertIn("Charms and Talismans must have Arete ratings", str(form.errors))
 
     def test_arete_not_required_for_artifact(self):
-        """Test that arete is not required for artifacts.
-
-        Note: The WonderForm.clean() has a separate bug where it fails to
-        handle arete=None properly (causes TypeError when comparing None < int).
-        This test verifies that the specific validation message for charms/talismans
-        is not raised for artifacts.
-        """
+        """An Artifact with a blank Arete validates instead of raising TypeError (U25)."""
         data = self._get_basic_form_data(wonder_type="artifact", rank=1)
-        # Set arete to 0 instead of deleting to avoid triggering a separate bug
-        # in clean() where None < rank causes TypeError
-        data["arete"] = "0"
-        data["effects-0-select"] = str(self.effect.pk)
+        data["arete"] = ""
 
         form = WonderForm(data=data)
-        # Check arete validation specifically
-        if not form.is_valid():
-            self.assertNotIn("Charms and Talismans must have Arete ratings", str(form.errors))
+
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        self.assertIsInstance(form.save(), Artifact)
 
     def test_resonance_total_must_match_or_exceed_rank(self):
         """Test that total resonance must be >= rank."""

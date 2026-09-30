@@ -8,18 +8,13 @@ from items.registry import registry
 
 
 class _ItemCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    """The owner comes from prepare_created_object (creator, or none when shared)."""
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
-
-    def form_valid(self, form):
-        # Set owner to current user if not already set
-        if not form.instance.owner:
-            form.instance.owner = self.request.user
-        return super().form_valid(form)
 
 
 ItemCreateView = registry.view("items.ItemModel", "create")
