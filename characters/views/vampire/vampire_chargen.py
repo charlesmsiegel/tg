@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.urls import reverse
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
@@ -26,6 +26,7 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
+from characters.views.vampire.vampire import VampireDetailView
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.mixins import (
     ScopedCreationFormMixin,
@@ -257,4 +258,4 @@ class VampireCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = Vampire
     key_property = "creation_status"
-    default_redirect = DetailView
+    default_redirect = VampireDetailView

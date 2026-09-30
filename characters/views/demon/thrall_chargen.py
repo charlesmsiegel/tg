@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import FormView, UpdateView
 
 from characters.chargen.registry import WorkflowViews
 from characters.chargen.transitions import advance
@@ -21,6 +21,7 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
+from characters.views.demon.thrall import ThrallDetailView
 from core.mixins import (
     ScopedCreationFormMixin,
     SpecialUserMixin,
@@ -153,4 +154,4 @@ class ThrallCharacterCreationView(HumanCharacterCreationView):
     view_mapping = WorkflowViews()
     model_class = Thrall
     key_property = "creation_status"
-    default_redirect = DetailView
+    default_redirect = ThrallDetailView
