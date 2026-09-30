@@ -637,17 +637,16 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageM
         return kwargs
 
     def form_valid(self, form):
-        # Check if request already exists
-        if WeeklyXPRequest.objects.filter(character=form.character, week=form.week).exists():
+        # submit() files the request once; a double submit finds the first one.
+        self.object = form.submit()
+        if self.object is None:
             messages.error(
                 self.request,
                 f"XP request already exists for {form.character.name} for this week.",
             )
             return redirect("game:week:detail", pk=form.week.pk)
-
-        # player_save() only prepares the instance; ModelFormMixin saves it once.
-        form.player_save(commit=False)
-        return super().form_valid(form)
+        messages.success(self.request, self.success_message)
+        return redirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse("game:week:detail", kwargs={"pk": self.object.week.pk})
@@ -679,7 +678,13 @@ class WeeklyXPRequestApproveView(LoginRequiredMixin, View):
         )
 
         if form.is_valid():
-            form.st_save()
+            try:
+                form.st_save()
+            except ValueError:
+                # Approved by another storyteller after the check above (approve() locks
+                # the row and re-checks).
+                messages.warning(request, "This XP request has already been approved.")
+                return redirect("game:weekly_xp_request:detail", pk=xp_request.pk)
             messages.success(
                 request,
                 f"XP request for {xp_request.character.name} approved successfully! "

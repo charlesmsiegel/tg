@@ -162,12 +162,13 @@ For each `(character, week)` pair:
    `WeeklyXPRequestView`, owner only). `WeeklyXPRequestForm.player_save()` always sets
    `finishing=True`; the player may also claim `learning`, `rp`, `focus` and
    `standingout`, each of which needs a finished scene of that week
-   (`WeeklyXPRequest.clean()` and the form's `clean()`).
+   (`WeeklyXPRequest.clean()` and the form's `clean()`). A character has at most one
+   request per week (unique constraint `unique_weekly_xp_request`).
 2. The ST reviews it (`accounts:weekly_xp_approval`, `WeeklyXPApprovalView`), may change
    the categories, and saves. The approver must pass `require_spending_approver` (see
    [Deciding a spend](#deciding-a-spend)). `WeeklyXPRequest.approve()` locks the request,
-   raises `ValueError` if it is already approved, sets `approved`, and adds `total_xp()`
-   (1 XP per true category) to the character.
+   raises `ValueError` if it is already approved (the views report it), sets `approved`,
+   and adds `total_xp()` (1 XP per true category) to the character under a row lock.
 
 The management command `process_weekly_xp` can create the week, record its
 participating non-NPC characters on `Week.characters`, and create a finishing-only

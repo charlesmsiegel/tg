@@ -145,8 +145,10 @@ The template hides a form whose `gameline` choices are empty.
 - `clean()` raises "Must include scene for any XP claimed" when a claimed criterion has
   no scene.
 - `player_save(commit=True)`: sets `finishing=True`, `week` and `character` on the
-  instance and saves it when `commit`. `WeeklyXPRequestCreateView` calls it with
-  `commit=False` and lets `CreateView` save once.
+  instance and saves it when `commit`.
+- `submit()`: files the player's request once through `player_save`; returns `None`
+  when the character already has a request for the week, including when a concurrent
+  submit wins the `(week, character)` unique constraint. Both create views call it.
 - `st_save()`: passes the cleaned criteria and scenes to `WeeklyXPRequest.approve`,
   which awards the XP. It raises `ValueError` if the request is already approved.
 

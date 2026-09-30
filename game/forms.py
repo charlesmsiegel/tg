@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 
 from characters.forms.core.xp import XPForm
@@ -541,6 +543,27 @@ class WeeklyXPRequestForm(forms.ModelForm):
         if commit:
             self.instance.save()
         return self.instance
+
+    def already_filed(self):
+        return WeeklyXPRequest.objects.filter(week=self.week, character=self.character).exists()
+
+    def submit(self):
+        """File the player's request; None when the week already has one for the character.
+
+        The (week, character) constraint settles a double submit: the losing save fails
+        model validation or the insert, and the caller reports the request already filed.
+        """
+        if self.already_filed():
+            return None
+        instance = self.player_save(commit=False)
+        try:
+            with transaction.atomic():
+                instance.save()
+        except (IntegrityError, ValidationError):
+            if self.already_filed():
+                return None
+            raise
+        return instance
 
     def st_save(self, commit=True):
         """Approve the XP request and award XP to the character.

@@ -1246,6 +1246,14 @@ class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
             models.Index(fields=["character", "week"]),
             models.Index(fields=["approved"]),
         ]
+        # One request per character and week (tg_schema 0010 removed older duplicates).
+        constraints = [
+            models.UniqueConstraint(
+                fields=["week", "character"],
+                name="unique_weekly_xp_request",
+                violation_error_message="This character already has an XP request for this week.",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.character.name} request for {self.week}"
