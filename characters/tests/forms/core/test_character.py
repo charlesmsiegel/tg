@@ -14,6 +14,7 @@ from django.test import TestCase
 
 from characters.forms.core import LimitedHumanEditForm
 from characters.models.core import Human
+from core.templatetags.sanitize_text import sanitize_html
 
 
 class TestLimitedHumanEditForm(TestCase):
@@ -94,8 +95,6 @@ class TestCharacterFormValidation(TestCase):
         not form-level sanitization. This test verifies the form accepts the data
         and that the sanitize_html filter properly strips dangerous HTML.
         """
-        from core.templatetags.sanitize_text import sanitize_html
-
         human = Human.objects.create(
             name="Test",
             owner=self.user,

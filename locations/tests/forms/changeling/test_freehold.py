@@ -9,6 +9,7 @@ Tests cover:
 - Holdings requirement calculation
 """
 
+from django.forms import CheckboxSelectMultiple, HiddenInput
 from django.test import TestCase
 
 from characters.tests.utils import changeling_setup
@@ -78,8 +79,6 @@ class TestFreeholdFormBasics(TestFreeholdFormSetup):
     def test_powers_widget_is_checkbox_select_multiple(self):
         """Test that powers field uses CheckboxSelectMultiple widget."""
         form = FreeholdForm()
-
-        from django.forms import CheckboxSelectMultiple
 
         self.assertIsInstance(form.fields["powers"].widget, CheckboxSelectMultiple)
 
@@ -525,7 +524,6 @@ class TestFreeholdFormEditing(TestFreeholdFormSetup):
         form = FreeholdForm(instance=freehold)
 
         # For non-academy, academy_ability should be hidden
-        from django.forms import HiddenInput
 
         self.assertIsInstance(form.fields["academy_ability"].widget, HiddenInput)
 

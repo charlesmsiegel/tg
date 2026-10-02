@@ -3,7 +3,14 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.changeling.changeling import Changeling
 from characters.models.core.attribute_block import Attribute
+from characters.models.demon.demon import Demon
+from characters.models.demon.thrall import Thrall
+from characters.models.hunter.hunter import Hunter
+from characters.models.vampire.vampire import Vampire
+from characters.models.werewolf.garou import Werewolf
+from characters.models.wraith.wraith import Wraith
 from characters.services.xp_spending import XPSpendingServiceFactory
 
 
@@ -20,14 +27,6 @@ class GamelineAttributeXPSpendTest(TestCase):
         return service.spend("Attribute", self.strength)
 
     def test_attribute_spend_for_each_gameline(self):
-        from characters.models.changeling.changeling import Changeling
-        from characters.models.demon.demon import Demon
-        from characters.models.demon.thrall import Thrall
-        from characters.models.hunter.hunter import Hunter
-        from characters.models.vampire.vampire import Vampire
-        from characters.models.werewolf.garou import Werewolf
-        from characters.models.wraith.wraith import Wraith
-
         for model in (Vampire, Werewolf, Wraith, Changeling, Demon, Thrall, Hunter):
             with self.subTest(model=model.__name__):
                 result = self.spend_attribute(model)

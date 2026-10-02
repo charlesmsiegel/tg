@@ -5,8 +5,11 @@ from html.parser import HTMLParser
 from types import SimpleNamespace
 
 from django import forms
+from django.contrib.auth.models import AnonymousUser
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase
+
+from characters.chargen import get_workflow
 
 
 class ScriptParser(HTMLParser):
@@ -32,8 +35,6 @@ class ScriptParser(HTMLParser):
 
 class StaticPageConfigurationTests(SimpleTestCase):
     def test_chargen_templates_do_not_display_developer_comments(self):
-        from django.contrib.auth.models import AnonymousUser
-
         for template in (
             "core/form.html",
             "characters/core/ability_block/status.html",
@@ -53,7 +54,6 @@ class StaticPageConfigurationTests(SimpleTestCase):
     def test_registered_vampire_virtues_has_no_page_script(self):
         # The interactive (htmx) Vampire workflow replaced vampire-virtues.js
         # with the Alpine pool and the server validator.
-        from characters.chargen import get_workflow
 
         step = next(step for step in get_workflow("vampire").steps if step.key == "virtues")
         self.assertEqual(ScriptParser(render_to_string(step.template)).scripts, [])

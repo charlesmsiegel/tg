@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from accounts.dashboard import ProfileDashboard
 from characters.models.core import Human
-from game.models import Chronicle, Gameline, Scene, STRelationship, UserSceneReadStatus
+from game.models import Chronicle, Gameline, Scene, Story, STRelationship, UserSceneReadStatus
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
@@ -181,8 +181,6 @@ class TestHeadStorytellerDashboard(TestCase):
 
 class TestStoryXPQueue(TestCase):
     def test_storyteller_sees_their_chronicles_stories_and_unassigned_ones(self):
-        from game.models import Story
-
         head = User.objects.create_user("story-head")
         mine = Chronicle.objects.create(name="Mine", head_st=head)
         theirs = Chronicle.objects.create(name="Theirs")

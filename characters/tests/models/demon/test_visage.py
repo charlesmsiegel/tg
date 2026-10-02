@@ -116,8 +116,6 @@ class VisageHouseRelationshipTests(TestCase):
 
     def test_visage_cascade_on_house_delete(self):
         """Deleting house cascades to delete visages with that house."""
-        from characters.models.demon.visage import Visage
-
         self.visage.house = self.house
         self.visage.save()
         visage_id = self.visage.id

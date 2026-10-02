@@ -7,7 +7,7 @@ from django.urls import reverse
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.fellowship import SorcererFellowship
-from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+from characters.models.mage.sorcerer import LinearMagicPath, PathRating, Sorcerer
 from characters.tests.utils import mage_setup
 from game.models import Chronicle
 
@@ -236,7 +236,6 @@ class TestSorcererRitualView(TestCase):
             willpower=5,
         )
         # Add path rating
-        from characters.models.mage.sorcerer import PathRating
 
         PathRating.objects.create(
             character=self.sorcerer,

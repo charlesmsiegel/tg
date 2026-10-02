@@ -7,6 +7,7 @@ from django.views.generic import DetailView, ListView
 from core.access_policy import authorize_route
 from core.cache import CACHE_TIMEOUT_LONG, cache_page_per_visitor
 from core.permissions import Permission, PermissionManager
+from widgets.widgets.formset_manager import render_formset_manager_script
 
 
 @method_decorator(cache_page_per_visitor(CACHE_TIMEOUT_LONG), name="dispatch")
@@ -161,7 +162,6 @@ class MultipleFormsetsMixin:
 
         # Compatibility output for standalone formset consumers. Full pages
         # combine formset media in the shared base template.
-        from widgets.widgets.formset_manager import render_formset_manager_script
 
         js_code = render_formset_manager_script()
 

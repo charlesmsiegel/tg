@@ -9,6 +9,7 @@ This module provides freebie spending services for Wraith: The Oblivion characte
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.wraith.arcanos import Arcanos
 
 from .base import (
     FreebieApplyResult,
@@ -178,8 +179,6 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _apply_arcanos(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Arcanos freebie spending."""
         if deny:
-            from characters.models.wraith.arcanos import Arcanos
-
             arcanos = Arcanos.objects.filter(name=freebie_request.trait_name).first()
             if arcanos:
                 current_val = getattr(self.character, arcanos.property_name, 0)

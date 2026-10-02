@@ -4,8 +4,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.core.background_block import Background
 from game.models import Chronicle
-from locations.models.mage.chantry import Chantry
+from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.tests.views.mage.chantry_fixtures import add_chantry_actors
 
 
 class TestChantryListView(TestCase):
@@ -362,10 +364,6 @@ class TestLoadExamplesView(TestCase):
     url = "/locations/mage/ajax/load_chantry_examples/"
 
     def setUp(self):
-        from characters.models.core.background_block import Background
-        from locations.models.mage.chantry import ChantryBackgroundRating
-        from locations.tests.views.mage.chantry_fixtures import add_chantry_actors
-
         add_chantry_actors(self)
         self.outsider = User.objects.create_user("chantry_outsider")
         self.chantry = Chantry.objects.create(

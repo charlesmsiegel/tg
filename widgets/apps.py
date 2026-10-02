@@ -4,7 +4,14 @@ Django App Configuration for Widgets App
 Auto-registers the AJAX endpoint URL so users don't need to modify urls.py
 """
 
+import importlib
+import warnings
+
 from django.apps import AppConfig
+from django.conf import settings
+from django.urls import path
+
+from .views import auto_chained_ajax_view
 
 
 class WidgetsConfig(AppConfig):
@@ -18,17 +25,9 @@ class WidgetsConfig(AppConfig):
 
     def _register_url(self):
         """Inject our AJAX endpoint into the root URLconf."""
-        import importlib
-
-        from django.conf import settings
-        from django.urls import path
-
         try:
             # Import the root URL configuration
             urlconf_module = importlib.import_module(settings.ROOT_URLCONF)
-
-            # Import our view
-            from .views import auto_chained_ajax_view
 
             # Check if we've already added it (happens during testing/reloads)
             existing_names = [
@@ -48,8 +47,6 @@ class WidgetsConfig(AppConfig):
         except Exception as e:
             # Don't crash the app if URL registration fails
             # (might happen in some test scenarios)
-            import warnings
-
             warnings.warn(
                 f"widgets: Could not auto-register URL: {e}. "
                 "You may need to add the URL manually.",

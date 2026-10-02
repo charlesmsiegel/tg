@@ -1,6 +1,7 @@
 """Tests for character_template forms module."""
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
@@ -180,8 +181,6 @@ class CharacterTemplateFormTest(TestCase):
 
     def test_form_with_unauthenticated_user(self):
         """Test form behavior when user is not authenticated."""
-        from django.contrib.auth.models import AnonymousUser
-
         anon = AnonymousUser()
         form = CharacterTemplateForm(user=anon)
         # Should not crash, just won't filter chronicles

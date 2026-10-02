@@ -15,10 +15,14 @@ Works with all objects that inherit from core.models.Model including:
 - And any other custom objects
 """
 
+import csv
 from collections import defaultdict
 
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
+from game.models import Chronicle
 
 
 class Command(BaseCommand):
@@ -142,8 +146,6 @@ class Command(BaseCommand):
             queryset = queryset.filter(chronicle_id=options["chronicle"])
 
         if options["owner"]:
-            from django.contrib.auth.models import User
-
             try:
                 user = User.objects.get(username=options["owner"])
                 queryset = queryset.filter(owner=user)
@@ -171,8 +173,6 @@ class Command(BaseCommand):
                 # Get owner and chronicle names
                 owner_name = "None"
                 if owner_id:
-                    from django.contrib.auth.models import User
-
                     try:
                         owner_name = User.objects.get(id=owner_id).username
                     except User.DoesNotExist:
@@ -180,8 +180,6 @@ class Command(BaseCommand):
 
                 chronicle_name = "None"
                 if chronicle_id:
-                    from game.models import Chronicle
-
                     try:
                         chronicle_name = Chronicle.objects.get(id=chronicle_id).name
                     except Chronicle.DoesNotExist:
@@ -310,8 +308,6 @@ class Command(BaseCommand):
 
     def export_duplicates(self, duplicates, filename):
         """Export duplicates to CSV file."""
-        import csv
-
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
                 "type",

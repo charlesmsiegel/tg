@@ -77,6 +77,7 @@ in the same diff, with the reason in the commit message.
 |-------|-------|
 | `core/tests/security/test_route_policies.py` | One policy per routed view; no stale entries; `PUBLIC_READ` views read-only; routers check first |
 | `core/tests/test_action_guard.py` | No POST on detail views; no dispatch on posted button names |
+| `core/tests/test_import_graph.py` | No imports inside functions (except `AppConfig.ready()` signal registration); module import graph acyclic |
 | `characters/tests/test_view_rules_guard.py` | `form_invalid` never calls `form_valid` |
 | `core/tests/test_query_budgets.py` | `SHEET_CEILINGS` per concrete character model, `SCENE_CEILING`, `INDEX_CEILING`, and constant cost as rows grow |
 | `core/tests/test_template_policy.py` | Inline-style budget, `<style>` allowlist, extends depth |

@@ -1,7 +1,5 @@
 from django.db import models
 
-from characters.models.core import Character
-
 from .location import LocationModel
 
 
@@ -10,7 +8,7 @@ class City(LocationModel):
     gameline = "wod"
 
     population = models.IntegerField(default=0)
-    characters = models.ManyToManyField(Character, blank=True)
+    characters = models.ManyToManyField("characters.Character", blank=True)
     mood = models.TextField(blank=True, null=True)
     theme = models.TextField(blank=True, null=True)
     media = models.TextField(blank=True, null=True)

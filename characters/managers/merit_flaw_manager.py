@@ -5,7 +5,13 @@ Extracts merit/flaw management logic from MeritFlawBlock mixin to
 implement composition over inheritance.
 """
 
+from django.apps import apps
 from django.db.models import F, Q, Sum
+
+
+def _model(name):
+    """A characters model, looked up when called so this module imports no models."""
+    return apps.get_model("characters", name)
 
 
 class MeritFlawManager:
@@ -40,12 +46,10 @@ class MeritFlawManager:
         Returns:
             int: Number of languages the character knows
         """
-        from characters.models.core.merit_flaw_block import MeritFlaw
-
         mf_list = self.character.merits_and_flaws.all().values_list("name", flat=True)
         if "Language" not in mf_list:
             return 0
-        language_rating = self.mf_rating(MeritFlaw.objects.get(name="Language"))
+        language_rating = self.mf_rating(_model("MeritFlaw").objects.get(name="Language"))
         if "Natural Linguist" in mf_list:
             language_rating *= 2
         return language_rating
@@ -70,10 +74,10 @@ class MeritFlawManager:
         Returns:
             bool: True if successfully added, False if rating is invalid
         """
-        from characters.models.core.merit_flaw_block import MeritFlawRating
-
         if rating in mf.get_ratings():
-            mfr, _ = MeritFlawRating.objects.get_or_create(character=self.character, mf=mf)
+            mfr, _ = _model("MeritFlawRating").objects.get_or_create(
+                character=self.character, mf=mf
+            )
             mfr.rating = rating
             mfr.save()
             return True
@@ -92,22 +96,21 @@ class MeritFlawManager:
         Returns:
             QuerySet: Filtered MeritFlaw queryset
         """
-        from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
-        from game.models import ObjectType
-
         character_type = self.character.type
         if character_type in ["fomor"]:
             character_type = "human"
 
         # Get merits/flaws not yet taken
-        new_mfs = MeritFlaw.objects.exclude(pk__in=self.character.merits_and_flaws.all())
+        new_mfs = _model("MeritFlaw").objects.exclude(pk__in=self.character.merits_and_flaws.all())
 
         # Get merits/flaws taken but not at max rating
-        non_max_mf = MeritFlawRating.objects.filter(character=self.character).exclude(
-            Q(rating=F("mf__max_rating"))
+        non_max_mf = (
+            _model("MeritFlawRating")
+            .objects.filter(character=self.character)
+            .exclude(Q(rating=F("mf__max_rating")))
         )
 
-        had_mfs = MeritFlaw.objects.filter(pk__in=non_max_mf)
+        had_mfs = _model("MeritFlaw").objects.filter(pk__in=non_max_mf)
         mf = new_mfs | had_mfs
 
         # If at max flaws, only show merits (positive ratings)
@@ -115,7 +118,7 @@ class MeritFlawManager:
             mf = mf.filter(max_rating__gt=0)
 
         # Filter by character type
-        character_type_object, _ = ObjectType.objects.get_or_create(
+        character_type_object, _ = apps.get_model("game", "ObjectType").objects.get_or_create(
             name=character_type, defaults={"type": "char", "gameline": "wod"}
         )
         return mf.filter(allowed_types=character_type_object)
@@ -130,11 +133,9 @@ class MeritFlawManager:
         Returns:
             int: Rating value, or 0 if not taken
         """
-        from characters.models.core.merit_flaw_block import MeritFlawRating
-
         try:
-            return MeritFlawRating.objects.get(character=self.character, mf=mf).rating
-        except MeritFlawRating.DoesNotExist:
+            return _model("MeritFlawRating").objects.get(character=self.character, mf=mf).rating
+        except _model("MeritFlawRating").DoesNotExist:
             return 0
 
     def has_max_flaws(self):
@@ -153,10 +154,10 @@ class MeritFlawManager:
         Returns:
             int: Sum of all negative merit/flaw ratings
         """
-        from characters.models.core.merit_flaw_block import MeritFlawRating
-
-        result = MeritFlawRating.objects.filter(character=self.character, rating__lt=0).aggregate(
-            Sum("rating")
+        result = (
+            _model("MeritFlawRating")
+            .objects.filter(character=self.character, rating__lt=0)
+            .aggregate(Sum("rating"))
         )
         return result["rating__sum"] or 0
 
@@ -167,10 +168,10 @@ class MeritFlawManager:
         Returns:
             int: Sum of all positive merit/flaw ratings
         """
-        from characters.models.core.merit_flaw_block import MeritFlawRating
-
-        result = MeritFlawRating.objects.filter(character=self.character, rating__gt=0).aggregate(
-            Sum("rating")
+        result = (
+            _model("MeritFlawRating")
+            .objects.filter(character=self.character, rating__gt=0)
+            .aggregate(Sum("rating"))
         )
         return result["rating__sum"] or 0
 

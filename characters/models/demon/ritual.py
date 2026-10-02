@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from characters.models.demon.lore import Lore
 from core.models import Model
 
 
@@ -108,8 +109,6 @@ class Ritual(Model):
 
     def get_secondary_lores(self):
         """Get list of secondary lore objects with ratings."""
-        from characters.models.demon.lore import Lore
-
         lores = []
         for req in self.secondary_lore_requirements:
             try:

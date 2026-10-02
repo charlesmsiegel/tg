@@ -188,6 +188,7 @@ message.
 | [`core/tests/security/test_route_policies.py`](../../core/tests/security/test_route_policies.py) | Every project URL has a reviewed policy in `core/route_policy_manifest.py`. See [Authorization](../architecture/authorization.md). |
 | [`core/tests/test_action_guard.py`](../../core/tests/test_action_guard.py) | Views do not pick an action from POST keys, and detail views do not handle POST. |
 | [`characters/tests/test_view_rules_guard.py`](../../characters/tests/test_view_rules_guard.py) | Views never route an invalid form into `form_valid`. |
+| [`core/tests/test_import_graph.py`](../../core/tests/test_import_graph.py) | Imports sit at module scope (only the `AppConfig.ready()` signal registrations are inside a function) and the module-level import graph of the project packages is acyclic. See [Imports](code-style.md#imports) for how to break a cycle instead. |
 | [`core/tests/test_tl_css.py`](../../core/tests/test_tl_css.py) | Every block in `tl.css` is closed, so a bad merge cannot swallow later rules into an `@media` block. |
 | [`core/tests/test_htmx.py`](../../core/tests/test_htmx.py) | The htmx helpers, and the SRI hashes of the vendored libraries in `source_static/vendor/` match the bytes and `VENDOR.md`. |
 | [`tg_schema/tests/test_schema_helpers.py`](../../tg_schema/tests/test_schema_helpers.py) | `tg_schema` migrations import no app model and survive a later rename or removal. See [Schema migrations](../architecture/schema-migrations.md). |

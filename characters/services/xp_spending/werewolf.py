@@ -12,6 +12,8 @@ This module provides XP spending services for Werewolf: The Apocalypse character
 from django.utils import timezone
 
 from characters.costs import get_xp_cost
+from characters.models.werewolf.gift import Gift
+from characters.models.werewolf.rite import Rite
 
 from .base import (
     HumanXPSpendingService,
@@ -148,8 +150,6 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
     @applier("gift")
     def _apply_gift(self, xp_request, approver) -> XPApplyResult:
         """Apply approved gift XP spending."""
-        from characters.models.werewolf.gift import Gift
-
         gift = Gift.objects.get(name=xp_request.trait_name)
         self.character.gifts.add(gift)
 
@@ -168,8 +168,6 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
     @applier("rite")
     def _apply_rite(self, xp_request, approver) -> XPApplyResult:
         """Apply approved rite XP spending."""
-        from characters.models.werewolf.rite import Rite
-
         rite = Rite.objects.get(name=xp_request.trait_name)
         self.character.rites_known.add(rite)
 

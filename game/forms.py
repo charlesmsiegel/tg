@@ -62,7 +62,6 @@ class SceneCreationForm(forms.Form):
         ).order_by("name")
 
         # Filter gameline choices to only those with STs for this chronicle
-        from game.models import STRelationship
 
         if user is not None and (
             user.is_staff or user.is_superuser or chronicle.head_st_id == user.pk

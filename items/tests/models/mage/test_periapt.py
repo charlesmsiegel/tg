@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from characters.models.mage.effect import Effect
 from game.models import Chronicle
 from items.models.mage.periapt import Periapt
 
@@ -20,8 +21,6 @@ class TestPeriapt(TestCase):
 
     def test_set_power(self):
         """Test setting a power on a periapt."""
-        from characters.models.mage.effect import Effect
-
         effect = Effect.objects.create(name="Test Effect")
         self.assertFalse(self.periapt.has_power())
         self.assertTrue(self.periapt.set_power(effect))
@@ -29,8 +28,6 @@ class TestPeriapt(TestCase):
 
     def test_has_power(self):
         """Test checking if periapt has a power."""
-        from characters.models.mage.effect import Effect
-
         self.assertFalse(self.periapt.has_power())
         effect = Effect.objects.create(name="Test Effect")
         self.periapt.power = effect

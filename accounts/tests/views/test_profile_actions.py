@@ -7,7 +7,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from characters.models.core import Ability, Attribute
 from characters.models.core.human import Human
+from characters.models.mage.effect import Effect
+from characters.models.mage.rote import Rote
 from game.forms import WeeklyXPRequestForm
 from game.models import (
     Chronicle,
@@ -148,10 +151,6 @@ class TestObjectApprovalView(TestCase):
         self.assertEqual(self.item.status, "App")
 
     def test_st_can_approve_rote(self):
-        from characters.models.core import Ability, Attribute
-        from characters.models.mage.effect import Effect
-        from characters.models.mage.rote import Rote
-
         STRelationship.objects.create(
             user=self.st_user,
             chronicle=self.chronicle,

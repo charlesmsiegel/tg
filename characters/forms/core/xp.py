@@ -6,6 +6,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.utils import get_character_object_type
 from core.validators import validate_image_upload_size
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
@@ -101,8 +102,6 @@ class XPForm(ChainedSelectMixin, forms.Form):
                 ]
                 example_choices_map[cat_value] = new_bg_choices + existing_bg_choices
             elif cat_value == "MeritFlaw":
-                from characters.utils import get_character_object_type
-
                 chartype = get_character_object_type(char.type)
                 filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
                 affordable_mfs = []
@@ -195,7 +194,6 @@ class XPForm(ChainedSelectMixin, forms.Form):
 
     def mf_valid(self):
         # Check if character has any affordable merit/flaws
-        from characters.utils import get_character_object_type
 
         chartype = get_character_object_type(self.character.type)
         filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)

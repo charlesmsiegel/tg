@@ -1,7 +1,7 @@
 from django import forms
 
 from core.constants import GameLine
-from core.model_registry import get_registry
+from core.registries import get_registry
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 

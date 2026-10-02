@@ -4,6 +4,18 @@ Character utilities.
 This module contains utility functions used across the characters app.
 """
 
+from game.models import ObjectType
+
+
+def trait_property_name(trait_name):
+    """Property name of a built-in trait (a virtue, a Hekau path) from its display name.
+
+    The chained freebie forms name these traits by property and show
+    ``property_name.replace("_", " ").title()``; this is the inverse, used when a
+    spending record stores only the display name.
+    """
+    return trait_name.strip().lower().replace(" ", "_")
+
 
 def get_character_object_type(character_type, gameline="wod"):
     """Get or create an ObjectType for a character type.
@@ -24,8 +36,6 @@ def get_character_object_type(character_type, gameline="wod"):
         >>> obj_type = get_character_object_type("vtm_human")  # Returns "human" type
         >>> obj_type = get_character_object_type("vampire")
     """
-    from game.models import ObjectType
-
     # Normalize human types (vtm_human, mta_human, etc. all become "human")
     # Use endswith("_human") or exact match to avoid false positives with
     # strings like "inhuman" or "superhuman"

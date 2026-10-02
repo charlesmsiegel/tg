@@ -10,6 +10,7 @@ Tests cover:
 - Data attributes for JavaScript filtering
 """
 
+import json
 import re
 
 from django.contrib.auth.models import User
@@ -163,7 +164,6 @@ class TestCharacterTypeFiltering(CharacterCreationFormTestCase):
         form = CharacterCreationForm(user=self.st_user)
 
         # Check the data-types-by-gameline for excluded group types
-        import json
 
         types_data = json.loads(
             form.fields["char_type"].widget.attrs.get("data-types-by-gameline", "{}")
@@ -188,8 +188,6 @@ class TestCharacterTypeFiltering(CharacterCreationFormTestCase):
         """Non-character types (spheres, disciplines, etc.) are excluded."""
         form = CharacterCreationForm(user=self.st_user)
 
-        import json
-
         types_data = json.loads(
             form.fields["char_type"].widget.attrs.get("data-types-by-gameline", "{}")
         )
@@ -212,8 +210,6 @@ class TestCharacterTypeFiltering(CharacterCreationFormTestCase):
     def test_valid_character_types_included(self):
         """Valid character types are included in the form."""
         form = CharacterCreationForm(user=self.st_user)
-
-        import json
 
         types_data = json.loads(
             form.fields["char_type"].widget.attrs.get("data-types-by-gameline", "{}")

@@ -14,6 +14,7 @@ from django.test import TestCase
 
 from game.models import Chronicle, Gameline, ObjectType, STRelationship
 from items.forms.core.item_creation import ItemCreationForm
+from widgets.widgets.chained import ChainedSelect
 
 
 class TestItemCreationFormSetup(TestCase):
@@ -84,16 +85,12 @@ class TestItemCreationFormBasics(TestItemCreationFormSetup):
 
     def test_gameline_field_uses_chained_select(self):
         """Test that gameline field uses ChainedSelect widget."""
-        from widgets.widgets.chained import ChainedSelect
-
         form = ItemCreationForm(user=self.regular_user)
 
         self.assertIsInstance(form.fields["gameline"].widget, ChainedSelect)
 
     def test_item_type_field_uses_chained_select(self):
         """Test that item_type field uses ChainedSelect widget."""
-        from widgets.widgets.chained import ChainedSelect
-
         form = ItemCreationForm(user=self.regular_user)
 
         self.assertIsInstance(form.fields["item_type"].widget, ChainedSelect)

@@ -2,8 +2,10 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from game.models import ObjectType
+from game.models import Chronicle, ObjectType
 from items.models.core.item import ItemModel
+from items.models.mage import Grimoire, Wonder
+from items.models.werewolf import Fetish
 
 
 class TestItemIndexView(TestCase):
@@ -65,10 +67,6 @@ class TestItemIndexGrouping(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        from game.models import Chronicle
-        from items.models.mage import Grimoire, Wonder
-        from items.models.werewolf import Fetish
-
         cls.staff = get_user_model().objects.create_user("st", is_staff=True)
         cls.chronicle = Chronicle.objects.create(name="Ashes of Hyde Park")
         Wonder.objects.create(name="Astrolabe", rank=3, chronicle=cls.chronicle)

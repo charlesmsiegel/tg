@@ -79,7 +79,8 @@ reasons and a review checklist. The most important ones:
   `CachedListView`; never Django's `cache_page`.
 - **Tests.** Every change ships tests next to the code it covers (`<app>/tests/`, mirroring
   the source path), including a denial test for each new route. Guard files (query ceilings,
-  template policy, route policies, CRUD field baselines) change only on purpose.
+  template policy, route policies, import placement, CRUD field baselines) change only on
+  purpose.
 - **Style.** black and ruff (the only import sorter) at 100 columns, through pre-commit; keep
   `ruff check .` clean.
 

@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 
 from core.permissions import Role, VisibilityTier
@@ -494,8 +494,6 @@ class IsSTTagTest(TestCase):
 
     def test_returns_false_for_anonymous_user(self):
         """Test tag returns False for anonymous users."""
-        from django.contrib.auth.models import AnonymousUser
-
         request = self.factory.get("/")
         request.user = AnonymousUser()
         context = {"request": request}

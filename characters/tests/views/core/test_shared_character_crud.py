@@ -15,7 +15,12 @@ from django.utils.module_loading import import_string
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import HtRHuman
 from characters.models.mage.mage import Mage
+from characters.views.core.character import CharacterDetailView
 from characters.views.hunter.htrhuman import HtRHumanDetailView, HtRHumanUpdateView
+from characters.views.mage.mage import MageCreateView, MageUpdateView
+from characters.views.vampire.ghoul import GhoulUpdateView
+from characters.views.vampire.revenant import RevenantUpdateView
+from characters.views.vampire.vampire import VampireUpdateView
 from core.permissions import Role
 from game.models import Chronicle, Gameline, Scene, STRelationship
 
@@ -24,8 +29,6 @@ BASELINE = json.loads(Path(__file__).with_name("shared_character_crud_baseline.j
 
 class CharacterCRUDFieldContracts(SimpleTestCase):
     def test_all_migrated_details_share_character_actions_but_references_do_not(self):
-        from characters.views.core.character import CharacterDetailView
-
         details = {
             "changeling.changeling": "ChangelingDetailView",
             "changeling.ctdhuman": "CtDHumanDetailView",
@@ -121,8 +124,6 @@ class CharacterCRUDFieldContracts(SimpleTestCase):
                             self.assertNotIn("status", form.base_fields)
 
     def test_vampire_full_form_has_only_existing_model_fields(self):
-        from characters.views.vampire.vampire import VampireUpdateView
-
         view = VampireUpdateView()
         view.setup(RequestFactory().get("/"))
         view.request.user = object()
@@ -137,8 +138,6 @@ class CharacterCRUDFieldContracts(SimpleTestCase):
         self.assertNotIn("current_willpower", form.base_fields)
 
     def test_mage_time_is_declared_once(self):
-        from characters.views.mage.mage import MageCreateView, MageUpdateView
-
         self.assertEqual(MageCreateView.FORM_FIELDS.count("time"), 1)
         self.assertEqual(MageUpdateView.fields.count("time"), 1)
 
@@ -209,10 +208,6 @@ class CharacterCRUDSecurityTests(TestCase):
             )
 
     def test_vampire_family_rejects_locked_owner_and_unrelated_direct_writes(self):
-        from characters.views.vampire.ghoul import GhoulUpdateView
-        from characters.views.vampire.revenant import RevenantUpdateView
-        from characters.views.vampire.vampire import VampireUpdateView
-
         for view in (GhoulUpdateView, RevenantUpdateView, VampireUpdateView):
             character = view.model.objects.create(
                 name=view.__name__, owner=self.owner, status="App"

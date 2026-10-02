@@ -1,6 +1,7 @@
 """Tests for sanitize_text template tags."""
 
 from django.test import TestCase
+from django.utils.safestring import SafeString
 
 from core.templatetags.sanitize_text import (
     quote_tag,
@@ -100,8 +101,6 @@ class SanitizeHTMLFilterTest(TestCase):
 
     def test_returns_marked_safe_html(self):
         """Test filter returns marked safe HTML."""
-        from django.utils.safestring import SafeString
-
         html = "<p>Test</p>"
         result = sanitize_html(html)
         self.assertIsInstance(result, SafeString)
@@ -140,8 +139,6 @@ class QuoteTagFilterTest(TestCase):
 
     def test_returns_safe_string(self):
         """Test filter returns a SafeString."""
-        from django.utils.safestring import SafeString
-
         text = 'He said "hello" to her.'
         result = quote_tag(text)
         self.assertIsInstance(result, SafeString)
@@ -351,8 +348,6 @@ class SimpleMarkdownFilterTest(TestCase):
 
     def test_returns_marked_safe_html(self):
         """Test filter returns marked safe HTML."""
-        from django.utils.safestring import SafeString
-
         text = "Test"
         result = simple_markdown(text)
         self.assertIsInstance(result, SafeString)
@@ -467,8 +462,6 @@ class SafePostFilterTest(TestCase):
         self.assertIn('href="http://example.com"', result)
 
     def test_returns_safe_string(self):
-        from django.utils.safestring import SafeString
-
         self.assertIsInstance(safe_post("text"), SafeString)
 
     def test_plain_text_unchanged(self):

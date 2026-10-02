@@ -12,6 +12,8 @@ This module provides freebie spending services for Werewolf: The Apocalypse char
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.werewolf.gift import Gift
+from characters.models.werewolf.rite import Rite
 
 from .base import (
     FreebieApplyResult,
@@ -293,8 +295,6 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_gift(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved gift freebie spending."""
         if deny:
-            from characters.models.werewolf.gift import Gift
-
             gift = Gift.objects.filter(name=freebie_request.trait_name).first()
             if gift:
                 self.character.gifts.remove(gift)
@@ -319,8 +319,6 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_rite(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved rite freebie spending."""
         if deny:
-            from characters.models.werewolf.rite import Rite
-
             rite = Rite.objects.filter(name=freebie_request.trait_name).first()
             if rite:
                 self.character.rites_known.remove(rite)

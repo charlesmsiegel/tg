@@ -23,6 +23,7 @@ from characters.models.core.background_block import Background
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.vampire import Vampire
+from widgets.tests.test_conditional_visibility import RULES, Form
 
 try:
     from playwright.sync_api import sync_playwright
@@ -430,8 +431,6 @@ class VisibilityParityTests(BrowserTestCase):
     """widgets/conditional.js and ConditionalFieldsMixin.field_visibility agree."""
 
     def test_browser_and_server_evaluators_agree(self):
-        from widgets.tests.test_conditional_visibility import RULES, Form
-
         cases = [
             {"category": "-----"},
             {"category": "Willpower"},

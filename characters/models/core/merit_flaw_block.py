@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CheckConstraint, F, Q
+from django.db.models import CheckConstraint, F, Q, Sum
 from django.urls import reverse
 
 from core.models import BaseMeritFlawRating, Model, Number
@@ -144,9 +144,7 @@ class MeritFlawBlock(models.Model):
             object_type = "human"
 
         # Determine type category ('char' for characters, 'loc' for locations)
-        from locations.models.core import LocationModel
-
-        type_category = "loc" if isinstance(self, LocationModel) else "char"
+        type_category = "loc" if self._meta.app_label == "locations" else "char"
 
         return ObjectType.objects.get_or_create(
             name=object_type,
@@ -228,8 +226,6 @@ class MeritFlawBlock(models.Model):
 
     def total_flaws(self):
         """Get the sum of all negative flaw ratings."""
-        from django.db.models import Sum
-
         through_model = self._get_through_model()
         fk_name = self._get_parent_fk_name()
         result = through_model.objects.filter(**{fk_name: self, "rating__lt": 0}).aggregate(
@@ -239,8 +235,6 @@ class MeritFlawBlock(models.Model):
 
     def total_merits(self):
         """Get the sum of all positive merit ratings."""
-        from django.db.models import Sum
-
         through_model = self._get_through_model()
         fk_name = self._get_parent_fk_name()
         result = through_model.objects.filter(**{fk_name: self, "rating__gt": 0}).aggregate(

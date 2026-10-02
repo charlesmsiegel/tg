@@ -1,5 +1,6 @@
 from django.db import models
 
+from characters.models.core.derangement import Derangement
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
 from characters.models.werewolf.gift import Gift, GiftPermission, gifts_by_rank
 from characters.models.werewolf.tribe import Tribe
@@ -74,8 +75,6 @@ class Kinfolk(WtAHuman):
         return self.tribe is not None
 
     def set_tribe(self, tribe):
-        from characters.models.core.derangement import Derangement
-
         for t in Tribe.objects.all():
             self.gift_permissions.remove(
                 GiftPermission.objects.get_or_create(shifter="werewolf", condition=t.name)[0]

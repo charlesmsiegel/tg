@@ -5,6 +5,7 @@ form, service or model method. Tests named ``*_regression`` pin the defects
 the Step 4 spec lists as fixed (they failed before the move).
 """
 
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.test import TestCase
@@ -12,7 +13,26 @@ from django.urls import reverse
 
 from characters.chargen import get_workflow
 from characters.models.core.ability_block import Ability
+from characters.models.core.archetype import Archetype
+from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.human import Human
+from characters.models.core.specialty import Specialty
+from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
+from characters.models.demon.demon import Demon
+from characters.models.demon.thrall import Thrall
+from characters.models.mage.companion import Companion
+from characters.models.mage.fellowship import SorcererFellowship
+from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.mage import Mage, PracticeRating, ResRating
+from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+from characters.models.mage.sphere import Sphere
+from characters.models.vampire.vampire import Vampire
+from characters.models.werewolf.corax import Corax
+from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.kinfolk import Kinfolk
+from characters.models.werewolf.tribe import Tribe
+from characters.rules.limits import DEMON_LORES
 
 
 def position(kind, key):
@@ -92,8 +112,6 @@ class BackgroundStepTests(RuleStepTestCase):
         )
 
     def test_human_background_total(self):
-        from characters.models.core.human import Human
-
         human = self.at("human", Human, "backgrounds")
         response = self.post(human, self.rows((self.resources, 3)))
         self.assert_stays(human, response)
@@ -107,9 +125,6 @@ class BackgroundStepTests(RuleStepTestCase):
         self.assertEqual(BackgroundRating.objects.get(char=human, bg=self.resources).rating, 3)
 
     def kinfolk(self, tribe_name):
-        from characters.models.werewolf.kinfolk import Kinfolk
-        from characters.models.werewolf.tribe import Tribe
-
         tribe = Tribe.objects.create(name=tribe_name)
         return self.at("kinfolk", Kinfolk, "backgrounds", tribe=tribe)
 
@@ -198,8 +213,6 @@ class AttributeAbilityStepTests(RuleStepTestCase):
     }
 
     def test_attribute_messages(self):
-        from characters.models.core.human import Human
-
         human = self.at("human", Human, "attributes")
         response = self.post(human, {**self.ATTRS, "strength": 4})
         self.assert_stays(human, response)
@@ -216,8 +229,6 @@ class AttributeAbilityStepTests(RuleStepTestCase):
 
 class VirtueStepTests(RuleStepTestCase):
     def test_vampire_virtues(self):
-        from characters.models.vampire.vampire import Vampire
-
         vampire = self.at("vampire", Vampire, "virtues")
         data = {"conscience": 3, "self_control": 2, "courage": 3, "conviction": 0, "instinct": 0}
         response = self.post(vampire, {**data, "courage": 1})
@@ -236,9 +247,6 @@ class VirtueStepTests(RuleStepTestCase):
         self.assertEqual((vampire.willpower, vampire.humanity, vampire.path_rating), (3, 4, 0))
 
     def test_demon_and_thrall_virtue_total(self):
-        from characters.models.demon.demon import Demon
-        from characters.models.demon.thrall import Thrall
-
         for kind, model in (("demon", Demon), ("thrall", Thrall)):
             with self.subTest(kind=kind):
                 character = self.at(kind, model, "virtues")
@@ -255,9 +263,6 @@ class VirtueStepTests(RuleStepTestCase):
 
     def test_low_courage_caps_temporary_willpower_regression(self):
         """D1: Demon/Thrall Willpower = Courage keeps temporary <= permanent."""
-        from characters.models.demon.demon import Demon
-        from characters.models.demon.thrall import Thrall
-
         for kind, model in (("demon", Demon), ("thrall", Thrall)):
             with self.subTest(kind=kind):
                 character = self.at(kind, model, "virtues", willpower=3, temporary_willpower=3)
@@ -267,10 +272,7 @@ class VirtueStepTests(RuleStepTestCase):
                 self.assertEqual((character.willpower, character.temporary_willpower), (1, 1))
 
     def test_demon_lores(self):
-        from characters.models.demon.demon import Demon
-
         demon = self.at("demon", Demon, "lores")
-        from characters.rules.limits import DEMON_LORES
 
         lores = dict.fromkeys(DEMON_LORES.fields, 0)
         response = self.post(demon, {**lores, "lore_of_flame": 2})
@@ -285,8 +287,6 @@ class MageStepTests(RuleStepTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        from characters.models.mage.focus import Practice, Tenet
-        from characters.models.mage.sphere import Sphere
 
         cls.met = Tenet.objects.create(name="Met", tenet_type="met")
         cls.per = Tenet.objects.create(name="Per", tenet_type="per")
@@ -297,8 +297,6 @@ class MageStepTests(RuleStepTestCase):
         cls.forces = Sphere.objects.create(name="Forces", property_name="forces")
 
     def mage(self, key, **kwargs):
-        from characters.models.mage.mage import Mage
-
         return self.at("mage", Mage, key, **kwargs)
 
     def focus_data(self, rating, **tenets):
@@ -383,7 +381,6 @@ class MageStepTests(RuleStepTestCase):
             [(r["trait"], r["value"], r["cost"]) for r in mage.spent_freebies],
             [("Arete", 2, 4), ("Arete", 3, 4)],
         )
-        from characters.models.mage.mage import ResRating
 
         self.assertEqual(ResRating.objects.get(mage=mage, resonance__name="Dynamic").rating, 1)
         self.assertEqual(mage.creation_status, position("mage", "spheres") + 1)
@@ -403,8 +400,6 @@ class MageStepTests(RuleStepTestCase):
         self.assertEqual(mage.freebies, 15)
 
     def test_rote_step_requires_a_choice(self):
-        from characters.models.mage.mage import PracticeRating
-
         mage = self.mage("rote", arete=1, forces=1)
         PracticeRating.objects.create(mage=mage, practice=self.practice, rating=1)
         response = self.post(mage, {})
@@ -413,10 +408,6 @@ class MageStepTests(RuleStepTestCase):
 
     def test_detail_specialties_reject_unrequested_stats_regression(self):
         """D12: detail-page specialties only accept stats that need one."""
-        from characters.models.core.attribute_block import Attribute
-        from characters.models.core.specialty import Specialty
-        from characters.models.mage.mage import Mage
-
         Attribute.objects.create(name="Strength", property_name="strength")
         admin = get_user_model().objects.create_superuser("rule-admin")
         mage = Mage.objects.create(name="Detail Mage", owner=self.owner, status="App", strength=4)
@@ -437,14 +428,11 @@ class SorcererStepTests(RuleStepTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        from characters.models.mage.sorcerer import LinearMagicPath
 
         cls.telepathy = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
         cls.alchemy = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
 
     def sorcerer(self, key):
-        from characters.models.mage.sorcerer import Sorcerer
-
         return self.at("sorcerer", Sorcerer, key, sorcerer_type="psychic")
 
     def rows(self, *ratings, path=None):
@@ -485,8 +473,6 @@ class HedgeNuminaTests(RuleStepTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        from characters.models.mage.focus import Practice
-        from characters.models.mage.sorcerer import LinearMagicPath
 
         cls.alchemy = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
         cls.occult = Ability.objects.create(name="Occult", property_name="occult")
@@ -494,8 +480,6 @@ class HedgeNuminaTests(RuleStepTestCase):
         cls.practice.abilities.add(cls.occult)
 
     def sorcerer(self):
-        from characters.models.mage.sorcerer import Sorcerer
-
         return self.at("sorcerer", Sorcerer, "path", sorcerer_type="hedge_mage")
 
     def rows(self, **row):
@@ -522,9 +506,6 @@ class HedgeNuminaTests(RuleStepTestCase):
 
 class FeraStepTests(RuleStepTestCase):
     def test_gifts_need_exactly_three(self):
-        from characters.models.werewolf.corax import Corax
-        from characters.models.werewolf.gift import Gift, GiftPermission
-
         corax = self.at("corax", Corax, "gifts")
         permission = GiftPermission.objects.create(shifter="corax", condition="corax")
         corax.gift_permissions.add(permission)
@@ -542,12 +523,6 @@ class FeraStepTests(RuleStepTestCase):
 class ApocalypticFormStepTests(RuleStepTestCase):
     def test_invalid_selection_keeps_saved_traits_regression(self):
         """D9: a rejected Apocalyptic Form submission changes nothing."""
-        from characters.models.demon.apocalyptic_form import (
-            ApocalypticForm,
-            ApocalypticFormTrait,
-        )
-        from characters.models.demon.demon import Demon
-
         demon = self.at("demon", Demon, "apocalyptic_form")
         traits = [ApocalypticFormTrait.objects.create(name=f"T{i}", cost=2) for i in range(8)]
         existing = ApocalypticForm.objects.create(name=f"{demon.name}'s Apocalyptic Form")
@@ -565,9 +540,6 @@ class ApocalypticFormStepTests(RuleStepTestCase):
         self.assertEqual(existing.high_torment_traits.count(), 4)
 
     def test_valid_selection(self):
-        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
-        from characters.models.demon.demon import Demon
-
         demon = self.at("demon", Demon, "apocalyptic_form")
         traits = [ApocalypticFormTrait.objects.create(name=f"T{i}", cost=2) for i in range(8)]
         data = {f"low_trait_{t.pk}": "on" for t in traits[:4]}
@@ -579,9 +551,6 @@ class ApocalypticFormStepTests(RuleStepTestCase):
         self.assertEqual(demon.creation_status, position("demon", "apocalyptic_form") + 1)
 
     def test_budget_and_overlap(self):
-        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
-        from characters.models.demon.demon import Demon
-
         demon = self.at("demon", Demon, "apocalyptic_form")
         traits = [ApocalypticFormTrait.objects.create(name=f"T{i}", cost=3) for i in range(8)]
         data = {f"low_trait_{t.pk}": "on" for t in traits[:4]}
@@ -604,11 +573,6 @@ class ApocalypticFormStepTests(RuleStepTestCase):
 class SorcererBasicsTests(RuleStepTestCase):
     def test_casting_attribute_must_be_favoured_by_the_fellowship_regression(self):
         """D11: basics no longer accept an attribute or path outside the fellowship."""
-        from characters.models.core.archetype import Archetype
-        from characters.models.core.attribute_block import Attribute
-        from characters.models.mage.fellowship import SorcererFellowship
-        from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
-
         archetype = Archetype.objects.create(name="Survivor")
         wits = Attribute.objects.create(name="Wits", property_name="wits")
         strength = Attribute.objects.create(name="Strength", property_name="strength")
@@ -642,8 +606,6 @@ class SorcererBasicsTests(RuleStepTestCase):
 class CompanionBudgetTests(RuleStepTestCase):
     def test_budget_by_type_preserves_d2(self):
         """Budgets keep the original keys; plain companions get none (defect D2)."""
-        from characters.models.mage.companion import Companion
-
         cases = (("consor", 7, 21), ("companion", 7, 7))
         for companion_type, before, after in cases:
             with self.subTest(companion_type=companion_type):
@@ -729,8 +691,6 @@ class FeraDispatchTests(RuleStepTestCase):
     """Each Changing Breed renders the fields, help text and gift lists it always did."""
 
     def fera_model(self, kind):
-        from django.apps import apps
-
         return apps.get_model("characters", kind)
 
     def test_breed_faction_step_per_type(self):
@@ -749,8 +709,6 @@ class FeraDispatchTests(RuleStepTestCase):
                     self.assertFalse(form.fields["role"].required)
 
     def test_breed_choice_runs_the_setters(self):
-        from characters.models.werewolf.gift import GiftPermission
-
         fera = self.at("ratkin", self.fera_model("ratkin"), "breed_faction")
         response = self.post(fera, {"breed": "homid", "aspect": "warrior"})
         self.assertEqual(response.status_code, 302)
@@ -765,8 +723,6 @@ class FeraDispatchTests(RuleStepTestCase):
         )
 
     def test_gift_groups_per_type(self):
-        from characters.models.werewolf.gift import Gift, GiftPermission
-
         for kind, (fields, _, keys) in FERA_BREED_STEP.items():
             with self.subTest(kind=kind):
                 model = self.fera_model(kind)

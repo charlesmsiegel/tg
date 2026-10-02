@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from characters.models.demon import Demon
+from characters.models.demon.lore import Lore
 
 
 class LoreBlockTests(TestCase):
@@ -249,8 +250,6 @@ class LoreBlockFieldAccessTests(TestCase):
 
     def test_lore_rows_lists_rated_lores_with_links(self):
         """lore_rows returns rated lores only, linked to Lore records when they exist."""
-        from characters.models.demon.lore import Lore
-
         beast = Lore.objects.create(name="Lore of the Beast", property_name="beast")
         self.assertEqual(self.demon.lore_rows(), [])
         self.demon.lore_of_the_beast = 2

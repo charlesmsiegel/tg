@@ -13,6 +13,7 @@ Tests cover:
 """
 
 from django.contrib.auth.models import User
+from django.template import loader
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -867,8 +868,6 @@ class TestVampireFreebiesFormTemplateStaticJS(TestCase):
 
     def test_freebies_form_uses_conditional_js(self):
         """Vampire freebies_form.html uses form.conditional_js for JavaScript."""
-        from django.template import loader
-
         template = loader.get_template("characters/vampire/vampire/freebies_form.html")
         template_source = template.template.source
 
@@ -877,8 +876,6 @@ class TestVampireFreebiesFormTemplateStaticJS(TestCase):
 
     def test_freebies_form_does_not_contain_inline_ajax(self):
         """Vampire freebies_form.html does not contain inline AJAX calls."""
-        from django.template import loader
-
         template = loader.get_template("characters/vampire/vampire/freebies_form.html")
         template_source = template.template.source
 

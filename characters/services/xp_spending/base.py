@@ -18,6 +18,10 @@ from django.db import transaction
 from django.utils import timezone
 
 from characters.costs import get_meritflaw_xp_cost, get_xp_cost
+from characters.models.core.ability_block import Ability
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.merit_flaw_block import MeritFlaw
 
 
 @dataclass
@@ -425,8 +429,6 @@ class HumanXPSpendingService(XPSpendingService):
         - Background model = new background (will create BackgroundRating)
         - BackgroundRating model = existing background (increase rating)
         """
-        from characters.models.core.background_block import Background
-
         is_new = isinstance(example, Background)
 
         if is_new:
@@ -547,8 +549,6 @@ class HumanXPSpendingService(XPSpendingService):
     @applier("attribute")
     def _apply_attribute(self, xp_request, approver) -> XPApplyResult:
         """Apply approved attribute XP spending."""
-        from characters.models.core.attribute_block import Attribute
-
         att = Attribute.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
             xp_request.id, att.property_name, xp_request.trait_value, approver
@@ -562,8 +562,6 @@ class HumanXPSpendingService(XPSpendingService):
     @applier("ability")
     def _apply_ability(self, xp_request, approver) -> XPApplyResult:
         """Apply approved ability XP spending."""
-        from characters.models.core.ability_block import Ability
-
         abb = Ability.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
             xp_request.id, abb.property_name, xp_request.trait_value, approver
@@ -606,8 +604,6 @@ class HumanXPSpendingService(XPSpendingService):
     @applier("new-background")
     def _apply_new_background(self, xp_request, approver) -> XPApplyResult:
         """Apply approved new background XP spending."""
-        from characters.models.core.background_block import Background, BackgroundRating
-
         # Parse background name and note from trait_name
         trait_name = xp_request.trait_name
         if "(" in trait_name:
@@ -653,8 +649,6 @@ class HumanXPSpendingService(XPSpendingService):
     @applier("meritflaw")
     def _apply_merit_flaw(self, xp_request, approver) -> XPApplyResult:
         """Apply approved merit/flaw XP spending."""
-        from characters.models.core.merit_flaw_block import MeritFlaw
-
         mf = MeritFlaw.objects.get(name=xp_request.trait_name)
         self.character.add_mf(mf, xp_request.trait_value)
 

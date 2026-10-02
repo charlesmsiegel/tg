@@ -11,23 +11,27 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from characters.models.core.background_block import Background
-from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from characters.models.mage.effect import Effect
 
 MAX_BACKGROUND_RATING = 5
 MAX_IE_SCORE = 10
 
 
-def _lock(chantry):
-    """Lock and return the current row for ``chantry`` (an instance or a pk).
+def _lock_row(model, pk):
+    """Lock and return the ``model`` row ``pk``.
 
     Raises ``ValidationError`` when the chantry was deleted behind the
     caller's back, so every mutation refuses a vanished chantry cleanly.
     """
-    pk = getattr(chantry, "pk", chantry)
     try:
-        return Chantry.objects.select_for_update().get(pk=pk)
-    except Chantry.DoesNotExist:
+        return model.objects.select_for_update().get(pk=pk)
+    except model.DoesNotExist:
         raise ValidationError("That chantry no longer exists.") from None
+
+
+def _lock(chantry):
+    """Lock and return the current row for the ``chantry`` instance."""
+    return _lock_row(type(chantry), chantry.pk)
 
 
 def _held_rating(chantry, bg):
@@ -46,7 +50,7 @@ def next_dot_cost(chantry, bg, current_rating=None):
 
 def background_purchase_error(chantry, bg, *, points=None, current_rating=None):
     """Why one more dot of ``bg`` cannot be bought, or None when it can."""
-    if bg.property_name not in Chantry.allowed_backgrounds:
+    if bg.property_name not in chantry.allowed_backgrounds:
         return f"{bg} is not a chantry background."
     if current_rating is None:
         held = _held_rating(chantry, bg)
@@ -89,7 +93,7 @@ def affordable_backgrounds(chantry):
     for rating in chantry.backgrounds.select_related("bg").order_by("pk"):
         held.setdefault(rating.bg_id, rating)
     new, existing = [], []
-    allowed = Background.objects.filter(property_name__in=Chantry.allowed_backgrounds)
+    allowed = Background.objects.filter(property_name__in=chantry.allowed_backgrounds)
     for bg in allowed.order_by("name"):
         rating = held.get(bg.pk)
         current = rating.rating if rating is not None else 0
@@ -116,8 +120,7 @@ def buy_background_dot(chantry, bg, *, note="", display_alt_name=False):
             raise ValidationError(error)
         rating = _held_rating(locked, bg)
         if rating is None:
-            return ChantryBackgroundRating.objects.create(
-                chantry=locked,
+            return locked.backgrounds.create(
                 bg=bg,
                 rating=1,
                 note=note,
@@ -182,12 +185,10 @@ def remove_background_dot(rating):
     or its chantry, first.
     """
     with transaction.atomic():
-        locked = _lock(rating.chantry_id)
+        locked = _lock_row(rating._meta.get_field("chantry").related_model, rating.chantry_id)
         try:
-            rating = ChantryBackgroundRating.objects.select_related("bg").get(
-                pk=rating.pk, chantry=locked
-            )
-        except ChantryBackgroundRating.DoesNotExist:
+            rating = locked.backgrounds.select_related("bg").get(pk=rating.pk)
+        except type(rating).DoesNotExist:
             raise ValidationError("That purchase no longer exists.") from None
         rating.chantry = locked
         error = background_removal_error(rating)
@@ -208,7 +209,7 @@ def ie_removal_error(chantry):
     score = chantry.integrated_effects_score
     if score <= 0:
         return "Integrated Effects is already at 0."
-    allowance = Chantry.INTEGRATED_EFFECTS_NUMBERS[score - 1]
+    allowance = chantry.INTEGRATED_EFFECTS_NUMBERS[score - 1]
     spent = chantry.spent_integrated_effect_points()
     if spent > allowance:
         return (
@@ -242,8 +243,6 @@ def remove_effect(chantry, effect):
 
 def affordable_effects(chantry):
     """Effects the chantry can still integrate: within its rank and its remaining IE points."""
-    from characters.models.mage.effect import Effect
-
     return Effect.objects.filter(
         rote_cost__gt=0,
         rote_cost__lte=chantry.current_ie_points(),
@@ -272,7 +271,7 @@ def apply_type_grants(chantry):
         )
         rating = _held_rating(locked, library)
         if rating is None:
-            return ChantryBackgroundRating.objects.create(chantry=locked, bg=library, rating=floor)
+            return locked.backgrounds.create(bg=library, rating=floor)
         if rating.rating < floor:
             rating.rating = floor
             rating.save(update_fields=["rating"])

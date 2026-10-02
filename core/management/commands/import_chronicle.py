@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from game.models import Chronicle, SettingElement
+
 logger = logging.getLogger(__name__)
 
 
@@ -138,8 +140,6 @@ class Command(BaseCommand):
 
     def import_chronicle(self, chronicle_data, user_map):
         """Import the chronicle."""
-        from game.models import Chronicle
-
         self.stdout.write("Importing chronicle...")
 
         # Create chronicle
@@ -171,8 +171,6 @@ class Command(BaseCommand):
 
     def import_setting_elements(self, elements_data, chronicle):
         """Import setting elements."""
-        from game.models import SettingElement
-
         self.stdout.write(f"Importing {len(elements_data)} setting elements...")
 
         for element_json in elements_data:

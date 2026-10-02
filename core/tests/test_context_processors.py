@@ -1,6 +1,7 @@
 """Tests for context processors in core/context_processors.py."""
 
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from django.test import RequestFactory, TestCase
 
 from core.context_processors import all_chronicles
@@ -44,8 +45,6 @@ class AllChroniclesContextProcessorTest(TestCase):
         request = self.factory.get("/")
 
         result = all_chronicles(request)
-
-        from django.db.models import QuerySet
 
         self.assertIsInstance(result["chronicles"], QuerySet)
         self.assertEqual(result["chronicles"].count(), 0)

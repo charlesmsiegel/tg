@@ -1,7 +1,12 @@
+from datetime import date
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.db import connection
+from django.test import Client, TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from django.utils import timezone
 
 from characters.models.core import CharacterModel
 from characters.models.core.attribute_block import Attribute
@@ -14,6 +19,7 @@ from game.models import (
     JournalEntry,
     ObjectType,
     Scene,
+    SettingElement,
     Story,
     StoryXPRequest,
     STRelationship,
@@ -23,6 +29,7 @@ from game.models import (
     extended_roll,
     message_processing,
 )
+from game.views import SceneDetailView
 from locations.models.core import LocationModel
 
 
@@ -271,7 +278,6 @@ class TestWeeklyXPRequestValidation(TestCase):
             chronicle=self.chronicle,
             concept="Test",
         )
-        from datetime import date
 
         self.week = Week.objects.create(end_date=date(2024, 1, 7))
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
@@ -568,12 +574,6 @@ class TestWeekListViewQueryOptimization(TestCase):
     """Test that WeekListView uses optimized queries."""
 
     def setUp(self):
-        from datetime import date
-
-        from django.db import connection
-        from django.test import Client
-        from django.test.utils import CaptureQueriesContext
-
         self.CaptureQueriesContext = CaptureQueriesContext
         self.connection = connection
         self.client = Client()
@@ -616,10 +616,6 @@ class TestSceneListViewQueryOptimization(TestCase):
     """Test that SceneListView uses optimized queries."""
 
     def setUp(self):
-        from django.db import connection
-        from django.test import Client
-        from django.test.utils import CaptureQueriesContext
-
         self.CaptureQueriesContext = CaptureQueriesContext
         self.connection = connection
         self.client = Client()
@@ -1195,8 +1191,6 @@ class TestJournalListView(TestCase):
 
     def test_journal_list_has_entry_count_annotation(self):
         """Test that journals are annotated with entry_count."""
-        from django.utils import timezone
-
         self.client.login(username="testuser", password="password")
         # Get the journal created by signal
         journal1, _ = Journal.objects.get_or_create(character=self.char1)
@@ -1211,8 +1205,6 @@ class TestJournalListView(TestCase):
 
     def test_journal_list_has_latest_entry_annotation(self):
         """Test that journals are annotated with latest_entry date."""
-        from django.utils import timezone
-
         self.client.login(username="testuser", password="password")
         journal1, _ = Journal.objects.get_or_create(character=self.char1)
         # Add entries with different dates
@@ -1234,10 +1226,6 @@ class TestJournalListView(TestCase):
 
     def test_journal_list_optimized_queries(self):
         """Test that journal list view uses optimized queries (not N+1)."""
-        from django.db import connection
-        from django.test.utils import CaptureQueriesContext
-        from django.utils import timezone
-
         self.client.login(username="testuser", password="password")
         # Create multiple journals with entries
         for i in range(5):
@@ -1284,7 +1272,6 @@ class TestJournalDetailView(TestCase):
             owner=self.user,
             chronicle=self.chronicle,
         )
-        from game.models import Journal
 
         self.journal, _ = Journal.objects.get_or_create(character=self.char)
 
@@ -1329,7 +1316,6 @@ class TestSettingElementViews(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        from game.models import SettingElement
 
         self.element = SettingElement.objects.create(
             name="The Camarilla",
@@ -1376,8 +1362,6 @@ class TestSettingElementViews(TestCase):
 
     def test_create_view_creates_element(self):
         """Test that create view creates a new element."""
-        from game.models import SettingElement
-
         self.client.login(username="stuser", password="password")
         initial_count = SettingElement.objects.count()
         response = self.client.post(
@@ -1413,8 +1397,6 @@ class TestWeeklyXPRequestBatchApproveView(TestCase):
     """Test the WeeklyXPRequestBatchApproveView."""
 
     def setUp(self):
-        from datetime import date
-
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
@@ -1562,8 +1544,6 @@ class TestChronicleDetailViewPost(TestCase):
 
     def test_st_can_create_story(self):
         """Test that storytellers can create stories."""
-        from game.models import Story
-
         self.client.login(username="stuser", password="password")
         initial_count = Story.objects.count()
         response = self.client.post(
@@ -1578,8 +1558,6 @@ class TestWeekViews(TestCase):
     """Test Week-related views."""
 
     def setUp(self):
-        from datetime import date
-
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password", is_staff=True)
         self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
@@ -1644,7 +1622,6 @@ class TestStoryViews(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        from game.models import Story
 
         self.story = Story.objects.create(name="Test Story")
 
@@ -1730,8 +1707,6 @@ class TestSceneDetailViewPost(TestCase):
 
     def test_post_straightens_quotes(self):
         """Test that curly quotes are straightened in posts."""
-        from game.views import SceneDetailView
-
         # Test the static method directly
         input_text = "\u201cHello\u201d \u2018World\u2019"
         result = SceneDetailView.straighten_quotes(input_text)
@@ -1742,10 +1717,6 @@ class TestChronicleDetailViewQueryOptimization(TestCase):
     """Test that ChronicleDetailView uses optimized queries for characters."""
 
     def setUp(self):
-        from django.db import connection
-        from django.test import Client
-        from django.test.utils import CaptureQueriesContext
-
         self.CaptureQueriesContext = CaptureQueriesContext
         self.connection = connection
         self.client = Client()

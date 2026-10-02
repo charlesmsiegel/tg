@@ -13,9 +13,36 @@ from pathlib import Path
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
+from django.template.backends.django import get_installed_libraries
 from django.template.loader import get_template
 from django.test import SimpleTestCase
 from django.urls import NoReverseMatch, get_resolver, resolve, reverse
+from django.views.generic import RedirectView
+
+import core.cache
+import core.linked_stat
+import core.mixins
+import core.utils
+import core.widgets
+import locations.views.core
+import widgets
+import widgets.widgets
+from characters.views.changeling import ctdhuman
+from characters.views.vampire import vtmhuman
+from core import context_processors
+from core.constants import GameLine
+from core.route_policy_manifest import POLICIES, VIEW_POLICIES
+from core.templatetags import dots, json_filters, sanitize_text
+from core.views import character_template, errors
+from game import urls as game_urls
+from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
+from items.views import core as item_views
+from locations.views import core as location_views
+from locations.views.mage.chantry import LoadExamplesView
+from widgets.fields import create_or_select
+from widgets.mixins import conditional
+from widgets.templatetags import formset_tags
+from widgets.widgets import filterable, metadata_select
 
 REPO_ROOT = Path(settings.BASE_DIR)
 
@@ -150,8 +177,6 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
         self.assertModuleRemoved("characters.urls.mage.ajax")
 
     def test_ajax_views_removed(self):
-        from core.route_policy_manifest import VIEW_POLICIES
-
         for dotted in self.REMOVED_AJAX_VIEWS:
             module_path, name = dotted.rsplit(".", 1)
             self.assertAttributesRemoved(module_path, name)
@@ -169,7 +194,6 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
     def test_chantry_ajax_endpoint_kept_until_c5(self):
         # resolve() a path and never spell the URL name, so find_dead_code.py still reports
         # the route as dead until chantry PR C5 deletes it together with this test.
-        from locations.views.mage.chantry import LoadExamplesView
 
         match = resolve("/locations/mage/ajax/load_chantry_examples/")
         self.assertIs(match.func.view_class, LoadExamplesView)
@@ -188,8 +212,6 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
 
     def test_every_gameline_urlconf_still_mounted(self):
         # characters/urls/__init__.py and locations/urls/__init__.py swallow ImportError,
-        # so a dangling "from . import ajax" would silently drop a whole gameline.
-        from core.constants import GameLine
 
         for app in ("characters", "locations"):
             mounted = get_resolver().namespace_dict[app][1].namespace_dict
@@ -200,8 +222,6 @@ class D4AjaxEndpointsRemovedTest(RemovalAssertions, SimpleTestCase):
                     self.assertIn(namespace, mounted)
 
     def test_object_ajax_policy_removed(self):
-        from core.route_policy_manifest import POLICIES
-
         self.assertNotIn("OBJECT_AJAX", POLICIES)
         for relative in (
             "core/access_policy.py",
@@ -230,16 +250,12 @@ class D5RemovedTests(SimpleTestCase):
     @staticmethod
     def _module_exists(dotted_path):
         """Return True when ``dotted_path`` can be imported (parents included)."""
-        import importlib.util
-
         try:
             return importlib.util.find_spec(dotted_path) is not None
         except ModuleNotFoundError:
             return False
 
     def _assert_libraries_removed(self, libraries, modules):
-        from django.template.backends.django import get_installed_libraries
-
         installed = get_installed_libraries()
         for name in libraries:
             with self.subTest(library=name):
@@ -255,24 +271,13 @@ class D5RemovedTests(SimpleTestCase):
         )
 
     def test_conditional_mixin_docstring_no_longer_shows_deleted_filter(self):
-        from widgets.mixins import conditional
-
         self.assertNotIn("conditional_wrap", conditional.__doc__)
 
     def test_kept_step6_library_and_render_post_html_survive(self):
-        from django.template.backends.django import get_installed_libraries
-
-        from core.templatetags import sanitize_text
-
         self.assertIn("permissions", get_installed_libraries())
         self.assertTrue(callable(sanitize_text.render_post_html))
 
     def test_dots_pool_and_linked_stat_tags_are_gone(self):
-        from django.template import TemplateDoesNotExist
-        from django.template.loader import get_template
-
-        from core.templatetags import dots
-
         for name in ("pool", "pool_dots"):
             with self.subTest(filter=name):
                 self.assertNotIn(name, dots.register.filters)
@@ -297,9 +302,6 @@ class D5RemovedTests(SimpleTestCase):
                 self.assertIn(name, dots.register.filters)
 
     def test_unused_single_tags_and_filters_are_gone(self):
-        from core.templatetags import json_filters, sanitize_text
-        from widgets.templatetags import formset_tags
-
         cases = (
             (json_filters, json_filters.register.filters, "get_item"),
             (sanitize_text, sanitize_text.register.filters, "badge_text"),
@@ -313,9 +315,6 @@ class D5RemovedTests(SimpleTestCase):
         self.assertIn("formset_add_btn", formset_tags.register.tags)
 
     def test_item_and_location_tag_libraries_are_gone(self):
-        from django.template import TemplateDoesNotExist
-        from django.template.loader import get_template
-
         self._assert_libraries_removed(
             ("item_filters", "location_tags"),
             ("items.templatetags.item_filters", "locations.templatetags.location_tags"),
@@ -324,12 +323,6 @@ class D5RemovedTests(SimpleTestCase):
             get_template("locations/location_recursive.html")
 
     def test_leftover_loads_are_removed_and_templates_compile(self):
-        import re
-        from pathlib import Path
-
-        from django.conf import settings
-        from django.template.loader import get_template
-
         leftover_loads = (
             ("items/templates/items/index.html", "items/index.html", "item_filters"),
             ("locations/templates/locations/index.html", "locations/index.html", "location_tags"),
@@ -353,16 +346,12 @@ class D6RemovedTests(SimpleTestCase):
     @staticmethod
     def _module_exists(dotted_path):
         """Return True when ``dotted_path`` can be imported (parents included)."""
-        import importlib.util
-
         try:
             return importlib.util.find_spec(dotted_path) is not None
         except ModuleNotFoundError:
             return False
 
     def test_dead_core_mixins_are_gone(self):
-        import core.mixins
-
         for name in (
             "STRequiredMixin",
             "SpendXPPermissionMixin",
@@ -377,18 +366,12 @@ class D6RemovedTests(SimpleTestCase):
                 self.assertTrue(hasattr(core.mixins, name))
 
     def test_character_template_st_mixin_is_gone(self):
-        from core.views import character_template
-
         self.assertFalse(hasattr(character_template, "STRequiredMixin"))
 
     def test_step6_retires_unused_permission_context_processor(self):
-        from core import context_processors
-
         self.assertFalse(hasattr(context_processors, "permissions"))
 
     def test_decorators_and_cache_middleware_modules_are_gone(self):
-        from django.conf import settings
-
         for dotted_path in ("core.decorators", "core.middleware.cache_middleware"):
             with self.subTest(module=dotted_path):
                 self.assertFalse(self._module_exists(dotted_path))
@@ -397,7 +380,6 @@ class D6RemovedTests(SimpleTestCase):
         )
 
     def test_dead_cache_helpers_are_gone(self):
-        import core.cache
 
         for name in ("cache_queryset", "get_cached_queryset", "invalidate_cache_on_save"):
             with self.subTest(name=name):
@@ -406,8 +388,6 @@ class D6RemovedTests(SimpleTestCase):
         self.assertTrue(callable(core.cache.get_cached_reference_list))
 
     def test_linked_stat_aliases_and_widgets_are_gone(self):
-        import core.linked_stat
-        import core.widgets
 
         for name in ("MaxCurrentStat", "PermanentTemporaryStat"):
             with self.subTest(name=name):
@@ -419,8 +399,6 @@ class D6RemovedTests(SimpleTestCase):
                 self.assertFalse(hasattr(core.widgets, name))
 
     def test_dead_utils_and_reexports_are_gone(self):
-        import core.utils
-        import locations.views.core
 
         for name in ("fast_selector", "level_name", "tree_sort", "compute_level"):
             with self.subTest(module="core.utils", name=name):
@@ -431,10 +409,6 @@ class D6RemovedTests(SimpleTestCase):
                 self.assertNotIn(name, locations.views.core.__all__)
 
     def test_dead_widgets_leftovers_are_gone(self):
-        import widgets
-        import widgets.widgets
-        from widgets.fields import create_or_select
-        from widgets.widgets import filterable, metadata_select
 
         gone = (
             (widgets, "CreateOrSelectModelChoiceField"),
@@ -517,9 +491,6 @@ class D7RemovedTests(SimpleTestCase):
         )
 
     def test_update_views_keep_their_field_lists(self):
-        from characters.views.changeling import ctdhuman
-        from characters.views.vampire import vtmhuman
-
         self.assertIs(ctdhuman.CtDHumanUpdateView.fields, ctdhuman.CTDHUMAN_FORM_FIELDS)
         self.assertIs(vtmhuman.VtMHumanUpdateView.fields, vtmhuman.VTMHUMAN_FORM_FIELDS)
         self.assertIn("kenning", ctdhuman.CTDHUMAN_FORM_FIELDS)
@@ -569,7 +540,6 @@ class D7RemovedTests(SimpleTestCase):
                 "characters.forms.vampire.revenant",
             ]
         )
-        from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
 
         self.assertTrue(callable(ArtifactCreateOrSelectForm))
 
@@ -670,10 +640,6 @@ class D8RemovedTests(SimpleTestCase):
     ]
 
     def test_list_included_url_modules_have_no_app_name(self):
-        from pathlib import Path
-
-        from django.conf import settings
-
         # Walk the files, not pkgutil: the */urls/core directories have no __init__.py.
         base = Path(settings.BASE_DIR)
         checked = 0
@@ -688,14 +654,9 @@ class D8RemovedTests(SimpleTestCase):
         self.assertGreater(checked, 100)
 
     def test_game_urls_keep_app_name(self):
-        from game import urls as game_urls
-
         self.assertEqual(game_urls.app_name, "game")
 
     def test_accounts_root_redirects_to_home(self):
-        from django.urls import resolve, reverse
-        from django.views.generic import RedirectView
-
         self.assertEqual(reverse("accounts:user"), "/accounts/")
         match = resolve("/accounts/")
         self.assertEqual(match.view_name, "accounts:user")
@@ -703,16 +664,11 @@ class D8RemovedTests(SimpleTestCase):
         self.assertEqual(match.func.view_initkwargs, {"pattern_name": "core:home"})
 
     def test_error_401_view_removed_but_template_kept(self):
-        from core.views import errors
-
         self.assertFalse(hasattr(errors, "error_401"))
         # AuthErrorHandlerMiddleware still renders this template directly.
         get_template("core/errors/401.html")
 
     def test_index_view_type_maps_removed(self):
-        from items.views import core as item_views
-        from locations.views import core as location_views
-
         self.assertFalse(hasattr(item_views.ItemIndexView, "items"))
         self.assertFalse(hasattr(location_views.LocationIndexView, "locs"))
         for module, names in (

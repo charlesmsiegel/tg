@@ -7,12 +7,13 @@ from django.urls import reverse
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
+from characters.models.core.human import Human
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-from game.models import Chronicle
+from game.models import Chronicle, XPSpendingRequest
 
 
 class TestMageDetailViewPost(TestCase):
@@ -324,8 +325,6 @@ class TestMageXPSpendAction(TestCase):
         return {"category": "Willpower", "example": "", "value": "", "note": "", "resonance": ""}
 
     def test_audience(self):
-        from game.models import XPSpendingRequest
-
         for user, status in ((None, 401), (self.player, 404), (self.owner, 302)):
             with self.subTest(user=user):
                 self.client.logout()
@@ -340,8 +339,6 @@ class TestMageXPSpendAction(TestCase):
         self.assertEqual(self.client.get(self.url).status_code, 405)
 
     def test_non_mage_is_404(self):
-        from characters.models.core.human import Human
-
         human = Human.objects.create(name="Plain", owner=self.owner, status="App", xp=50)
         self.client.force_login(self.owner)
         response = self.client.post(

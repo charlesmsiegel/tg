@@ -29,7 +29,7 @@ from core.mixins import (  # noqa: E402
     PermissionRequiredMixin,
     StorytellerRequiredMixin,
 )
-from core.model_registry import get_registry  # noqa: E402
+from core.registries import get_registry  # noqa: E402
 from core.route_policy_manifest import VIEW_POLICIES  # noqa: E402
 from core.views.generic import DictView  # noqa: E402
 

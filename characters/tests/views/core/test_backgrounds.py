@@ -1,6 +1,7 @@
 """Tests for backgrounds view module."""
 
 from unittest import mock
+from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
@@ -132,7 +133,6 @@ class TestHumanBackgroundsViewFormValidation(TestCase):
         view.kwargs = {"pk": self.human.pk}
 
         # Create a mock formset that totals 5 points (human.background_points)
-        from unittest.mock import MagicMock
 
         mock_form1 = MagicMock()
         mock_form1.cleaned_data = {"bg": self.contacts, "rating": 3}
@@ -172,7 +172,6 @@ class TestHumanBackgroundsViewFormValidation(TestCase):
         view.object = self.human
 
         # Create a mock formset that totals incorrectly
-        from unittest.mock import MagicMock
 
         mock_form1 = MagicMock()
         mock_form1.cleaned_data = {"bg": self.contacts, "rating": 2}

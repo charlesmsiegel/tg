@@ -1,13 +1,23 @@
 """Permission snapshots, request isolation, SQL parity and bounded row costs."""
 
+from pathlib import Path
 from types import SimpleNamespace
 
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.contenttypes.models import ContentType
+from django.template import Context, Engine
+from django.template.loader import get_template
+from django.template.response import TemplateResponse
 from django.test import RequestFactory, TestCase
+from django.views.generic import ListView
 
-from characters.models.core import Character
+from characters.models.core import Character, CharacterModel
 from characters.models.core.human import Human
+from core.middleware.authorization import AuthorizationMiddleware
+from core.mixins import VisibilityFilterMixin
 from core.models import Observer
+from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
 from game.models import Chronicle, Gameline, STRelationship
 from items.models.core import ItemModel
@@ -92,8 +102,6 @@ class PermissionContextTests(TestCase):
         )
 
     def test_snapshot_and_page_query_budget(self):
-        from core.permission_context import get_object_permissions, prepare_permission_objects
-
         objects = [
             Human.objects.create(name=f"Row {i}", owner=self.owner, chronicle=self.chronicle)
             for i in range(20)
@@ -111,8 +119,6 @@ class PermissionContextTests(TestCase):
                     self.assertTrue(perms.is_chronicle_st)
 
     def test_snapshot_status_and_unsaved_identity(self):
-        from core.permission_context import get_object_permissions
-
         request = self.request()
         self.assertTrue(get_object_permissions(request, self.character).can_chargen)
         self.character.status = "App"
@@ -195,10 +201,6 @@ class PermissionContextTests(TestCase):
                     self.assertEqual(actual, expected)
 
     def test_middleware_adds_snapshot_without_shadowing_django_perms(self):
-        from django.template.response import TemplateResponse
-
-        from core.middleware.authorization import AuthorizationMiddleware
-
         request = self.request()
         django_perms = object()
         response = TemplateResponse(
@@ -216,12 +218,6 @@ class PermissionContextTests(TestCase):
         self.assertNotIn("object_perms", public_response.context_data)
 
     def test_shared_chargen_template_gates_fields_and_submit_by_capability(self):
-        from pathlib import Path
-
-        from django.template import Context, Engine
-
-        from core.permission_context import get_object_permissions
-
         # The step body shared by the plain and the htmx chargen forms holds the gates.
         source = Path("characters/templates/characters/core/chargen/step_body.html").read_text(
             encoding="utf-8"
@@ -260,10 +256,6 @@ class PermissionContextTests(TestCase):
                     )
 
     def test_templates_retire_ambiguous_flag(self):
-        from pathlib import Path
-
-        from django.conf import settings
-
         for app in ("core", "characters", "items", "locations", "game"):
             for path in (Path(settings.BASE_DIR) / app / "templates").rglob("*.html"):
                 self.assertNotIn("is_approved_user", path.read_text(encoding="utf-8"), str(path))
@@ -271,11 +263,6 @@ class PermissionContextTests(TestCase):
     def test_approval_template_uses_scoped_capability(self):
         # Render the actual approval template with a minimal base; unrelated
         # navigation and database-driven context processors are outside this test.
-        from pathlib import Path
-
-        from django.template import Context, Engine
-
-        from core.permission_context import get_object_permissions
 
         def read(path):
             return Path(path).read_text(encoding="utf-8")
@@ -313,9 +300,6 @@ class PermissionContextTests(TestCase):
             self.assertEqual("APPROVAL_FORM" in output, expected)
 
     def test_base_subject_status_changes_stay_live(self):
-        from characters.models.core import CharacterModel
-        from core.permission_context import get_object_permissions
-
         base = CharacterModel.objects.non_polymorphic().get(pk=self.character.pk)
         request = self.request()
         self.assertTrue(get_object_permissions(request, base).can_chargen)
@@ -325,11 +309,6 @@ class PermissionContextTests(TestCase):
         self.assertFalse(get_object_permissions(request, base).can_view_full)
 
     def test_batched_linked_base_characters_do_not_add_queries_per_row(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from characters.models.core import CharacterModel
-        from core.permission_context import get_object_permissions, prepare_permission_objects
-
         ids = [
             Human.objects.create(name=f"Linked {i}", owner=self.owner, chronicle=self.chronicle).pk
             for i in range(20)
@@ -362,8 +341,6 @@ class PermissionContextTests(TestCase):
         )
 
     def test_snapshot_permission_fields_match_manager(self):
-        from core.permission_context import get_object_permissions
-
         fields = {
             "can_view_full": Permission.VIEW_FULL,
             "can_view_partial": Permission.VIEW_PARTIAL,
@@ -388,8 +365,6 @@ class PermissionContextTests(TestCase):
                         )
 
     def test_spending_controls_hide_self_approval_and_follow_npc_changes(self):
-        from core.permission_context import get_object_permissions
-
         self.character.owner = self.editor
         request = self.request(self.editor)
         self.assertTrue(get_object_permissions(request, self.character).can_approve)
@@ -402,15 +377,9 @@ class PermissionContextTests(TestCase):
         self.assertFalse(get_object_permissions(request, self.character).can_approve_spending)
 
     def test_character_template_list_compiles(self):
-        from django.template.loader import get_template
-
         get_template("core/character_template/list.html")
 
     def test_unpaginated_lists_do_not_prepare_unused_row_permissions(self):
-        from django.views.generic import ListView
-
-        from core.mixins import VisibilityFilterMixin
-
         class CharacterList(VisibilityFilterMixin, ListView):
             model = Human
 
@@ -421,8 +390,6 @@ class PermissionContextTests(TestCase):
             view.get_context_data()
 
     def test_snapshot_loses_st_grants_when_live_chronicle_changes(self):
-        from core.permission_context import get_object_permissions
-
         request = self.request(self.editor)
         self.assertTrue(get_object_permissions(request, self.character).can_approve)
         self.character.chronicle = Chronicle.objects.create(name="Different scope")

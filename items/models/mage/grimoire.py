@@ -7,6 +7,7 @@ from django.db.models import Q
 
 from characters.models.core.ability_block import Ability
 from characters.models.mage.effect import Effect
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Instrument, Practice
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
@@ -192,7 +193,6 @@ class Grimoire(Wonder):
     def random_faction(self, faction=None):
         if faction is None:
             faction_probs = {}
-            from characters.models.mage.faction import MageFaction
 
             for candidate in MageFaction.objects.select_related("parent__parent"):
                 if candidate.parent is None:

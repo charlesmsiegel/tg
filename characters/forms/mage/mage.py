@@ -74,6 +74,20 @@ class MageCreationForm(ChainedSelectMixin, forms.ModelForm):
                     name__in=["Nephandi", "Marauders"]
                 )
 
+    def allowed_chained_parent(self, field_name, parent_id):
+        """Whether ``parent_id`` may drive the chained ``field_name`` for this user.
+
+        The chained-select endpoint (``widgets.views``) asks the form rather than
+        trusting the request: a faction must be one of the affiliations this user
+        may pick, and a subfaction's parent must belong to one of them.
+        """
+        affiliation_ids = self.fields["affiliation"].queryset.values("pk")
+        if field_name == "faction":
+            return MageFaction.objects.filter(
+                pk=parent_id, parent=None, pk__in=affiliation_ids
+            ).exists()
+        return MageFaction.objects.filter(pk=parent_id, parent_id__in=affiliation_ids).exists()
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:  # If we have a user

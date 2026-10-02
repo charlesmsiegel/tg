@@ -129,6 +129,8 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
+from characters.views import changeling, demon, hunter, mage, mummy, vampire, werewolf, wraith
+from characters.views.core.human import HumanCharacterCreationView
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle
@@ -145,18 +147,6 @@ class GenericCharacterDetailView(DictView):
 
     @property
     def view_mapping(self):
-        from characters.views import (
-            changeling,
-            demon,
-            hunter,
-            mage,
-            mummy,
-            vampire,
-            werewolf,
-            wraith,
-        )
-        from characters.views.core.human import HumanCharacterCreationView
-
         return {
             # Core
             "human": HumanCharacterCreationView,
@@ -223,8 +213,6 @@ class GenericGroupDetailView(DictView):
 
     @property
     def view_mapping(self):
-        from characters.views import changeling, demon, mage, vampire, werewolf, wraith
-
         return {
             "group": GroupDetailView,
             "pack": werewolf.PackDetailView,

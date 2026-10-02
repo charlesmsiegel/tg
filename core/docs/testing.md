@@ -88,6 +88,7 @@ say why in review. Otherwise fix the query (`select_related`, `prefetch_related`
 |--------|---------|
 | `test_action_guard.py` | No view module in the project apps chooses an action by testing for a posted key (`"approve" in request.POST`); routed `DetailView`s do not handle POST. Give each action its own endpoint (see [action endpoints](views.md#action-endpoints)) |
 | `test_dead_code_removed.py` | Removed modules, templates, URL names and dependencies stay removed |
+| `test_import_graph.py` | Every import in the project packages sits at module scope (the only exceptions are the signal registrations in `AppConfig.ready()`), and the module-level import graph has no cycles. Break a cycle structurally (string model references, reverse accessors, `apps.get_model()`, a service) rather than by deferring an import; see [code style](../../docs/development/code-style.md#imports) |
 | `test_dead_code_heuristics.py`, `test_find_dead_code_script.py` | The dead-code finder in `scripts/` (`find_dead_code.py` runs in a subprocess because it repoints the database when imported) |
 | `test_model_registry.py` | Item and location registry contracts: every concrete model registered, every action with a policy and messages, route names and paths unchanged against `fixtures/model_routes.json` |
 

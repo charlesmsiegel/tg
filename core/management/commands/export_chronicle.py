@@ -15,9 +15,11 @@ Exports:
 import json
 from datetime import date, datetime
 
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.core.serializers import serialize
 
+from characters.models.core.character import CharacterModel
 from game.models import (
     Chronicle,
     Journal,
@@ -25,6 +27,8 @@ from game.models import (
     StoryXPRequest,
     WeeklyXPRequest,
 )
+from items.models.core.item import ItemModel
+from locations.models.core.location import LocationModel
 
 
 class Command(BaseCommand):
@@ -135,8 +139,6 @@ class Command(BaseCommand):
 
     def export_characters(self, chronicle):
         """Export all characters in the chronicle."""
-        from characters.models.core.character import CharacterModel
-
         characters = CharacterModel.objects.filter(chronicle=chronicle)
         self.stdout.write(f"Exporting {characters.count()} characters...")
 
@@ -144,8 +146,6 @@ class Command(BaseCommand):
 
     def export_items(self, chronicle):
         """Export all items in the chronicle."""
-        from items.models.core.item import ItemModel
-
         items = ItemModel.objects.filter(chronicle=chronicle)
         self.stdout.write(f"Exporting {items.count()} items...")
 
@@ -153,8 +153,6 @@ class Command(BaseCommand):
 
     def export_locations(self, chronicle):
         """Export all locations in the chronicle."""
-        from locations.models.core.location import LocationModel
-
         locations = LocationModel.objects.filter(chronicle=chronicle)
         self.stdout.write(f"Exporting {locations.count()} locations...")
 
@@ -183,8 +181,6 @@ class Command(BaseCommand):
 
     def export_xp_requests(self, chronicle):
         """Export XP requests for characters in the chronicle."""
-        from characters.models.core.character import CharacterModel
-
         character_ids = CharacterModel.objects.filter(chronicle=chronicle).values_list(
             "id", flat=True
         )
@@ -207,13 +203,9 @@ class Command(BaseCommand):
 
     def export_users(self, chronicle):
         """Export identity fields of chronicle STs and character owners."""
-        from django.contrib.auth.models import User
-
         # Get all STs and character owners
         user_ids = set()
         user_ids.update(chronicle.storytellers.values_list("id", flat=True))
-
-        from characters.models.core.character import CharacterModel
 
         character_owners = (
             CharacterModel.objects.filter(chronicle=chronicle)

@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 
+from characters.models.core.character import Character
 from core.models import CharacterTemplate
 from core.views.character_template import CharacterTemplateQuickNPCView
 from game.models import Chronicle, Gameline, STRelationship
@@ -580,8 +581,6 @@ class CharacterTemplateQuickNPCViewTest(TestCase):
                 self.assertEqual(model.type, character_type)
 
     def test_quick_npc_from_mage_and_werewolf_templates(self):
-        from characters.models.core.character import Character
-
         self.client.login(username="st_user", password="testpass123")
         werewolf_template = CharacterTemplate.objects.create(
             name="Werewolf Template",

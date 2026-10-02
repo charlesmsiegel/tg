@@ -8,15 +8,16 @@ from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from characters.models.core.human import Human
-from game.models import Week, WeeklyXPRequest
+from game.consumers import SceneChatConsumer
+from game.models import Chronicle, Post, Scene, Week, WeeklyXPRequest
+from game.selectors import annotate_week_scene_counts, count_dates_in_week
+from game.text import straighten_quotes
+from game.views import SceneDetailView
+from locations.models.core import LocationModel
 
 
 class StraightenQuotesTests(SimpleTestCase):
     def test_one_implementation_serves_views_and_consumer(self):
-        from game.consumers import SceneChatConsumer
-        from game.text import straighten_quotes
-        from game.views import SceneDetailView
-
         self.assertIs(SceneDetailView.straighten_quotes, straighten_quotes)
         self.assertIs(SceneChatConsumer.straighten_quotes, straighten_quotes)
         self.assertEqual(straighten_quotes("“it’s” `x´"), "\"it's\" 'x'")
@@ -24,8 +25,6 @@ class StraightenQuotesTests(SimpleTestCase):
 
 class WeekSceneCountTests(SimpleTestCase):
     def test_counts_are_inclusive_seven_day_windows(self):
-        from game.selectors import count_dates_in_week
-
         dates = sorted(
             [
                 date(2024, 1, 7),  # start of the week ending Jan 14 (end - 7 days)
@@ -42,10 +41,6 @@ class WeekSceneCountTests(SimpleTestCase):
 
 class WeekListSceneCountTests(TestCase):
     def test_list_shows_counts_for_visible_finished_scenes(self):
-        from game.models import Chronicle, Post, Scene
-        from game.selectors import annotate_week_scene_counts
-        from locations.models.core import LocationModel
-
         user = get_user_model().objects.create_user("week-viewer", is_staff=True)
         chronicle = Chronicle.objects.create(name="C")
         location = LocationModel.objects.create(name="L", chronicle=chronicle)

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.werewolf.battlescar import BattleScar
@@ -549,8 +550,6 @@ class TestWerewolfGnosisRageValidation(TestCase):
 
     def test_gnosis_minimum_validation_in_clean(self):
         """clean() raises ValidationError when gnosis is below 1."""
-        from django.core.exceptions import ValidationError
-
         self.character.gnosis = 0
         with self.assertRaises(ValidationError) as context:
             self.character.clean()
@@ -558,8 +557,6 @@ class TestWerewolfGnosisRageValidation(TestCase):
 
     def test_rage_minimum_validation_in_clean(self):
         """clean() raises ValidationError when rage is below 1."""
-        from django.core.exceptions import ValidationError
-
         self.character.rage = 0
         with self.assertRaises(ValidationError) as context:
             self.character.clean()

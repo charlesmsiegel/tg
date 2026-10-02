@@ -12,7 +12,7 @@ from .predicates import (
     no_rotes,
     psychic,
 )
-from .registry import Step, Workflow
+from .workflow import Step, Workflow
 
 # These types currently have detail pages but no creation router. Preserve their
 # existing freebie eligibility without inventing a wizard or inheriting its order.

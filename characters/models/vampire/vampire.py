@@ -1,11 +1,14 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 from characters.costs import get_freebie_cost
+from characters.models.vampire.discipline import Discipline
 from core.constants import CharacterStatus
 from core.linked_stat import LinkedStat
+from core.utils import add_dot
 
 from .clan import VampireClan
 from .path import Path
@@ -206,8 +209,6 @@ class Vampire(VtMHuman):
         ]
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         super().clean()
         errors = {}
 
@@ -583,16 +584,12 @@ class Vampire(VtMHuman):
         ]
 
         if trait in discipline_fields:
-            from characters.models.vampire.discipline import Discipline
-
             try:
                 discipline_obj = Discipline.objects.get(property_name=trait)
                 is_clan = self.is_clan_discipline(discipline_obj)
                 cost = 7 if is_clan else 10
 
                 if cost <= self.freebies:
-                    from core.utils import add_dot
-
                     # Use generation-based maximum for disciplines
                     if add_dot(self, trait, self.get_discipline_max()):
                         self.freebies -= cost
@@ -606,8 +603,6 @@ class Vampire(VtMHuman):
         if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
             cost = get_freebie_cost("virtue")
             if cost <= self.freebies:
-                from core.utils import add_dot
-
                 if add_dot(self, trait, 5):
                     self.freebies -= cost
                     return True
@@ -618,8 +613,6 @@ class Vampire(VtMHuman):
         if trait == "humanity":
             cost = get_freebie_cost("humanity")
             if cost <= self.freebies:
-                from core.utils import add_dot
-
                 if add_dot(self, "humanity", 10):
                     self.freebies -= cost
                     return True
@@ -630,8 +623,6 @@ class Vampire(VtMHuman):
         if trait == "path_rating":
             cost = get_freebie_cost("path_rating")
             if cost <= self.freebies:
-                from core.utils import add_dot
-
                 if add_dot(self, "path_rating", 10):
                     self.freebies -= cost
                     return True

@@ -17,6 +17,7 @@ import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+import django
 from django import forms
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -556,8 +557,6 @@ class StaticAssetsBrowserTests(SimpleTestCase):
 
 
 if __name__ == "__main__":
-    import django
-
     settings.configure(
         SECRET_KEY="browser-fixtures",
         STATIC_URL="/static/",

@@ -352,6 +352,4 @@ class TestImports(TestCase):
 
     def test_conditional_fields_mixin_export(self):
         """Test ConditionalFieldsMixin is exported from widgets package."""
-        from widgets import ConditionalFieldsMixin
-
         self.assertIsNotNone(ConditionalFieldsMixin)

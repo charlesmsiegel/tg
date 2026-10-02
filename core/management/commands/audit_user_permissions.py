@@ -7,10 +7,13 @@ Reports on:
 - Profile data completeness (lines/veils for safety tools)
 """
 
+import csv
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
+from accounts.models import Profile
 from game.models import Chronicle, STRelationship
 
 
@@ -74,8 +77,6 @@ class Command(BaseCommand):
 
     def display_st_relationships(self):
         """Display ST relationships by chronicle."""
-        from game.models import Chronicle
-
         self.stdout.write("\nST RELATIONSHIPS BY CHRONICLE")
         self.stdout.write("-" * 70)
 
@@ -92,8 +93,6 @@ class Command(BaseCommand):
 
     def check_inactive_sts(self):
         """Find STs who have no active chronicles."""
-        from game.models import STRelationship
-
         self.stdout.write("\n\nSTORYTELLERS WITH NO ACTIVE CHRONICLES")
         self.stdout.write("-" * 70)
 
@@ -115,8 +114,6 @@ class Command(BaseCommand):
 
     def check_profile_completeness(self):
         """Check profile data completeness."""
-        from accounts.models import Profile
-
         self.stdout.write("\n\nPROFILE DATA COMPLETENESS")
         self.stdout.write("-" * 70)
 
@@ -151,10 +148,6 @@ class Command(BaseCommand):
 
     def export_audit(self, filename, all_users, st_users):
         """Export audit results to CSV."""
-        import csv
-
-        from accounts.models import Profile
-
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
                 "username",

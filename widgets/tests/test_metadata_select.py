@@ -5,7 +5,7 @@ Tests for the OptionMetadataSelect widget.
 from django import forms
 from django.test import TestCase
 
-from widgets import OptionMetadataSelect
+from widgets import ChainedChoiceField, ChainedSelectMixin, OptionMetadataSelect
 from widgets.utils import normalize_choices
 
 
@@ -148,7 +148,6 @@ class TestChainedSelectWithMetadata(TestCase):
 
     def test_chained_select_with_metadata_choices(self):
         """Test ChainedSelectMixin handles 3-tuple choices correctly."""
-        from widgets import ChainedChoiceField, ChainedSelectMixin
 
         class TestForm(ChainedSelectMixin, forms.Form):
             category = ChainedChoiceField(choices=[("bg", "Background"), ("mf", "Merit/Flaw")])
@@ -186,7 +185,6 @@ class TestChainedSelectWithMetadata(TestCase):
 
     def test_chained_select_mf_choices_without_metadata(self):
         """Test ChainedSelectMixin handles 2-tuple choices correctly."""
-        from widgets import ChainedChoiceField, ChainedSelectMixin
 
         class TestForm(ChainedSelectMixin, forms.Form):
             category = ChainedChoiceField(choices=[("bg", "Background"), ("mf", "Merit/Flaw")])
@@ -213,6 +211,4 @@ class TestImports(TestCase):
 
     def test_option_metadata_exports(self):
         """Test OptionMetadataSelect exports are available from widgets package."""
-        from widgets import OptionMetadataSelect
-
         self.assertIsNotNone(OptionMetadataSelect)

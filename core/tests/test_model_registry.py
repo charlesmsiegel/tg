@@ -6,15 +6,30 @@ from pathlib import Path
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ImproperlyConfigured
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db import connection
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import Resolver404, get_resolver, resolve
 
-from core.model_registry import ModelRegistry, get_registry
-from items.models.core import ItemModel
+import items.registry as registry_module
+from characters.models.mage.focus import Practice
+from core.create_redirects import resolve_object_type_url
+from core.model_registry import ModelRegistry
+from core.registries import get_registry
+from game.models import ObjectType
+from items.forms.core.item_creation import ItemCreationForm
+from items.models.core import ItemModel, Material, Weapon
+from items.models.demon.relic import Relic
+from items.models.mage import Talisman, Wonder
+from items.models.mage.artifact import Artifact
+from items.models.wraith.artifact import WraithArtifact
+from items.models.wraith.relic import WraithRelic
+from items.views.core import GenericItemDetailView
 from locations.models.core import LocationModel
+from locations.models.mage import Node, RealityZone
+from locations.models.mage.chantry import Chantry
 from scripts.inventory_model_routes import inventory
 
 
@@ -47,11 +62,6 @@ class RegistryContractTests(SimpleTestCase):
                     self.assertTrue(view.error_message, (entry.model_label, action))
 
     def test_polymorphic_dispatch_uses_model_identity(self):
-        from items.models.demon.relic import Relic
-        from items.models.mage.artifact import Artifact
-        from items.models.wraith.artifact import WraithArtifact
-        from items.models.wraith.relic import WraithRelic
-
         registry = get_registry("items")
         for model in (Artifact, WraithArtifact, Relic, WraithRelic):
             self.assertIs(registry.detail_view(model).model, model)
@@ -81,8 +91,6 @@ class RegistryContractTests(SimpleTestCase):
                 ModelRegistry("items", [entry, replace(other, actions=actions)])
 
     def test_new_entry_can_export_views_without_a_handwritten_module(self):
-        import items.registry as registry_module
-
         entry = get_registry("items").entry("items.Weapon")
         actions = {
             name: replace(action, view_path=f"items.registry.NewWeapon{name.title()}View")
@@ -112,9 +120,6 @@ class RegistryTestCase(TestCase):
 
 class RegistryBehaviorTests(RegistryTestCase):
     def test_generated_object_lists_filter_private_querysets(self):
-        from items.models.core import Weapon
-        from locations.models.mage.chantry import Chantry
-
         for model in (Weapon, Chantry):
             with self.subTest(model=model._meta.label):
                 owned = model.objects.create(name="Owned", owner=self.owner)
@@ -127,10 +132,6 @@ class RegistryBehaviorTests(RegistryTestCase):
                 self.assertEqual(list(view.get_queryset()), [owned])
 
     def test_reference_lists_remain_public(self):
-        from django.contrib.auth.models import AnonymousUser
-
-        from items.models.core import Material
-
         material = Material.objects.create(name="Public reference")
         request = RequestFactory().get("/")
         request.user = AnonymousUser()
@@ -138,8 +139,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(list(response.context_data["object_list"]), [material])
 
     def test_direct_registry_detail_includes_permission_snapshot(self):
-        from items.models.core import Weapon
-
         weapon = Weapon.objects.create(name="Owned weapon", owner=self.owner)
         request = RequestFactory().get("/")
         request.user = self.owner
@@ -158,9 +157,6 @@ class RegistryBehaviorTests(RegistryTestCase):
             self.assertEqual(response.context["object"].pk, obj.pk)
 
     def test_router_hands_off_the_already_loaded_instance(self):
-        from items.models.core import Weapon
-        from items.views.core import GenericItemDetailView
-
         obj = Weapon.objects.create(name="One lookup", owner=self.staff)
         request = RequestFactory().get(f"/items/{obj.pk}/")
         request.user = self.staff
@@ -178,10 +174,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(len(object_reads), 2, object_reads)
 
     def test_direct_view_call_still_denies_unauthorized_updates(self):
-        from django.core.exceptions import PermissionDenied
-
-        from items.models.core import Weapon
-
         obj = Weapon.objects.create(name="Protected", owner=self.owner)
         request = RequestFactory().post(obj.get_update_url(), {"name": "Hijacked"})
         request.user = self.other
@@ -189,8 +181,6 @@ class RegistryBehaviorTests(RegistryTestCase):
             get_registry("items").view(Weapon, "update").as_view()(request, pk=obj.pk)
 
     def test_missing_specialized_templates_use_shared_fallbacks(self):
-        from items.models.core import Weapon
-
         entry = get_registry("items").entry(Weapon)
         registry = ModelRegistry(
             "items",
@@ -212,8 +202,6 @@ class RegistryBehaviorTests(RegistryTestCase):
             self.assertIn(f"core/registry/{fallback}.html", response.template_name)
 
     def test_wonder_form_creates_an_owned_concrete_subtype(self):
-        from items.models.mage import Talisman, Wonder
-
         self.client.force_login(self.owner)
         response = self.client.post(
             Wonder.get_creation_url(),
@@ -235,9 +223,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(Talisman.objects.get(name="Registry talisman").owner, self.owner)
 
     def test_node_custom_create_saves_once_and_redirects(self):
-        from characters.models.mage.focus import Practice
-        from locations.models.mage import Node
-
         positive = Practice.objects.create(name="Positive practice")
         negative = Practice.objects.create(name="Negative practice")
         self.client.force_login(self.owner)
@@ -276,8 +261,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(Node.objects.get(name="Registry node").owner, self.owner)
 
     def test_workflow_router_keeps_public_card(self):
-        from locations.models.mage import Chantry
-
         obj = Chantry.objects.create(
             name="Visible name", description="HIDDEN CHANTRY", owner=self.owner
         )
@@ -294,8 +277,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_reference_reads_are_public_and_writes_staff_only(self):
-        from items.models.core import Material
-
         obj = Material.objects.create(name="Steel")
         self.assertContains(self.client.get(obj.get_absolute_url()), "Steel")
         self.client.force_login(self.owner)
@@ -304,8 +285,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(obj.name, "Steel")
 
     def test_public_reality_zone_does_not_expose_private_location_stats(self):
-        from locations.models.mage import Node, RealityZone
-
         zone = RealityZone.objects.create(name="Public reference")
         node = Node.objects.create(
             name="PRIVATE NODE LINK", rank=5, owner=self.owner, visibility="PRI", reality_zone=zone
@@ -317,8 +296,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertContains(self.client.get(zone.get_absolute_url()), node.name)
 
     def test_create_assigns_owner_and_update_denies_other_user(self):
-        from items.models.core import Weapon
-
         self.client.force_login(self.owner)
         response = self.client.post(
             Weapon.get_creation_url(),
@@ -341,10 +318,6 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(obj.name, "Registry sword")
 
     def test_menus_and_collision_redirects_need_no_database_types(self):
-        from core.create_redirects import resolve_object_type_url
-        from game.models import ObjectType
-        from items.forms.core.item_creation import ItemCreationForm
-
         self.assertFalse(ObjectType.objects.exists())
         form = ItemCreationForm(user=self.staff)
         self.assertIn(("wraith_artifact", "Artifact"), form.fields["item_type"].choices_map["wto"])

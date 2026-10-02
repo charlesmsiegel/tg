@@ -2,7 +2,6 @@ from django.db import models
 
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from items.models.mage.wonder import Wonder
 
 
 class MtAHuman(Human):
@@ -277,7 +276,7 @@ class MtAHuman(Human):
     umbrood_protocols = models.IntegerField(default=0)
 
     allied_characters = models.ManyToManyField(Character, blank=True)
-    enhancement_devices = models.ManyToManyField(Wonder, blank=True)
+    enhancement_devices = models.ManyToManyField("items.Wonder", blank=True)
 
     background_points = 5
 

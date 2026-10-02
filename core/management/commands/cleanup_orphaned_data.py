@@ -15,7 +15,11 @@ Objects carry no creation date, so there is no age threshold.
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 
+from characters.models.core.character import CharacterModel
 from core.constants import CharacterStatus
+from game.models import Scene, SettingElement, StoryXPRequest, WeeklyXPRequest
+from items.models.core.item import ItemModel
+from locations.models.core.location import LocationModel
 
 
 class Command(BaseCommand):
@@ -96,8 +100,6 @@ class Command(BaseCommand):
 
     def cleanup_orphaned_characters(self):
         """Remove orphaned character objects."""
-        from characters.models.core.character import CharacterModel
-
         orphaned = self.orphans(CharacterModel)
 
         count = orphaned.count()
@@ -120,8 +122,6 @@ class Command(BaseCommand):
 
     def cleanup_orphaned_items(self):
         """Remove orphaned item objects."""
-        from items.models.core.item import ItemModel
-
         orphaned = self.orphans(ItemModel)
 
         count = orphaned.count()
@@ -141,8 +141,6 @@ class Command(BaseCommand):
 
     def cleanup_orphaned_locations(self):
         """Remove orphaned location objects."""
-        from locations.models.core.location import LocationModel
-
         orphaned = self.orphans(LocationModel)
 
         count = orphaned.count()
@@ -164,8 +162,6 @@ class Command(BaseCommand):
 
     def cleanup_empty_scenes(self):
         """Remove empty scenes with no posts or participants."""
-        from game.models import Scene
-
         # Find scenes with no posts and no characters
         empty_scenes = Scene.objects.annotate(
             post_count=Count("post"), char_count=Count("characters")
@@ -188,8 +184,6 @@ class Command(BaseCommand):
 
     def cleanup_unused_setting_elements(self):
         """Remove unused setting elements."""
-        from game.models import SettingElement
-
         # Find setting elements not associated with any chronicle
         unused = SettingElement.objects.annotate(chronicle_count=Count("chronicle")).filter(
             chronicle_count=0
@@ -214,8 +208,6 @@ class Command(BaseCommand):
 
     def cleanup_orphaned_xp_requests(self):
         """Remove XP requests with no associated character."""
-        from game.models import StoryXPRequest, WeeklyXPRequest
-
         # Weekly requests
         orphaned_weekly = WeeklyXPRequest.objects.filter(character__isnull=True)
         weekly_count = orphaned_weekly.count()

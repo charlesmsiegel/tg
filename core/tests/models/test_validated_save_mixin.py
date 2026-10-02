@@ -10,8 +10,10 @@ Tests verify:
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.test import TestCase
 
+from core.base import ValidatedSaveMixin
 from core.models import Book, NewsItem
 
 
@@ -82,22 +84,14 @@ class TestValidatedSaveMixinMRO(TestCase):
 
     def test_book_has_mixin_in_mro(self):
         """Test that Book has ValidatedSaveMixin in its MRO."""
-        from core.base import ValidatedSaveMixin
-
         self.assertTrue(issubclass(Book, ValidatedSaveMixin))
 
     def test_newsitem_has_mixin_in_mro(self):
         """Test that NewsItem has ValidatedSaveMixin in its MRO."""
-        from core.base import ValidatedSaveMixin
-
         self.assertTrue(issubclass(NewsItem, ValidatedSaveMixin))
 
     def test_mixin_comes_before_model(self):
         """Test that ValidatedSaveMixin comes before models.Model in MRO."""
-        from django.db import models
-
-        from core.base import ValidatedSaveMixin
-
         mro = Book.__mro__
         mixin_index = mro.index(ValidatedSaveMixin)
         model_index = mro.index(models.Model)

@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from characters.chargen import get_workflow
 from characters.models.changeling.autumn_person import AutumnPerson
 from characters.models.changeling.cantrip import Cantrip
 from characters.models.changeling.changeling import Changeling
@@ -29,9 +30,10 @@ from characters.models.werewolf.drone import Drone
 from characters.models.werewolf.fera import Fera
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.gift import Gift
+from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.pack import Pack
+from characters.models.werewolf.ratkin import Ratkin
 from characters.models.werewolf.renownincident import RenownIncident
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.septposition import SeptPosition
@@ -253,8 +255,6 @@ class ChargenStepTests(TestCase):
         self.client.force_login(self.owner)
 
     def at(self, model, key, **kwargs):
-        from characters.chargen import get_workflow
-
         workflow = get_workflow(model.type)
         status = next(i for i, step in enumerate(workflow.steps, 1) if step.key == key)
         return model.objects.create(
@@ -273,8 +273,6 @@ class ChargenStepTests(TestCase):
         return response
 
     def test_ability_steps_use_the_shared_columns(self):
-        from characters.models.werewolf.ratkin import Ratkin
-
         for model in (WtAHuman, Werewolf, Kinfolk, Fomor, Drone, Ratkin, CtDHuman, Changeling):
             with self.subTest(model=model.__name__):
                 response = self.step(self.at(model, "abilities"))
@@ -291,9 +289,6 @@ class ChargenStepTests(TestCase):
         self.assertContains(response, "Fomori powers")
 
     def test_fera_steps(self):
-        from characters.models.werewolf.gift import GiftPermission
-        from characters.models.werewolf.ratkin import Ratkin
-
         self.step(self.at(Ratkin, "breed_faction"))
         self.step(self.at(Ratkin, "history"))
         permission = GiftPermission.objects.create(shifter="ratkin", condition="homid")

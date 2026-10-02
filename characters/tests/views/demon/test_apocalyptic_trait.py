@@ -11,6 +11,7 @@ from django.urls import reverse
 
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.house import DemonHouse
+from characters.views.demon.apocalyptic_trait import ApocalypticFormTraitListView
 
 
 class TestApocalypticFormTraitDetailView(TestCase):
@@ -70,10 +71,6 @@ class TestApocalypticFormTraitListView(TestCase):
 
     def test_list_view_uses_select_related(self):
         """Test that get_queryset uses select_related for house."""
-        from characters.views.demon.apocalyptic_trait import (
-            ApocalypticFormTraitListView,
-        )
-
         view = ApocalypticFormTraitListView()
         view.request = None
         queryset = view.get_queryset()

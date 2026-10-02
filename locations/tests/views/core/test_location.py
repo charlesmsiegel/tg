@@ -5,6 +5,8 @@ from django.urls import reverse
 
 from game.models import Chronicle, ObjectType
 from locations.models.core.location import LocationModel
+from locations.models.mage.node import Node
+from locations.models.werewolf.caern import Caern
 
 
 class TestLocationIndexView(TestCase):
@@ -151,9 +153,6 @@ class TestLocationIndexTree(TestCase):
     url = "/locations/index/"
 
     def setUp(self):
-        from locations.models.mage.node import Node
-        from locations.models.werewolf.caern import Caern
-
         self.client.force_login(get_user_model().objects.create_user("staff", is_staff=True))
         self.ahp = Chronicle.objects.create(name="Ashes of Hyde Park")
         self.other = Chronicle.objects.create(name="Other Chronicle")

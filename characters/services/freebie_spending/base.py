@@ -18,6 +18,11 @@ from django.db import transaction
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost, get_meritflaw_freebie_cost
+from characters.models.core.ability_block import Ability
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.merit_flaw_block import MeritFlaw
+from game.models import FreebieSpendingRecord
 
 
 @dataclass
@@ -322,8 +327,6 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
             trait_value: Value gained
             cost: Freebie cost
         """
-        from game.models import FreebieSpendingRecord
-
         FreebieSpendingRecord.objects.create(
             character=self.character,
             trait_name=trait_name,
@@ -510,8 +513,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         - Background model = new background (create BackgroundRating)
         - BackgroundRating model = existing background (increase rating)
         """
-        from characters.models.core.background_block import Background, BackgroundRating
-
         # Detect new vs existing based on example type
         is_new = isinstance(example, Background)
 
@@ -703,7 +704,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         """Apply or deny approved attribute freebie spending."""
         if deny:
             # Revert the attribute
-            from characters.models.core.attribute_block import Attribute
 
             att = Attribute.objects.filter(name=freebie_request.trait_name).first()
             if att:
@@ -733,7 +733,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         """Apply or deny approved ability freebie spending."""
         if deny:
             # Revert the ability
-            from characters.models.core.ability_block import Ability
 
             abb = Ability.objects.filter(name=freebie_request.trait_name).first()
             if abb:
@@ -763,7 +762,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         """Apply or deny new background freebie spending."""
         if deny:
             # Remove the background
-            from characters.models.core.background_block import Background
 
             trait_name = freebie_request.trait_name
             if "(" in trait_name:
@@ -863,7 +861,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         """Apply or deny merit/flaw freebie spending."""
         if deny:
             # Remove the merit/flaw
-            from characters.models.core.merit_flaw_block import MeritFlaw
 
             mf = MeritFlaw.objects.filter(name=freebie_request.trait_name).first()
             if mf:

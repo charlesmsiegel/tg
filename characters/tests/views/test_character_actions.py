@@ -1,15 +1,19 @@
 """Character sheet action endpoints (Step 5): approve/reject XP, retire, decease,
 specialties. Each is tested against the full audience, GET, and old URLs."""
 
+from django.apps import apps
 from django.contrib.messages import get_messages
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
+from characters.models.core import Character
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
+from characters.models.demon.demon import Demon
+from characters.models.vampire.vampire import Vampire
 from characters.views.core import GenericCharacterDetailView
 from core.tests.action_audience import ActionAudienceMixin
 from game.models import XPSpendingRequest
@@ -245,10 +249,6 @@ class EveryCharacterTypeStatusTests(ActionAudienceMixin, TestCase):
     """Every mapped character type offers retire/decease, and both work."""
 
     def test_retire_and_decease_work_for_every_type(self):
-        from django.apps import apps
-
-        from characters.models.core import Character
-
         seen = set()
         for key in GenericCharacterDetailView().view_mapping:
             model = next(
@@ -324,9 +324,6 @@ class ActionRedirectTargetTests(ActionAudienceMixin, TestCase):
     deny an approved Vampire or Demon; it now renders their sheet too (U1)."""
 
     def test_retire_redirect_renders_for_vampire_and_demon(self):
-        from characters.models.demon.demon import Demon
-        from characters.models.vampire.vampire import Vampire
-
         self.login_as("staff")
         for model in (Vampire, Demon):
             with self.subTest(model=model.__name__):

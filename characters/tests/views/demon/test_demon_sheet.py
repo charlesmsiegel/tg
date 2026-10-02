@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from characters.models.demon import Demon
 from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
+from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.earthbound import Earthbound
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
@@ -191,8 +192,6 @@ class TestThrallSheet(DemonSheetTestBase):
 
 class TestDtFHumanSheet(DemonSheetTestBase):
     def test_human_sheet(self):
-        from characters.models.demon.dtf_human import DtFHuman
-
         human = DtFHuman.objects.create(
             name="Mortal", owner=self.owner, chronicle=self.chronicle, status="App", enigmas=2
         )

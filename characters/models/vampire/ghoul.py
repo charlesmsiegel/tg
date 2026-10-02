@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from characters.models.vampire.discipline import Discipline
 from core.linked_stat import LinkedStat
 
 from .vtmhuman import VtMHuman
@@ -92,7 +93,6 @@ class Ghoul(VtMHuman):
             # Can learn domitor's clan disciplines
             return list(self.domitor.clan.disciplines.all())
         # Independent ghouls can learn physical disciplines
-        from characters.models.vampire.discipline import Discipline
 
         physical = ["Potence", "Celerity", "Fortitude"]
         return list(Discipline.objects.filter(name__in=physical))

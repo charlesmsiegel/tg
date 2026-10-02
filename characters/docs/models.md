@@ -120,7 +120,6 @@ XP is held as an integer balance; each spend creates a `game.models.XPSpendingRe
 - `get_absolute_url()` returns `characters:character` (the polymorphic router, see
   [Views and URLs](views-and-urls.md)); several subclasses override it with their own detail
   route.
-- `next_stage(user=...)` and `prev_stage()` delegate to `characters.chargen.transitions`.
 - `can_navigate_back()` is the single gate for chargen back-navigation: status `Un` or `Rev`,
   `creation_status > 1`, within the workflow, and `freebies_approved` false.
   `chargen_back_url` returns the `characters:chargen_back` URL when it is true, else `""`.

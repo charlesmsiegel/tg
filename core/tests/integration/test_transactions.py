@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TransactionTestCase
 
+from accounts.models import Profile
+from characters.models.core.group import Group
 from characters.models.core.human import Human
 from game.models import Chronicle, Journal, Week, WeeklyXPRequest
 
@@ -33,7 +35,6 @@ class SignalTransactionTests(TransactionTestCase):
             username="test_user1", email="test1@example.com", password="testpass123"
         )
         # Verify profile count is exactly 1
-        from accounts.models import Profile
 
         self.assertEqual(Profile.objects.filter(user=user1).count(), 1)
 
@@ -230,8 +231,6 @@ class M2MOperationTransactionTests(TransactionTestCase):
 
     def test_m2m_removal_atomic(self):
         """Test that M2M removals are atomic within a transaction."""
-        from characters.models.core.group import Group
-
         # Create a group and add character
         group = Group.objects.create(
             name="Test Group",

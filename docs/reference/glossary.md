@@ -67,7 +67,7 @@ for developers and agents who know Django but not the games, or the games but no
 | Visibility | `core.models.PermissionMixin.visibility`: `PUB` (public), `PRI` (private, default), `CHR` (chronicle only), `CUS` (custom). Scenes have their own: `CHRONICLE`, `PARTICIPANTS`, `PUBLIC`. |
 | Visibility tier | `VisibilityTier.FULL`, `PARTIAL` or `NONE`: how much of an object a viewer sees. |
 | Week | `game.models.Week`: a seven-day period ending on `end_date`, the unit of weekly XP. |
-| Workflow | `characters.chargen.registry.Workflow`: the ordered chargen steps of one character type, in `WORKFLOWS` ([`characters/chargen/definitions.py`](../../characters/chargen/definitions.py)). |
+| Workflow | `characters.chargen.workflow.Workflow`: the ordered chargen steps of one character type, in `WORKFLOWS` ([`characters/chargen/definitions.py`](../../characters/chargen/definitions.py)). |
 | XP | Experience points: `Character.xp`, earned from scenes, weeks and stories and spent through `XPSpendingRequest` rows a storyteller approves. |
 | XP requests | `game.models.WeeklyXPRequest`, `StoryXPRequest` (earning) and `XPSpendingRequest` (spending); `FreebieSpendingRecord` records freebie spends. |
 

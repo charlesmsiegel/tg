@@ -21,13 +21,7 @@ def readable_chronicles(user):
 
 def staffed_chronicles(user):
     """Chronicles where a user has a full ST read role."""
-    if not user.is_authenticated:
-        return Chronicle.objects.none()
-    if user.is_staff or user.is_superuser:
-        return Chronicle.objects.all()
-    return Chronicle.objects.filter(
-        Q(head_st=user) | Q(game_storytellers=user) | Q(st_relationships__user=user)
-    ).distinct()
+    return Chronicle.objects.staffed_by(user)
 
 
 def can_read_private_record(user, record):

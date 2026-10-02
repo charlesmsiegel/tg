@@ -10,7 +10,7 @@ Tests cover:
 - Form validation for valid/invalid group types
 """
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase
 
 from characters.forms.core.group_creation import GroupCreationForm
@@ -220,8 +220,6 @@ class TestUnauthenticatedUser(GroupCreationFormTestCase):
 
     def test_anonymous_user_class_has_empty_choices(self):
         """AnonymousUser gets empty choices."""
-        from django.contrib.auth.models import AnonymousUser
-
         anon = AnonymousUser()
         form = GroupCreationForm(user=anon)
 

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
 
-from characters.models.core import MeritFlaw
+from characters.models.core import Human, MeritFlaw
 from characters.models.core.merit_flaw_block import MeritFlawRating
 from game.models import ObjectType
 
@@ -124,8 +124,6 @@ class TestMeritFlawRatingRelatedNames(TestCase):
     """Test explicit related_name attributes on MeritFlawRating ForeignKey fields."""
 
     def setUp(self):
-        from characters.models.core import Human
-
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )

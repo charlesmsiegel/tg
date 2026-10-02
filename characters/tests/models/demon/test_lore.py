@@ -1,6 +1,7 @@
 """Tests for Lore model."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.demon.house import DemonHouse
@@ -34,8 +35,6 @@ class LoreModelTests(TestCase):
 
     def test_property_name_unique(self):
         """Test that property_name must be unique."""
-        from django.core.exceptions import ValidationError
-
         with self.assertRaises(ValidationError):
             Lore.objects.create(
                 name="Other Fire Lore",

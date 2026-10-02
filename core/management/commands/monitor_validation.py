@@ -25,7 +25,7 @@ from django.utils import timezone
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from core.constants import CharacterStatus
-from game.models import Scene
+from game.models import Scene, XPSpendingRequest
 
 
 class Command(BaseCommand):
@@ -162,8 +162,6 @@ class Command(BaseCommand):
 
     def check_xp_activity(self, since):
         """Check XP spending activity and patterns."""
-        from game.models import XPSpendingRequest
-
         # Count spending records using XPSpendingRequest model
         total_spends = XPSpendingRequest.objects.count()
         pending_spends = XPSpendingRequest.objects.filter(approved="Pending").count()

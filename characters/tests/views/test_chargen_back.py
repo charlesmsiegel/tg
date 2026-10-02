@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from characters.models.core.human import Human
 from characters.models.vampire.vtmhuman import VtMHuman
+from locations.models.core.location import LocationModel
 
 
 class TestChargenBackView(TestCase):
@@ -203,8 +204,6 @@ class TestChargenBackUrlProperty(TestCase):
     def test_locations_have_no_chargen_back_url(self):
         """LocationModel also has creation_status but must not expose the
         Back button — the property lives on Character only."""
-        from locations.models.core.location import LocationModel
-
         loc = LocationModel.objects.create(name="Chantry", status="Un")
         self.assertFalse(hasattr(loc, "chargen_back_url"))
 

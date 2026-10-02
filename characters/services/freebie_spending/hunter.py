@@ -9,6 +9,8 @@ This module provides freebie spending services for Hunter: The Reckoning charact
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.hunter.edge import Edge
+from characters.utils import trait_property_name
 
 from .base import (
     FreebieApplyResult,
@@ -78,13 +80,11 @@ class HtRHumanFreebieSpendingService(HumanFreebieSpendingService):
     def _apply_virtue(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved virtue freebie spending."""
         if deny:
-            from characters.models.core.virtue import Virtue
-
-            virtue = Virtue.objects.filter(name=freebie_request.trait_name).first()
-            if virtue:
-                current_val = getattr(self.character, virtue.property_name, 1)
+            property_name = trait_property_name(freebie_request.trait_name)
+            if hasattr(self.character, property_name):
+                current_val = getattr(self.character, property_name, 1)
                 if current_val > 1:
-                    setattr(self.character, virtue.property_name, current_val - 1)
+                    setattr(self.character, property_name, current_val - 1)
                     self.character.save()
             return FreebieApplyResult(
                 success=True,
@@ -151,8 +151,6 @@ class HunterFreebieSpendingService(HtRHumanFreebieSpendingService):
     def _apply_edge(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Edge freebie spending."""
         if deny:
-            from characters.models.hunter.edge import Edge
-
             edge = Edge.objects.filter(name=freebie_request.trait_name).first()
             if edge:
                 self.character.edges.remove(edge)

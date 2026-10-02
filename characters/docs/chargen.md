@@ -12,11 +12,12 @@ a step, follow [Adding a chargen step](../../docs/guides/adding-a-chargen-step.m
 
 | Path | Responsibility |
 |------|----------------|
-| [`chargen/__init__.py`](../chargen/__init__.py) | `get_workflow(character_type)` (lazy import, safe during model loading) |
-| [`chargen/registry.py`](../chargen/registry.py) | `Step`, `Workflow`, `progress_rows()`, the `WorkflowViews` and `FreebiePosition` descriptors |
+| [`chargen/__init__.py`](../chargen/__init__.py) | `get_workflow(character_type)` (safe during model loading: the package imports no models or views) |
+| [`chargen/workflow.py`](../chargen/workflow.py) | `Step` and `Workflow` dataclasses |
+| [`chargen/registry.py`](../chargen/registry.py) | `progress_rows()`, the `WorkflowViews` and `FreebiePosition` descriptors; re-exports `Step` and `Workflow` |
 | [`chargen/definitions.py`](../chargen/definitions.py) | Shared `Step` constants, `bind()`, one `Workflow` per type in `WORKFLOWS`, `DETAIL_ONLY_FREEBIE_POSITIONS` |
 | [`chargen/predicates.py`](../chargen/predicates.py) | Skip predicates |
-| [`chargen/transitions.py`](../chargen/transitions.py) | `advance()`, `previous_position()` |
+| [`chargen/transitions.py`](../chargen/transitions.py) | `advance()`, `retreat()`, `previous_position()` |
 | [`views/core/chargen_mixins.py`](../views/core/chargen_mixins.py), [`allocations.py`](../views/core/allocations.py), [`spending.py`](../views/core/spending.py), [`generic_background.py`](../views/core/generic_background.py), [`chargen_back.py`](../views/core/chargen_back.py) | Shared step machinery (see [Views and URLs](views-and-urls.md#chargen-step-views)) |
 | [`rules/`](../rules/) | Allocation rules and point pools (see [Costs and rules](costs-and-rules.md)) |
 | [`templates/characters/core/chargen.html`](../templates/characters/core/chargen.html), [`templates/characters/core/chargen/`](../templates/characters/core/chargen/) | Page shell and step partials (see [Templates](templates.md#chargen-templates)) |

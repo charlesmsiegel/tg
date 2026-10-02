@@ -9,18 +9,33 @@ from django.http import Http404
 from django.test import RequestFactory, TestCase
 
 from characters.chargen import get_workflow
+from characters.chargen.definitions import WORKFLOWS
+from characters.chargen.transitions import advance
 from characters.forms.mage.freebies import CompanionFreebiesForm, SorcererFreebiesForm
+from characters.models.changeling.changeling import Changeling
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.statistic import Statistic
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.focus import Practice
+from characters.models.mage.mage import Mage
+from characters.models.mage.mtahuman import MtAHuman
+from characters.models.mage.resonance import Resonance
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
+from characters.models.mage.sphere import Sphere
+from characters.models.vampire.clan import VampireClan
+from characters.models.vampire.discipline import Discipline
+from characters.models.vampire.vampire import Vampire
 from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.passion import Passion
 from characters.models.wraith.wraith import Wraith
+from characters.views.changeling.changeling import ChangelingFreebiesView
 from characters.views.mage.companion import CompanionFreebiesView
+from characters.views.mage.mage import MageFreebiesView
+from characters.views.mage.mtahuman import MtAHumanFreebiesView
 from characters.views.mage.sorcerer import SorcererFreebiesView
+from characters.views.vampire.vampire_chargen import VampireFreebiesView
 from characters.views.wraith.wraith_chargen import WraithFettersView, WraithPassionsView
 from game.models import FreebieSpendingRecord
 
@@ -203,8 +218,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         self.assertFalse(FreebieSpendingRecord.objects.filter(character=char).exists())
 
     def test_every_registered_freebie_adapter_spends_a_common_attribute(self):
-        from characters.chargen.definitions import WORKFLOWS
-
         attribute = Attribute.objects.create(name="Strength", property_name="strength")
         for character_type, workflow in WORKFLOWS.items():
             with self.subTest(character_type=character_type):
@@ -219,10 +232,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
                 self.assertEqual(FreebieSpendingRecord.objects.filter(character=char).count(), 1)
 
     def test_changeling_chained_art_and_realm_choices(self):
-        from characters.models.changeling.changeling import Changeling
-        from characters.models.core.statistic import Statistic
-        from characters.views.changeling.changeling import ChangelingFreebiesView
-
         char = self.character(Changeling, "freebies", freebies=20)
         for category, property_name, price in (("Art", "chicanery", 5), ("Realm", "actor", 2)):
             trait = Statistic.objects.create(
@@ -238,10 +247,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
             self.assertEqual(char.freebies, before - price)
 
     def test_mage_chained_sphere_choice(self):
-        from characters.models.mage.mage import Mage
-        from characters.models.mage.sphere import Sphere
-        from characters.views.mage.mage import MageFreebiesView
-
         char = self.character(Mage, "freebies", freebies=20, arete=2)
         sphere = Sphere.objects.create(name="Matter", property_name="matter")
         response, _ = self.request(
@@ -252,9 +257,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         self.assertEqual((char.matter, char.freebies), (1, 13))
 
     def test_mage_arete_level_choice_is_not_treated_as_a_practice(self):
-        from characters.models.mage.mage import Mage
-        from characters.views.mage.mage import MageFreebiesView
-
         char = self.character(Mage, "freebies", freebies=10, arete=1)
         response, _ = self.request(MageFreebiesView, char, {"category": "Arete", "example": "2"})
         self.assertEqual(response.status_code, 302)
@@ -264,10 +266,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         self.assertEqual((record.trait_name, record.trait_type, record.cost), ("Arete", "arete", 4))
 
     def test_mage_rotes_and_resonance_form_values_reach_service(self):
-        from characters.models.mage.mage import Mage
-        from characters.models.mage.resonance import Resonance
-        from characters.views.mage.mage import MageFreebiesView
-
         char = self.character(Mage, "freebies", freebies=20, arete=2, rote_points=0)
         response, _ = self.request(MageFreebiesView, char, {"category": "Rotes"})
         self.assertEqual(response.status_code, 302)
@@ -293,11 +291,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         self.assertEqual(char.freebies, 20)
 
     def test_vampire_chained_discipline_and_string_virtue(self):
-        from characters.models.vampire.clan import VampireClan
-        from characters.models.vampire.discipline import Discipline
-        from characters.models.vampire.vampire import Vampire
-        from characters.views.vampire.vampire_chargen import VampireFreebiesView
-
         discipline = Discipline.objects.create(name="Potence", property_name="potence")
         clan = VampireClan.objects.create(name="Brujah")
         clan.disciplines.add(discipline)
@@ -334,8 +327,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         for model, view in ((Companion, CompanionFreebiesView), (Sorcerer, SorcererFreebiesView)):
             with self.subTest(model=model.type):
                 char = self.character(model, "freebies", freebies=5)
-                from characters.chargen.transitions import advance
-
                 with patch(f"{view.form_valid.__module__}.advance", wraps=advance) as advance_spy:
                     response, _ = self.request(
                         view, char, {"category": "Attribute", "example": attribute.pk}
@@ -441,9 +432,6 @@ class SharedSpendingRegressionTests(SpendingAllocationCase):
         self.assertEqual((char.freebies, char.willpower, char.essence), (1, 3, 15))
 
     def test_existing_background_price_and_other_characters_choice_rejected(self):
-        from characters.models.mage.mtahuman import MtAHuman
-        from characters.views.mage.mtahuman import MtAHumanFreebiesView
-
         bg = Background.objects.create(name="Resources", property_name="resources", multiplier=3)
         char = self.character(MtAHuman, "freebies", freebies=10)
         rating = BackgroundRating.objects.create(char=char, bg=bg, rating=1)

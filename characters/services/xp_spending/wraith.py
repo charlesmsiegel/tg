@@ -7,6 +7,7 @@ This module provides XP spending services for Wraith: The Oblivion characters:
 """
 
 from characters.costs import get_xp_cost
+from characters.models.wraith.arcanos import Arcanos
 
 from .base import (
     HumanXPSpendingService,
@@ -123,8 +124,6 @@ class WraithXPSpendingService(WtOHumanXPSpendingService):
     @applier("arcanos")
     def _apply_arcanos(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Arcanos XP spending."""
-        from characters.models.wraith.arcanos import Arcanos
-
         arcanos = Arcanos.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
             xp_request.id, arcanos.property_name, xp_request.trait_value, approver

@@ -1,8 +1,9 @@
 """Tests for accounts context processors."""
 
 from datetime import date
+from unittest.mock import patch
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db import connection
@@ -11,9 +12,12 @@ from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 
 from accounts.context_processors import notification_count, theme_context
+from characters.models.core import Ability, Attribute
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
+from characters.models.vampire.vtmhuman import VtMHuman
 from game.models import (
     Chronicle,
     Gameline,
@@ -23,6 +27,7 @@ from game.models import (
     UserSceneReadStatus,
     Week,
     WeeklyXPRequest,
+    XPSpendingRequest,
 )
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
@@ -48,8 +53,6 @@ class TestThemeContextProcessor(TestCase):
 
     def test_unauthenticated_user_gets_empty_context(self):
         """Test that unauthenticated users get empty context."""
-        from django.contrib.auth.models import AnonymousUser
-
         request = self.factory.get("/")
         request.user = AnonymousUser()
         context = theme_context(request)
@@ -147,8 +150,6 @@ class TestNotificationCountContextProcessor(TestCase):
 
     def test_unauthenticated_user_gets_zero_notifications(self):
         """Test that unauthenticated users get zero notifications."""
-        from django.contrib.auth.models import AnonymousUser
-
         request = self.factory.get("/")
         request.user = AnonymousUser()
         context = notification_count(request)
@@ -240,9 +241,6 @@ class TestNotificationCountContextProcessor(TestCase):
 
     def test_st_sees_rotes_to_approve(self):
         """Test that storytellers see rotes to approve."""
-        from characters.models.core import Ability, Attribute
-        from characters.models.mage.effect import Effect
-
         effect = Effect.objects.create(name="Test Effect")
         attribute = Attribute.objects.create(name="Strength", property_name="strength")
         ability = Ability.objects.create(name="Athletics", property_name="athletics")
@@ -266,8 +264,6 @@ class TestNotificationCountContextProcessor(TestCase):
         to show up in freebies_to_approve. For VtMHuman (which Human inherits from),
         freebie_step = 5.
         """
-        from characters.models.vampire.vtmhuman import VtMHuman
-
         VtMHuman.objects.create(
             name="Freebies Char",
             owner=self.user,
@@ -387,8 +383,6 @@ class TestNotificationCountContextProcessor(TestCase):
 
     def test_st_sees_xp_spend_requests(self):
         """Test that storytellers see XP spend requests."""
-        from game.models import XPSpendingRequest
-
         char = Human.objects.create(
             name="XP Character",
             owner=self.user,
@@ -415,8 +409,6 @@ class TestNotificationCountContextProcessor(TestCase):
         We simulate this by creating a user without a profile (which shouldn't
         happen in normal operation but tests the exception handling).
         """
-        from unittest.mock import patch
-
         request = self.factory.get("/")
         request.user = self.user
 

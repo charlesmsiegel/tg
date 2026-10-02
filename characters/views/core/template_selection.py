@@ -7,6 +7,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView
 
+from characters.services.templates import apply_template
 from core.mixins import SharedTemplateMixin
 
 
@@ -42,7 +43,7 @@ class CharacterTemplateSelectView(SharedTemplateMixin, LoginRequiredMixin, FormV
     def form_valid(self, form):
         template = form.cleaned_data.get("template")
         if template:
-            template.apply_to_character(self.object)
+            apply_template(template, self.object)
             messages.success(
                 self.request,
                 f"Applied template '{template.name}'. You can now customize the character further.",

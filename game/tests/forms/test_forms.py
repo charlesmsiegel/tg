@@ -4,6 +4,7 @@ from datetime import date
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils.timezone import now
 
 from characters.models.core.human import Human
 from game.forms import (
@@ -20,6 +21,7 @@ from game.models import (
     Gameline,
     Journal,
     JournalEntry,
+    Post,
     Scene,
     STRelationship,
     Week,
@@ -367,8 +369,6 @@ class TestSTResponseForm(TestCase):
     """Tests for STResponseForm."""
 
     def setUp(self):
-        from django.utils.timezone import now
-
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )
@@ -429,9 +429,6 @@ class TestWeeklyXPRequestForm(TestCase):
         )
         self.scene.characters.add(self.character)
         # Need to add a post so the scene counts as finished for the week
-        from django.utils.timezone import now
-
-        from game.models import Post
 
         Post.objects.create(
             character=self.character,

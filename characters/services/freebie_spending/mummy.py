@@ -9,6 +9,7 @@ This module provides freebie spending services for Mummy: The Resurrection chara
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.utils import trait_property_name
 
 from .base import (
     FreebieApplyResult,
@@ -171,13 +172,11 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _apply_hekau(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Hekau freebie spending."""
         if deny:
-            from characters.models.mummy.hekau import Hekau
-
-            hekau = Hekau.objects.filter(name=freebie_request.trait_name).first()
-            if hekau:
-                current_val = getattr(self.character, hekau.property_name, 0)
+            property_name = trait_property_name(freebie_request.trait_name)
+            if hasattr(self.character, property_name):
+                current_val = getattr(self.character, property_name, 0)
                 if current_val > 0:
-                    setattr(self.character, hekau.property_name, current_val - 1)
+                    setattr(self.character, property_name, current_val - 1)
                     self.character.save()
             return FreebieApplyResult(
                 success=True,

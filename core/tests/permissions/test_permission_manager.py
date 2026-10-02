@@ -1,6 +1,7 @@
 """Tests for PermissionManager in core/permissions.py."""
 
 from django.contrib.auth.models import AnonymousUser, User
+from django.db.models import Q
 from django.test import TestCase
 
 from characters.models.core.character import Character
@@ -617,8 +618,6 @@ class HelperMethodsTest(TestCase):
 
     def test_build_owner_filter_for_model_without_owner(self):
         """Test _build_owner_filter for model without owner returns Q filter."""
-        from django.db.models import Q
-
         user = User.objects.create_user(username="test2", password="testpass123")
         # Chronicle doesn't have an owner field
         q_filter = PermissionManager._build_owner_filter(user, Chronicle)

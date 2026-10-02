@@ -104,7 +104,11 @@ route policy is `WIDGET`: anonymous callers get `{"error": "Authentication requi
 with status 401 from the middleware (and from the view itself).
 
 `auto_chained_ajax_view` accepts GET only and answers only for forms and fields listed
-in `widgets.views.REGISTERED_FORMS`. It never imports a class named in the request.
+in `widgets.views.REGISTERED_FORMS` (dotted form path to its chained fields). It never
+imports a class named in the request: the registered path is resolved with `import_string`,
+the form is built with the requesting user, and the form's own
+`allowed_chained_parent(field_name, parent_id)` decides which parents it would offer that
+user. The widgets app itself imports nothing from the other apps.
 
 | Check | Failure |
 |-------|---------|

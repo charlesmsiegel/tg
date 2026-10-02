@@ -8,8 +8,14 @@ settings.DEBUG is true or --force is given.
 import secrets
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+
+from characters.models.core.character import CharacterModel
+from game.models import Chronicle, Scene, StoryXPRequest, Week, WeeklyXPRequest
+from items.models.core.item import ItemModel
+from locations.models.core.location import LocationModel
 
 
 class Command(BaseCommand):
@@ -72,11 +78,6 @@ class Command(BaseCommand):
 
     def delete_game_data(self):
         """Delete all game-related data."""
-        from characters.models.core.character import CharacterModel
-        from game.models import Chronicle, Scene, StoryXPRequest, Week, WeeklyXPRequest
-        from items.models.core.item import ItemModel
-        from locations.models.core.location import LocationModel
-
         self.stdout.write("Deleting existing game data...")
 
         # Delete in order to respect foreign keys
@@ -95,8 +96,6 @@ class Command(BaseCommand):
 
     def delete_users(self):
         """Delete all users except superusers."""
-        from django.contrib.auth.models import User
-
         self.stdout.write("Deleting non-superuser accounts...")
 
         User.objects.filter(is_superuser=False).delete()
@@ -105,11 +104,6 @@ class Command(BaseCommand):
 
     def load_demo_data(self, password):
         """Load demo data; new demo accounts get ``password``."""
-
-        from django.contrib.auth.models import User
-
-        from game.models import Chronicle
-
         self.stdout.write("Loading demo data...")
 
         # Create demo users; existing accounts keep their password

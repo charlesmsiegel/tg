@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from characters.models.core.human import Human
 from characters.models.wraith.circle import Circle
+from characters.views.wraith.circle import CircleListView
 from game.models import Chronicle
 
 
@@ -210,8 +211,6 @@ class TestCircleListViewQueryOptimization(TestCase):
 
     def test_get_queryset_uses_select_related(self):
         """Test that get_queryset uses select_related for leader."""
-        from characters.views.wraith.circle import CircleListView
-
         view = CircleListView()
         view.request = None
         queryset = view.get_queryset()
@@ -220,8 +219,6 @@ class TestCircleListViewQueryOptimization(TestCase):
 
     def test_get_queryset_uses_prefetch_related(self):
         """Test that get_queryset uses prefetch_related for members."""
-        from characters.views.wraith.circle import CircleListView
-
         view = CircleListView()
         view.request = None
         queryset = view.get_queryset()

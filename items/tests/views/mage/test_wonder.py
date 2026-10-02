@@ -1,12 +1,17 @@
 """Tests for wonder views."""
 
+from pathlib import Path
+
 from django.contrib.auth.models import User
+from django.contrib.staticfiles import finders
 from django.db import connection
+from django.template import loader
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
 
 from characters.models.mage.resonance import Resonance
 from items.models.mage import Wonder, WonderResonanceRating
+from items.views.mage.wonder import WonderCreateView, WonderUpdateView
 
 
 class TestWonderDetailViewQueryOptimization(TestCase):
@@ -54,9 +59,6 @@ class TestWonderCreateView(TestCase):
     """Test WonderCreateView functionality."""
 
     def test_create_view_redirects_to_saved_object(self):
-        from items.models.mage.wonder import Wonder
-        from items.views.mage.wonder import WonderCreateView
-
         obj = Wonder.objects.create(name="Saved Wonder")
         view = WonderCreateView()
         view.object = obj
@@ -67,9 +69,6 @@ class TestWonderUpdateView(TestCase):
     """Test WonderUpdateView functionality."""
 
     def test_update_view_redirects_to_saved_object(self):
-        from items.models.mage.wonder import Wonder
-        from items.views.mage.wonder import WonderUpdateView
-
         obj = Wonder.objects.create(name="Saved Wonder")
         view = WonderUpdateView()
         view.object = obj
@@ -81,11 +80,6 @@ class TestWonderFormTemplateJS(TestCase):
 
     def test_form_include_has_toggle_effect_fields(self):
         """The form loads the static asset containing its effect-field toggle."""
-        from pathlib import Path
-
-        from django.contrib.staticfiles import finders
-        from django.template import loader
-
         template = loader.get_template("items/mage/wonder/form_include.html")
         template_source = template.template.source
 
@@ -95,10 +89,6 @@ class TestWonderFormTemplateJS(TestCase):
 
     def test_form_include_has_init_wonder_form(self):
         """The static asset initializes the form when the DOM is ready."""
-        from pathlib import Path
-
-        from django.contrib.staticfiles import finders
-
         script = Path(finders.find("items/js/wonder-form.js")).read_text(encoding="utf-8")
         self.assertIn("function initWonderForm", script)
         self.assertIn("document.addEventListener('DOMContentLoaded', initWonderForm)", script)
