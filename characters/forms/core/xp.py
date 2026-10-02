@@ -194,7 +194,6 @@ class XPForm(ChainedSelectMixin, forms.Form):
 
     def mf_valid(self):
         # Check if character has any affordable merit/flaws
-
         chartype = get_character_object_type(self.character.type)
         filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 

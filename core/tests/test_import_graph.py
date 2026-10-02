@@ -79,34 +79,53 @@ class ImportPlacementTests(SimpleTestCase):
         )
 
 
+def import_edges(modules):
+    """{module: set of project modules it imports at module scope}."""
+    edges = {module: set() for module in modules}
+    for module, path in modules.items():
+        tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
+        is_package = path.name == "__init__.py"
+        for node in tree.body:
+            if isinstance(node, ast.Import):
+                targets = [resolve(alias.name, modules) for alias in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                if node.level:
+                    base = module if is_package else module.rsplit(".", 1)[0]
+                    base = ".".join(base.split(".")[: len(base.split(".")) - node.level + 1])
+                    full = f"{base}.{node.module}" if node.module else base
+                else:
+                    full = node.module or ""
+                targets = [
+                    (
+                        f"{full}.{alias.name}"
+                        if f"{full}.{alias.name}" in modules
+                        else resolve(full, modules)
+                    )
+                    for alias in node.names
+                ]
+            else:
+                continue
+            edges[module].update(t for t in targets if t and t != module)
+
+    return edges
+
+
+def reachable(edges, start):
+    """Every module reachable from ``start`` over module-level imports."""
+    seen, pending = set(), [start]
+    while pending:
+        module = pending.pop()
+        for target in edges.get(module, ()):
+            if target not in seen:
+                seen.add(target)
+                pending.append(target)
+    return seen
+
+
 class ImportGraphTests(SimpleTestCase):
     def test_module_level_imports_are_acyclic(self):
         modules = project_modules()
-        edges = {module: set() for module in modules}
-        for module, path in modules.items():
-            tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
-            is_package = path.name == "__init__.py"
-            for node in tree.body:
-                if isinstance(node, ast.Import):
-                    targets = [resolve(alias.name, modules) for alias in node.names]
-                elif isinstance(node, ast.ImportFrom):
-                    if node.level:
-                        base = module if is_package else module.rsplit(".", 1)[0]
-                        base = ".".join(base.split(".")[: len(base.split(".")) - node.level + 1])
-                        full = f"{base}.{node.module}" if node.module else base
-                    else:
-                        full = node.module or ""
-                    targets = [
-                        (
-                            f"{full}.{alias.name}"
-                            if f"{full}.{alias.name}" in modules
-                            else resolve(full, modules)
-                        )
-                        for alias in node.names
-                    ]
-                else:
-                    continue
-                edges[module].update(t for t in targets if t and t != module)
+        edges = import_edges(modules)
 
         # Tarjan's strongly connected components, iterative so a deep import chain
         # cannot overflow the stack; any component of two or more modules is a cycle.
@@ -149,4 +168,28 @@ class ImportGraphTests(SimpleTestCase):
                 strong(module)
         self.assertEqual(
             cycles, [], "Import cycles between modules:\n" + "\n".join(map(str, cycles))
+        )
+
+    def test_app_loading_code_imports_no_models(self):
+        """Modules Django runs before the app registry is ready stay model-free.
+
+        ``AppConfig`` modules are imported while apps are still loading, and
+        ``characters.chargen`` is imported by ``characters.models.core.character``
+        at model-definition time, so neither may reach a ``models`` module (nor,
+        for chargen, a ``views`` module) through module-level imports.
+        """
+        modules = project_modules()
+        edges = import_edges(modules)
+        constraints = {module: ("models",) for module in modules if module.endswith(".apps")}
+        for module in modules:
+            if module == "characters.chargen" or module.startswith("characters.chargen."):
+                if module != "characters.chargen.transitions":
+                    constraints[module] = ("models", "views")
+        offenders = []
+        for module, forbidden in sorted(constraints.items()):
+            for target in sorted(reachable(edges, module)):
+                if any(segment in forbidden for segment in target.split(".")):
+                    offenders.append(f"{module} -> {target}")
+        self.assertEqual(
+            offenders, [], "App-loading code reaches models or views:\n" + "\n".join(offenders)
         )
