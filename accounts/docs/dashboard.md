@@ -30,7 +30,7 @@ with no chronicle when the user is staff or a superuser.
 
 | Method | Returns |
 |--------|---------|
-| `st_relations()` | `dict` of `Chronicle` to the user's `STRelationship` rows for it (from `STRelationship.objects.for_user_optimized`) |
+| `st_relations()` | `dict` of `Chronicle` to the user's `STRelationship` rows for it (from `STRelationship.objects.for_user_optimized`); a chronicle the user heads is included with an empty list when it has no row |
 | `characters_to_approve()` | Characters with status `Sub` in staffed chronicles (`pending_approval_for_user`) |
 | `items_to_approve()`, `locations_to_approve()` | The same for items and locations |
 | `rotes_to_approve()` | `dict` of submitted `Rote` (status `Sub`, in the user's chronicles, ordered by name) to the list of mages that have it |
@@ -111,7 +111,7 @@ The tab comes from `?tab=`. `ProfileView.get_tab` accepts `needs`, `characters` 
 |-----|---------|----------|
 | Needs you | Every queue collected by `get_needs_you` (below) | `accounts/includes/needs.html` |
 | My characters | `my_characters`, `my_locations`, `my_items` as tiles | `includes/characters.html`, `locations.html`, `items.html` |
-| Chronicles | `st_relations()`: each chronicle with the gamelines the user storytells | `includes/chronicles.html` |
+| Chronicles | `st_relations()`: each chronicle the user heads or storytells, with "Head storyteller" and the gamelines | `includes/chronicles.html` |
 | Experience | The player's weekly XP request cards; on a storyteller's own profile also weekly XP approvals and scene XP award cards | `includes/xp_weekly.html`, `xp_weekly_st.html`, `xp_scene_st.html` |
 | Journals | `get_updated_journals()` | `includes/journals.html` |
 

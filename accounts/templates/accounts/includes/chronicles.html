@@ -11,6 +11,7 @@
                     <div class="tl-scenerow" data-gameline="{{ chronicle|gameline_code }}">
                         <span class="tl-scenerow__name"><a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a></span>
                         <span class="tl-scenerow__when">
+                            {% if chronicle.head_st_id == object.user_id %}Head storyteller{% if relations|field:chronicle %} ·{% endif %}{% endif %}
                             {% for str in relations|field:chronicle %}
                                 {{ str.gameline }}{% if not forloop.last %} ·{% endif %}
                             {% endfor %}

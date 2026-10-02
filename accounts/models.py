@@ -84,16 +84,18 @@ class Profile(ValidatedSaveMixin, models.Model):
     def is_st(self):
         """Whether the user can act as a storyteller for at least one chronicle.
 
-        True for the ``head_st`` of any chronicle and for the holder of any
-        ``STRelationship`` row, the same people ``PermissionManager.can_manage_scope``
-        accepts. Game storytellers (``Chronicle.game_storytellers``) are view-only and do
-        not count; staff status is left to callers, which keeps this a data predicate.
-        Callers that need the answer more than once per request should keep the result
-        rather than call again: each call is one query.
+        True for the ``head_st`` of any chronicle and for the holder of an
+        ``STRelationship`` row for an existing chronicle, the same people
+        ``PermissionManager.can_manage_scope`` accepts. A relationship row whose chronicle
+        was deleted (``chronicle`` is ``SET_NULL``) staffs nothing and does not count. Game
+        storytellers (``Chronicle.game_storytellers``) are view-only and do not count;
+        staff status is left to callers, which keeps this a data predicate. Callers that
+        need the answer more than once per request should keep the result rather than
+        call again: each call is one query, a subquery rather than a join so the planner
+        has no multi-valued OR to work around.
         """
-        return Chronicle.objects.filter(
-            Q(head_st=self.user) | Q(st_relationships__user=self.user)
-        ).exists()
+        staffed = STRelationship.objects.filter(user=self.user).values("chronicle_id")
+        return Chronicle.objects.filter(Q(head_st=self.user) | Q(pk__in=staffed)).exists()
 
     def is_st_for(self, chronicle):
         """Check if user is a storyteller for a specific chronicle.

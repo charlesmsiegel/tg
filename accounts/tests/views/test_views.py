@@ -173,12 +173,41 @@ class TestProfileView(TestCase):
         self.assertContains(response, "Characters to approve")
         self.assertContains(response, "Waiting On Head")
 
+        response = self.client.get(head.profile.get_absolute_url(), {"tab": "chronicles"})
+        self.assertContains(response, "Headed Chronicle")
+        self.assertContains(response, "Head storyteller")
+        self.assertNotContains(response, "You do not storytell any chronicles.")
+
+    def test_staff_viewing_a_head_storytellers_profile_sees_no_st_queues(self):
+        """The head ST's queues stay on their own profile, as a relationship holder's do."""
+        head = User.objects.create_user("Head ST", "head@st.com", "testpass")
+        chronicle = Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+        Human.objects.create(
+            name="Waiting On Head", owner=self.user2, chronicle=chronicle, status="Sub"
+        )
+        User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
+
+        self.client.login(username="Staff", password="testpass")
+        response = self.client.get(head.profile.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_st"])
+        self.assertFalse(response.context["st_queues"])
+        self.assertEqual(response.context["characters_to_approve"], [])
+        self.assertEqual(response.context["freebie_forms"], [])
+        self.assertNotContains(response, "Characters to approve")
+        self.assertNotContains(response, "Waiting On Head")
+
     def test_profile_render_runs_the_storyteller_predicate_once(self):
         """The page decides "is this user a storyteller" with one query, not one per use.
 
         The nav badge's context processor asks the same question for every page and caches
         its answer per user for 60 seconds, so the warm-up request leaves that cache filled
-        and the count below is the profile view's own.
+        and the count below is the profile view's own. The match is on SQL text on purpose:
+        the total query count stays constant whether the predicate runs once or four
+        times, and counting Python calls would not catch a second query from a template.
+        The two fragments matched (an EXISTS projection and the head_st column) are what
+        Profile.is_st() must emit under any rewrite that still asks the database once.
         """
         self.client.login(username="Test Storyteller", password="testpass")
         url = self.storyteller.profile.get_absolute_url()

@@ -77,6 +77,32 @@ class TestSTRelationships(TestCase):
         self.assertFalse(STRelationship.objects.filter(user=head).exists())
         self.assertTrue(head.profile.is_st())
 
+    def test_is_st_ignores_a_relationship_row_whose_chronicle_is_gone(self):
+        """A row left with chronicle=NULL by SET_NULL staffs nothing and does not count."""
+        gone = Chronicle.objects.create(name="Deleted later")
+        row = STRelationship.objects.create(
+            user=self.st_user, chronicle=gone, gameline=self.gameline
+        )
+        self.assertTrue(self.st_user.profile.is_st())
+
+        gone.delete()
+
+        row.refresh_from_db()
+        self.assertIsNone(row.chronicle)
+        self.assertFalse(self.st_user.profile.is_st())
+
+    def test_st_relations_lists_a_headed_chronicle_without_a_relationship_row(self):
+        """The Chronicles tab lists what is_st() counts: a headed chronicle, rows or not."""
+        headed = Chronicle.objects.create(name="Headed", head_st=self.st_user)
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+
+        relations = self.st_user.profile.st_relations()
+
+        self.assertEqual(relations[headed], [])
+        self.assertEqual(len(relations[self.chronicle]), 1)
+
     def test_is_st_returns_false_for_game_storyteller(self):
         """Game storytellers are view-only and are not storytellers."""
         viewer = User.objects.create_user(username="gst", email="gst@test.com", password="pw")
