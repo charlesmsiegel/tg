@@ -660,6 +660,20 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
         self.own_draft.refresh_from_db()
         self.assertEqual(self.own_draft.total_points, 105)
 
+    def test_save_join_refuses_a_chantry_approved_meanwhile(self):
+        """The status check sits in the UPDATE itself, after validation."""
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.own_draft.pk},
+            character=self.character,
+            points=5,
+        )
+        self.assertTrue(form.is_valid())
+        Chantry.objects.filter(pk=self.own_draft.pk).update(status="App")
+        with self.assertRaises(ValidationError):
+            form.save()
+        self.own_draft.refresh_from_db()
+        self.assertEqual(self.own_draft.total_points, 20)
+
     def test_save_join_refuses_a_chantry_deleted_meanwhile(self):
         form = ChantrySelectOrCreateForm(
             data={"existing_chantry": self.own_draft.pk},
