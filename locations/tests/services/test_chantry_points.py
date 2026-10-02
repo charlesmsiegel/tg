@@ -456,6 +456,14 @@ class TestFunding(ChantryPointsTestCase):
             svc.set_total_points(Chantry(name="Negative"), -1)
         self.assertIsNone(svc.funding_error(Chantry(name="Fresh"), 0))
 
+    def test_add_points_with_zero_still_requires_an_open_chantry(self):
+        """A 0-point join changes nothing on a draft and is refused elsewhere."""
+        draft = self.make_chantry(total_points=10)
+        self.assertEqual(svc.add_points(draft, 0), 10)
+        approved = self.make_chantry(total_points=10, status="App")
+        with self.assertRaises(ValidationError):
+            svc.add_points(approved, 0)
+
     def test_add_points_refuses_a_chantry_that_left_the_wizard(self):
         """Points joined into an approved chantry could never be spent."""
         for status in ("Sub", "App", "Ret", "Dec"):
