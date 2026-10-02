@@ -136,3 +136,12 @@ class ChantryDirectCreateTests(TestCase):
         )
         self.assertEqual(self.client.post(DIRECT_URL, self.data).status_code, 302)
         self.assertIsNone(Chantry.objects.get(name="Direct").chronicle)
+
+    def test_negative_total_points_is_a_form_error(self):
+        self.client.force_login(self.st)
+        response = self.client.post(
+            DIRECT_URL, {**self.data, "total_points": -5, "chronicle": self.chronicle.pk}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("total_points", response.context["form"].errors)
+        self.assertFalse(Chantry.objects.filter(name="Direct").exists())

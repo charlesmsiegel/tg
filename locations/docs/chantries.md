@@ -92,6 +92,23 @@ dots are also a floor that cannot be refunded.
   `2 × integrated_effects_score`.
 - `points` (property) = `total_points - total_cost()`: the points left to spend.
 
+### Funding
+
+`total_points` is written only by the points service: `set_total_points(chantry, total)`
+and `add_points(chantry, points)`. `funding_error(chantry, total)` is the rule they
+apply: the total must be 0 or more and, on a saved chantry, at least `total_cost()`, so
+the balance can never go negative behind the wizard's back. Every form that funds a
+chantry goes through them:
+
+| Form | How it funds |
+|------|--------------|
+| `ChantryCreateForm` (wizard entry) | `set_total_points()` on the unsaved chantry with the entered total |
+| `ChantrySelectOrCreateForm`, creating | `set_total_points()` with the character's Chantry background rating |
+| `ChantrySelectOrCreateForm`, joining | `add_points()` with that rating, as one atomic `UPDATE` |
+| The direct create and update forms | `ChantryFundingMixin.clean_total_points()` asks `funding_error()`; the storyteller cannot lower the total below what is spent |
+
+`rank` follows `total_points`, so funding a chantry is the only way to raise its rank.
+
 ### Rank
 
 `rank` is a read-only property computed from `total_points`:
@@ -146,14 +163,17 @@ been deleted. `MAX_BACKGROUND_RATING` is 5 and `MAX_IE_SCORE` is 10.
 | `ie_removal_error(chantry)` / `remove_ie_dot(chantry)` | Predicate / Mutation | Lowers the score unless the chosen effects would exceed the lower allowance |
 | `remove_effect(chantry, effect)` | Mutation | Removes a chosen effect |
 | `apply_type_grants(chantry)` | Mutation | For a library-type chantry, creates the Library rating at the floor or raises it to the floor; does nothing for other types |
+| `funding_error(chantry, total)` | Predicate | Why `total` cannot be the chantry's `total_points` (negative, or below `total_cost()` on a saved chantry), or `None` |
+| `set_total_points(chantry, total)` | Mutation | Sets `total_points` after `funding_error`; on a saved chantry locks and writes the row and updates the instance, on an unsaved one only sets the attribute for the caller to save. Returns the total |
+| `add_points(chantry, points)` | Mutation | Adds a non-negative amount with one atomic `UPDATE ... SET total_points = total_points + points` (no read, so concurrent joins never lose points); refuses a vanished chantry. Returns the new total |
 
 ## Three ways to create a chantry
 
 | Route | Who | What happens |
 |-------|-----|--------------|
 | `/locations/mage/create/chantry/` (`locations:mage:create:chantry`, `ChantryBasicsView`) | Any logged-in user | The player names the chantry, sets its details and `total_points` with `ChantryCreateForm`. The view sets `owner` to the user, `status = "Un"`, `creation_status = 1`, calls `apply_type_grants()` and redirects to the chantry, which opens the wizard. This is the chantry's `get_creation_url()` and the menu target. |
-| `/locations/mage/create/chantry/direct/` (`locations:mage:create:chantry_direct`, `ChantryCreateView`) | Staff, and Mage storytellers or head storytellers of at least one chronicle | An all-fields form (`chronicle` plus `DIRECT_FORM_FIELDS` in [`views/mage/chantry.py`](../views/mage/chantry.py)). `dispatch()` refuses users with no eligible chronicle; `post()` also requires `PermissionManager.user_can_manage_creation()` for the chosen chronicle. The chronicle choices are `direct_create_chronicles(user)`. `apply_type_grants()` runs after saving. |
-| The Chantry background step of the Mage-family character wizards (`characters.views.mage.background_views.CharacterChantryBackgroundView`) | The character's player | `ChantrySelectOrCreateForm` either creates a chantry funded with the background's rating (owner = the character's player, chronicle = the character's chronicle, `status = "Un"`, `creation_status = 1`) or adds that rating to an existing chantry's `total_points` with a single atomic `UPDATE`. The character is added to `members`. See [forms](forms.md#chantryselectorcreateform). |
+| `/locations/mage/create/chantry/direct/` (`locations:mage:create:chantry_direct`, `ChantryCreateView`) | Staff, and Mage storytellers or head storytellers of at least one chronicle | An all-fields form (`chronicle` plus `DIRECT_FORM_FIELDS` in [`views/mage/chantry.py`](../views/mage/chantry.py)), with `ChantryFundingMixin` so `total_points` passes `funding_error()`. `dispatch()` refuses users with no eligible chronicle; `post()` also requires `PermissionManager.user_can_manage_creation()` for the chosen chronicle. The chronicle choices are `direct_create_chronicles(user)`. `apply_type_grants()` runs after saving. |
+| The Chantry background step of the Mage-family character wizards (`characters.views.mage.background_views.CharacterChantryBackgroundView`) | The character's player | `ChantrySelectOrCreateForm` either creates a chantry funded with the background's rating (owner = the character's player, chronicle = the character's chronicle, `status = "Un"`, `creation_status = 1`) or adds that rating, through `chantry_points.add_points()`, to one of the player's own unfinished chantries in the same chronicle (`joinable_chantries()`). The character is added to `members`. See [forms](forms.md#chantryselectorcreateform). |
 
 The chantry list page shows a link to the direct form when
 `direct_create_chronicles(user)` is not empty (`can_create_directly` in the context).

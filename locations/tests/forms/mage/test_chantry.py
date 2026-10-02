@@ -396,7 +396,11 @@ class TestChantryCreateFormSave(TestChantryCreateFormSetup):
 
 
 class TestChantrySelectOrCreateFormSetup(TestCase):
-    """Shared setup for ChantrySelectOrCreateForm tests."""
+    """Shared setup for ChantrySelectOrCreateForm tests.
+
+    ``own_draft`` is joinable (the player's own unfinished chantry);
+    ``existing_chantry`` is another player's approved chantry and is not.
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -408,12 +412,26 @@ class TestChantrySelectOrCreateFormSetup(TestCase):
         cls.character = Mage.objects.create(
             name="Test Mage", owner=cls.user, chronicle=cls.chronicle
         )
+        cls.own_draft = Chantry.objects.create(
+            name="Own Draft",
+            owner=cls.user,
+            chronicle=cls.chronicle,
+            status="Un",
+            total_points=20,
+        )
         cls.existing_chantry = Chantry.objects.create(
             name="Existing Chantry",
             owner=cls.other,
             chronicle=cls.chronicle,
             status="App",
             total_points=20,
+        )
+
+    def joinable(self):
+        return (
+            ChantrySelectOrCreateForm(character=self.character, points=3)
+            .fields["existing_chantry"]
+            .queryset
         )
 
 
@@ -432,28 +450,30 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
         self.assertNotIn("chronicle", form.fields)
 
     def test_existing_chantry_queryset_filtered_by_chronicle(self):
-        """Test that existing_chantry queryset is filtered by character's chronicle."""
+        """A draft of the player's own in another chronicle is not offered."""
         other_chronicle = Chronicle.objects.create(name="Other Chronicle")
-        other_chantry = Chantry.objects.create(name="Other Chantry", chronicle=other_chronicle)
+        elsewhere = Chantry.objects.create(
+            name="Elsewhere", owner=self.user, chronicle=other_chronicle, status="Un"
+        )
 
-        form = ChantrySelectOrCreateForm(character=self.character, points=3)
+        queryset = self.joinable()
 
-        self.assertIn(self.existing_chantry, form.fields["existing_chantry"].queryset)
-        self.assertNotIn(other_chantry, form.fields["existing_chantry"].queryset)
+        self.assertIn(self.own_draft, queryset)
+        self.assertNotIn(elsewhere, queryset)
 
     def test_existing_chantry_queryset_excludes_retired_and_deceased(self):
-        retired = Chantry.objects.create(name="Retired", chronicle=self.chronicle, status="Ret")
-        dead = Chantry.objects.create(name="Dead", chronicle=self.chronicle, status="Dec")
-
-        queryset = (
-            ChantrySelectOrCreateForm(character=self.character, points=3)
-            .fields["existing_chantry"]
-            .queryset
+        retired = Chantry.objects.create(
+            name="Retired", owner=self.user, chronicle=self.chronicle, status="Ret"
         )
+        dead = Chantry.objects.create(
+            name="Dead", owner=self.user, chronicle=self.chronicle, status="Dec"
+        )
+
+        queryset = self.joinable()
 
         self.assertNotIn(retired, queryset)
         self.assertNotIn(dead, queryset)
-        self.assertIn(self.existing_chantry, queryset)
+        self.assertIn(self.own_draft, queryset)
 
     def test_all_fields_optional(self):
         """Test that all fields are optional."""
@@ -463,13 +483,79 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
             self.assertFalse(field.required)
 
 
+class TestChantrySelectOrCreateFormJoinRule(TestChantrySelectOrCreateFormSetup):
+    """Only unfinished chantries the player owns, or the character belongs to, take points."""
+
+    def test_another_players_draft_is_not_offered(self):
+        draft = Chantry.objects.create(
+            name="Their Draft", owner=self.other, chronicle=self.chronicle, status="Un"
+        )
+        self.assertNotIn(draft, self.joinable())
+
+    def test_approved_and_submitted_chantries_are_not_offered(self):
+        own_approved = Chantry.objects.create(
+            name="Own Approved", owner=self.user, chronicle=self.chronicle, status="App"
+        )
+        own_submitted = Chantry.objects.create(
+            name="Own Submitted", owner=self.user, chronicle=self.chronicle, status="Sub"
+        )
+        queryset = self.joinable()
+        self.assertNotIn(self.existing_chantry, queryset)
+        self.assertNotIn(own_approved, queryset)
+        self.assertNotIn(own_submitted, queryset)
+
+    def test_own_drafts_and_returned_chantries_are_offered(self):
+        returned = Chantry.objects.create(
+            name="Returned", owner=self.user, chronicle=self.chronicle, status="Rev"
+        )
+        queryset = self.joinable()
+        self.assertIn(self.own_draft, queryset)
+        self.assertIn(returned, queryset)
+
+    def test_a_draft_the_character_belongs_to_is_offered_once(self):
+        shared = Chantry.objects.create(
+            name="Shared Draft", owner=self.other, chronicle=self.chronicle, status="Un"
+        )
+        shared.members.add(self.character)
+        queryset = self.joinable()
+        self.assertIn(shared, queryset)
+        self.assertEqual(queryset.filter(pk=shared.pk).count(), 1)
+
+    def test_post_naming_another_players_draft_is_rejected(self):
+        draft = Chantry.objects.create(
+            name="Their Draft",
+            owner=self.other,
+            chronicle=self.chronicle,
+            status="Un",
+            total_points=7,
+        )
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": draft.pk}, character=self.character, points=3
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("existing_chantry", form.errors)
+        draft.refresh_from_db()
+        self.assertEqual(draft.total_points, 7)
+
+    def test_post_naming_an_approved_chantry_is_rejected(self):
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.existing_chantry.pk},
+            character=self.character,
+            points=3,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("existing_chantry", form.errors)
+        self.existing_chantry.refresh_from_db()
+        self.assertEqual(self.existing_chantry.total_points, 20)
+
+
 class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup):
     """Test ChantrySelectOrCreateForm validation logic."""
 
     def test_valid_select_existing(self):
-        """Test that selecting existing chantry is valid."""
+        """Test that selecting a joinable chantry is valid."""
         form = ChantrySelectOrCreateForm(
-            data={"existing_chantry": self.existing_chantry.pk},
+            data={"existing_chantry": self.own_draft.pk},
             character=self.character,
             points=5,
         )
@@ -510,30 +596,31 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
     def test_save_returns_existing_chantry(self):
         """Test that saving with existing selection returns the existing chantry."""
         form = ChantrySelectOrCreateForm(
-            data={"existing_chantry": self.existing_chantry.pk},
+            data={"existing_chantry": self.own_draft.pk},
             character=self.character,
             points=5,
         )
         self.assertTrue(form.is_valid())
         chantry = form.save()
 
-        self.assertEqual(chantry.pk, self.existing_chantry.pk)
+        self.assertEqual(chantry.pk, self.own_draft.pk)
 
-    def test_save_adds_points_to_existing_chantry_and_nothing_else(self):
+    def test_save_adds_exactly_the_points_and_nothing_else(self):
         """Joining adds the points; owner, chronicle and status stay."""
         form = ChantrySelectOrCreateForm(
-            data={"existing_chantry": self.existing_chantry.pk},
+            data={"existing_chantry": self.own_draft.pk},
             character=self.character,
             points=5,
         )
         self.assertTrue(form.is_valid())
-        form.save()
+        chantry = form.save()
 
-        self.existing_chantry.refresh_from_db()
-        self.assertEqual(self.existing_chantry.total_points, 25)
-        self.assertEqual(self.existing_chantry.owner, self.other)
-        self.assertEqual(self.existing_chantry.status, "App")
-        self.assertEqual(self.existing_chantry.chronicle, self.chronicle)
+        self.assertEqual(chantry.total_points, 25)
+        self.own_draft.refresh_from_db()
+        self.assertEqual(self.own_draft.total_points, 25)
+        self.assertEqual(self.own_draft.owner, self.user)
+        self.assertEqual(self.own_draft.status, "Un")
+        self.assertEqual(self.own_draft.chronicle, self.chronicle)
 
     def test_save_creates_new_chantry(self):
         """Creating makes an unfinished chantry owned by the character's player."""
@@ -558,24 +645,35 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
     def test_save_join_adds_points_to_database_value_even_if_form_instance_stale(self):
         """The join is a single atomic UPDATE, so it uses the DB value, not a stale read."""
         form = ChantrySelectOrCreateForm(
-            data={"existing_chantry": self.existing_chantry.pk},
+            data={"existing_chantry": self.own_draft.pk},
             character=self.character,
             points=5,
         )
         self.assertTrue(form.is_valid())
         # Simulate another request changing total_points after this form validated but
         # before it saves (the instance the form's cleaned_data holds is now stale).
-        Chantry.objects.filter(pk=self.existing_chantry.pk).update(total_points=100)
+        Chantry.objects.filter(pk=self.own_draft.pk).update(total_points=100)
 
         chantry = form.save()
 
         self.assertEqual(chantry.total_points, 105)
-        self.existing_chantry.refresh_from_db()
-        self.assertEqual(self.existing_chantry.total_points, 105)
+        self.own_draft.refresh_from_db()
+        self.assertEqual(self.own_draft.total_points, 105)
+
+    def test_save_join_refuses_a_chantry_deleted_meanwhile(self):
+        form = ChantrySelectOrCreateForm(
+            data={"existing_chantry": self.own_draft.pk},
+            character=self.character,
+            points=5,
+        )
+        self.assertTrue(form.is_valid())
+        Chantry.objects.filter(pk=self.own_draft.pk).delete()
+        with self.assertRaises(ValidationError):
+            form.save()
 
 
 class TestChantrySelectOrCreateFormChronicleLess(TestCase):
-    """A chronicle-less character may only join their own chronicle-less chantries."""
+    """A chronicle-less character may only join their own chronicle-less drafts."""
 
     @classmethod
     def setUpTestData(cls):
@@ -587,32 +685,36 @@ class TestChantrySelectOrCreateFormChronicleLess(TestCase):
             name="Own Chantry-less",
             owner=cls.user,
             chronicle=None,
-            status="App",
+            status="Un",
             total_points=5,
         )
         cls.other_chantry = Chantry.objects.create(
             name="Other Chantry-less",
             owner=cls.other,
             chronicle=None,
-            status="App",
+            status="Un",
             total_points=5,
         )
 
-    def test_own_chronicle_less_chantry_is_offered(self):
-        queryset = (
+    def joinable(self):
+        return (
             ChantrySelectOrCreateForm(character=self.character, points=3)
             .fields["existing_chantry"]
             .queryset
         )
-        self.assertIn(self.own_chantry, queryset)
+
+    def test_own_chronicle_less_draft_is_offered(self):
+        self.assertIn(self.own_chantry, self.joinable())
+
+    def test_own_draft_in_a_chronicle_is_not_offered(self):
+        chronicle = Chronicle.objects.create(name="Somewhere")
+        placed = Chantry.objects.create(
+            name="Placed", owner=self.user, chronicle=chronicle, status="Un"
+        )
+        self.assertNotIn(placed, self.joinable())
 
     def test_other_players_chronicle_less_chantry_is_not_offered(self):
-        queryset = (
-            ChantrySelectOrCreateForm(character=self.character, points=3)
-            .fields["existing_chantry"]
-            .queryset
-        )
-        self.assertNotIn(self.other_chantry, queryset)
+        self.assertNotIn(self.other_chantry, self.joinable())
 
     def test_post_choosing_other_players_chantry_is_invalid(self):
         form = ChantrySelectOrCreateForm(
