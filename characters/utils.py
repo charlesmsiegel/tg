@@ -4,6 +4,8 @@ Character utilities.
 This module contains utility functions used across the characters app.
 """
 
+import re
+
 from game.models import ObjectType
 
 
@@ -11,10 +13,11 @@ def trait_property_name(trait_name):
     """Property name of a built-in trait (a virtue, a Hekau path) from its display name.
 
     The chained freebie forms name these traits by property and show
-    ``property_name.replace("_", " ").title()``; this is the inverse, used when a
-    spending record stores only the display name.
+    ``property_name.replace("_", " ").title()`` or a hyphenated label such as
+    "Self-Control"; this is the inverse, used when a spending record stores only
+    the display name.
     """
-    return trait_name.strip().lower().replace(" ", "_")
+    return re.sub(r"[\s-]+", "_", trait_name.strip().lower())
 
 
 def get_character_object_type(character_type, gameline="wod"):

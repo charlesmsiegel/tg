@@ -33,10 +33,13 @@ from pathlib import Path
 import django
 from django.conf import settings
 from django.contrib.auth import BACKEND_SESSION_KEY, HASH_SESSION_KEY, SESSION_KEY
-from django.contrib.sessions.backends.db import SessionStore
 from django.core.management import call_command
 from PIL import Image, ImageChops
-from playwright.sync_api import sync_playwright
+
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:  # optional: only ``capture`` needs a browser
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -60,6 +63,10 @@ def seed_pages():
 
 
 def _session_cookie(user):
+    # The session model can only load once ``seed_pages()`` has set Django up on
+    # the throwaway database, so this import cannot sit at module scope.
+    from django.contrib.sessions.backends.db import SessionStore
+
     session = SessionStore()
     session[SESSION_KEY] = str(user.pk)
     session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
@@ -69,6 +76,8 @@ def _session_cookie(user):
 
 
 def capture(out_dir):
+    if sync_playwright is None:
+        raise SystemExit("capture needs the optional playwright package: pip install playwright")
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     db = out / "fixtures.sqlite3"
