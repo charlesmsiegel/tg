@@ -8,6 +8,8 @@ Tests cover:
 - ChantrySelectOrCreateForm: Selecting existing or creating new chantry
 """
 
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -43,7 +45,7 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
 
     def test_form_has_required_fields(self):
         """Test that form has all required fields."""
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
 
         self.assertIn("category", form.fields)
         self.assertIn("example", form.fields)
@@ -52,7 +54,7 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
 
     def test_category_choices_include_integrated_effects(self):
         """Test that category includes Integrated Effects option."""
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
 
         category_values = [choice[0] for choice in form.fields["category"].choices]
 
@@ -61,7 +63,7 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
 
     def test_category_excludes_existing_background_when_no_backgrounds(self):
         """Test that Existing Background is excluded when chantry has no backgrounds."""
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
 
         category_values = [choice[0] for choice in form.fields["category"].choices]
 
@@ -70,7 +72,7 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
     def test_category_includes_existing_background_when_has_backgrounds(self):
         """Test that Existing Background is included when chantry has backgrounds."""
         ChantryBackgroundRating.objects.create(bg=self.background, chantry=self.chantry, rating=1)
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
 
         category_values = [choice[0] for choice in form.fields["category"].choices]
 
@@ -81,18 +83,24 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
         self.chantry.integrated_effects_score = 10
         self.chantry.save()
 
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
 
         category_values = [choice[0] for choice in form.fields["category"].choices]
 
         self.assertNotIn("Integrated Effects", category_values)
+
+    def test_form_keeps_the_given_chantry(self):
+        """The view's instance is used as is; the form never refetches it."""
+        with patch.object(Chantry.objects, "get", side_effect=AssertionError("refetched")):
+            form = ChantryPointForm(chantry=self.chantry)
+        self.assertIs(form.object, self.chantry)
 
 
 class TestChantryPointFormVisibility(TestChantryPointFormSetup):
     """U24: the category decides which of example / note / alternate name show."""
 
     def test_visibility_follows_category(self):
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
         cases = {
             "-----": (False, False, False),
             "Integrated Effects": (False, False, False),
@@ -108,7 +116,7 @@ class TestChantryPointFormVisibility(TestChantryPointFormSetup):
                 )
 
     def test_rules_render_for_the_browser(self):
-        form = ChantryPointForm(pk=self.chantry.pk)
+        form = ChantryPointForm(chantry=self.chantry)
         self.assertIn("data-conditional-rules", str(form.conditional_js()))
         self.assertIn("widgets/conditional.js", str(form.media))
 
@@ -125,7 +133,7 @@ class TestChantryPointFormValidation(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
 
         self.assertFalse(form.is_valid())
 
@@ -140,7 +148,7 @@ class TestChantryPointFormValidation(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
 
         self.assertFalse(form.is_valid())
 
@@ -153,7 +161,7 @@ class TestChantryPointFormValidation(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
 
         self.assertTrue(form.is_valid())
 
@@ -172,7 +180,7 @@ class TestChantryPointFormSave(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -190,7 +198,7 @@ class TestChantryPointFormSave(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -209,7 +217,7 @@ class TestChantryPointFormSave(TestChantryPointFormSetup):
             "display_alt_name": False,
         }
 
-        form = ChantryPointForm(data=form_data, pk=self.chantry.pk)
+        form = ChantryPointForm(data=form_data, chantry=self.chantry)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -235,7 +243,7 @@ class TestChantryEffectsFormBasics(TestChantryEffectsFormSetup):
 
     def test_form_has_select_field(self):
         """Test that form has a select field."""
-        form = ChantryEffectsForm(pk=self.chantry.pk)
+        form = ChantryEffectsForm(chantry=self.chantry)
 
         self.assertIn("select", form.fields)
 
@@ -244,16 +252,21 @@ class TestChantryEffectsFormBasics(TestChantryEffectsFormSetup):
         if self.effect:
             self.chantry.integrated_effects.add(self.effect)
 
-            form = ChantryEffectsForm(pk=self.chantry.pk)
+            form = ChantryEffectsForm(chantry=self.chantry)
 
             self.assertNotIn(self.effect, form.fields["select"].queryset)
 
     def test_queryset_respects_rank_limit(self):
         """Test that queryset only includes effects within rank limit."""
-        form = ChantryEffectsForm(pk=self.chantry.pk)
+        form = ChantryEffectsForm(chantry=self.chantry)
 
         for effect in form.fields["select"].queryset:
             self.assertLessEqual(effect.max_sphere, self.chantry.rank)
+
+    def test_form_keeps_the_given_chantry(self):
+        with patch.object(Chantry.objects, "get", side_effect=AssertionError("refetched")):
+            form = ChantryEffectsForm(chantry=self.chantry)
+        self.assertIs(form.object, self.chantry)
 
 
 class TestChantryEffectsFormSave(TestChantryEffectsFormSetup):
@@ -267,7 +280,7 @@ class TestChantryEffectsFormSave(TestChantryEffectsFormSetup):
                 "select": str(self.effect.pk),
             }
 
-            form = ChantryEffectsForm(data=form_data, pk=self.chantry.pk)
+            form = ChantryEffectsForm(data=form_data, chantry=self.chantry)
             if form.is_valid():
                 form.save()
                 self.assertIn(self.effect, self.chantry.integrated_effects.all())
@@ -632,7 +645,8 @@ class TestChantryPointFormRules(TestChantryPointFormSetup):
 
     def form(self, data=None, **chantry_fields):
         Chantry.objects.filter(pk=self.chantry.pk).update(**chantry_fields)
-        return ChantryPointForm(data=data, pk=self.chantry.pk)
+        self.chantry.refresh_from_db()
+        return ChantryPointForm(data=data, chantry=self.chantry)
 
     def examples(self, form, category):
         return {value for value, _ in form.fields["example"].choices_map[category]}
@@ -724,7 +738,7 @@ class TestChantryEffectsFormCostLimit(TestCase):
         cls.too_costly = Effect.objects.create(name="Big Ward", forces=2, prime=2, mind=1)
 
     def test_queryset_respects_remaining_ie_points(self):
-        form = ChantryEffectsForm(pk=self.chantry.pk)
+        form = ChantryEffectsForm(chantry=self.chantry)
         self.assertIn(self.fits, form.fields["select"].queryset)
         self.assertNotIn(self.too_costly, form.fields["select"].queryset)
 

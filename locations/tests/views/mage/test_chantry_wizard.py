@@ -2,12 +2,15 @@
 
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.core.background_block import Background
+from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.resonance import Resonance
+from locations.forms.mage.chantry import ChantryEffectsForm, ChantryPointForm
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
@@ -190,3 +193,113 @@ class ChantryBackgroundStepTests(TestCase):
         self.assertEqual(self.client.post(self.url, {}).status_code, 302)
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.creation_status, 4)
+
+
+class ChantryPurchaseStepTests(TestCase):
+    """Steps 1-2 spend points through the service and survive a lost race."""
+
+    def setUp(self):
+        add_chantry_actors(self)
+        self.chantry = Chantry.objects.create(
+            name="Bought", owner=self.player, chronicle=self.chronicle, total_points=10
+        )
+        self.url = self.chantry.get_absolute_url()
+        self.allies, _ = Background.objects.get_or_create(
+            property_name="allies", defaults={"name": "Allies"}
+        )
+        self.client.force_login(self.player)
+
+    def at_step(self, creation_status, **fields):
+        Chantry.objects.filter(pk=self.chantry.pk).update(
+            status="Un", creation_status=creation_status, **fields
+        )
+
+    def background_post(self):
+        return {
+            "category": "New Background",
+            "example": str(self.allies.pk),
+            "note": "",
+            "display_alt_name": "",
+        }
+
+    def test_background_purchase_refused_by_the_service_re_renders_the_step(self):
+        self.at_step(1)
+        with patch(
+            "locations.forms.mage.chantry.chantry_points.buy_background_dot",
+            side_effect=ValidationError("gone"),
+        ):
+            response = self.client.post(self.url, self.background_post())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "locations/mage/chantry/point_spend_form.html")
+        self.assertContains(response, "gone")
+        self.assertFalse(self.chantry.backgrounds.exists())
+
+    def test_ie_purchase_refused_by_the_service_re_renders_the_step(self):
+        self.at_step(1)
+        with patch(
+            "locations.forms.mage.chantry.chantry_points.buy_ie_dot",
+            side_effect=ValidationError("gone"),
+        ):
+            response = self.client.post(
+                self.url, {"category": "Integrated Effects", "example": "", "note": ""}
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "locations/mage/chantry/point_spend_form.html")
+        self.assertContains(response, "gone")
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.integrated_effects_score, 0)
+
+    def test_losing_the_race_for_the_last_points_re_renders_the_step(self):
+        """A double click on Buy: the points go between validation and the lock."""
+        self.at_step(1)
+        original_clean = ChantryPointForm.clean
+
+        def clean_then_lose_the_points(form):
+            cleaned_data = original_clean(form)
+            Chantry.objects.filter(pk=form.object.pk).update(total_points=0)
+            return cleaned_data
+
+        with patch.object(ChantryPointForm, "clean", clean_then_lose_the_points):
+            response = self.client.post(self.url, self.background_post())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Allies costs 2 points; 0 remain.")
+        self.assertFalse(self.chantry.backgrounds.exists())
+
+    def test_effect_save_refused_re_renders_the_step(self):
+        self.at_step(2, integrated_effects_score=1)
+        effect = Effect.objects.create(name="Bolt", forces=1)
+        with patch.object(ChantryEffectsForm, "save", side_effect=ValidationError("gone")):
+            response = self.client.post(self.url, {"select": str(effect.pk)})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "locations/mage/chantry/effects_form.html")
+        self.assertContains(response, "gone")
+        self.assertFalse(self.chantry.integrated_effects.exists())
+
+    def test_effect_step_adds_the_chosen_effect(self):
+        self.at_step(2, integrated_effects_score=1)
+        effect = Effect.objects.create(name="Bolt", forces=1)
+        response = self.client.post(self.url, {"select": str(effect.pk)})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(list(self.chantry.integrated_effects.all()), [effect])
+
+    def test_steps_for_a_deleted_chantry_are_404(self):
+        for step, data in ((1, self.background_post()), (2, {"select": "1"})):
+            with self.subTest(step=step):
+                self.at_step(step, integrated_effects_score=1)
+                pk = self.chantry.pk
+                Chantry.objects.filter(pk=pk).delete()
+                self.assertEqual(self.client.get(self.url).status_code, 404)
+                self.assertEqual(self.client.post(self.url, data).status_code, 404)
+                self.chantry = Chantry.objects.create(
+                    name="Bought", owner=self.player, chronicle=self.chronicle, total_points=10
+                )
+                self.url = self.chantry.get_absolute_url()
+
+    def test_the_forms_use_the_chantry_the_view_resolved(self):
+        """The step views hand the forms their instance; nothing refetches it."""
+        self.at_step(1)
+        with patch.object(Chantry.objects, "get", side_effect=AssertionError("refetched")):
+            self.assertEqual(self.client.get(self.url).status_code, 200)
+        self.at_step(2, integrated_effects_score=1)
+        with patch.object(Chantry.objects, "get", side_effect=AssertionError("refetched")):
+            self.assertEqual(self.client.get(self.url).status_code, 200)

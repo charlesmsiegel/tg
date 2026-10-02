@@ -187,7 +187,9 @@ this, the generic router checks the `OBJECT_DETAIL` policy, so a user without
 Effects`, `New Background`, `Existing Background`) and, chained to it, the backgrounds
 from `affordable_backgrounds()`. Saving calls `buy_ie_dot()` or
 `buy_background_dot()`. A POST when fewer than 2 points remain (the cheapest purchase)
-advances to step 2 instead of buying.
+advances to step 2 instead of buying. The service re-checks the rule under the row lock,
+so a purchase it refuses after the form validated (a double click, a chantry deleted
+meanwhile) re-renders the step with the service's message rather than failing.
 
 ### Step 2: Integrated Effects
 

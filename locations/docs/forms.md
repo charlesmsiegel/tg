@@ -92,8 +92,8 @@ in [chantries](chantries.md).
 | Form | Kind | Use |
 |------|------|-----|
 | `ChantryCreateForm` | `ModelForm` | Wizard entry: `name`, `chronicle`, `contained_within`, `description`, `faction`, `leadership_type`, `season`, `chantry_type`, the barriers, and `total_points` (0 or more). `save()` copies `total_points` and saves many-to-many data. |
-| `ChantryPointForm` | `Form` (chained selects, conditional fields) | Wizard step 1. Constructor takes `pk`. `category` (`-----`, `Integrated Effects`, `New Background`, `Existing Background`; only the affordable ones are offered) and `example` chained to it; `note` and `display_alt_name` for new backgrounds. `clean()` re-checks with the points service; `save()` calls `buy_ie_dot()` or `buy_background_dot()`. |
-| `ChantryEffectsForm` | `characters.forms.mage.effect.EffectCreateOrSelectForm` | Wizard step 2. Constructor takes `pk`; `select` is limited to affordable effects within the rank. `save()` adds the effect to `integrated_effects`. |
+| `ChantryPointForm` | `Form` (chained selects, conditional fields) | Wizard step 1. Constructor takes `chantry`, the instance the view resolved. `category` (`-----`, `Integrated Effects`, `New Background`, `Existing Background`; only the affordable ones are offered) and `example` chained to it; `note` and `display_alt_name` for new backgrounds. `clean()` re-checks with the points service; `save()` calls `buy_ie_dot()` or `buy_background_dot()` and lets their `ValidationError` propagate for the view to show. |
+| `ChantryEffectsForm` | `characters.forms.mage.effect.EffectCreateOrSelectForm` | Wizard step 2. Constructor takes `chantry`; `select` is limited to affordable effects within the rank. `save()` adds the effect to `integrated_effects`. |
 | `ChantrySelectOrCreateForm` | `ModelForm` with `CreateOrSelectMixin` | Character wizards' Chantry step; see below |
 | `ChantryRemoveForm` | `Form` | Validates and applies one refund (`rating`, `ie` or `effect`) through the points service; not used by any view |
 

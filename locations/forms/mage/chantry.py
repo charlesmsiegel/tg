@@ -66,9 +66,10 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
         "display_alt_name": {"visible_when": {"category": {"value_is": NEW}}},
     }
 
-    def __init__(self, *args, **kwargs):
-        pk = kwargs.pop("pk")
-        self.object = Chantry.objects.get(pk=pk)
+    def __init__(self, *args, chantry, **kwargs):
+        # The view already resolved (and 404ed on) the chantry; reuse its
+        # instance instead of refetching a row that may vanish in between.
+        self.object = chantry
         super().__init__(*args, **kwargs)
 
         # Only options the points service says are allowed and affordable.
@@ -196,9 +197,8 @@ class ChantryRemoveForm(forms.Form):
 
 # Form for choosing effects
 class ChantryEffectsForm(EffectCreateOrSelectForm):
-    def __init__(self, *args, **kwargs):
-        pk = kwargs.pop("pk")
-        self.object = Chantry.objects.get(pk=pk)
+    def __init__(self, *args, chantry, **kwargs):
+        self.object = chantry
         super().__init__(*args, **kwargs)
         q = Effect.objects.filter(max_sphere__lte=self.object.rank)
         q = q.exclude(pk__in=self.object.integrated_effects.all())

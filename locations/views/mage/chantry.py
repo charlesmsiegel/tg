@@ -2,7 +2,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
 from django.forms import ModelForm
 from django.http import Http404, HttpResponseRedirect
@@ -272,8 +272,8 @@ class ChantryPointsView(EditPermissionMixin, ChantryObjectMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["pk"] = self.kwargs.get("pk")
-        self.object = get_object_or_404(Chantry, pk=self.kwargs["pk"])
+        self.object = self.get_object()
+        kwargs["chantry"] = self.object
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -286,11 +286,18 @@ class ChantryPointsView(EditPermissionMixin, ChantryObjectMixin, FormView):
         return self.object.get_absolute_url()
 
     def form_valid(self, form):
-        form.save()
+        # The service re-checks the rule under the row lock and refuses a
+        # purchase the form validated a moment ago (a double click, a
+        # chantry deleted meanwhile); show that as a form error.
+        try:
+            form.save()
+        except ValidationError as error:
+            form.add_error(None, error)
+            return self.form_invalid(form)
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
-        obj = get_object_or_404(Chantry, pk=kwargs.get("pk"))
+        obj = self.get_object()
         if obj.points < 2:
             obj.creation_status += 1
             obj.save()
@@ -304,8 +311,8 @@ class ChantryIntegratedEffectsView(EditPermissionMixin, ChantryObjectMixin, Form
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["pk"] = self.kwargs.get("pk")
-        self.object = get_object_or_404(Chantry, pk=self.kwargs["pk"])
+        self.object = self.get_object()
+        kwargs["chantry"] = self.object
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -318,11 +325,15 @@ class ChantryIntegratedEffectsView(EditPermissionMixin, ChantryObjectMixin, Form
         return self.object.get_absolute_url()
 
     def form_valid(self, form):
-        form.save()
+        try:
+            form.save()
+        except ValidationError as error:
+            form.add_error(None, error)
+            return self.form_invalid(form)
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
-        obj = get_object_or_404(Chantry, pk=kwargs.get("pk"))
+        obj = self.get_object()
         if obj.current_ie_points() == 0:
             obj.creation_status += 1
             obj.save()
