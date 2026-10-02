@@ -794,3 +794,63 @@ class TestFreebieDenialReverts(TestCase):
         self.assertFalse(
             BackgroundRating.objects.filter(char=self.mage, bg=self.resources).exists()
         )
+
+    def test_overlapping_spends_deny_in_reverse_order(self):
+        self.assertTrue(self.service.spend("Attribute", self.strength).success)
+        first = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertTrue(self.service.spend("Attribute", self.strength).success)
+        second = FreebieSpendingRecord.objects.get(
+            character=self.mage, approved="Pending", trait_value=4
+        )
+
+        refused = self.service.deny(first, self.st_user)
+        self.assertFalse(refused.success)
+        self.assertIn("later spend", refused.error)
+
+        self.assertTrue(self.service.deny(second, self.st_user).success)
+        self.assertTrue(self.service.deny(first, self.st_user).success)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.strength, 2)
+        self.assertEqual(self.mage.freebies, 15)
+
+    def test_pool_trait_changed_since_the_spend_refuses(self):
+        """A pool (Quintessence here) that moved after the spend is not reverted relative
+        to its current value: the denial refuses and the storyteller corrects by hand."""
+        self.mage.quintessence = 4
+        self.mage.save()
+        self.assertTrue(self.service.spend("Quintessence").success)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_value, 8)
+        Mage.objects.filter(pk=self.mage.pk).update(quintessence=6)
+        self.mage.refresh_from_db()
+
+        result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertIn("Quintessence is 6", result.error)
+        record.refresh_from_db()
+        self.mage.refresh_from_db()
+        self.assertEqual(record.approved, "Pending")
+        self.assertEqual(self.mage.quintessence, 6)
+
+    def test_background_note_ending_in_a_parenthesis_is_found(self):
+        note = "Trust fund (contested)"
+        result = self.service.spend("New Background", self.resources, note=note)
+        self.assertTrue(result.success, result.error)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_name, f"Resources ({note})")
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertTrue(deny.success, deny.error)
+        self.assertFalse(BackgroundRating.objects.filter(char=self.mage, note=note).exists())
+
+    def test_ambiguous_catalogue_name_refuses(self):
+        Attribute.objects.create(name="Strength", property_name="dexterity")
+        record = self.record(trait_value=2)
+
+        result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertIn("More than one", result.error)
+        self.assert_untouched(record, freebies=15, strength=2)

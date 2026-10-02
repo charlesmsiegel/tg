@@ -103,7 +103,15 @@ trait), `_revert_catalogue_column()` (a column named by an `Attribute`, `Sphere`
 `BackgroundRating`, practice or path rating) refuse unless the trait still holds
 `trait_value`, then restore the value before the spend, deleting a rating row the spend
 created. A player who raised the same trait again therefore cannot have the later raise
-undone in place of the denied one.
+undone in place of the denied one: two pending spends on one trait are denied newest
+first, and the refusal message says so. The same check applies to pools the character
+spends in play (Quintessence, Rote Points, temporary Renown, Pathos, Corpus): a pool that
+has moved since the spend is not reverted relative to its current value, the denial
+refuses, and the storyteller corrects the sheet by hand. Records written before this
+check used the same `trait_value` convention (the value the spend set, the lowered value
+for a Banality or Torment reduction), so they revert the same way; one whose trait no
+longer matches refuses rather than guessing. Catalogue names carry no unique constraint,
+so a display name matching more than one `Attribute`, `Sphere` or similar row refuses too.
 
 A failed revert leaves nothing behind. When the applier returns `success=False`, raises,
 or no applier is registered for the record's `trait_type`, `deny()` rolls the transaction

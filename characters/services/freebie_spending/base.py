@@ -286,7 +286,9 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         ``decide_spending_request`` opens with the record and character locked). A revert
         that fails, raises, or has no applier registered for the record's trait type rolls
         everything back and returns a failed result, so the record stays ``Pending``, the
-        cost stays deducted and the caller raises instead of reporting success.
+        cost stays deducted and the caller raises instead of reporting success. A failed
+        denial also reloads ``self.character`` from the database, so callers must not
+        hold unsaved changes on that instance.
 
         Args:
             freebie_request: FreebieSpendingRecord instance to deny
@@ -415,8 +417,8 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         if current != expected:
             return self._revert_refused(
                 trait_name,
-                f"{trait_name} is {current}, not the {expected} this spend set; "
-                "it has changed since and must be corrected by hand",
+                f"{trait_name} is {current}, not the {expected} this spend set. Deny any "
+                f"later spend on {trait_name} first, or correct it by hand",
             )
         restored = expected - step
         setattr(self.character, property_name, restored)
@@ -431,14 +433,21 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
 
     def _revert_catalogue_column(self, freebie_request, model, **kwargs) -> FreebieApplyResult:
         """Revert a column named by a catalogue row (``Attribute``, ``Sphere``, ...)
-        looked up by the record's display name; refuse when the row is missing."""
-        row = model.objects.filter(name=freebie_request.trait_name).first()
-        if row is None:
+        looked up by the record's display name; refuse when the row is missing or the
+        name is ambiguous (catalogue names carry no unique constraint)."""
+        trait_name = freebie_request.trait_name
+        rows = list(model.objects.filter(name=trait_name)[:2])
+        if not rows:
             return self._revert_refused(
-                freebie_request.trait_name,
-                f"No {model._meta.verbose_name} named {freebie_request.trait_name!r} to revert",
+                trait_name, f"No {model._meta.verbose_name} named {trait_name!r} to revert"
             )
-        return self._revert_column(freebie_request, row.property_name, **kwargs)
+        if len(rows) > 1:
+            return self._revert_refused(
+                trait_name,
+                f"More than one {model._meta.verbose_name} is named {trait_name!r}; "
+                "correct the trait by hand",
+            )
+        return self._revert_column(freebie_request, rows[0].property_name, **kwargs)
 
     def _revert_rating_row(self, freebie_request, row) -> FreebieApplyResult:
         """Revert a rating row (a background, practice or path rating) to the value
@@ -454,8 +463,8 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         if row.rating != expected:
             return self._revert_refused(
                 trait_name,
-                f"{trait_name} is {row.rating}, not the {expected} this spend set; "
-                "it has changed since and must be corrected by hand",
+                f"{trait_name} is {row.rating}, not the {expected} this spend set. Deny any "
+                f"later spend on {trait_name} first, or correct it by hand",
             )
         if expected <= 1:
             row.delete()
@@ -879,13 +888,10 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     def _apply_background(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny background freebie spending (a new background or a raise)."""
         if deny:
-            trait_name = freebie_request.trait_name
-            if " (" in trait_name:
-                bg_name, note = trait_name.split(" (", 1)
-                note = note.rstrip(")")
-            else:
-                bg_name = trait_name
-                note = ""
+            # The spend recorded ``"<background> (<note>)"``; strip exactly one closing
+            # parenthesis so a note that ends in one survives.
+            bg_name, _, note = freebie_request.trait_name.partition(" (")
+            note = note.removesuffix(")")
             row = self.character.backgrounds.filter(bg__name=bg_name, note=note).first()
             return self._revert_rating_row(freebie_request, row)
 
