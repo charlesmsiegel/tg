@@ -1,16 +1,24 @@
 """Tests for Freebie spending service."""
 
+from types import SimpleNamespace
 from unittest import mock
 
 from django.apps import apps
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from characters.models.changeling.changeling import Changeling
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.statistic import Statistic
+from characters.models.demon.demon import Demon
+from characters.models.demon.thrall import Thrall
+from characters.models.hunter.hunter import Hunter
 from characters.models.mage.mage import Mage
 from characters.models.mage.sphere import Sphere
+from characters.models.mummy.mummy import Mummy
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
@@ -18,6 +26,7 @@ from characters.models.vampire.vampire import Vampire
 from characters.models.werewolf.bastet import Bastet
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.rite import Rite
+from characters.models.wraith.wraith import Wraith
 from characters.services.freebie_spending import (
     FeraFreebieSpendingService,
     FreebieApplyResult,
@@ -696,7 +705,25 @@ class TestFreebieDenialReverts(TestCase):
             result = self.service.deny(record, self.st_user)
 
         self.assertFalse(result.success)
-        self.assertEqual(result.error, "catalogue exploded")
+        self.assertEqual(result.error, "Could not revert Strength: an unexpected error was logged")
+        self.assertNotIn("exploded", result.error)
+        self.assert_untouched(record, freebies=15, strength=2)
+
+    def test_validation_error_during_revert_reaches_the_storyteller(self):
+        record = self.record(trait_value=2)
+
+        def invalid_revert(freebie_request, approver, deny=False):
+            raise ValidationError({"strength": ["Strength cannot drop below 2 for this clan."]})
+
+        with mock.patch.object(
+            MageFreebieSpendingService, "_apply_attribute", side_effect=invalid_revert
+        ):
+            result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertEqual(
+            result.error, "Could not revert Strength: Strength cannot drop below 2 for this clan."
+        )
         self.assert_untouched(record, freebies=15, strength=2)
 
     def test_unregistered_trait_type_fails(self):
@@ -782,6 +809,21 @@ class TestFreebieDenialReverts(TestCase):
         record.refresh_from_db()
         self.assertEqual(record.approved, "Pending")
 
+    def test_old_spelling_record_refuses_once_the_background_was_raised(self):
+        BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=2, note="Old")
+        record = self.record(
+            trait_name="Resources (Old)", trait_type="background", trait_value=1, cost=1
+        )
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertFalse(deny.success)
+        self.assertEqual(
+            BackgroundRating.objects.get(char=self.mage, bg=self.resources, note="Old").rating, 2
+        )
+        record.refresh_from_db()
+        self.assertEqual(record.approved, "Pending")
+
     def test_old_new_background_record_spelled_background_still_deletes(self):
         BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=1, note="Old")
         record = self.record(
@@ -854,3 +896,116 @@ class TestFreebieDenialReverts(TestCase):
         self.assertFalse(result.success)
         self.assertIn("More than one", result.error)
         self.assert_untouched(record, freebies=15, strength=2)
+
+
+class TestEveryColumnRevertRoundTrips(TestCase):
+    """Every applier that reverts through ``_revert_column`` restores the exact value a
+    spend set, so a wrong ``step`` or a missing ``mirror`` in any gameline shows up here.
+
+    Quintessence and Pathos are excluded from the spend-then-deny cases because their
+    freebie costs are fractional (0.25 and 0.5), which the integer ``cost`` column stores
+    as 0; Corpus, Banality Reduction and Torment Reduction because they have no freebie
+    cost entry, so the spend itself fails. Those are spend-side defects outside the
+    denial fix; their reverts are covered by the hand-filed records below.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.player = User.objects.create_user(username="roundtrip-player")
+        cls.storyteller = User.objects.create_user(username="roundtrip-st")
+        cls.forces = Sphere.objects.create(name="Forces", property_name="forces")
+        cls.potence = Discipline.objects.create(name="Potence", property_name="potence")
+        cls.chicanery = Statistic.objects.create(name="Chicanery", property_name="chicanery")
+        cls.actor = Statistic.objects.create(name="Actor", property_name="actor")
+
+    @staticmethod
+    def named(name, property_name):
+        return SimpleNamespace(name=name, property_name=property_name)
+
+    def spend_cases(self):
+        # (model, create kwargs, category, example, column, mirror column or None)
+        return [
+            (Mage, {"arete": 1}, "Arete", None, "arete", None),
+            (Mage, {"arete": 1}, "Rote Points", None, "rote_points", None),
+            (Mage, {"arete": 1}, "Sphere", self.forces, "forces", None),
+            (Mage, {"arete": 1}, "Willpower", None, "willpower", "temporary_willpower"),
+            (Vampire, {"humanity": 5}, "Humanity", None, "humanity", None),
+            (Vampire, {}, "Discipline", self.potence, "potence", None),
+            (Vampire, {}, "Virtue", self.named("Conscience", "conscience"), "conscience", None),
+            (Werewolf, {"rage": 3, "gnosis": 3}, "Rage", None, "rage", None),
+            (Werewolf, {"rage": 3, "gnosis": 3}, "Gnosis", None, "gnosis", None),
+            (Werewolf, {"rage": 3, "gnosis": 3}, "Glory", None, "temporary_glory", None),
+            (Werewolf, {"rage": 3, "gnosis": 3}, "Honor", None, "temporary_honor", None),
+            (Werewolf, {"rage": 3, "gnosis": 3}, "Wisdom", None, "temporary_wisdom", None),
+            (Mummy, {"sekhem": 3, "balance": 3}, "Sekhem", None, "sekhem", None),
+            (Mummy, {"sekhem": 3, "balance": 3}, "Balance", None, "balance", None),
+            (Mummy, {}, "Hekau", self.named("Alchemy", "alchemy"), "alchemy", None),
+            (Changeling, {}, "Art", self.chicanery, "chicanery", None),
+            (Changeling, {}, "Realm", self.actor, "actor", None),
+            (Changeling, {"glamour": 3}, "Glamour", None, "glamour", "temporary_glamour"),
+            (Demon, {"faith": 3}, "Faith", None, "faith", None),
+            (Demon, {}, "Virtue", self.named("Conviction", "conviction"), "conviction", None),
+            (Thrall, {}, "Faith Potential", None, "faith_potential", None),
+            (Hunter, {}, "Virtue", self.named("Zeal", "zeal"), "zeal", None),
+        ]
+
+    def test_spend_then_deny_restores_the_column(self):
+        for model, kwargs, category, example, column, mirror in self.spend_cases():
+            with self.subTest(model=model.__name__, category=category):
+                character = model.objects.create(
+                    name=f"{model.__name__} {category}", owner=self.player, freebies=30, **kwargs
+                )
+                before = getattr(character, column)
+                service = FreebieSpendingServiceFactory.get_service(character)
+
+                spend = service.spend(category, example)
+                self.assertTrue(spend.success, spend.error)
+                character.refresh_from_db()
+                self.assertNotEqual(getattr(character, column), before)
+                record = FreebieSpendingRecord.objects.get(character=character, approved="Pending")
+
+                deny = service.deny(record, self.storyteller)
+                self.assertTrue(deny.success, deny.error)
+                character.refresh_from_db()
+                record.refresh_from_db()
+                self.assertEqual(getattr(character, column), before)
+                if mirror:
+                    self.assertEqual(getattr(character, mirror), before)
+                self.assertEqual(character.freebies, 30)
+                self.assertEqual(record.approved, "Denied")
+
+    def test_hand_filed_records_revert_by_their_step(self):
+        """The +4 pools and the reductions revert ``trait_value - step``."""
+        cases = [
+            # (model, column, trait type, value the spend set, value before it)
+            (Mage, "quintessence", "quintessence", 7, 3),
+            (Mage, "rote_points", "rotes", 10, 6),
+            (Wraith, "pathos", "pathos", 6, 5),
+            (Wraith, "corpus", "corpus", 6, 5),
+            (Changeling, "banality", "banality_reduction", 4, 5),
+            (Demon, "torment", "torment_reduction", 4, 5),
+        ]
+        for model, column, trait_type, after, before in cases:
+            with self.subTest(model=model.__name__, trait_type=trait_type):
+                character = model.objects.create(
+                    name=f"{model.__name__} {trait_type}",
+                    owner=self.player,
+                    freebies=10,
+                    **{column: after},
+                )
+                record = FreebieSpendingRecord.objects.create(
+                    character=character,
+                    trait_name=trait_type,
+                    trait_type=trait_type,
+                    trait_value=after,
+                    cost=1,
+                )
+
+                deny = FreebieSpendingServiceFactory.get_service(character).deny(
+                    record, self.storyteller
+                )
+
+                self.assertTrue(deny.success, deny.error)
+                character.refresh_from_db()
+                self.assertEqual(getattr(character, column), before)
+                self.assertEqual(character.freebies, 11)
