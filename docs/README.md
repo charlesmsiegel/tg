@@ -62,6 +62,27 @@ Step-by-step procedures for common changes, each ending with a checklist.
 | [Testing](development/testing.md) | The test runner, running tests, browser tests, guard tests, helpers |
 | [Code style](development/code-style.md) | black, ruff, pre-commit, conventions, commit messages |
 
+### Generated code overview
+
+[`code-overview.html`](code-overview.html) is a single-page, generated report: a summary,
+code map, health grade, measurement audit and theory panel for the repository and for each
+of the eleven units listed in [`code-overview.json`](code-overview.json). It is a snapshot of
+the commit named in its header, not a maintained document; the code is the source of truth
+and the page goes stale as the code changes. Open it from a checkout in a current browser
+(it inflates its embedded pages with `DecompressionStream` and loads Mermaid from a CDN for
+diagrams; everything else is offline). Its **Download page** button saves any embedded page
+as a standalone file.
+
+To regenerate it, install the skills from the
+[`coding-skills`](https://github.com/charlesmsiegel/coding-skills) repository
+(`./install.sh --claude --skills`) and run the `code-overview` workflow against this
+checkout with `docs/code-overview.json` as the package map. The workflow writes the sixty
+individual pages (`docs/*.html` and `<unit>/docs/*.html`); its final gate is
+`inject_nav.py --map docs/code-overview.json --repo . --check`, which exits 0 only when
+every link between pages resolves. The individual pages are not committed; the combined
+page embeds them all. Regenerate rarely: the page is about 1.5 MB and each regeneration is a
+full-size change in history.
+
 Also see [`CONTRIBUTING.md`](../CONTRIBUTING.md) for the pull request process and
 [`AGENTS.md`](../AGENTS.md) for coding-agent instructions. The design rules and review
 checklists live in the [`tg-standards`](../.claude/skills/tg-standards/SKILL.md) skill.
