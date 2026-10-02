@@ -1,0 +1,17 @@
+{
+  "schema": "code-overview/1",
+  "generated": "2026-10-02",
+  "packages": [
+    {"name": "accounts",    "roots": ["accounts"],    "docs": "accounts/docs",    "language": "python", "doctor": "django-code-doctor"},
+    {"name": "characters",  "roots": ["characters"],  "docs": "characters/docs",  "language": "python", "doctor": "django-code-doctor"},
+    {"name": "core",        "roots": ["core"],        "docs": "core/docs",        "language": "python", "doctor": "django-code-doctor"},
+    {"name": "game",        "roots": ["game"],        "docs": "game/docs",        "language": "python", "doctor": "django-code-doctor"},
+    {"name": "items",       "roots": ["items"],       "docs": "items/docs",       "language": "python", "doctor": "django-code-doctor"},
+    {"name": "locations",   "roots": ["locations"],   "docs": "locations/docs",   "language": "python", "doctor": "django-code-doctor"},
+    {"name": "tg_schema",   "roots": ["tg_schema"],   "docs": "tg_schema/docs",   "language": "python", "doctor": "django-code-doctor"},
+    {"name": "widgets",     "roots": ["widgets"],     "docs": "widgets/docs",     "language": "python", "doctor": "django-code-doctor"},
+    {"name": "tg",          "roots": ["tg"],          "docs": "tg/docs",          "language": "python", "doctor": "python-code-doctor"},
+    {"name": "populate_db", "roots": ["populate_db"], "docs": "populate_db/docs", "language": "python", "doctor": "python-code-doctor"},
+    {"name": "scripts",     "roots": ["scripts"],     "docs": "scripts/docs",     "language": "python", "doctor": "python-code-doctor"}
+  ]
+}
