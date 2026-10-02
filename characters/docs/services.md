@@ -115,8 +115,10 @@ so a display name matching more than one `Attribute`, `Sphere` or similar row re
 
 A failed revert leaves nothing behind. When the applier returns `success=False`, raises,
 or no applier is registered for the record's `trait_type`, `deny()` rolls the transaction
-back, logs the failure and returns `success=False` with the reason in `error`: the trait
-keeps its value, `freebies` is not refunded and the record stays `Pending`.
+back, logs the failure and returns `success=False` with the reason in `error` (a
+`ValidationError`'s message, or a generic sentence when the failure was unexpected; the
+detail stays in the log): the trait keeps its value, `freebies` is not refunded and the
+record stays `Pending`.
 `decide_spending_request()` turns that result into a `SpendingDecisionError`, so the
 storyteller sees the failure and can correct the character by hand.
 

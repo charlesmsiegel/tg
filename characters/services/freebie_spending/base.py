@@ -341,16 +341,39 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
             )
             self.character.refresh_from_db()
             return FreebieApplyResult(success=False, trait=trait_name, message="", error=str(exc))
-        except Exception as exc:
+        except ValidationError as exc:
+            # A cap or a model rule refused the restored value: the reason is for the
+            # storyteller, who has to correct the sheet by hand.
+            logger.warning(
+                "Freebie denial of %s (record %s, character %s) refused by validation: %s",
+                trait_name,
+                freebie_request.pk,
+                self.character.pk,
+                exc,
+            )
+            self.character.refresh_from_db()
+            return FreebieApplyResult(
+                success=False,
+                trait=trait_name,
+                message="",
+                error=f"Could not revert {trait_name}: " + "; ".join(exc.messages),
+            )
+        except Exception:
             logger.exception(
                 "Freebie denial of %s (record %s, character %s) failed",
                 trait_name,
                 freebie_request.pk,
                 self.character.pk,
             )
-            # The savepoint restored the row; drop whatever the applier set in memory.
+            # The savepoint restored the row; drop whatever the applier set in memory. The
+            # exception text stays in the log rather than reaching the storyteller.
             self.character.refresh_from_db()
-            return FreebieApplyResult(success=False, trait=trait_name, message="", error=str(exc))
+            return FreebieApplyResult(
+                success=False,
+                trait=trait_name,
+                message="",
+                error=f"Could not revert {trait_name}: an unexpected error was logged",
+            )
 
         return FreebieApplyResult(
             success=True,
