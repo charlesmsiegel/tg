@@ -82,16 +82,8 @@ class DtFHumanFreebieSpendingService(HumanFreebieSpendingService):
     def _apply_virtue(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved virtue freebie spending."""
         if deny:
-            property_name = trait_property_name(freebie_request.trait_name)
-            if hasattr(self.character, property_name):
-                current_val = getattr(self.character, property_name, 1)
-                if current_val > 1:
-                    setattr(self.character, property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
+            return self._revert_column(
+                freebie_request, trait_property_name(freebie_request.trait_name)
             )
 
         # Mark as approved
@@ -246,17 +238,7 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _apply_lore(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Lore freebie spending."""
         if deny:
-            lore = Lore.objects.filter(name=freebie_request.trait_name).first()
-            if lore:
-                current_val = getattr(self.character, lore.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, lore.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Lore)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -273,14 +255,7 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _apply_faith(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Faith freebie spending."""
         if deny:
-            if self.character.faith > 1:
-                self.character.faith -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Faith",
-                message="Denied and reverted Faith",
-            )
+            return self._revert_column(freebie_request, "faith")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -297,14 +272,8 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _apply_torment_reduction(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Torment reduction freebie spending."""
         if deny:
-            # Revert torment (increase it back)
-            self.character.torment += 1
-            self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Torment",
-                message="Denied and reverted Torment reduction",
-            )
+            # A reduction lowered the trait, so the value before it is one higher.
+            return self._revert_column(freebie_request, "torment", step=-1)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -368,14 +337,7 @@ class ThrallFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _apply_faith_potential(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Faith Potential freebie spending."""
         if deny:
-            if hasattr(self.character, "faith_potential") and self.character.faith_potential > 0:
-                self.character.faith_potential -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Faith Potential",
-                message="Denied and reverted Faith Potential",
-            )
+            return self._revert_column(freebie_request, "faith_potential")
 
         # Mark as approved
         freebie_request.approved = "Approved"

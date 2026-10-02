@@ -217,17 +217,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _apply_art(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Art freebie spending."""
         if deny:
-            art = Statistic.objects.filter(name=freebie_request.trait_name).first()
-            if art:
-                current_val = getattr(self.character, art.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, art.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Statistic)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -244,17 +234,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _apply_realm(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Realm freebie spending."""
         if deny:
-            realm = Statistic.objects.filter(name=freebie_request.trait_name).first()
-            if realm:
-                current_val = getattr(self.character, realm.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, realm.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Statistic)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -271,15 +251,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _apply_glamour(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Glamour freebie spending."""
         if deny:
-            if self.character.glamour > 1:
-                self.character.glamour -= 1
-                self.character.temporary_glamour = self.character.glamour
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Glamour",
-                message="Denied and reverted Glamour",
-            )
+            return self._revert_column(freebie_request, "glamour", mirror=("temporary_glamour",))
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -298,14 +270,8 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     ) -> FreebieApplyResult:
         """Apply or deny approved Banality reduction freebie spending."""
         if deny:
-            # Revert banality (increase it back)
-            self.character.banality += 1
-            self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Banality",
-                message="Denied and reverted Banality reduction",
-            )
+            # A reduction lowered the trait, so the value before it is one higher.
+            return self._revert_column(freebie_request, "banality", step=-1)
 
         # Mark as approved
         freebie_request.approved = "Approved"

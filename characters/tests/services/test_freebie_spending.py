@@ -1,5 +1,7 @@
 """Tests for Freebie spending service."""
 
+from unittest import mock
+
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -631,3 +633,164 @@ class TestWerewolfRiteSpending(TestCase):
                 result = service.apply(request, self.user)
                 self.assertTrue(result.success)
                 self.assertIn(self.rite, character.rites_known.all())
+
+
+class TestFreebieDenialReverts(TestCase):
+    """deny() reverts exactly the recorded spend, or refuses and changes nothing."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="denial-player")
+        self.st_user = User.objects.create_user(username="denial-st")
+        self.chronicle = Chronicle.objects.create(name="Denial Chronicle")
+        self.mage = Mage.objects.create(
+            name="Denied Mage",
+            owner=self.user,
+            chronicle=self.chronicle,
+            arete=1,
+            freebies=15,
+            strength=2,
+        )
+        self.strength = Attribute.objects.create(name="Strength", property_name="strength")
+        self.resources = Background.objects.create(name="Resources", property_name="resources")
+        self.service = MageFreebieSpendingService(self.mage)
+
+    def record(self, **kwargs):
+        fields = {
+            "character": self.mage,
+            "trait_name": "Strength",
+            "trait_type": "attribute",
+            "trait_value": 3,
+            "cost": 5,
+        }
+        fields.update(kwargs)
+        return FreebieSpendingRecord.objects.create(**fields)
+
+    def assert_untouched(self, record, *, freebies, strength):
+        record.refresh_from_db()
+        self.mage.refresh_from_db()
+        self.assertEqual(record.approved, "Pending")
+        self.assertIsNone(record.approved_by)
+        self.assertEqual(self.mage.freebies, freebies)
+        self.assertEqual(self.mage.strength, strength)
+
+    def test_missing_catalogue_row_fails_and_changes_nothing(self):
+        record = self.record(trait_name="Charisma")
+
+        result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertIn("Charisma", result.error)
+        self.assert_untouched(record, freebies=15, strength=2)
+
+    def test_raising_revert_fails_and_rolls_back(self):
+        record = self.record(trait_value=2)
+
+        def partial_then_raise(freebie_request, approver, deny=False):
+            self.mage.freebies += 999
+            self.mage.save()
+            raise RuntimeError("catalogue exploded")
+
+        with mock.patch.object(
+            MageFreebieSpendingService, "_apply_attribute", side_effect=partial_then_raise
+        ):
+            result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.error, "catalogue exploded")
+        self.assert_untouched(record, freebies=15, strength=2)
+
+    def test_unregistered_trait_type_fails(self):
+        record = self.record(trait_type="custom")
+
+        result = self.service.deny(record, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertIn("custom", result.error)
+        self.assert_untouched(record, freebies=15, strength=2)
+
+    def test_denial_restores_the_recorded_value(self):
+        self.assertTrue(self.service.spend("Attribute", self.strength).success)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_value, 3)
+
+        result = self.service.deny(record, self.st_user)
+
+        self.assertTrue(result.success, result.error)
+        record.refresh_from_db()
+        self.mage.refresh_from_db()
+        self.assertEqual(record.approved, "Denied")
+        self.assertEqual(record.approved_by, self.st_user)
+        self.assertEqual(self.mage.strength, 2)
+        self.assertEqual(self.mage.freebies, 15)
+
+    def test_denial_after_a_later_raise_refuses(self):
+        self.assertTrue(self.service.spend("Attribute", self.strength).success)
+        first = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertTrue(self.service.spend("Attribute", self.strength).success)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.strength, 4)
+
+        result = self.service.deny(first, self.st_user)
+
+        self.assertFalse(result.success)
+        self.assertIn("Strength", result.error)
+        self.assert_untouched(first, freebies=5, strength=4)
+
+    def test_new_background_is_recorded_and_removed_on_denial(self):
+        result = self.service.spend("New Background", self.resources, note="Family wealth")
+        self.assertTrue(result.success, result.error)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_type, "new-background")
+        self.assertEqual(record.trait_value, 1)
+        freebies_after_spend = Mage.objects.get(pk=self.mage.pk).freebies
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertTrue(deny.success, deny.error)
+        self.assertFalse(
+            BackgroundRating.objects.filter(char=self.mage, bg=self.resources).exists()
+        )
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.freebies, freebies_after_spend + record.cost)
+
+    def test_existing_background_denial_decrements(self):
+        rating = BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=2)
+        self.assertTrue(self.service.spend("Existing Background", rating).success)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_type, "background")
+        self.assertEqual(record.trait_value, 3)
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertTrue(deny.success, deny.error)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 2)
+
+    def test_background_denial_after_a_later_raise_refuses(self):
+        rating = BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=1)
+        self.assertTrue(self.service.spend("Existing Background", rating).success)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        rating.refresh_from_db()
+        rating.rating = 3
+        rating.save()
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertFalse(deny.success)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 3)
+        record.refresh_from_db()
+        self.assertEqual(record.approved, "Pending")
+
+    def test_old_new_background_record_spelled_background_still_deletes(self):
+        BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=1, note="Old")
+        record = self.record(
+            trait_name="Resources (Old)", trait_type="background", trait_value=1, cost=1
+        )
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertTrue(deny.success, deny.error)
+        self.assertFalse(
+            BackgroundRating.objects.filter(char=self.mage, bg=self.resources).exists()
+        )

@@ -13,7 +13,11 @@ from game.models import (
     STRelationship,
     XPSpendingRequest,
 )
-from game.spending_approval import SpendingAlreadyDecided, decide_spending_request
+from game.spending_approval import (
+    SpendingAlreadyDecided,
+    SpendingDecisionError,
+    decide_spending_request,
+)
 
 
 class ApprovalSecurityTests(TestCase):
@@ -102,3 +106,23 @@ class ApprovalSecurityTests(TestCase):
             self.decide(XPSpendingRequest, self.character, request.pk, self.st, "deny")
         self.character.refresh_from_db()
         self.assertEqual(self.character.xp, 7)
+
+    def test_freebie_denial_whose_revert_fails_raises_and_changes_nothing(self):
+        """A revert the service cannot perform (here: no Attribute row named Charisma)
+        is reported to the storyteller and leaves the record, trait and freebies as
+        they were, so the player cannot keep both the refund and the dot."""
+        Human.objects.filter(pk=self.character.pk).update(freebies=5, charisma=3)
+        record = FreebieSpendingRecord.objects.create(
+            character=self.character,
+            trait_name="Charisma",
+            trait_type="attribute",
+            trait_value=3,
+            cost=5,
+        )
+        with self.assertRaises(SpendingDecisionError):
+            self.decide(FreebieSpendingRecord, self.character, record.pk, self.st, "deny")
+        record.refresh_from_db()
+        self.character.refresh_from_db()
+        self.assertEqual(record.approved, "Pending")
+        self.assertEqual(self.character.freebies, 5)
+        self.assertEqual(self.character.charisma, 3)

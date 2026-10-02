@@ -172,16 +172,8 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _apply_hekau(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Hekau freebie spending."""
         if deny:
-            property_name = trait_property_name(freebie_request.trait_name)
-            if hasattr(self.character, property_name):
-                current_val = getattr(self.character, property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
+            return self._revert_column(
+                freebie_request, trait_property_name(freebie_request.trait_name)
             )
 
         # Mark as approved
@@ -199,14 +191,7 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _apply_sekhem(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Sekhem freebie spending."""
         if deny:
-            if self.character.sekhem > 1:
-                self.character.sekhem -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Sekhem",
-                message="Denied and reverted Sekhem",
-            )
+            return self._revert_column(freebie_request, "sekhem")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -223,14 +208,7 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _apply_balance(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Balance freebie spending."""
         if deny:
-            if self.character.balance > 1:
-                self.character.balance -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Balance",
-                message="Denied and reverted Balance",
-            )
+            return self._revert_column(freebie_request, "balance")
 
         # Mark as approved
         freebie_request.approved = "Approved"

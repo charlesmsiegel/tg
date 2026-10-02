@@ -343,14 +343,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_rage(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Rage freebie spending."""
         if deny:
-            if self.character.rage > 1:
-                self.character.rage -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Rage",
-                message="Denied and reverted Rage",
-            )
+            return self._revert_column(freebie_request, "rage")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -367,14 +360,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_gnosis(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Gnosis freebie spending."""
         if deny:
-            if self.character.gnosis > 1:
-                self.character.gnosis -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Gnosis",
-                message="Denied and reverted Gnosis",
-            )
+            return self._revert_column(freebie_request, "gnosis")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -391,14 +377,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_glory(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Glory freebie spending."""
         if deny:
-            if self.character.temporary_glory > 0:
-                self.character.temporary_glory -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Glory",
-                message="Denied and reverted Glory",
-            )
+            return self._revert_column(freebie_request, "temporary_glory")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -415,14 +394,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_honor(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Honor freebie spending."""
         if deny:
-            if self.character.temporary_honor > 0:
-                self.character.temporary_honor -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Honor",
-                message="Denied and reverted Honor",
-            )
+            return self._revert_column(freebie_request, "temporary_honor")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -439,14 +411,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _apply_wisdom(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Wisdom freebie spending."""
         if deny:
-            if self.character.temporary_wisdom > 0:
-                self.character.temporary_wisdom -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Wisdom",
-                message="Denied and reverted Wisdom",
-            )
+            return self._revert_column(freebie_request, "temporary_wisdom")
 
         # Mark as approved
         freebie_request.approved = "Approved"
