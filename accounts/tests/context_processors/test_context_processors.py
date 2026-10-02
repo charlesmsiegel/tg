@@ -148,6 +148,22 @@ class TestNotificationCountContextProcessor(TestCase):
         self.assertEqual(cached_context, first_context)
         self.assertEqual(cached_context["notification_count"], 1)
 
+    def test_head_st_without_relationship_row_gets_storyteller_counts(self):
+        """The badge counts a head ST's queues even with no STRelationship row."""
+        head = User.objects.create_user("head", "head@test.com", "password")
+        chronicle = Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+        Human.objects.create(
+            name="Pending For Head", owner=self.user, chronicle=chronicle, status="Sub"
+        )
+        self.assertFalse(STRelationship.objects.filter(user=head).exists())
+        request = self.factory.get("/")
+        request.user = head
+
+        context = notification_count(request)
+
+        self.assertEqual(context["notification_breakdown"], {"Characters to Approve": 1})
+        self.assertEqual(context["notification_count"], 1)
+
     def test_unauthenticated_user_gets_zero_notifications(self):
         """Test that unauthenticated users get zero notifications."""
         request = self.factory.get("/")

@@ -18,7 +18,7 @@ from characters.models.mage.focus import Practice
 from core.create_redirects import resolve_object_type_url
 from core.model_registry import ModelRegistry
 from core.registries import get_registry
-from game.models import ObjectType
+from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
 from items.models.core import ItemModel, Material, Weapon
 from items.models.demon.relic import Relic
@@ -316,6 +316,15 @@ class RegistryBehaviorTests(RegistryTestCase):
         self.assertEqual(response.status_code, 403)
         obj.refresh_from_db()
         self.assertEqual(obj.name, "Registry sword")
+
+    def test_menu_offers_every_gameline_to_a_head_storyteller(self):
+        """The create menu follows Profile.is_st(): a head ST needs no STRelationship row."""
+        head = get_user_model().objects.create_user("registry_head")
+        Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+        registry = get_registry("items")
+
+        self.assertEqual({e.gameline for e in registry.menu(self.other)}, {"mta"})
+        self.assertGreater(len({e.gameline for e in registry.menu(head)}), 1)
 
     def test_menus_and_collision_redirects_need_no_database_types(self):
         self.assertFalse(ObjectType.objects.exists())

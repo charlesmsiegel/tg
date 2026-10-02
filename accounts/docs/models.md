@@ -39,7 +39,7 @@ custom user model. It inherits `core.base.ValidatedSaveMixin`, so every `save()`
 
 | Method | Returns | Rule |
 |--------|---------|------|
-| `is_st()` | `bool` | The user has at least one `game.models.STRelationship` row, for any chronicle and gameline. Being a chronicle's `head_st`, a game storyteller or staff does not count on its own. |
+| `is_st()` | `bool` | The user can act as a storyteller for at least one chronicle: they are the `head_st` of any `Chronicle` or hold any `game.models.STRelationship` row. This is the rule `PermissionManager.can_manage_scope` applies per chronicle, so what the profile shows matches what the endpoints accept. Game storytellers and staff do not count on their own; callers that want staff to qualify OR in `is_staff` themselves. One query per call; `ProfileView` decides it once per render. |
 | `is_st_for(chronicle)` | `bool` | The user is `chronicle.head_st`, or has an `STRelationship` for that chronicle. `False` for `None`. Game storytellers (`Chronicle.game_storytellers`) do not qualify. |
 
 `is_st()` drives what the profile page and the notification badge treat as storyteller

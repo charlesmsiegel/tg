@@ -1,17 +1,17 @@
 {% load tl %}
 {% comment %}
 Cover rule list. Display preferences show only to the owner; Discord, Veils and Lines show
-to the owner, storytellers, or anyone when the owner made them visible. The owner sees
-whether each is public.
+to the owner, storytellers (viewer_is_st, decided once by ProfileView), or anyone when the
+owner made them visible. The owner sees whether each is public.
 {% endcomment %}
-{% if user == object.user or user.profile.is_st or object.discord_toggle or object.veils_toggle or object.lines_toggle %}
+{% if user == object.user or viewer_is_st or object.discord_toggle or object.veils_toggle or object.lines_toggle %}
     <div class="tl-facts tl-profile-settings">
         {% if user == object.user %}
             {% fact "Theme" object.get_theme_display %}
             {% fact "Highlight my posts" object.highlight_text|yesno:"On,Off" %}
             {% fact "Preferred heading" object.preferred_heading|gameline_name|default:"World of Darkness" %}
         {% endif %}
-        {% if user == object.user or user.profile.is_st or object.discord_toggle %}
+        {% if user == object.user or viewer_is_st or object.discord_toggle %}
             <div class="tl-facts__row">
                 <span class="tl-facts__k">
                     Discord
@@ -20,7 +20,7 @@ whether each is public.
                 <span class="tl-facts__v">{{ object.discord_id|default:"Not set" }}</span>
             </div>
         {% endif %}
-        {% if user == object.user or user.profile.is_st or object.veils_toggle %}
+        {% if user == object.user or viewer_is_st or object.veils_toggle %}
             <div class="tl-facts__row tl-facts__row--stack">
                 <span class="tl-facts__k">
                     Veils
@@ -30,7 +30,7 @@ whether each is public.
                 <span class="tl-facts__note">Content to fade to black</span>
             </div>
         {% endif %}
-        {% if user == object.user or user.profile.is_st or object.lines_toggle %}
+        {% if user == object.user or viewer_is_st or object.lines_toggle %}
             <div class="tl-facts__row tl-facts__row--stack">
                 <span class="tl-facts__k">
                     Lines

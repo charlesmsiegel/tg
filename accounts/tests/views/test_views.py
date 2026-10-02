@@ -151,6 +151,47 @@ class TestProfileView(TestCase):
         self.assertContains(response, "Test Chronicle")
         self.assertNotContains(response, "Characters to approve")
 
+    def test_head_st_without_relationship_row_sees_storyteller_profile(self):
+        """A head ST with no STRelationship row gets the storyteller page, not the player one."""
+        head = User.objects.create_user("Head ST", "head@st.com", "testpass")
+        chronicle = Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+        Human.objects.create(
+            name="Waiting On Head", owner=self.user2, chronicle=chronicle, status="Sub"
+        )
+        self.assertFalse(STRelationship.objects.filter(user=head).exists())
+
+        self.client.login(username="Head ST", password="testpass")
+        response = self.client.get(head.profile.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_st"])
+        self.assertTrue(response.context["st_queues"])
+        self.assertEqual(response.context["tab"], "needs")
+        self.assertContains(response, "Storyteller ·")
+        self.assertContains(response, "?tab=chronicles")
+        self.assertContains(response, "?tab=journals")
+        self.assertContains(response, "Characters to approve")
+        self.assertContains(response, "Waiting On Head")
+
+    def test_profile_render_runs_the_storyteller_predicate_once(self):
+        """The page decides "is this user a storyteller" with one query, not one per use.
+
+        The nav badge's context processor asks the same question for every page and caches
+        its answer per user for 60 seconds, so the warm-up request leaves that cache filled
+        and the count below is the profile view's own.
+        """
+        self.client.login(username="Test Storyteller", password="testpass")
+        url = self.storyteller.profile.get_absolute_url()
+        self.client.get(url)  # warm per-process caches and the notification badge
+        with CaptureQueriesContext(connection) as ctx:
+            self.assertEqual(self.client.get(url).status_code, 200)
+        predicate = [
+            q["sql"]
+            for q in ctx.captured_queries
+            if q["sql"].startswith("SELECT 1 AS") and '"game_chronicle"."head_st_id"' in q["sql"]
+        ]
+        self.assertEqual(len(predicate), 1, predicate)
+
     def test_storyteller_tabs_fall_back_for_players(self):
         self.client.login(username="Test User 1", password="testpass")
         url = self.user1.profile.get_absolute_url()

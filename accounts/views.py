@@ -321,8 +321,16 @@ class ProfileView(LoginRequiredMixin, DetailView):
             dict: Context with profile data, XP forms, and approval queues.
         """
         context = super().get_context_data(**kwargs)
+        # Profile.is_st() is one query; decide it once here and hand the answer to
+        # get_needs_you and the templates. The viewer and the profile owner differ when
+        # staff open another profile, so settings.html gets the viewer's own answer.
+        is_own = self.request.user == self.object.user
+        is_st = self.object.is_st()
+        context["is_st"] = is_st
+        context["is_own"] = is_own
+        context["viewer_is_st"] = is_st if is_own else self.request.user.profile.is_st()
         context["scenes_waiting"] = []
-        if self.object.is_st():
+        if is_st:
             context["scenes_waiting"] = filter_scenes(
                 Scene.objects.waiting_for_st().filter(
                     chronicle__in=staffed_chronicles(self.object.user)
@@ -332,7 +340,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         # The storyteller forms show only on a storyteller's own profile (st_queues in
         # get_needs_you); skip their queries for everyone else.
-        st_queues = self.request.user == self.object.user and self.object.is_st()
+        st_queues = is_own and is_st
         context["scenexp_forms"] = []
         context["freebie_forms"] = []
         context["weekly_xp_request_forms_to_approve"] = []
@@ -377,11 +385,12 @@ class ProfileView(LoginRequiredMixin, DetailView):
         Storyteller queues (approvals, freebies, scene and weekly XP awards) only show on
         the owner's own profile, as they always have; scenes needing attention and XP
         spend requests show to anyone viewing a storyteller's profile. Each queue is
-        evaluated once here so the tab count and the tab body agree.
+        evaluated once here so the tab count and the tab body agree. ``is_st`` and
+        ``is_own`` come from ``get_context_data``, which decided them once.
         """
         profile = self.object
-        is_st = profile.is_st()
-        is_own = self.request.user == profile.user
+        is_st = context["is_st"]
+        is_own = context["is_own"]
         st_queues = is_st and is_own
         empty = []
 

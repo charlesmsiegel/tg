@@ -69,7 +69,7 @@ Every user gets the player counts:
 | Unread Scenes | `unread_scenes().count()` |
 | Weekly XP Requests | `len(get_unfulfilled_weekly_xp_requests())` |
 
-When `profile.is_st()` is true (the user has any `STRelationship`), these are added:
+When `profile.is_st()` is true (the user heads a chronicle or has any `STRelationship`), these are added:
 
 | Label | Source |
 |-------|--------|
@@ -83,10 +83,12 @@ When `profile.is_st()` is true (the user has any `STRelationship`), these are ad
 | Updated Journals | `get_updated_journals()` |
 | Weekly XP to Approve | `len(get_unfulfilled_weekly_xp_requests_to_approve())` |
 
-A head ST or staff user with no `STRelationship` row gets only the player counts, even
-though the selectors themselves include their chronicles. The same `is_st()` test gates
-the storyteller queues, tabs and forms on the profile page (below), so such a user also
-sees no storyteller work there.
+The storyteller counts are added when `Profile.is_st()` is true: the user is a chronicle's
+`head_st` or holds an `STRelationship` row (see [models](models.md)). That is the same
+rule the approval endpoints apply, so a head ST with no relationship row is counted. A
+staff user without either gets only the player counts even though the selectors include
+every chronicle for staff, and a game storyteller gets none of them: the endpoints reject
+game storytellers too.
 
 To add a notification, add a selector to `ProfileDashboard` and an `_add_count` line in
 `_player_notification_count` or `_storyteller_notification_count`. Keep the calls
@@ -115,6 +117,10 @@ The tab comes from `?tab=`. `ProfileView.get_tab` accepts `needs`, `characters` 
 
 ### Context built by `get_context_data`
 
+- `is_st`, `is_own`, `viewer_is_st`: `Profile.is_st()` for the viewed profile, whether
+  the viewer is its user, and `is_st()` for the viewer. Each predicate is one query, so
+  the view decides them once here and `get_needs_you` and the templates read the values
+  (`includes/settings.html` uses `viewer_is_st`; the cover label and tabs use `is_st`).
 - `scenes_waiting`: scenes with `waiting_for_st=True` in the profile user's staffed
   chronicles, filtered by `filter_scenes`; empty unless the profile `is_st()`.
 - `st_queues`: true when the viewer is the profile's user and the profile `is_st()`. The
