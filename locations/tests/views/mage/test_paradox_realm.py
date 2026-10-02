@@ -224,6 +224,13 @@ class TestParadoxRealmUpdateView(TestCase):
         )
         self.url = self.realm.get_update_url()
 
+    def test_update_view_for_a_missing_realm_is_404(self):
+        """A realm deleted before (or during) the request is a 404, not a crash."""
+        self.client.login(username="st_user", password="password")
+        ParadoxRealm.objects.filter(pk=self.realm.pk).delete()
+        self.assertEqual(self.client.get(self.url).status_code, 404)
+        self.assertEqual(self.client.post(self.url, {"name": "x"}).status_code, 404)
+
     def test_update_view_status_code(self):
         """Test update view returns 200 for ST."""
         self.client.login(username="st_user", password="password")

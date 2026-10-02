@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic.edit import FormView
 
@@ -38,7 +39,7 @@ ParadoxRealmCreateView = registry.view("locations.ParadoxRealm", "create")
 class _ParadoxRealmUpdateView(EditPermissionMixin, FormView):
 
     def get_object(self):
-        return ParadoxRealm.objects.get(pk=self.kwargs["pk"])
+        return get_object_or_404(ParadoxRealm, pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
