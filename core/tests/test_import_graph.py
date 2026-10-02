@@ -5,16 +5,29 @@ import. The project breaks cycles structurally instead (string model references,
 reverse accessors, ``apps.get_model`` at call time, or a service that imports both
 sides); see ``docs/development/code-style.md``. The only exceptions are the signal
 registrations in ``AppConfig.ready()``, which Django requires because the receivers
-import models.
+import models. Optional-dependency guards (``debug_toolbar``, Playwright) pass
+because they are module-level ``try`` blocks, not function bodies, and ``manage.py``
+is outside the packages checked.
 """
 
 import ast
 from pathlib import Path
 
+from django.apps import apps
 from django.test import SimpleTestCase
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKAGES = ("accounts", "characters", "core", "game", "items", "locations", "widgets", "tg")
+PACKAGES = (
+    "accounts",
+    "characters",
+    "core",
+    "game",
+    "items",
+    "locations",
+    "tg",
+    "tg_schema",
+    "widgets",
+)
 SKIP_DIRS = {"migrations", "__pycache__"}
 
 # Imports that Django's app loading makes necessary: (file, function, module).
@@ -49,6 +62,15 @@ def resolve(name, modules):
 
 
 class ImportPlacementTests(SimpleTestCase):
+    def test_every_local_app_is_checked(self):
+        """A new app cannot slip out of the guard by not being listed."""
+        local_apps = {
+            config.name
+            for config in apps.get_app_configs()
+            if Path(config.path).resolve().is_relative_to(ROOT)
+        }
+        self.assertEqual(sorted(local_apps - set(PACKAGES)), [])
+
     def test_imports_sit_at_module_scope(self):
         offenders = []
 
