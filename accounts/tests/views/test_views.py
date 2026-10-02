@@ -1,6 +1,7 @@
 """Tests for accounts views."""
 
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -9,6 +10,7 @@ from django.test import RequestFactory, TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
+from accounts.models import Profile
 from accounts.views import ProfileView
 from characters.models.core import Ability, Attribute, Human
 from characters.models.mage.effect import Effect
@@ -58,6 +60,12 @@ class TestProfileView(TestCase):
         self.char4 = Human.objects.create(name="Test Character 4", owner=self.user2)
         self.char5 = Human.objects.create(name="Test Character 5", owner=self.user1)
         self.char6 = Human.objects.create(name="Test Character 6", owner=self.user2)
+
+    def test_profile_denies_anonymous_callers(self):
+        """The ACCOUNT route policy stops anonymous callers (401) before the view runs,
+        so get_context_data and its viewer predicate never see an anonymous user."""
+        response = self.client.get(self.user1.profile.get_absolute_url())
+        self.assertEqual(response.status_code, 401)
 
     def test_template_logged_in(self):
         self.client.login(username="Test User 1", password="testpass")
@@ -178,6 +186,28 @@ class TestProfileView(TestCase):
         self.assertContains(response, "Head storyteller")
         self.assertNotContains(response, "You do not storytell any chronicles.")
 
+    def test_chronicles_tab_costs_the_same_with_more_headed_chronicles(self):
+        """Headed chronicles load in one query; the tab renders them without more."""
+        head = User.objects.create_user("Head ST", "head@st.com", "testpass")
+        Chronicle.objects.create(name="Headed 0", head_st=head)
+        self.client.login(username="Head ST", password="testpass")
+        url = head.profile.get_absolute_url()
+
+        def count():
+            with CaptureQueriesContext(connection) as ctx:
+                response = self.client.get(url, {"tab": "chronicles"})
+                self.assertEqual(response.status_code, 200)
+            return len(ctx), response
+
+        count()  # warm per-process caches and the notification badge
+        before, _response = count()
+        for n in range(1, 4):
+            Chronicle.objects.create(name=f"Headed {n}", head_st=head)
+        after, response = count()
+        self.assertEqual(after, before)
+        self.assertContains(response, "Headed 3")
+        self.assertContains(response, "Head storyteller", count=4)
+
     def test_staff_viewing_a_head_storytellers_profile_sees_no_st_queues(self):
         """The head ST's queues stay on their own profile, as a relationship holder's do."""
         head = User.objects.create_user("Head ST", "head@st.com", "testpass")
@@ -212,8 +242,12 @@ class TestProfileView(TestCase):
         self.client.login(username="Test Storyteller", password="testpass")
         url = self.storyteller.profile.get_absolute_url()
         self.client.get(url)  # warm per-process caches and the notification badge
-        with CaptureQueriesContext(connection) as ctx:
+        with (
+            patch.object(Profile, "is_st", autospec=True, side_effect=Profile.is_st) as is_st,
+            CaptureQueriesContext(connection) as ctx,
+        ):
             self.assertEqual(self.client.get(url).status_code, 200)
+        self.assertEqual(is_st.call_count, 1)
         predicate = [
             q["sql"]
             for q in ctx.captured_queries
