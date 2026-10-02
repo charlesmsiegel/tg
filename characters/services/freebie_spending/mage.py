@@ -13,9 +13,9 @@ from django.utils import timezone
 
 from characters.costs import get_freebie_cost
 from characters.models.mage.companion import Advantage
-from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.focus import Tenet
 from characters.models.mage.resonance import Resonance
-from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
+from characters.models.mage.sorcerer import LinearMagicRitual
 from characters.models.mage.sphere import Sphere
 from characters.models.werewolf.charm import SpiritCharm
 
@@ -324,19 +324,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_sphere(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved sphere freebie spending."""
         if deny:
-            # Revert the sphere
-
-            s = Sphere.objects.filter(name=freebie_request.trait_name).first()
-            if s:
-                current_val = getattr(self.character, s.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, s.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Sphere)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -353,15 +341,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_arete(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Arete freebie spending."""
         if deny:
-            # Revert Arete
-            if self.character.arete > 1:
-                self.character.arete -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Arete",
-                message="Denied and reverted Arete",
-            )
+            return self._revert_column(freebie_request, "arete")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -385,20 +365,8 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
             else:
                 resonance_name = trait_name
 
-            # Remove resonance
-            rr = self.character.resonance_ratings.filter(resonance__name=resonance_name).first()
-            if rr:
-                if rr.rating > 1:
-                    rr.rating -= 1
-                    rr.save()
-                else:
-                    rr.delete()
-
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            row = self.character.resonance_ratings.filter(resonance__name=resonance_name).first()
+            return self._revert_rating_row(freebie_request, row)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -439,20 +407,10 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_practice(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved practice freebie spending."""
         if deny:
-            practice = Practice.objects.filter(name=freebie_request.trait_name).first()
-            if practice:
-                pr = self.character.practice_ratings.filter(practice=practice).first()
-                if pr:
-                    if pr.rating > 1:
-                        pr.rating -= 1
-                        pr.save()
-                    else:
-                        pr.delete()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            row = self.character.practice_ratings.filter(
+                practice__name=freebie_request.trait_name
+            ).first()
+            return self._revert_rating_row(freebie_request, row)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -469,14 +427,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_rotes(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved rote points freebie spending."""
         if deny:
-            # Revert rote points
-            self.character.rote_points = max(0, self.character.rote_points - 4)
-            self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Rote Points",
-                message="Denied and reverted Rote Points",
-            )
+            return self._revert_column(freebie_request, "rote_points", step=4)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -493,14 +444,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_quintessence(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved quintessence freebie spending."""
         if deny:
-            # Revert quintessence
-            self.character.quintessence = max(0, self.character.quintessence - 4)
-            self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Quintessence",
-                message="Denied and reverted Quintessence",
-            )
+            return self._revert_column(freebie_request, "quintessence", step=4)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -658,20 +602,8 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_path(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved sorcerer path freebie spending."""
         if deny:
-            path = LinearMagicPath.objects.filter(name=freebie_request.trait_name).first()
-            if path:
-                pr = self.character.path_ratings.filter(path=path).first()
-                if pr:
-                    if pr.rating > 1:
-                        pr.rating -= 1
-                        pr.save()
-                    else:
-                        pr.delete()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            row = self.character.path_ratings.filter(path__name=freebie_request.trait_name).first()
+            return self._revert_rating_row(freebie_request, row)
 
         # Mark as approved
         freebie_request.approved = "Approved"

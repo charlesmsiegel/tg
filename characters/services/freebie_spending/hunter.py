@@ -80,16 +80,8 @@ class HtRHumanFreebieSpendingService(HumanFreebieSpendingService):
     def _apply_virtue(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved virtue freebie spending."""
         if deny:
-            property_name = trait_property_name(freebie_request.trait_name)
-            if hasattr(self.character, property_name):
-                current_val = getattr(self.character, property_name, 1)
-                if current_val > 1:
-                    setattr(self.character, property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
+            return self._revert_column(
+                freebie_request, trait_property_name(freebie_request.trait_name)
             )
 
         # Mark as approved

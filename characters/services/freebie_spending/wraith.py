@@ -179,17 +179,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _apply_arcanos(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Arcanos freebie spending."""
         if deny:
-            arcanos = Arcanos.objects.filter(name=freebie_request.trait_name).first()
-            if arcanos:
-                current_val = getattr(self.character, arcanos.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, arcanos.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Arcanos)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -206,14 +196,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _apply_pathos(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Pathos freebie spending."""
         if deny:
-            if self.character.pathos > 1:
-                self.character.pathos -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Pathos",
-                message="Denied and reverted Pathos",
-            )
+            return self._revert_column(freebie_request, "pathos")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -230,14 +213,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _apply_corpus(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Corpus freebie spending."""
         if deny:
-            if self.character.corpus > 1:
-                self.character.corpus -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Corpus",
-                message="Denied and reverted Corpus",
-            )
+            return self._revert_column(freebie_request, "corpus")
 
         # Mark as approved
         freebie_request.approved = "Approved"

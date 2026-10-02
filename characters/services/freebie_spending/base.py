@@ -9,6 +9,7 @@ Mirrors the XP spending service architecture but for freebie point spending
 during character creation.
 """
 
+import logging
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
@@ -23,6 +24,12 @@ from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from game.models import FreebieSpendingRecord
+
+logger = logging.getLogger(__name__)
+
+
+class FreebieRevertError(Exception):
+    """A denial's revert could not be performed; ``deny()`` rolls back and reports it."""
 
 
 @dataclass
@@ -273,7 +280,13 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
 
     def deny(self, freebie_request, denier) -> FreebieApplyResult:
         """
-        Deny a freebie spending request, refund freebies, and revert the trait.
+        Deny a freebie spending request: revert the trait, refund the cost, mark Denied.
+
+        The three writes run in one transaction (a savepoint inside the caller's, which
+        ``decide_spending_request`` opens with the record and character locked). A revert
+        that fails, raises, or has no applier registered for the record's trait type rolls
+        everything back and returns a failed result, so the record stays ``Pending``, the
+        cost stays deducted and the caller raises instead of reporting success.
 
         Args:
             freebie_request: FreebieSpendingRecord instance to deny
@@ -282,33 +295,65 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         Returns:
             FreebieApplyResult with success/failure info
         """
+        trait_name = freebie_request.trait_name
         trait_type = freebie_request.trait_type
 
-        # Refund the freebie cost
-        self.character.freebies += freebie_request.cost
-        self.character.save()
-
-        # Try to revert the trait using the applier's revert logic
         applier_name = self._appliers.get(trait_type)
-        if applier_name:
-            applier_method = getattr(self, applier_name, None)
-            if applier_method:
-                try:
-                    # Call with deny=True to trigger revert logic
-                    applier_method(freebie_request=freebie_request, approver=denier, deny=True)
-                except Exception:
-                    pass  # Best effort revert
+        applier_method = getattr(self, applier_name, None) if applier_name else None
+        if applier_method is None:
+            logger.error(
+                "No freebie revert registered for trait type %r (record %s, character %s)",
+                trait_type,
+                freebie_request.pk,
+                self.character.pk,
+            )
+            return FreebieApplyResult(
+                success=False,
+                trait=trait_name,
+                message="",
+                error=f"Cannot revert {trait_name}: no revert is registered for {trait_type!r} spends",
+            )
 
-        # Mark as denied
-        freebie_request.approved = "Denied"
-        freebie_request.approved_by = denier
-        freebie_request.approved_at = timezone.now()
-        freebie_request.save()
+        try:
+            with transaction.atomic():
+                reverted = applier_method(
+                    freebie_request=freebie_request, approver=denier, deny=True
+                )
+                if not reverted.success:
+                    raise FreebieRevertError(reverted.error or f"Could not revert {trait_name}")
+
+                self.character.freebies += freebie_request.cost
+                self.character.save()
+
+                freebie_request.approved = "Denied"
+                freebie_request.approved_by = denier
+                freebie_request.approved_at = timezone.now()
+                freebie_request.save()
+        except FreebieRevertError as exc:
+            logger.warning(
+                "Freebie denial of %s (record %s, character %s) refused: %s",
+                trait_name,
+                freebie_request.pk,
+                self.character.pk,
+                exc,
+            )
+            self.character.refresh_from_db()
+            return FreebieApplyResult(success=False, trait=trait_name, message="", error=str(exc))
+        except Exception as exc:
+            logger.exception(
+                "Freebie denial of %s (record %s, character %s) failed",
+                trait_name,
+                freebie_request.pk,
+                self.character.pk,
+            )
+            # The savepoint restored the row; drop whatever the applier set in memory.
+            self.character.refresh_from_db()
+            return FreebieApplyResult(success=False, trait=trait_name, message="", error=str(exc))
 
         return FreebieApplyResult(
             success=True,
-            trait=freebie_request.trait_name,
-            message=f"Denied and refunded {freebie_request.cost} freebies for {freebie_request.trait_name}",
+            trait=trait_name,
+            message=f"{reverted.message}; refunded {freebie_request.cost} freebies",
         )
 
     def _record_spending(
@@ -339,6 +384,91 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         """Deduct freebies from character and save."""
         self.character.freebies -= cost
         self.character.save()
+
+    # ------------------------------------------------------------------
+    # Record-driven reverts, shared by the ``deny=True`` branch of appliers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _revert_refused(trait_name: str, error: str) -> FreebieApplyResult:
+        return FreebieApplyResult(success=False, trait=trait_name, message="", error=error)
+
+    def _revert_column(
+        self, freebie_request, property_name: str, *, step: int = 1, mirror: tuple[str, ...] = ()
+    ) -> FreebieApplyResult:
+        """Set an integer trait column back to the value before the recorded spend.
+
+        The record's ``trait_value`` is the value the spend set, so the value before it
+        is ``trait_value - step`` (``step`` is negative for a spend that lowers a trait,
+        such as a Banality reduction). The revert refuses when the column no longer holds
+        ``trait_value``: the player raised the trait again, or something else changed it,
+        and undoing that later change would not be this spend's reversal. ``mirror``
+        names columns kept equal to the trait (a temporary pool).
+        """
+        trait_name = freebie_request.trait_name
+        if not hasattr(self.character, property_name):
+            return self._revert_refused(
+                trait_name, f"{self.character.name} has no {property_name} trait to revert"
+            )
+        current = getattr(self.character, property_name)
+        expected = freebie_request.trait_value
+        if current != expected:
+            return self._revert_refused(
+                trait_name,
+                f"{trait_name} is {current}, not the {expected} this spend set; "
+                "it has changed since and must be corrected by hand",
+            )
+        restored = expected - step
+        setattr(self.character, property_name, restored)
+        for name in mirror:
+            setattr(self.character, name, restored)
+        self.character.save()
+        return FreebieApplyResult(
+            success=True,
+            trait=trait_name,
+            message=f"Denied and reverted {trait_name} to {restored}",
+        )
+
+    def _revert_catalogue_column(self, freebie_request, model, **kwargs) -> FreebieApplyResult:
+        """Revert a column named by a catalogue row (``Attribute``, ``Sphere``, ...)
+        looked up by the record's display name; refuse when the row is missing."""
+        row = model.objects.filter(name=freebie_request.trait_name).first()
+        if row is None:
+            return self._revert_refused(
+                freebie_request.trait_name,
+                f"No {model._meta.verbose_name} named {freebie_request.trait_name!r} to revert",
+            )
+        return self._revert_column(freebie_request, row.property_name, **kwargs)
+
+    def _revert_rating_row(self, freebie_request, row) -> FreebieApplyResult:
+        """Revert a rating row (a background, practice or path rating) to the value
+        before the recorded spend: delete the row the spend created (``trait_value``
+        1), otherwise lower it by one. Refuse when the row is gone or no longer holds
+        ``trait_value``."""
+        trait_name = freebie_request.trait_name
+        expected = freebie_request.trait_value
+        if row is None:
+            return self._revert_refused(
+                trait_name, f"{self.character.name} no longer has {trait_name} to revert"
+            )
+        if row.rating != expected:
+            return self._revert_refused(
+                trait_name,
+                f"{trait_name} is {row.rating}, not the {expected} this spend set; "
+                "it has changed since and must be corrected by hand",
+            )
+        if expected <= 1:
+            row.delete()
+            return FreebieApplyResult(
+                success=True, trait=trait_name, message=f"Denied and removed {trait_name}"
+            )
+        row.rating = expected - 1
+        row.save()
+        return FreebieApplyResult(
+            success=True,
+            trait=trait_name,
+            message=f"Denied and reverted {trait_name} to {row.rating}",
+        )
 
     @property
     def available_categories(self) -> list[str]:
@@ -544,7 +674,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
             )
 
             # Record and deduct
-            self._record_spending(trait, "background", new_value, cost)
+            self._record_spending(trait, "new-background", new_value, cost)
             self._deduct_freebies(cost)
 
             return FreebieSpendResult(
@@ -703,19 +833,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     def _apply_attribute(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved attribute freebie spending."""
         if deny:
-            # Revert the attribute
-
-            att = Attribute.objects.filter(name=freebie_request.trait_name).first()
-            if att:
-                current_val = getattr(self.character, att.property_name, 1)
-                if current_val > 1:
-                    setattr(self.character, att.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Attribute)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -732,19 +850,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     def _apply_ability(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved ability freebie spending."""
         if deny:
-            # Revert the ability
-
-            abb = Ability.objects.filter(name=freebie_request.trait_name).first()
-            if abb:
-                current_val = getattr(self.character, abb.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, abb.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Ability)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -759,65 +865,29 @@ class HumanFreebieSpendingService(FreebieSpendingService):
 
     @applier("new-background")
     def _apply_new_background(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
-        """Apply or deny new background freebie spending."""
-        if deny:
-            # Remove the background
+        """Apply or deny new background freebie spending.
 
-            trait_name = freebie_request.trait_name
-            if "(" in trait_name:
-                bg_name, note = trait_name.split("(")
-                note = note.rstrip(")").strip()
-                bg_name = bg_name.strip()
-            else:
-                bg_name = trait_name.strip()
-                note = ""
-
-            bg = Background.objects.filter(name=bg_name).first()
-            if bg:
-                self.character.backgrounds.filter(bg=bg, note=note, rating=1).delete()
-
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and removed {freebie_request.trait_name}",
-            )
-
-        # Mark as approved
-        freebie_request.approved = "Approved"
-        freebie_request.approved_by = approver
-        freebie_request.approved_at = timezone.now()
-        freebie_request.save()
-        return FreebieApplyResult(
-            success=True,
-            trait=freebie_request.trait_name,
-            message=f"Approved {freebie_request.trait_name}",
-        )
+        The revert is driven by the record, which holds ``trait_value`` 1 for a background
+        the spend created, so it shares ``_apply_background``: that deletes the rating row
+        a new-background spend created and lowers one an existing-background spend raised.
+        Going through the same method also keeps a gameline override of
+        ``_apply_background`` (the Mage Avatar hook) in force for both spellings.
+        """
+        return self._apply_background(freebie_request, approver, deny=deny)
 
     @applier("background")
     def _apply_background(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
-        """Apply or deny existing background freebie spending."""
+        """Apply or deny background freebie spending (a new background or a raise)."""
         if deny:
-            # Reduce the background rating
             trait_name = freebie_request.trait_name
             if " (" in trait_name:
-                bg_name, note = trait_name.split(" (")
+                bg_name, note = trait_name.split(" (", 1)
                 note = note.rstrip(")")
             else:
                 bg_name = trait_name
                 note = ""
-
-            bgr = self.character.backgrounds.filter(bg__name=bg_name, note=note).first()
-            if bgr and bgr.rating > 1:
-                bgr.rating -= 1
-                bgr.save()
-            elif bgr and bgr.rating == 1:
-                bgr.delete()
-
-            return FreebieApplyResult(
-                success=True,
-                trait=trait_name,
-                message=f"Denied and reverted {trait_name}",
-            )
+            row = self.character.backgrounds.filter(bg__name=bg_name, note=note).first()
+            return self._revert_rating_row(freebie_request, row)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -834,15 +904,8 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     def _apply_willpower(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny willpower freebie spending."""
         if deny:
-            # Revert willpower
-            if self.character.willpower > 1:
-                self.character.willpower -= 1
-                self.character.temporary_willpower = self.character.willpower
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Willpower",
-                message="Denied and reverted Willpower",
+            return self._revert_column(
+                freebie_request, "willpower", mirror=("temporary_willpower",)
             )
 
         # Mark as approved

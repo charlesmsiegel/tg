@@ -326,8 +326,12 @@ mirrors the XP services (`FreebieSpendingService`, `@handler` / `@applier`, a fa
 `get_service()` and `locked()`, `HumanFreebieSpendingService` plus gameline services), with
 one difference: a freebie `spend()` applies the trait **immediately**, then records a
 `FreebieSpendingRecord` (status `Pending`) and deducts the cost. `apply()` only marks the
-record `Approved`; `deny()` refunds the cost and makes a best-effort revert of the trait
-through the applier's `deny=True` branch before marking the record `Denied`.
+record `Approved`; `deny()` reverts the trait through the applier's `deny=True` branch to
+the value the record says it had before the spend, then refunds the cost, then marks the
+record `Denied`, all in one transaction. A revert that fails or raises rolls everything
+back and returns a failed result (the record stays `Pending`, the cost stays deducted), and
+`decide_spending_request()` raises `SpendingDecisionError`. See
+[Services](../../characters/docs/services.md#freebies-spend-immediately-record-reverse-on-denial).
 
 `game.models.FreebieSpendingRecord` has the same shape as `XPSpendingRequest` (`trait_name`,
 `trait_type`, `trait_value`, `cost`, `approved`, timestamps, `approved_by`).

@@ -82,16 +82,8 @@ class VtMHumanFreebieSpendingService(HumanFreebieSpendingService):
     def _apply_virtue(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved virtue freebie spending."""
         if deny:
-            property_name = trait_property_name(freebie_request.trait_name)
-            if hasattr(self.character, property_name):
-                current_val = getattr(self.character, property_name, 1)
-                if current_val > 1:
-                    setattr(self.character, property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
+            return self._revert_column(
+                freebie_request, trait_property_name(freebie_request.trait_name)
             )
 
         # Mark as approved
@@ -259,17 +251,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
     def _apply_discipline(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved discipline freebie spending."""
         if deny:
-            discipline = Discipline.objects.filter(name=freebie_request.trait_name).first()
-            if discipline:
-                current_val = getattr(self.character, discipline.property_name, 0)
-                if current_val > 0:
-                    setattr(self.character, discipline.property_name, current_val - 1)
-                    self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait=freebie_request.trait_name,
-                message=f"Denied and reverted {freebie_request.trait_name}",
-            )
+            return self._revert_catalogue_column(freebie_request, Discipline)
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -286,14 +268,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
     def _apply_humanity(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved humanity freebie spending."""
         if deny:
-            if self.character.humanity > 1:
-                self.character.humanity -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Humanity",
-                message="Denied and reverted Humanity",
-            )
+            return self._revert_column(freebie_request, "humanity")
 
         # Mark as approved
         freebie_request.approved = "Approved"
@@ -310,14 +285,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
     def _apply_path_rating(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved path rating freebie spending."""
         if deny:
-            if hasattr(self.character, "path_rating") and self.character.path_rating > 1:
-                self.character.path_rating -= 1
-                self.character.save()
-            return FreebieApplyResult(
-                success=True,
-                trait="Path Rating",
-                message="Denied and reverted Path Rating",
-            )
+            return self._revert_column(freebie_request, "path_rating")
 
         # Mark as approved
         freebie_request.approved = "Approved"

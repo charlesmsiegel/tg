@@ -86,10 +86,31 @@ through `MageXPSpendView` for the Mage sheet.
 
 A freebie handler checks the budget and trait maximum, changes the trait at once, records
 a `game.models.FreebieSpendingRecord` (`_record_spending()`) and deducts the cost
-(`_deduct_freebies()`). `apply()` marks the record approved (through an applier when one
-exists). `deny()` refunds the cost and calls the applier with `deny=True` to revert the
-trait on a best-effort basis. The chargen freebie step calls the service from
-`FreebieSpendingView.form_valid()` and advances once `freebies` reaches 0.
+(`_deduct_freebies()`). The record's `trait_value` is the value the spend set, and its
+`trait_type` names the applier that reverts it: a background the spend created is recorded
+as `new-background`, a raise of one the character already had as `background`. `apply()`
+marks the record approved (through an applier when one exists). The chargen freebie step
+calls the service from `FreebieSpendingView.form_valid()` and advances once `freebies`
+reaches 0.
+
+`deny()` runs three writes in one transaction, in this order: it calls the applier with
+`deny=True` to **revert** the trait, then **refunds** the cost to `freebies`, then
+**marks** the record `Denied`. The revert is driven by the record, not by the trait's
+current value: the shared helpers `_revert_column()` (an integer column such as an
+attribute, a Sphere or Rage, with `step` for spends that add four points or lower a
+trait), `_revert_catalogue_column()` (a column named by an `Attribute`, `Sphere`,
+`Discipline` or similar row looked up by display name) and `_revert_rating_row()` (a
+`BackgroundRating`, practice or path rating) refuse unless the trait still holds
+`trait_value`, then restore the value before the spend, deleting a rating row the spend
+created. A player who raised the same trait again therefore cannot have the later raise
+undone in place of the denied one.
+
+A failed revert leaves nothing behind. When the applier returns `success=False`, raises,
+or no applier is registered for the record's `trait_type`, `deny()` rolls the transaction
+back, logs the failure and returns `success=False` with the reason in `error`: the trait
+keeps its value, `freebies` is not refunded and the record stays `Pending`.
+`decide_spending_request()` turns that result into a `SpendingDecisionError`, so the
+storyteller sees the failure and can correct the character by hand.
 
 ### Services per type
 
