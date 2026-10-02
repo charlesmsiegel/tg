@@ -14,7 +14,7 @@ from django.db.models import Prefetch
 from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
-from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
+from game.models import Chronicle, Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
 from game.security import filter_private_records, filter_scenes, staffed_chronicles
 from items.models.core.item import ItemModel
 from locations.models.core.location import LocationModel
@@ -51,11 +51,17 @@ class ProfileDashboard:
         self.profile = profile
 
     def st_relations(self):
-        """Return storyteller relationships grouped by chronicle."""
+        """Return the chronicles the user storytells, each with its STRelationship rows.
+
+        A chronicle the user heads is listed even with no relationship row (its list is
+        then empty), so the Chronicles tab agrees with ``Profile.is_st()``.
+        """
         relationships = STRelationship.objects.for_user_optimized(self.profile.user)
         grouped = {}
         for relationship in relationships:
             grouped.setdefault(relationship.chronicle, []).append(relationship)
+        for chronicle in Chronicle.objects.filter(head_st=self.profile.user):
+            grouped.setdefault(chronicle, [])
         return grouped
 
     def my_characters(self):
