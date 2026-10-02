@@ -121,3 +121,15 @@ db_test*.sqlite3-journal
 .worktrees/
 online_game.sqlite3:Zone.Identifier
 online_game.sqlite3
+
+### Generated code overview (docs/code-overview.html embeds these) ###
+docs/summary.html
+docs/codemap.html
+docs/health.html
+docs/measurement.html
+docs/theory.html
+*/docs/summary.html
+*/docs/codemap.html
+*/docs/health.html
+*/docs/measurement.html
+*/docs/theory.html

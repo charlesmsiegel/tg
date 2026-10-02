@@ -73,6 +73,16 @@ and the page goes stale as the code changes. Open it from a checkout in a curren
 diagrams; everything else is offline). Its **Download page** button saves any embedded page
 as a standalone file.
 
+Read the grades for what they are. The health grade is a density of mechanically detectable
+findings per thousand lines, and in this codebase it is dominated by missing docstrings,
+missing type annotations and Django class attributes (`list_display = [...]`) that the
+detector counts as mutable class state, so every unit grades F and the letter says little
+on its own; the Findings tab on each health page says what the number is made of, and its
+value is comparability between regenerations. The measurement grade is null for most units
+because nothing in them produces a quality number, which is honest rather than bad. The
+theory grade is a judgment by three independent model judges, with their disagreements
+reported; read the evidence on the Dimensions tab rather than the letter.
+
 To regenerate it, install the skills from the
 [`coding-skills`](https://github.com/charlesmsiegel/coding-skills) repository
 (`./install.sh --claude --skills`) and run the `code-overview` workflow against this
