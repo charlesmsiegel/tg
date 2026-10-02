@@ -10,7 +10,7 @@ Usage:
 """
 
 from django.core.management.base import BaseCommand
-from django.db.models import F
+from django.db.models import Count, F
 
 from characters.models.core.character import Character
 from characters.models.core.human import Human
@@ -402,7 +402,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.HTTP_INFO("\n7. Checking for duplicate ST relationships..."))
 
         # Find duplicates by grouping
-        from django.db.models import Count
 
         duplicates = (
             STRelationship.objects.values("user", "chronicle", "gameline")

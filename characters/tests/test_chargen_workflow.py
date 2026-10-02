@@ -1,10 +1,20 @@
+from functools import partial
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
 from django.test import TestCase
 from django.urls import reverse
 
 from characters.chargen import get_workflow
+from characters.chargen.predicates import no_background
+from characters.chargen.transitions import previous_position
 from characters.models.core import Character
+from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.mage.sorcerer import Sorcerer
 from characters.models.vampire.vampire import Vampire
+from characters.models.wraith.wraith import Wraith
+from characters.views.core import GenericCharacterDetailView
 
 
 class WorkflowRenderingTests(TestCase):
@@ -14,8 +24,6 @@ class WorkflowRenderingTests(TestCase):
         cls.other = get_user_model().objects.create_user(username="chargen-other")
 
     def test_every_step_renders_for_its_owner_without_changing_progress(self):
-        from characters.views.core import GenericCharacterDetailView
-
         self.client.force_login(self.owner)
         seen = set()
         for kind, router in GenericCharacterDetailView().view_mapping.items():
@@ -37,10 +45,6 @@ class WorkflowRenderingTests(TestCase):
                     self.assertEqual(character.creation_status, position)
 
     def test_unequal_ability_groups_keep_empty_cells_without_none_text(self):
-        from unittest.mock import patch
-
-        from django.template.loader import render_to_string
-
         vampire = Vampire.objects.create(name="Unequal groups", owner=self.owner, creation_status=2)
         self.client.force_login(self.owner)
         with patch.multiple(
@@ -72,8 +76,6 @@ class WorkflowRenderingTests(TestCase):
         self.assertNotIn("None", html)
 
     def test_vampire_late_forms_match_their_views(self):
-        from characters.models.core.background_block import Background, BackgroundRating
-
         self.client.force_login(self.owner)
         vampire = Vampire.objects.create(name="Late forms", owner=self.owner)
         for position, key in ((10, "mentor"), (11, "contacts"), (12, "retainers")):
@@ -86,12 +88,6 @@ class WorkflowRenderingTests(TestCase):
                 self.assertEqual(response.context["step"].key, key)
 
     def test_background_forms_render_with_an_incomplete_rating(self):
-        from functools import partial
-
-        from characters.chargen.predicates import no_background
-        from characters.models.core.background_block import Background, BackgroundRating
-        from characters.views.core import GenericCharacterDetailView
-
         self.client.force_login(self.owner)
         seen = set()
         for kind, router in GenericCharacterDetailView().view_mapping.items():
@@ -177,9 +173,6 @@ class WorkflowRenderingTests(TestCase):
         self.assertEqual(vampire.creation_status, 99)
 
     def test_sorcerer_final_freebie_stops_at_required_node(self):
-        from characters.models.core.background_block import Background, BackgroundRating
-        from characters.models.mage.sorcerer import Sorcerer
-
         sorcerer = Sorcerer.objects.create(
             name="Final freebie",
             owner=self.owner,
@@ -216,8 +209,6 @@ class WorkflowRenderingTests(TestCase):
         self.assertEqual(other.creation_status, 18)
 
     def test_sorcerer_freebies_render_ritual_fields(self):
-        from characters.models.mage.sorcerer import Sorcerer
-
         sorcerer = Sorcerer.objects.create(
             name="Rituals", owner=self.owner, creation_status=8, freebies=21, freebies_approved=True
         )
@@ -227,9 +218,6 @@ class WorkflowRenderingTests(TestCase):
             self.assertTrue(f'name="{name}"' in response.content.decode(), name)
 
     def test_completed_wraith_allocations_are_skipped_on_continue_and_back(self):
-        from characters.chargen.transitions import previous_position
-        from characters.models.wraith.wraith import Wraith
-
         wraith = Wraith.objects.create(
             name="Complete allocations", owner=self.owner, creation_status=8
         )
@@ -248,8 +236,6 @@ class WorkflowRenderingTests(TestCase):
         self.assertEqual(wraith.creation_status, 8)
 
     def test_multiple_background_ratings_are_completed_before_advancing(self):
-        from characters.models.core.background_block import Background, BackgroundRating
-
         vampire = Vampire.objects.create(name="Allies", owner=self.owner, creation_status=9)
         bg = Background.objects.create(name="Allies", property_name="allies")
         for _ in range(2):

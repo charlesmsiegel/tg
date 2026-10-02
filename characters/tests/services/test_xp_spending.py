@@ -1,17 +1,24 @@
 """Tests for XP spending service."""
 
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.test import TestCase
 
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.focus import Practice, Tenet
 from characters.models.mage.mage import Mage, PracticeRating
 from characters.models.mage.sphere import Sphere
 from characters.services.xp_spending import (
+    BastetXPSpendingService,
+    CoraxXPSpendingService,
+    FeraXPSpendingService,
+    GarouXPSpendingService,
     MageXPSpendingService,
+    VampireXPSpendingService,
     XPApplyResult,
     XPSpendingServiceFactory,
     XPSpendResult,
@@ -562,8 +569,6 @@ class TestHandlerInheritance(TestCase):
 
     def test_vampire_service_inherits_from_vtm_human(self):
         """Test VampireXPSpendingService inherits VtMHumanXPSpendingService handlers."""
-        from characters.services.xp_spending import VampireXPSpendingService
-
         # VtMHuman adds Virtue handler, Vampire should inherit it
         self.assertIn("Virtue", VampireXPSpendingService._handlers)
         # Plus Vampire-specific handlers
@@ -572,8 +577,6 @@ class TestHandlerInheritance(TestCase):
 
     def test_garou_service_has_werewolf_handlers(self):
         """Test GarouXPSpendingService has werewolf-specific handlers."""
-        from characters.services.xp_spending import GarouXPSpendingService
-
         werewolf_handlers = ["Gift", "Rite", "Rage", "Gnosis"]
         for handler in werewolf_handlers:
             self.assertIn(
@@ -584,12 +587,6 @@ class TestHandlerInheritance(TestCase):
 
     def test_fera_services_inherit_from_garou(self):
         """Test Fera services inherit Garou handlers."""
-        from characters.services.xp_spending import (
-            BastetXPSpendingService,
-            CoraxXPSpendingService,
-            FeraXPSpendingService,
-        )
-
         for service_class in [
             FeraXPSpendingService,
             BastetXPSpendingService,
@@ -1125,8 +1122,6 @@ class TestApplierInheritance(TestCase):
 
     def test_vampire_service_inherits_appliers(self):
         """Test VampireXPSpendingService inherits appliers correctly."""
-        from characters.services.xp_spending import VampireXPSpendingService
-
         # VtMHuman adds virtue applier
         self.assertIn("virtue", VampireXPSpendingService._appliers)
         # Plus Vampire-specific appliers
@@ -1135,8 +1130,6 @@ class TestApplierInheritance(TestCase):
 
     def test_garou_service_has_werewolf_appliers(self):
         """Test GarouXPSpendingService has werewolf-specific appliers."""
-        from characters.services.xp_spending import GarouXPSpendingService
-
         werewolf_appliers = ["gift", "rite", "rage", "gnosis"]
         for applier_type in werewolf_appliers:
             self.assertIn(
@@ -1304,10 +1297,6 @@ class TestEveryCharacterTypeCanSpendXP(TestCase):
     """The services call spend_xp with keywords; every model must accept them."""
 
     def test_willpower_spend_files_a_request_for_every_character_type(self):
-        from django.apps import apps
-
-        from characters.models.core.human import Human
-
         user = User.objects.create_user(username="spender")
         models = [
             model

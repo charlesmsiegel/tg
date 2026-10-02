@@ -5,6 +5,14 @@ Extracts background management logic from BackgroundBlock mixin to
 implement composition over inheritance.
 """
 
+from django.apps import apps
+from django.db.models import Sum
+
+
+def _model(name):
+    """A characters model, looked up when called so this module imports no models."""
+    return apps.get_model("characters", name)
+
 
 class BackgroundManager:
     """
@@ -45,13 +53,11 @@ class BackgroundManager:
         Returns:
             int: Sum of all ratings for this background type
         """
-        from django.db.models import Sum
-
-        from characters.models.core.background_block import BackgroundRating
-
-        result = BackgroundRating.objects.filter(
-            bg__property_name=bg_name, char=self.character
-        ).aggregate(total=Sum("rating"))
+        result = (
+            _model("BackgroundRating")
+            .objects.filter(bg__property_name=bg_name, char=self.character)
+            .aggregate(total=Sum("rating"))
+        )
         return result["total"] or 0
 
     def get_backgrounds(self):
@@ -78,25 +84,27 @@ class BackgroundManager:
         Returns:
             bool: True if successfully added, False if at maximum
         """
-        from characters.models.core.background_block import Background, BackgroundRating
-
         if isinstance(background, str):
-            bg, _ = Background.objects.get_or_create(
+            bg, _ = _model("Background").objects.get_or_create(
                 property_name=background,
                 defaults={"name": background.replace("_", " ").title()},
             )
-            background = BackgroundRating.objects.filter(
-                char=self.character, bg=bg, rating__lt=5
-            ).first()
+            background = (
+                _model("BackgroundRating")
+                .objects.filter(char=self.character, bg=bg, rating__lt=5)
+                .first()
+            )
             if not background:
-                background = BackgroundRating.objects.create(char=self.character, bg=bg)
-        elif isinstance(background, Background):
+                background = _model("BackgroundRating").objects.create(char=self.character, bg=bg)
+        elif isinstance(background, _model("Background")):
             bg = background
-            background = BackgroundRating.objects.filter(
-                char=self.character, bg=bg, rating__lt=5
-            ).first()
+            background = (
+                _model("BackgroundRating")
+                .objects.filter(char=self.character, bg=bg, rating__lt=5)
+                .first()
+            )
             if not background:
-                background = BackgroundRating.objects.create(char=self.character, bg=bg)
+                background = _model("BackgroundRating").objects.create(char=self.character, bg=bg)
         else:
             raise ValueError(
                 "Must be a background name, Background object, or BackgroundRating object"
@@ -154,25 +162,19 @@ class BackgroundManager:
         Returns:
             tuple: (trait_name, value, cost)
         """
-        from characters.models.core.background_block import (
-            Background,
-            BackgroundRating,
-            PooledBackgroundRating,
-        )
-
         trait = form.cleaned_data["example"]
         cost = trait.multiplier
         value = 1
-        trait = Background.objects.get(pk=form.data["example"])
+        trait = _model("Background").objects.get(pk=form.data["example"])
 
         # Only allow pooling if the background is poolable
         if "pooled" in form.data.keys() and trait.poolable:
-            pbgr = PooledBackgroundRating.objects.get_or_create(
+            pbgr = _model("PooledBackgroundRating").objects.get_or_create(
                 bg=trait, group=self.character.get_group(), note=form.data["note"]
             )[0]
             pbgr.rating += 1
             pbgr.save()
-            BackgroundRating.objects.create(
+            _model("BackgroundRating").objects.create(
                 bg=trait,
                 rating=1,
                 char=self.character,
@@ -181,7 +183,7 @@ class BackgroundManager:
                 pooled=True,
             )
         else:
-            BackgroundRating.objects.create(
+            _model("BackgroundRating").objects.create(
                 bg=trait,
                 rating=1,
                 char=self.character,
@@ -205,13 +207,11 @@ class BackgroundManager:
         Returns:
             tuple: (trait_name, value, cost)
         """
-        from characters.models.core.background_block import PooledBackgroundRating
-
         trait = form.cleaned_data["example"]
         cost = trait.bg.multiplier
 
         if trait.pooled:
-            pbgr = PooledBackgroundRating.objects.get(
+            pbgr = _model("PooledBackgroundRating").objects.get(
                 bg=trait.bg, group=self.character.get_group(), note=trait.note
             )
             pbgr.rating += 1
@@ -249,17 +249,17 @@ class BackgroundManager:
             bg_name: Property name of the background
             value: New rating value
         """
-        from characters.models.core.background_block import Background, BackgroundRating
-
         if value != 0:
-            bg, _ = Background.objects.get_or_create(
+            bg, _ = _model("Background").objects.get_or_create(
                 property_name=bg_name,
                 defaults={"name": bg_name.replace("_", " ").title()},
             )
-            BackgroundRating.objects.create(
+            _model("BackgroundRating").objects.create(
                 char=self.character,
                 bg=bg,
                 rating=value,
             )
         else:
-            BackgroundRating.objects.filter(char=self.character, bg__property_name=bg_name).delete()
+            _model("BackgroundRating").objects.filter(
+                char=self.character, bg__property_name=bg_name
+            ).delete()

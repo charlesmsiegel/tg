@@ -26,9 +26,7 @@ class Tribe(Model):
         return reverse("characters:werewolf:create:tribe")
 
     def get_camps(self):
-        from characters.models.werewolf.camp import Camp
-
-        return Camp.objects.filter(tribe=self)
+        return self.camp_set.all()
 
     def get_gifts_by_rank(self, rank):
         tribe_permission = GiftPermission.objects.get(shifter="werewolf", condition=self.name)

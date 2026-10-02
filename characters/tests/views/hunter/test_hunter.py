@@ -10,6 +10,7 @@ from django.urls import reverse
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import Hunter
 from characters.models.hunter.creed import Creed
+from characters.views.hunter.hunter import HunterCreateView
 from game.models import Chronicle
 
 
@@ -106,8 +107,6 @@ class TestHunterCreateView(TestCase):
 
     def test_create_view_has_get_success_url_method(self):
         """Test that HunterCreateView has explicit get_success_url method."""
-        from characters.views.hunter.hunter import HunterCreateView
-
         self.assertTrue(
             hasattr(HunterCreateView, "get_success_url"),
             "HunterCreateView should have get_success_url method",

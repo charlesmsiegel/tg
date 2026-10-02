@@ -10,6 +10,7 @@ from django.test import TestCase
 
 from characters.models.mage.mage import Mage, ResRating
 from characters.models.mage.resonance import Resonance
+from core.models import BaseResonanceRating
 from items.models.mage.wonder import Wonder, WonderResonanceRating
 from items.models.mummy.relic import MummyRelic, RelicResonanceRating
 from locations.models.mage.node import Node, NodeResonanceRating
@@ -20,26 +21,18 @@ class TestBaseResonanceRatingInheritance(TestCase):
 
     def test_resrating_inherits_base(self):
         """Test ResRating inherits from BaseResonanceRating."""
-        from core.models import BaseResonanceRating
-
         self.assertTrue(issubclass(ResRating, BaseResonanceRating))
 
     def test_wonderresonancerating_inherits_base(self):
         """Test WonderResonanceRating inherits from BaseResonanceRating."""
-        from core.models import BaseResonanceRating
-
         self.assertTrue(issubclass(WonderResonanceRating, BaseResonanceRating))
 
     def test_noderesonancerating_inherits_base(self):
         """Test NodeResonanceRating inherits from BaseResonanceRating."""
-        from core.models import BaseResonanceRating
-
         self.assertTrue(issubclass(NodeResonanceRating, BaseResonanceRating))
 
     def test_relicresonancerating_inherits_base(self):
         """Test RelicResonanceRating inherits from BaseResonanceRating."""
-        from core.models import BaseResonanceRating
-
         self.assertTrue(issubclass(RelicResonanceRating, BaseResonanceRating))
 
 

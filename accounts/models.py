@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
+from accounts.dashboard import ProfileDashboard
 from core.base import ValidatedSaveMixin
 from core.constants import HeadingChoices, ThemeChoices
 from game.models import STRelationship
@@ -109,8 +110,6 @@ class Profile(ValidatedSaveMixin, models.Model):
     @property
     def dashboard(self):
         """Return the profile-bound dashboard selector."""
-        from accounts.dashboard import ProfileDashboard
-
         return ProfileDashboard(self)
 
     def st_relations(self):

@@ -1,12 +1,29 @@
 """The golden fixture records routing before the registry migration."""
 
+import importlib
+import inspect
 import json
+from functools import partial
 from pathlib import Path
 
 from django.template.loader import get_template
 from django.test import SimpleTestCase
 
 from characters.chargen import get_workflow
+from characters.chargen.definitions import DETAIL_ONLY_FREEBIE_POSITIONS, WORKFLOWS
+from characters.chargen.predicates import no_background
+from characters.chargen.registry import progress_rows
+from characters.models.changeling.autumn_person import AutumnPerson
+from characters.models.changeling.inanimae import Inanimae
+from characters.models.changeling.nunnehi import Nunnehi
+from characters.models.demon.earthbound import Earthbound
+from characters.models.hunter.htrhuman import HtRHuman
+from characters.models.hunter.hunter import Hunter
+from characters.models.mummy.mtr_human import MtRHuman
+from characters.models.mummy.mummy import Mummy
+from characters.models.vampire.revenant import Revenant
+from characters.views.core import GenericCharacterDetailView
+from characters.views.core.chargen_mixins import ChargenStepMixin
 
 
 class RegistryTests(SimpleTestCase):
@@ -24,8 +41,6 @@ class RegistryTests(SimpleTestCase):
                     get_template(step.template)
 
     def test_router_coverage(self):
-        from characters.views.core import GenericCharacterDetailView
-
         for kind, router in GenericCharacterDetailView().view_mapping.items():
             with self.subTest(kind=kind):
                 workflow = get_workflow(kind)
@@ -41,17 +56,6 @@ class RegistryTests(SimpleTestCase):
         self.assertIsNone(get_workflow("not_a_character"))
 
     def test_detail_only_types_preserve_freebie_metadata_without_a_wizard(self):
-        from characters.chargen.definitions import DETAIL_ONLY_FREEBIE_POSITIONS
-        from characters.models.changeling.autumn_person import AutumnPerson
-        from characters.models.changeling.inanimae import Inanimae
-        from characters.models.changeling.nunnehi import Nunnehi
-        from characters.models.demon.earthbound import Earthbound
-        from characters.models.hunter.htrhuman import HtRHuman
-        from characters.models.hunter.hunter import Hunter
-        from characters.models.mummy.mtr_human import MtRHuman
-        from characters.models.mummy.mummy import Mummy
-        from characters.models.vampire.revenant import Revenant
-
         expected = (
             (AutumnPerson, 5),
             (Inanimae, 5),
@@ -77,12 +81,6 @@ class RegistryTests(SimpleTestCase):
                 workflow.step(position)
 
     def test_no_orphan_step_views(self):
-        import importlib
-        import inspect
-
-        from characters.chargen.definitions import WORKFLOWS
-        from characters.views.core.chargen_mixins import ChargenStepMixin
-
         views = {step.view for workflow in WORKFLOWS.values() for step in workflow.steps}
         for module in {view.__module__ for view in views}:
             for name, cls in inspect.getmembers(importlib.import_module(module), inspect.isclass):
@@ -109,11 +107,6 @@ class ProgressTests(SimpleTestCase):
         self.assertEqual(steps["attributes"]["status"], "current")
 
     def test_every_background_gated_step_is_in_the_background_group(self):
-        from functools import partial
-
-        from characters.chargen.definitions import WORKFLOWS
-        from characters.chargen.predicates import no_background
-
         for workflow in WORKFLOWS.values():
             for step in workflow.steps:
                 gated = isinstance(step.skip_if, partial) and step.skip_if.func is no_background
@@ -121,8 +114,6 @@ class ProgressTests(SimpleTestCase):
                     self.assertEqual(step.group == "background", gated)
 
     def test_mage_background_details_collapse_into_one_row(self):
-        from characters.chargen.registry import progress_rows
-
         rows = progress_rows(get_workflow("mage").progress(1))
         self.assertEqual(len(rows), 11)
         self.assertEqual([row["number"] for row in rows], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21])
@@ -149,8 +140,6 @@ class ProgressTests(SimpleTestCase):
         self.assertTrue(rows[7]["conditional"])  # Languages
 
     def test_group_row_status_follows_its_steps(self):
-        from characters.chargen.registry import progress_rows
-
         workflow = get_workflow("mage")
         library = [step.key for step in workflow.steps].index("library") + 1
         self.assertEqual(progress_rows(workflow.progress(library))[9]["status"], "current")
@@ -158,8 +147,6 @@ class ProgressTests(SimpleTestCase):
         self.assertEqual([last[9]["status"], last[10]["status"]], ["completed", "current"])
 
     def test_rows_accept_progress_without_groups(self):
-        from characters.chargen.registry import progress_rows
-
         rows = progress_rows(
             [{"label": "Stats", "status": "completed"}, {"label": "Powers", "status": "current"}]
         )

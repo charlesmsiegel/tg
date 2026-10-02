@@ -11,6 +11,7 @@ This module provides freebie spending services for Changeling: The Dreaming char
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.core.statistic import Statistic
 
 from .base import (
     FreebieApplyResult,
@@ -216,9 +217,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _apply_art(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Art freebie spending."""
         if deny:
-            from characters.models.changeling.art import Art
-
-            art = Art.objects.filter(name=freebie_request.trait_name).first()
+            art = Statistic.objects.filter(name=freebie_request.trait_name).first()
             if art:
                 current_val = getattr(self.character, art.property_name, 0)
                 if current_val > 0:
@@ -245,9 +244,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _apply_realm(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Realm freebie spending."""
         if deny:
-            from characters.models.changeling.realm import Realm
-
-            realm = Realm.objects.filter(name=freebie_request.trait_name).first()
+            realm = Statistic.objects.filter(name=freebie_request.trait_name).first()
             if realm:
                 current_val = getattr(self.character, realm.property_name, 0)
                 if current_val > 0:

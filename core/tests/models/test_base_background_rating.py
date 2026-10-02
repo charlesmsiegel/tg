@@ -15,6 +15,7 @@ from characters.models.core.background_block import (
 )
 from characters.models.core.group import Group
 from characters.models.core.human import Human
+from core.models import BaseBackgroundRating
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 
 
@@ -23,20 +24,14 @@ class TestBaseBackgroundRatingInheritance(TestCase):
 
     def test_backgroundrating_inherits_base(self):
         """Test BackgroundRating inherits from BaseBackgroundRating."""
-        from core.models import BaseBackgroundRating
-
         self.assertTrue(issubclass(BackgroundRating, BaseBackgroundRating))
 
     def test_pooledbackgroundrating_inherits_base(self):
         """Test PooledBackgroundRating inherits from BaseBackgroundRating."""
-        from core.models import BaseBackgroundRating
-
         self.assertTrue(issubclass(PooledBackgroundRating, BaseBackgroundRating))
 
     def test_chantrybackgroundrating_inherits_base(self):
         """Test ChantryBackgroundRating inherits from BaseBackgroundRating."""
-        from core.models import BaseBackgroundRating
-
         self.assertTrue(issubclass(ChantryBackgroundRating, BaseBackgroundRating))
 
 

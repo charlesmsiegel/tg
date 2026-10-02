@@ -3,6 +3,8 @@
 from django.http import HttpResponse
 
 from core.access_policy import PROJECT_PREFIXES, authorize_route
+from core.model_registry import RegistryViewMixin
+from core.permission_context import add_object_permissions
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,
@@ -24,8 +26,6 @@ class AuthorizationMiddleware:
         return self.get_response(request)
 
     def process_template_response(self, request, response):
-        from core.permission_context import add_object_permissions
-
         if getattr(response, "context_data", None) is not None:
             add_object_permissions(request, response.context_data)
         return response
@@ -40,7 +40,6 @@ class AuthorizationMiddleware:
             return HttpResponse("Not found", status=404, content_type="text/plain")
         # Registry views enforce the same evaluator before their custom dispatch.
         # Let that wrapper resolve the subject once and reuse it for rendering.
-        from core.model_registry import RegistryViewMixin
 
         if view_class is not None and issubclass(view_class, RegistryViewMixin):
             return None

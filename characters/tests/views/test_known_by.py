@@ -22,6 +22,7 @@ from characters.models.hunter import Edge, Hunter
 from characters.models.mage import Mage, Sphere
 from characters.models.mage.companion import Advantage, AdvantageRating, Companion
 from characters.models.mage.sorcerer import LinearMagicPath, PathRating, Sorcerer
+from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.vampire import Vampire
 from characters.models.werewolf.garou import Werewolf
@@ -300,8 +301,6 @@ class KnownBySourceTests(TestCase):
         self.assertContains(self.client.get(url), 'class="tl-knownby__rating tl-rubric">-2<')
 
     def test_reference_without_a_source_has_no_section(self):
-        from characters.models.vampire.clan import VampireClan
-
         clan = VampireClan.objects.create(name="Brujah")
         response = self.client.get(reverse("characters:vampire:clan", kwargs={"pk": clan.pk}))
         self.assertNotContains(response, 'id="known-by"')

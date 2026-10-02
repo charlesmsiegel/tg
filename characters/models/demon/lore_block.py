@@ -1,5 +1,6 @@
 from django.db import models
 
+from characters.models.demon.lore import Lore
 from core.utils import add_dot
 
 
@@ -87,8 +88,6 @@ class LoreBlock(models.Model):
         Labels and links come from the matching ``Lore`` records (whose ``property_name``
         is the field name without ``lore_of_`` / ``the_``) when those exist.
         """
-        from characters.models.demon.lore import Lore
-
         rated = {field: rating for field, rating in self.get_lores().items() if rating}
         if not rated:
             return []

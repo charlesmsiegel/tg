@@ -11,6 +11,7 @@ Tests cover:
 """
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.costs import get_freebie_cost, get_xp_cost
@@ -19,6 +20,7 @@ from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
+from core.constants import CharacterStatus
 from game.models import Chronicle
 
 
@@ -944,8 +946,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_virtue_minimum_validation_in_clean(self):
         """clean() raises ValidationError when virtues are below 1."""
-        from django.core.exceptions import ValidationError
-
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.conscience = 0
         with self.assertRaises(ValidationError) as context:
@@ -954,10 +954,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_minimum_validation_during_creation(self):
         """clean() raises ValidationError when humanity is below 4 during creation."""
-        from django.core.exceptions import ValidationError
-
-        from core.constants import CharacterStatus
-
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.status = CharacterStatus.UNAPPROVED
         vampire.humanity = 3
@@ -967,8 +963,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_at_four_is_valid_during_creation(self):
         """clean() passes when humanity is 4 during creation."""
-        from core.constants import CharacterStatus
-
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.status = CharacterStatus.UNAPPROVED
         vampire.humanity = 4
@@ -977,10 +971,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_above_ten_is_invalid(self):
         """clean() raises ValidationError when humanity exceeds 10 during creation."""
-        from django.core.exceptions import ValidationError
-
-        from core.constants import CharacterStatus
-
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.status = CharacterStatus.UNAPPROVED
         vampire.humanity = 11
@@ -990,8 +980,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_can_be_low_after_approval(self):
         """Approved vampires can have humanity below 4 (degeneration)."""
-        from core.constants import CharacterStatus
-
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         # Properly transition through status workflow
         vampire.status = CharacterStatus.SUBMITTED
@@ -1004,10 +992,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_path_rating_minimum_validation_during_creation(self):
         """clean() raises ValidationError when path_rating is below 4 during creation."""
-        from django.core.exceptions import ValidationError
-
-        from core.constants import CharacterStatus
-
         # Create a valid vampire first
         vampire = Vampire.objects.create(
             name="Test",
@@ -1024,8 +1008,6 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_path_rating_at_four_is_valid(self):
         """clean() passes when path_rating is 4 during creation."""
-        from core.constants import CharacterStatus
-
         vampire = Vampire.objects.create(
             name="Test",
             owner=self.user,

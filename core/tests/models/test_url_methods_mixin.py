@@ -12,7 +12,7 @@ from django.test import TestCase
 
 from characters.models.core import Archetype, Derangement
 from characters.models.mage import Resonance
-from core.models import URLMethodsMixin
+from core.models import Model, URLMethodsMixin
 
 
 class TestURLMethodsMixinErrorHandling(TestCase):
@@ -169,8 +169,6 @@ class TestURLMethodsMixinMRO(TestCase):
 
     def test_mixin_comes_before_model_in_archetype(self):
         """Test that URLMethodsMixin comes before Model in Archetype MRO."""
-        from core.models import Model
-
         mro = Archetype.__mro__
         mixin_index = mro.index(URLMethodsMixin)
         model_index = mro.index(Model)

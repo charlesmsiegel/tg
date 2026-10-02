@@ -19,6 +19,14 @@ from django.apps import apps
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
+from django.urls import URLPattern, URLResolver, get_resolver, reverse
+from django.urls.exceptions import NoReverseMatch
+
+from characters.models.core import CharacterModel
+from characters.models.core.specialty import Specialty
+from game.models import Chronicle, Gameline, Post, Scene, STRelationship
+from items.models.core import ItemModel
+from locations.models.core import LocationModel
 
 FIXTURE_APPS = ("characters", "items", "locations", "core", "game")
 RATING_FIELDS = {
@@ -126,10 +134,6 @@ def _field_names(model):
 
 
 def _object_models():
-    from characters.models.core import CharacterModel
-    from items.models.core import ItemModel
-    from locations.models.core import LocationModel
-
     trees = (CharacterModel, ItemModel, LocationModel)
     found = []
     for app in FIXTURE_APPS:
@@ -145,13 +149,6 @@ def _object_models():
 
 def seed():
     """Create the fixture set in the current database and return it."""
-    from accounts.models import Profile  # noqa: F401  (profile signal)
-    from characters.models.core import CharacterModel
-    from characters.models.core.specialty import Specialty
-    from game.models import Chronicle, Gameline, Post, Scene, STRelationship
-    from items.models.core import ItemModel
-    from locations.models.core import LocationModel
-
     st = User.objects.create_superuser("fixture_st", "st@example.com", "fixture-pass")
     player = User.objects.create_user("fixture_player", "player@example.com", "fixture-pass")
     chronicle = Chronicle.objects.create(name="Fixture Chronicle", head_st=st)
@@ -221,8 +218,6 @@ def _slug(*parts):
 
 def list_urls():
     """Every routed list/index page of the object apps that takes no arguments."""
-    from django.urls import URLPattern, URLResolver, get_resolver, reverse
-    from django.urls.exceptions import NoReverseMatch
 
     def walk(patterns, namespaces=()):
         for pattern in patterns:

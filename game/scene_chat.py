@@ -14,6 +14,7 @@ from django.db import transaction
 
 from characters.services.result import ServiceResult
 from core.actions import ActionFailed
+from core.permissions import PermissionManager
 from game.text import straighten_quotes
 
 logger = logging.getLogger(__name__)
@@ -70,8 +71,14 @@ def create_post(scene, form):
     if character is None:
         raise ActionFailed("You need a character in this scene to post.")
     message = straighten_quotes(form.cleaned_data["message"])
+    storyteller = bool(
+        character.owner
+        and PermissionManager.can_manage_scope(character.owner, scene.chronicle, scene.gameline)
+    )
     try:
-        post = scene.add_post(character, form.cleaned_data["display_name"], message)
+        post = scene.add_post(
+            character, form.cleaned_data["display_name"], message, storyteller=storyteller
+        )
     except ValueError as exc:
         raise ActionFailed("Command does not match the expected format.") from exc
     if post is None:

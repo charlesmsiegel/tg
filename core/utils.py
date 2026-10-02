@@ -2,6 +2,8 @@ import logging
 import random
 import secrets
 
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -72,8 +74,6 @@ def get_gameline_name(s):
     Returns:
         Full gameline name (e.g., 'Vampire: the Masquerade')
     """
-    from django.conf import settings
-
     return settings.GAMELINES.get(s, {}).get("name", s)
 
 
@@ -88,8 +88,6 @@ def get_short_gameline_name(s):
         App name (e.g., 'vampire', 'werewolf') or empty string for 'wod'.
         The 'wod' gameline uses base URL patterns without a gameline namespace.
     """
-    from django.conf import settings
-
     # 'wod' characters use base URL patterns without gameline prefix
     if s == "wod":
         return ""

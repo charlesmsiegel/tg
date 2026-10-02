@@ -1,5 +1,7 @@
+import random
 from collections import defaultdict
 
+from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -22,9 +24,6 @@ from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import BasePracticeRating, BaseResonanceRating
 from core.utils import add_dot
-from items.models.core.item import ItemModel
-from locations.models.mage.library import Library
-from locations.models.mage.node import Node
 
 
 class Mage(MtAHuman):
@@ -242,7 +241,7 @@ class Mage(MtAHuman):
         return self.affinity_sphere
 
     def get_items_owned(self):
-        return ItemModel.objects.filter(owned_by=self)
+        return self.itemmodel_set.all()
 
     def add_ability(self, ability, maximum=5):
         return add_dot(self, ability, maximum)
@@ -283,8 +282,6 @@ class Mage(MtAHuman):
 
         # Marauders are defined by their permanent Quiet
         if affiliation is not None and affiliation.name == "Marauders":
-            import random
-
             if self.quiet == 0:
                 self.quiet = random.randint(1, 5)
             if self.quiet_type == "none":
@@ -481,8 +478,6 @@ class Mage(MtAHuman):
 
     def add_effect(self, effect):
         if effect.is_learnable(self):
-            from characters.models.core import Ability, Attribute
-
             # Get default attribute and ability for rote creation
             attribute = Attribute.objects.first()
             ability = Ability.objects.first()
@@ -697,10 +692,12 @@ class Mage(MtAHuman):
         return trait
 
     def has_library(self):
-        return sum([x.rank for x in Library.objects.filter(owned_by=self)]) == self.library
+        library_model = apps.get_model("locations", "Library")
+        return sum([x.rank for x in library_model.objects.filter(owned_by=self)]) == self.library
 
     def has_node(self):
-        return sum([x.rank for x in Node.objects.filter(owned_by=self)]) == self.node
+        node_model = apps.get_model("locations", "Node")
+        return sum([x.rank for x in node_model.objects.filter(owned_by=self)]) == self.node
 
     def sphere_to_trait_type(self, trait_name):
         if self.affinity_sphere and trait_name == self.affinity_sphere.property_name:

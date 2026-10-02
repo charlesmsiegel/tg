@@ -1,6 +1,7 @@
 import re
 from datetime import date, datetime, timedelta
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -16,9 +17,9 @@ from django.utils.timezone import (  # ensure timezone-aware now if using TIME_Z
 
 from core.base import ValidatedSaveMixin
 from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
-from core.permissions import PermissionManager
 from core.utils import dice
 from core.validators import validate_gameline, validate_non_empty_name
+from core.xp_utils import award_xp_atomically, calculate_story_xp
 from game.rolls import roll_strip as build_roll_strip
 
 
@@ -116,6 +117,20 @@ class Gameline(ValidatedSaveMixin, models.Model):
             raise ValidationError(errors)
 
 
+class ChronicleQuerySet(models.QuerySet):
+    def staffed_by(self, user):
+        """Chronicles where ``user`` has a full storyteller read role."""
+        if not user.is_authenticated:
+            return self.none()
+        if user.is_staff or user.is_superuser:
+            return self.all()
+        return self.filter(
+            models.Q(head_st=user)
+            | models.Q(game_storytellers=user)
+            | models.Q(st_relationships__user=user)
+        ).distinct()
+
+
 class Chronicle(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     storytellers = models.ManyToManyField(User, blank=True, through="STRelationship")
@@ -151,6 +166,8 @@ class Chronicle(ValidatedSaveMixin, models.Model):
     )
 
     allowed_objects = models.ManyToManyField(ObjectType, blank=True)
+
+    objects = ChronicleQuerySet.as_manager()
 
     class Meta:
         verbose_name = "Chronicle"
@@ -189,9 +206,8 @@ class Chronicle(ValidatedSaveMixin, models.Model):
 
     def add_scene(self, name, location, date_of_scene=None, gameline=None):
         if isinstance(location, str):
-            from locations.models import LocationModel
-
-            location = LocationModel.objects.get(name=location)
+            location_model = Scene._meta.get_field("location").related_model
+            location = location_model.objects.get(name=location)
         if Scene.objects.filter(name=name, chronicle=self, location=location).exists():
             return Scene.objects.filter(name=name, chronicle=self, location=location).first()
         scene_kwargs = {
@@ -351,8 +367,6 @@ class Story(ValidatedSaveMixin, models.Model):
         Raises:
             ValidationError: If XP has already been awarded for this story
         """
-        from core.xp_utils import award_xp_atomically, calculate_story_xp
-
         # Convert category dicts to XP amounts
         character_xp_map = {
             char: calculate_story_xp(xp_categories)
@@ -403,11 +417,10 @@ class Week(ValidatedSaveMixin, models.Model):
 
         Optimized to avoid N+1 query issues by prefetching owner and chronicle.
         """
-        from characters.models.core.human import Human
-
         scene_ids = self.finished_scenes().values_list("id", flat=True)
         return (
-            Human.objects.filter(scenes__id__in=scene_ids, npc=False)
+            apps.get_model("characters", "Human")
+            .objects.filter(scenes__id__in=scene_ids, npc=False)
             .select_related("owner", "chronicle")
             .distinct()
             .order_by("name")
@@ -459,9 +472,7 @@ class SceneQuerySet(models.QuerySet):
 
     def for_user_chronicles(self, user):
         """Scenes in chronicles the user staffs or heads."""
-        from game.security import staffed_chronicles  # deferred: circular import
-
-        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        scope = models.Q(chronicle__in=Chronicle.objects.staffed_by(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
             scope |= models.Q(chronicle__isnull=True)
         return self.filter(scope)
@@ -541,16 +552,16 @@ class Scene(models.Model):
 
     def add_character(self, character):
         if isinstance(character, str):
-            from characters.models.core import CharacterModel
-
-            character = CharacterModel.objects.get(name=character)
+            character = self.characters.model.objects.get(name=character)
         self.characters.add(character)
         return character
 
     def total_posts(self):
         return Post.objects.filter(scene=self).count()
 
-    def add_post(self, character, display, message):
+    def add_post(self, character, display, message, *, storyteller=False):
+        """Record a post. ``storyteller`` says the poster may answer a storyteller
+        request in this scope; the caller decides that with ``PermissionManager``."""
         # Handle None character (ST posts)
         if character is not None:
             if character not in self.characters.all():
@@ -562,12 +573,7 @@ class Scene(models.Model):
             self.st_message = message[len("@storyteller ") :]
             self.save()
             return None
-        if (
-            character is not None
-            and self.waiting_for_st
-            and character.owner
-            and PermissionManager.can_manage_scope(character.owner, self.chronicle, self.gameline)
-        ):
+        if character is not None and self.waiting_for_st and storyteller:
             self.waiting_for_st = False
             self.save()
         try:
@@ -595,8 +601,6 @@ class Scene(models.Model):
         Raises:
             ValidationError: If XP has already been awarded for this scene
         """
-        from core.xp_utils import award_xp_atomically
-
         # Convert bool dict to XP amounts (1 XP per character if True)
         character_xp_map = {
             char: 1 if should_award else 0 for char, should_award in character_awards.items()
@@ -1322,9 +1326,8 @@ class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
         # Award XP to the character, locked and re-read so a concurrent award or
         # spend is not overwritten (the same pattern as core.xp_utils).
         if locked.character_id:
-            from characters.models.core import Character
-
-            character = Character.objects.select_for_update().get(pk=locked.character_id)
+            character_model = apps.get_model("characters", "Character")
+            character = character_model.objects.select_for_update().get(pk=locked.character_id)
             character.xp += xp_increase
             character.save(update_fields=["xp"])
 

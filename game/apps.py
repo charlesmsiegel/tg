@@ -6,4 +6,5 @@ class GameConfig(AppConfig):
     name = "game"
 
     def ready(self):
-        import game.signals  # noqa: F401 - Register signal handlers
+        # Receivers import models, so Django's app registry must be ready first.
+        import game.signals  # noqa: F401

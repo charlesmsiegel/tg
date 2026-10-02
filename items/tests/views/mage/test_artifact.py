@@ -8,6 +8,7 @@ from django.test.utils import CaptureQueriesContext
 from characters.models.mage.resonance import Resonance
 from items.models.mage import WonderResonanceRating
 from items.models.mage.artifact import Artifact
+from items.views.mage.artifact import ArtifactCreateView, ArtifactUpdateView
 
 
 class TestArtifactDetailViewQueryOptimization(TestCase):
@@ -57,9 +58,6 @@ class TestArtifactCreateView(TestCase):
     """Test ArtifactCreateView functionality."""
 
     def test_create_view_redirects_to_saved_object(self):
-        from items.models.mage.artifact import Artifact
-        from items.views.mage.artifact import ArtifactCreateView
-
         obj = Artifact.objects.create(name="Saved Artifact")
         view = ArtifactCreateView()
         view.object = obj
@@ -70,9 +68,6 @@ class TestArtifactUpdateView(TestCase):
     """Test ArtifactUpdateView functionality."""
 
     def test_update_view_redirects_to_saved_object(self):
-        from items.models.mage.artifact import Artifact
-        from items.views.mage.artifact import ArtifactUpdateView
-
         obj = Artifact.objects.create(name="Saved Artifact")
         view = ArtifactUpdateView()
         view.object = obj

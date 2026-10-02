@@ -1,8 +1,15 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.core.ability_block import Ability
 from characters.models.mage.faction import MageFaction
+from characters.models.mage.focus import Instrument, Practice
+from characters.models.mage.resonance import Resonance
+from characters.models.mage.sphere import Sphere
+from core.models import Language, Noun
 from game.models import Chronicle
+from items.models.core.material import Material
+from items.models.core.medium import Medium
 from items.models.mage.grimoire import Grimoire
 from locations.models.mage.library import Library
 
@@ -167,14 +174,6 @@ class TestLibraryRandomBook(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        from characters.models.core.ability_block import Ability
-        from characters.models.mage.focus import Instrument, Practice
-        from characters.models.mage.resonance import Resonance
-        from characters.models.mage.sphere import Sphere
-        from core.models import Language, Noun
-        from items.models.core.material import Material
-        from items.models.core.medium import Medium
-
         cls.faction = MageFaction.objects.create(name="Order of Hermes", founded=1000)
         practice = Practice.objects.create(name="High Ritual")
         instrument = Instrument.objects.create(name="Wand")

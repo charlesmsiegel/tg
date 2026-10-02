@@ -13,6 +13,7 @@ from unittest.mock import Mock
 from django.test import TestCase
 
 from characters.models.core import Human
+from core.models import Model, NewsItem
 from core.utils import dice, filepath, weighted_choice
 
 
@@ -158,8 +159,6 @@ class TestNewsItemStr(TestCase):
 
     def test_newsitem_str_returns_title(self):
         """Test NewsItem __str__ returns the title."""
-        from core.models import NewsItem
-
         news = NewsItem.objects.create(
             title="Important Announcement",
             content="This is the content of the news item.",
@@ -169,8 +168,6 @@ class TestNewsItemStr(TestCase):
 
     def test_newsitem_str_with_empty_title(self):
         """Test NewsItem __str__ with empty title."""
-        from core.models import NewsItem
-
         # Create with empty title (validation will fail, so don't save)
         news = NewsItem(
             title="",
@@ -186,14 +183,10 @@ class ModelIndexTests(TestCase):
 
     def test_model_owner_field_has_db_index(self):
         """Test that Model.owner ForeignKey has db_index=True."""
-        from core.models import Model
-
         owner_field = Model._meta.get_field("owner")
         self.assertTrue(owner_field.db_index)
 
     def test_model_chronicle_field_has_db_index(self):
         """Test that Model.chronicle ForeignKey has db_index=True."""
-        from core.models import Model
-
         chronicle_field = Model._meta.get_field("chronicle")
         self.assertTrue(chronicle_field.db_index)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from characters.models.vampire.discipline import Discipline
 from core.linked_stat import LinkedStat
 
 from .vtmhuman import VtMHuman
@@ -145,7 +146,6 @@ class Revenant(VtMHuman):
             # Can learn family disciplines
             return list(self.family.disciplines.all())
         # Without a family, can only learn physical disciplines
-        from characters.models.vampire.discipline import Discipline
 
         physical = ["Potence", "Celerity", "Fortitude"]
         return list(Discipline.objects.filter(name__in=physical))

@@ -1,6 +1,9 @@
 """Tests for Hunter character models."""
 
+from datetime import date
+
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -209,8 +212,6 @@ class TestHunter(TestCase):
 
     def test_hunter_imbuing_date(self):
         """Test Hunter imbuing date field."""
-        from datetime import date
-
         self.hunter.imbuing_date = date(2023, 6, 15)
         self.hunter.save()
 
@@ -463,8 +464,6 @@ class TestEdge(TestCase):
 
     def test_edge_unique_together(self):
         """Test Edge name and level must be unique together."""
-        from django.db import IntegrityError
-
         with self.assertRaises(IntegrityError):
             Edge.objects.create(name="Discern", virtue="conviction", level=1)
 

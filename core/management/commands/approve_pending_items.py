@@ -17,8 +17,12 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.management.base import BaseCommand, CommandError
 
+from characters.models.core.character import Character, CharacterModel
+from characters.models.core.human import Human
 from core.constants import CharacterStatus, ImageStatus
 from core.permissions import Permission, PermissionManager
+from core.services.approval import ApprovalService
+from game.models import WeeklyXPRequest
 
 
 class Command(BaseCommand):
@@ -157,9 +161,6 @@ class Command(BaseCommand):
         }[item_type]()
 
     def collect_characters(self):
-        from characters.models.core.character import Character
-        from core.services.approval import ApprovalService
-
         characters = self.scoped(
             Character.objects.filter(status=CharacterStatus.SUBMITTED).select_related(
                 "owner", "chronicle"
@@ -172,8 +173,6 @@ class Command(BaseCommand):
         return "Submitted Characters", list(characters), approve
 
     def collect_images(self):
-        from core.services.approval import ApprovalService
-
         objects = []
         for model_type, model in ApprovalService.IMAGE_MODEL_MAP.items():
             queryset = model.objects.filter(image_status=ImageStatus.SUBMITTED).exclude(image="")
@@ -189,8 +188,6 @@ class Command(BaseCommand):
         return "Pending Images", objects, approve
 
     def collect_freebies(self):
-        from characters.models.core.human import Human
-
         humans = self.scoped(
             Human.objects.filter(
                 status=CharacterStatus.SUBMITTED, freebies_approved=False
@@ -205,9 +202,6 @@ class Command(BaseCommand):
         return "Pending Freebie Approvals", list(humans), approve
 
     def collect_xp_requests(self):
-        from characters.models.core.character import CharacterModel
-        from game.models import WeeklyXPRequest
-
         requests = WeeklyXPRequest.objects.filter(approved=False).select_related(
             "character", "week"
         )

@@ -8,11 +8,14 @@ A chronicle is considered inactive if it has:
 """
 
 import logging
+import os
 from datetime import timedelta
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from characters.models.core.character import CharacterModel
 from game.models import Chronicle, Scene
 
 logger = logging.getLogger(__name__)
@@ -112,7 +115,6 @@ class Command(BaseCommand):
             info["active_scene_count"] = scenes.filter(finished=False).count()
 
         # Check characters
-        from characters.models.core.character import CharacterModel
 
         characters = CharacterModel.objects.filter(chronicle=chronicle)
         info["total_characters"] = characters.count()
@@ -163,10 +165,6 @@ class Command(BaseCommand):
 
     def export_chronicles(self, inactive_chronicles):
         """Export inactive chronicles to JSON files."""
-        import os
-
-        from django.core.management import call_command
-
         self.stdout.write("\nExporting chronicles...")
 
         # Create exports directory

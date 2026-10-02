@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from characters.models.core import Group
 from characters.models.core.human import Human
+from characters.models.vampire.vtmhuman import VtMHuman
 
 
 class TestGroupDetailView(TestCase):
@@ -52,8 +53,6 @@ class TestGroupRoster(TestCase):
         self.assertEqual(self.group.roster, [self.theo, self.alma])
 
     def test_members_come_back_as_their_concrete_types(self):
-        from characters.models.vampire.vtmhuman import VtMHuman
-
         ghoul_kin = VtMHuman.objects.create(name="Bea", owner=self.player)
         self.group.members.add(ghoul_kin, self.alma)
         self.assertEqual([type(m) for m in self.group.roster], [Human, VtMHuman])

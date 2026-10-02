@@ -17,6 +17,7 @@ from characters.models.demon.pact import Pact
 from characters.models.demon.ritual import Ritual
 from characters.models.demon.thrall import Thrall
 from characters.models.demon.visage import Visage
+from characters.services.xp_spending import XPSpendingServiceFactory
 
 
 class DemonModelTests(TestCase):
@@ -209,8 +210,6 @@ class DemonFaithTests(TestCase):
 
     def test_faith_xp_spend_deducts_xp_and_files_a_request(self):
         """Buying Faith with XP deducts the cost and files a pending request."""
-        from characters.services.xp_spending import XPSpendingServiceFactory
-
         Demon.objects.filter(pk=self.demon.pk).update(faith=3, xp=40)
         self.demon.refresh_from_db()
         result = XPSpendingServiceFactory.get_service(self.demon).spend("Faith")

@@ -9,6 +9,8 @@ This module provides XP spending services for Hunter: The Reckoning characters:
 from django.utils import timezone
 
 from characters.costs import get_xp_cost
+from characters.models.hunter.edge import Edge
+from characters.utils import trait_property_name
 
 from .base import (
     HumanXPSpendingService,
@@ -61,11 +63,11 @@ class HtRHumanXPSpendingService(HumanXPSpendingService):
     @applier("virtue")
     def _apply_virtue(self, xp_request, approver) -> XPApplyResult:
         """Apply approved virtue XP spending."""
-        from characters.models.core.virtue import Virtue
-
-        virtue = Virtue.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
-            xp_request.id, virtue.property_name, xp_request.trait_value, approver
+            xp_request.id,
+            trait_property_name(xp_request.trait_name),
+            xp_request.trait_value,
+            approver,
         )
         return XPApplyResult(
             success=True,
@@ -112,8 +114,6 @@ class HunterXPSpendingService(HtRHumanXPSpendingService):
     @applier("edge")
     def _apply_edge(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Edge XP spending."""
-        from characters.models.hunter.edge import Edge
-
         edge = Edge.objects.get(name=xp_request.trait_name)
         self.character.edges.add(edge)
 

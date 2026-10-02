@@ -1,5 +1,6 @@
 import json
 import logging
+from importlib import import_module
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,6 +20,7 @@ from django.views.generic import (
     UpdateView,
 )
 
+from characters.services.templates import apply_template
 from core.forms.character_template import (
     CharacterTemplateForm,
     CharacterTemplateImportForm,
@@ -274,7 +276,7 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, View):
                 )
 
                 # Apply template to character
-                template.apply_to_character(character)
+                apply_template(template, character)
 
                 # Save character
                 character.save()
@@ -313,8 +315,6 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, View):
         module_path, class_name = character_type_map[template.character_type]
 
         try:
-            from importlib import import_module
-
             module = import_module(module_path)
             return getattr(module, class_name)
         except (ImportError, AttributeError):

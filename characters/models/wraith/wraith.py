@@ -1,11 +1,15 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+from django.utils import timezone
 
 from characters.costs import get_freebie_cost
 from characters.models.wraith.faction import WraithFaction
+from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.guild import Guild
+from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
@@ -148,8 +152,6 @@ class Wraith(WtOHuman):
         ordering = ["name"]
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         super().clean()
         # All wraiths have a Shadow, so permanent Angst must be at least 1
         if self.angst < 1:
@@ -250,8 +252,6 @@ class Wraith(WtOHuman):
         return self.total_arcanoi() == 5
 
     def add_passion(self, emotion, description, rating=1, is_dark=False):
-        from characters.models.wraith.passion import Passion
-
         Passion.objects.create(
             wraith=self,
             emotion=emotion,
@@ -262,16 +262,12 @@ class Wraith(WtOHuman):
         return True
 
     def total_passion_rating(self):
-        from characters.models.wraith.passion import Passion
-
         return sum(p.rating for p in Passion.objects.filter(wraith=self))
 
     def has_passions(self):
         return self.total_passion_rating() == self.passion_points
 
     def add_fetter(self, fetter_type, description, rating=1):
-        from characters.models.wraith.fetter import Fetter
-
         Fetter.objects.create(
             wraith=self,
             fetter_type=fetter_type,
@@ -281,8 +277,6 @@ class Wraith(WtOHuman):
         return True
 
     def total_fetter_rating(self):
-        from characters.models.wraith.fetter import Fetter
-
         return sum(f.rating for f in Fetter.objects.filter(wraith=self))
 
     def has_fetters(self):
@@ -386,8 +380,6 @@ class Wraith(WtOHuman):
         - Corpus reduced to 0
         - Angst reaches 10 (permanent Spectrehood threshold)
         """
-        from characters.models.wraith.fetter import Fetter
-
         triggers = []
 
         # Check Willpower
@@ -446,10 +438,6 @@ class Wraith(WtOHuman):
         Shadow becomes dominant, Psyche is suppressed.
         Changes character type and converts Passions to Dark Passions.
         """
-        from django.utils import timezone
-
-        from characters.models.wraith.passion import Passion
-
         if self.character_type == "spectre":
             return False  # Already a Spectre
 
@@ -465,7 +453,6 @@ class Wraith(WtOHuman):
             passion.save()
 
         # Reduce connection to Fetters (optional - makes them weaker)
-        from characters.models.wraith.fetter import Fetter
 
         fetters = Fetter.objects.filter(wraith=self)
         for fetter in fetters:
@@ -500,8 +487,6 @@ class Wraith(WtOHuman):
         # - Requires Castigate Arcanos or Pardoner assistance
         # - Willpower contest between restored Psyche and Shadow
 
-        from characters.models.wraith.fetter import Fetter
-
         fetters = Fetter.objects.filter(wraith=self).count()
         can_attempt = fetters > 0 and self.angst < 10
 
@@ -533,9 +518,6 @@ class Wraith(WtOHuman):
         psyche_successes: Number of successes on Psyche's roll
         shadow_successes: Number of successes on Shadow's roll
         """
-
-        from characters.models.wraith.passion import Passion
-
         if psyche_successes > shadow_successes:
             # Redemption successful - Psyche regains control
             self.character_type = "wraith"

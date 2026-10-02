@@ -9,6 +9,8 @@ from django.test import SimpleTestCase
 from django.urls import get_resolver
 from django.views.generic import DetailView
 
+from core.views.generic import DictView
+
 APPS = ("accounts", "characters", "core", "game", "items", "locations", "widgets")
 
 
@@ -59,8 +61,6 @@ class ActionGuardTests(SimpleTestCase):
         self.assertEqual(offenders, [], "Give each action its own endpoint (core.actions)")
 
     def test_routed_detail_views_do_not_handle_post(self):
-        from core.views.generic import DictView
-
         seen, offenders = set(), []
 
         def visit(view):

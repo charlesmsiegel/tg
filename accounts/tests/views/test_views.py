@@ -4,12 +4,16 @@ from datetime import date
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import connection
 from django.test import RequestFactory, TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from accounts.views import ProfileView
-from characters.models.core import Human
+from characters.models.core import Ability, Attribute, Human
+from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
+from characters.models.vampire.vtmhuman import VtMHuman
 from game.models import (
     Chronicle,
     Gameline,
@@ -102,9 +106,6 @@ class TestProfileView(TestCase):
 
     def test_storyteller_queues_cost_the_same_with_more_rows(self):
         """The NEEDS YOU queues load per queue, not per row."""
-        from django.db import connection
-        from django.test.utils import CaptureQueriesContext
-
         self.client.login(username="Test Storyteller", password="testpass")
         url = self.storyteller.profile.get_absolute_url()
         chronicle = self.char2.chronicle
@@ -384,9 +385,6 @@ class TestProfileRoteApprovalWorkflow(TestCase):
     """Test rote approval workflow in the profile view."""
 
     def setUp(self):
-        from characters.models.core import Ability, Attribute
-        from characters.models.mage.effect import Effect
-
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -567,8 +565,6 @@ class TestProfileFreebieWorkflow(TestCase):
         self.assertEqual(self.char.freebies, initial_freebies)
 
     def test_freebie_forms_cache_owner_profiles(self):
-        from characters.models.vampire.vtmhuman import VtMHuman
-
         VtMHuman.objects.create(
             name="Freebie Query Character",
             owner=self.user,

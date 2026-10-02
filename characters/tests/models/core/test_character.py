@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from characters.models.core import Character, Human
-from game.models import Chronicle
+from game.models import Chronicle, XPSpendingRequest
 
 
 class TestCharacter(TestCase):
@@ -82,8 +82,6 @@ class TestCharacter(TestCase):
 
     def test_character_spent_xp_tracking(self):
         """Test spent XP tracking via XPSpendingRequest model."""
-        from game.models import XPSpendingRequest
-
         character = Character.objects.create(
             name="Test",
             owner=self.user,

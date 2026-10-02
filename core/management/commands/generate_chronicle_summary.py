@@ -12,7 +12,8 @@ Generates:
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count
 
-from game.models import Chronicle, Scene
+from characters.models.core.character import CharacterModel
+from game.models import Chronicle, Scene, WeeklyXPRequest
 
 
 class Command(BaseCommand):
@@ -69,9 +70,6 @@ class Command(BaseCommand):
 
     def gather_statistics(self):
         """Gather comprehensive chronicle statistics."""
-        from characters.models.core.character import CharacterModel
-        from game.models import WeeklyXPRequest
-
         stats = {
             "chronicle": self.chronicle,
             "storytellers": list(self.chronicle.storytellers.all()),

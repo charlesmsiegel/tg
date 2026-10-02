@@ -1,5 +1,6 @@
 """Tests for cache utilities in core/cache.py."""
 
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Model
 from django.test import TestCase
@@ -220,8 +221,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_returns_list_not_queryset(self):
         """Test that function returns an evaluated list, not a queryset."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="test", password="test123")
 
         # User model doesn't have a "name" field, so specify ordering
@@ -231,8 +230,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_uses_cache_on_second_call(self):
         """Test that second call uses cached result."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="test", password="test123")
 
         # First call (User model doesn't have "name" field)
@@ -249,8 +246,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_ordering_parameter(self):
         """Test that ordering parameter works correctly."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="zebra", password="test123")
         User.objects.create_user(username="alpha", password="test123")
 
@@ -261,8 +256,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_ordering_none(self):
         """Test that ordering=None works (no ordering applied)."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="test", password="test123")
 
         result = get_cached_reference_list(User, ordering=None)
@@ -271,8 +264,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_filters_parameter(self):
         """Test that filters parameter works correctly."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="active", password="test123", is_active=True)
         User.objects.create_user(username="inactive", password="test123", is_active=False)
 
@@ -283,8 +274,6 @@ class GetCachedReferenceListTest(TestCase):
 
     def test_different_filters_use_different_cache_keys(self):
         """Test that different filters create separate cache entries."""
-        from django.contrib.auth.models import User
-
         User.objects.create_user(username="active", password="test123", is_active=True)
         User.objects.create_user(username="inactive", password="test123", is_active=False)
 

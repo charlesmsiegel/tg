@@ -6,6 +6,7 @@ from characters.models.mage.focus import Practice
 from characters.models.mage.resonance import Resonance
 from locations.forms.mage.node import NodeForm, NodeResonanceRatingForm
 from locations.models.core.location import LocationModel
+from locations.models.mage.node import NodeResonanceRating
 
 
 class TestNodeResonanceRatingForm(TestCase):
@@ -307,7 +308,6 @@ class TestNodeFormSave(TestCase):
         node = form.save()
 
         # Check that resonance was saved
-        from locations.models.mage.node import NodeResonanceRating
 
         resonance_ratings = NodeResonanceRating.objects.filter(node=node)
         self.assertEqual(resonance_ratings.count(), 1)

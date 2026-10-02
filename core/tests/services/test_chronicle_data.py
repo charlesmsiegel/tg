@@ -8,9 +8,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from characters.models.core import Human
+from characters.models.core.character import Character
 from characters.models.vampire import Vampire
 from core.services import ChronicleDataService
-from game.models import Chronicle, Scene
+from game.models import Chronicle, Scene, SettingElement
 from items.models.core import ItemModel
 from items.models.mage import Wonder
 from locations.models.core.location import LocationModel
@@ -42,7 +43,6 @@ class TestChronicleDataServiceGroupByGameline(TestCase):
     def test_empty_queryset_returns_empty_dict(self):
         """Test that empty queryset returns empty OrderedDict."""
         # Use an actual empty queryset from the database
-        from game.models import SettingElement
 
         empty_qs = SettingElement.objects.none()
         result = ChronicleDataService.group_by_gameline(empty_qs)
@@ -72,8 +72,6 @@ class TestChronicleDataServiceGroupCharacters(TestCase):
 
     def test_empty_queryset_returns_empty_dict(self):
         """Test that empty character queryset returns empty OrderedDict."""
-        from characters.models.core.character import Character
-
         empty_qs = Character.objects.none()
         result = ChronicleDataService.group_characters_by_gameline(empty_qs)
 
@@ -82,8 +80,6 @@ class TestChronicleDataServiceGroupCharacters(TestCase):
 
     def test_characters_grouped_by_gameline(self):
         """Test that characters are grouped by their gameline model type."""
-        from characters.models.core.character import Character
-
         # Create a Human (WoD base)
         human = Human.objects.create(
             name="Test Human",

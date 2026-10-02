@@ -5,9 +5,14 @@ New actions extend the central permission matrix; templates consume booleans.
 Public projections deliberately do not carry this private-object contract.
 """
 
+from collections import defaultdict
 from dataclasses import dataclass
 
+from django.contrib.contenttypes.models import ContentType
+
+from core.models import Model
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
+from game.spending_approval import can_approve_spending
 
 
 @dataclass(frozen=True)
@@ -36,8 +41,6 @@ def permission_subject(obj, request=None):
 
 
 def get_object_permissions(request, obj):
-    from game.spending_approval import can_approve_spending
-
     obj = permission_subject(obj, request)
     user = request.user
     # Consult the request-cached roles before a snapshot hit: live owner or
@@ -96,10 +99,6 @@ def prepare_permission_objects(request, objects):
     Callers select_related('character') for records. Polymorphic hydration is
     bounded by the number of concrete types, not by the number of rows.
     """
-    from collections import defaultdict
-
-    from django.contrib.contenttypes.models import ContentType
-
     subjects = [PermissionManager.permission_subject(obj) for obj in objects]
     groups = defaultdict(list)
     ContentType.objects.get_for_models(*(type(obj) for obj in subjects))
@@ -120,8 +119,6 @@ def prepare_permission_objects(request, objects):
 
 def add_object_permissions(request, context):
     """Idempotent adapter shared by mixins and legacy TemplateResponses."""
-    from core.models import Model
-
     obj = context.get("object")
     if isinstance(obj, Model) or (
         obj is not None

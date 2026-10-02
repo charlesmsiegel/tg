@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from game.models import Chronicle
+from game.models import Chronicle, Scene
 from locations.models.core import LocationModel
 
 
@@ -176,8 +176,6 @@ class TestLocationDetailView(TestCase):
 
     def test_detail_view_is_spread_native(self):
         """Cover with "Located in" chain, Barriers columns, Scenes here rows."""
-        from game.models import Scene
-
         city = LocationModel.objects.create(name="Chicago")
         hood = LocationModel.objects.create(name="Near North Side")
         hood.contained_within.add(city)

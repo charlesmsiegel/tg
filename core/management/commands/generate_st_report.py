@@ -11,6 +11,7 @@ Shows:
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
+from characters.models.core.character import CharacterModel
 from game.models import Chronicle, Scene, WeeklyXPRequest
 
 
@@ -66,8 +67,6 @@ class Command(BaseCommand):
 
     def generate_report(self, title, chronicles):
         """Generate the ST report."""
-        from characters.models.core.character import CharacterModel
-
         output = []
         output.append("=" * 70)
         output.append(title.upper())

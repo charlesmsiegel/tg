@@ -2,12 +2,14 @@ import unittest
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
+from characters.models.core.specialty import Specialty
 from characters.tests.utils import changeling_setup
 from game.models import Chronicle
 
@@ -982,8 +984,6 @@ class TestChangelingDetailViewContext(TestCase):
 
     def test_detail_view_shows_specialties(self):
         """The sheet shows specialties next to their stats (from the shared blocks)."""
-        from characters.models.core.specialty import Specialty
-
         self.changeling.strength = 4
         self.changeling.save()
         self.changeling.specialties.add(Specialty.objects.create(name="Iron Grip", stat="strength"))
@@ -1153,7 +1153,6 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "scene": 0,
             "time": 0,
         }
-        from django.urls import reverse
 
         url = reverse(
             "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}
@@ -1192,7 +1191,6 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "scene": 0,
             "time": 0,
         }
-        from django.urls import reverse
 
         url = reverse(
             "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}
@@ -1231,7 +1229,6 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "scene": 0,
             "time": 0,
         }
-        from django.urls import reverse
 
         url = reverse(
             "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}

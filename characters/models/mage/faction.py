@@ -3,8 +3,6 @@ from django.urls import reverse
 
 from characters.models.mage.sphere import Sphere
 from core.models import Language, Model, ModelManager, ModelQuerySet
-from items.models.core.material import Material
-from items.models.core.medium import Medium
 
 from .focus import Paradigm, Practice
 
@@ -28,8 +26,8 @@ class MageFaction(Model):
     affinities = models.ManyToManyField(Sphere, blank=True)
     paradigms = models.ManyToManyField(Paradigm, blank=True)
     practices = models.ManyToManyField(Practice, blank=True)
-    media = models.ManyToManyField(Medium, blank=True)
-    materials = models.ManyToManyField(Material, blank=True)
+    media = models.ManyToManyField("items.Medium", blank=True)
+    materials = models.ManyToManyField("items.Material", blank=True)
     founded = models.IntegerField(default=-5000)
     ended = models.IntegerField(default=5000)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)

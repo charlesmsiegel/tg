@@ -3,6 +3,7 @@
 from django import forms
 
 from characters.models.core.archetype import Archetype
+from characters.models.core.attribute_block import Attribute
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
 from widgets import ChainedChoiceField, ChainedSelectMixin
@@ -86,8 +87,6 @@ class SorcererBasicsForm(ChainedSelectMixin, forms.ModelForm):
 
     def clean_casting_attribute(self):
         """Convert casting_attribute ID string to Attribute instance."""
-        from characters.models.core.attribute_block import Attribute
-
         casting_attribute = self.cleaned_data.get("casting_attribute")
         if casting_attribute and casting_attribute != "":
             return Attribute.objects.get(pk=casting_attribute)

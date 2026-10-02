@@ -1,7 +1,7 @@
 """Declarative CRUD for items and locations; policies and workflows stay explicit."""
 
 from dataclasses import dataclass, field
-from functools import cached_property, lru_cache
+from functools import cached_property
 from importlib import import_module
 
 from django.apps import apps
@@ -297,10 +297,3 @@ class ModelRegistry:
             ),
             key=lambda entry: (entry.gameline, entry.menu_label),
         )
-
-
-@lru_cache(maxsize=2)
-def get_registry(app):
-    if app not in {"items", "locations"}:
-        raise ImproperlyConfigured(f"Unsupported registry: {app}")
-    return import_module(f"{app}.registry").registry

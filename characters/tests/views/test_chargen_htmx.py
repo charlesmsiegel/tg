@@ -9,6 +9,7 @@ import json
 import re
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import connection
 from django.test import TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
@@ -336,8 +337,6 @@ class ValidateOnlyTests(InteractiveChargenTestCase):
 
     @override_settings(CHARGEN_PARTIAL_LIMIT=2)
     def test_partial_requests_are_throttled_per_character(self):
-        from django.core.cache import cache
-
         cache.clear()
         character = self.vampire(1)
         codes = [self.validate(character, ATTRIBUTES_VALID).status_code for _ in range(3)]
@@ -397,8 +396,6 @@ class OptionsTests(InteractiveChargenTestCase):
                 self.assertEqual(self.options(_options=name).status_code, 400)
 
     def test_full_page_uses_server_options_not_embedded_trees(self):
-        from django.core.cache import cache
-
         strength = Attribute.objects.create(name="Strength", property_name="strength")
         cache.clear()  # the freebie form reads Attributes through the reference cache
         response = self.client.get(self.url(self.character))

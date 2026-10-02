@@ -3,6 +3,7 @@
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 
+from core.models import Language
 from core.permissions import Permission, PermissionManager
 
 from . import get_workflow
@@ -10,8 +11,6 @@ from . import get_workflow
 
 def _skip_effect(character, step):
     if step.key == "languages":
-        from core.models import Language
-
         english, _ = Language.objects.get_or_create(name="English")
         character.languages.add(english)
 
@@ -45,6 +44,12 @@ def advance(character, *, user):
     character.creation_status = position
     character.save(update_fields=["creation_status"])
     return position
+
+
+def retreat(character):
+    """Move the character back to the previous applicable step and save it."""
+    character.creation_status = previous_position(character)
+    character.save(update_fields=["creation_status"])
 
 
 def previous_position(character):

@@ -60,9 +60,7 @@ class Practice(Model):
         return True
 
     def get_rotes(self):
-        from characters.models.mage.rote import Rote
-
-        return Rote.objects.filter(practice=self)
+        return self.rote_set.all()
 
 
 class SpecializedPractice(Practice):
@@ -96,9 +94,7 @@ class SpecializedPractice(Practice):
 
     def get_rotes(self):
         if self.parent_practice is None:
-            from characters.models.mage.rote import Rote
-
-            return Rote.objects.none()
+            return self.rote_set.none()
         return self.parent_practice.get_rotes()
 
 
@@ -131,9 +127,7 @@ class CorruptedPractice(Practice):
 
     def get_rotes(self):
         if self.parent_practice is None:
-            from characters.models.mage.rote import Rote
-
-            return Rote.objects.none()
+            return self.rote_set.none()
         return self.parent_practice.get_rotes()
 
 

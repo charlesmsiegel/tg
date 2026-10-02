@@ -12,6 +12,12 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.mage.companion import Advantage
+from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.resonance import Resonance
+from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
+from characters.models.mage.sphere import Sphere
+from characters.models.werewolf.charm import SpiritCharm
 
 from .base import (
     FreebieApplyResult,
@@ -162,8 +168,6 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     @handler("Resonance")
     def _handle_resonance(self, resonance="", **kwargs) -> FreebieSpendResult:
         """Handle resonance freebie spending."""
-        from characters.models.mage.resonance import Resonance
-
         cost = get_freebie_cost("resonance")
 
         if cost > self.character.freebies:
@@ -321,7 +325,6 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
         """Apply or deny approved sphere freebie spending."""
         if deny:
             # Revert the sphere
-            from characters.models.mage.sphere import Sphere
 
             s = Sphere.objects.filter(name=freebie_request.trait_name).first()
             if s:
@@ -412,8 +415,6 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_tenet(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved tenet freebie spending."""
         if deny:
-            from characters.models.mage.focus import Tenet
-
             tenet = Tenet.objects.filter(name=freebie_request.trait_name).first()
             if tenet and tenet in self.character.other_tenets.all():
                 self.character.other_tenets.remove(tenet)
@@ -438,8 +439,6 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_practice(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved practice freebie spending."""
         if deny:
-            from characters.models.mage.focus import Practice
-
             practice = Practice.objects.filter(name=freebie_request.trait_name).first()
             if practice:
                 pr = self.character.practice_ratings.filter(practice=practice).first()
@@ -601,8 +600,6 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
 
         Requires name, path, level, description kwargs.
         """
-        from characters.models.mage.sorcerer import LinearMagicRitual
-
         name = kwargs.get("ritual_name", "")
         path = kwargs.get("ritual_path")
         level = kwargs.get("ritual_level", 1)
@@ -661,8 +658,6 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_path(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved sorcerer path freebie spending."""
         if deny:
-            from characters.models.mage.sorcerer import LinearMagicPath
-
             path = LinearMagicPath.objects.filter(name=freebie_request.trait_name).first()
             if path:
                 pr = self.character.path_ratings.filter(path=path).first()
@@ -693,8 +688,6 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_ritual(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved sorcerer ritual freebie spending."""
         if deny:
-            from characters.models.mage.sorcerer import LinearMagicRitual
-
             ritual = LinearMagicRitual.objects.filter(name=freebie_request.trait_name).first()
             if ritual:
                 self.character.rituals.remove(ritual)
@@ -808,8 +801,6 @@ class CompanionFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_advantage(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Special Advantage freebie spending."""
         if deny:
-            from characters.models.mage.companion import Advantage
-
             advantage = Advantage.objects.filter(name=freebie_request.trait_name).first()
             if advantage:
                 ar = self.character.advantage_ratings.filter(advantage=advantage).first()
@@ -840,8 +831,6 @@ class CompanionFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _apply_charm(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Spirit Charm freebie spending."""
         if deny:
-            from characters.models.werewolf.charm import SpiritCharm
-
             charm = SpiritCharm.objects.filter(name=freebie_request.trait_name).first()
             if charm:
                 self.character.charms.remove(charm)

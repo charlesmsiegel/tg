@@ -30,6 +30,14 @@ import sys
 import time
 from pathlib import Path
 
+import django
+from django.conf import settings
+from django.contrib.auth import BACKEND_SESSION_KEY, HASH_SESSION_KEY, SESSION_KEY
+from django.contrib.sessions.backends.db import SessionStore
+from django.core.management import call_command
+from PIL import Image, ImageChops
+from playwright.sync_api import sync_playwright
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 SETTINGS = "scripts.screenshot_settings"
@@ -42,11 +50,9 @@ def _free_port():
 
 
 def seed_pages():
-    import django
-    from django.core.management import call_command
-
     django.setup()
     call_command("migrate", run_syncdb=True, verbosity=0, interactive=False)
+    # Models can only load once Django is set up on the throwaway database.
     from core.tests.template_fixtures import fixture_pages, seed
 
     fixtures = seed()
@@ -54,10 +60,6 @@ def seed_pages():
 
 
 def _session_cookie(user):
-    from django.conf import settings
-    from django.contrib.auth import BACKEND_SESSION_KEY, HASH_SESSION_KEY, SESSION_KEY
-    from django.contrib.sessions.backends.db import SessionStore
-
     session = SessionStore()
     session[SESSION_KEY] = str(user.pk)
     session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
@@ -67,8 +69,6 @@ def _session_cookie(user):
 
 
 def capture(out_dir):
-    from playwright.sync_api import sync_playwright
-
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     db = out / "fixtures.sqlite3"
@@ -122,8 +122,6 @@ def capture(out_dir):
 
 
 def compare(before_dir, after_dir):
-    from PIL import Image, ImageChops
-
     before, after = Path(before_dir), Path(after_dir)
     b_pages = json.loads((before / "pages.json").read_text())
     a_pages = json.loads((after / "pages.json").read_text())

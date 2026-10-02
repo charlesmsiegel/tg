@@ -12,6 +12,7 @@ from django.test import TestCase
 from characters.models.core import MeritFlaw
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlawRating
+from core.models import BaseMeritFlawRating
 from locations.models.mage import Node, NodeMeritFlawRating
 from locations.models.mummy import Tomb, TombMeritFlawRating
 from locations.models.vampire import Haven, HavenMeritFlawRating
@@ -22,26 +23,18 @@ class TestBaseMeritFlawRatingInheritance(TestCase):
 
     def test_meritflawrating_inherits_base(self):
         """Test MeritFlawRating inherits from BaseMeritFlawRating."""
-        from core.models import BaseMeritFlawRating
-
         self.assertTrue(issubclass(MeritFlawRating, BaseMeritFlawRating))
 
     def test_nodemeritflawrating_inherits_base(self):
         """Test NodeMeritFlawRating inherits from BaseMeritFlawRating."""
-        from core.models import BaseMeritFlawRating
-
         self.assertTrue(issubclass(NodeMeritFlawRating, BaseMeritFlawRating))
 
     def test_havenmeritflawrating_inherits_base(self):
         """Test HavenMeritFlawRating inherits from BaseMeritFlawRating."""
-        from core.models import BaseMeritFlawRating
-
         self.assertTrue(issubclass(HavenMeritFlawRating, BaseMeritFlawRating))
 
     def test_tombmeritflawrating_inherits_base(self):
         """Test TombMeritFlawRating inherits from BaseMeritFlawRating."""
-        from core.models import BaseMeritFlawRating
-
         self.assertTrue(issubclass(TombMeritFlawRating, BaseMeritFlawRating))
 
 

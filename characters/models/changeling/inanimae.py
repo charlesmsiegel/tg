@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 from characters.models.changeling.ctdhuman import CtDHuman
+from core.utils import add_dot
 
 
 class Inanimae(CtDHuman):
@@ -134,8 +135,6 @@ class Inanimae(CtDHuman):
 
     def add_mana(self):
         """Add a dot of Mana (like Glamour for Changelings)"""
-        from core.utils import add_dot
-
         return add_dot(self, "mana", 10)
 
     def set_anchor(self, description):

@@ -14,8 +14,10 @@ from characters.models.core import (
     MeritFlaw,
     MeritFlawRating,
 )
+from characters.models.core.ability_block import Ability
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
+from characters.models.mage.mtahuman import MtAHuman
 from characters.tests.utils import human_setup
 from core.models import Language, Number
 from game.models import Chronicle, ObjectType
@@ -804,9 +806,6 @@ class TestHuman(TestCase):
 
     def test_specialty_helpers_agree_on_the_one_dot_abilities(self):
         """needed_specialties, has_specialties and add_specialty use one list."""
-        from characters.models.core.ability_block import Ability
-        from characters.models.mage.mtahuman import MtAHuman
-
         for name in ("larceny", "occult"):
             Ability.objects.get_or_create(property_name=name, defaults={"name": name.title()})
         mortal = MtAHuman.objects.create(name="Sleeper", owner=self.user, larceny=1, occult=1)

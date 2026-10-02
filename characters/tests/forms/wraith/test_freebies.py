@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from characters.costs import get_freebie_cost
+from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.wraith.freebies import WraithFreebiesForm
 from characters.models.wraith.wraith import Wraith
 
@@ -32,8 +33,6 @@ class TestWraithFreebiesFormInitialization(WraithFreebiesFormTestCase):
 
     def test_form_inherits_from_human_freebies_form(self):
         """Form inherits from HumanFreebiesForm."""
-        from characters.forms.core.freebies import HumanFreebiesForm
-
         self.assertTrue(issubclass(WraithFreebiesForm, HumanFreebiesForm))
 
 

@@ -4,6 +4,7 @@ from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 from characters.models.core.human import Human
+from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.werewolf.charm import SpiritCharm
 from core.models import Model, Number
@@ -140,8 +141,6 @@ class Companion(MtAHuman):
         if self.companion_type in self.STARTING_FREEBIES:
             self.freebies = self.STARTING_FREEBIES[self.companion_type]
         elif self.companion_type == "familiar":
-            from characters.models.core.merit_flaw_block import MeritFlaw
-
             if not self.npc:
                 self.freebies = self.FAMILIAR_FREEBIES
             flaw_name, flaw_rating = self.FAMILIAR_PACKAGE_FLAW

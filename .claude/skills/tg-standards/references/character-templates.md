@@ -25,7 +25,7 @@ Unlike other `Model` subclasses it stores `gameline` as a **column**
 
 `Meta.unique_together = [["gameline", "character_type", "name"]]`.
 
-`apply_to_character(character)` sets the fields, creates `BackgroundRating` (`char=`)
+`characters.services.templates.apply_template(template, character)` sets the fields, creates `BackgroundRating` (`char=`)
 and `MeritFlawRating` (`character=`) rows with `get_or_create`, links the shared
 `Specialty(name, stat=<ability property_name>)` rows through `character.specialties`, adds
 languages, saves the character, records a `TemplateApplication` and increments
@@ -41,7 +41,7 @@ version reads the class attribute); headings and `gameline_code` follow it.
   ignored, so a typo loses data without an error. Test a new template against its
   character type.
 - **Only `Archetype` is supported in `"FK:Model:Name"`.** Add a resolver in
-  `apply_to_character` (with a test) before using another model name.
+  `apply_template` (with a test) before using another model name.
 - **Call it inside a transaction.** `CharacterTemplateSelectView.form_valid` is
   `@transaction.atomic`; `CharacterTemplateQuickNPCView` wraps creation and application in
   `transaction.atomic()`.

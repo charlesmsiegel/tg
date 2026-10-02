@@ -15,7 +15,7 @@ view names are invented; everything they plug into is real.
 
 | Piece | Where | What it holds |
 |-------|-------|---------------|
-| `Step` | [`characters/chargen/registry.py`](../../characters/chargen/registry.py) | `key` (unique in the workflow), `label` (shown in the step list), `view_path` (dotted path of the view), `template` (the step body, default `characters/core/chargen/form.html`), `skip_if` (predicate or `None`), `group` (steps sharing a group collapse into one row of the step list) |
+| `Step` | [`characters/chargen/workflow.py`](../../characters/chargen/workflow.py) | `key` (unique in the workflow), `label` (shown in the step list), `view_path` (dotted path of the view), `template` (the step body, default `characters/core/chargen/form.html`), `skip_if` (predicate or `None`), `group` (steps sharing a group collapse into one row of the step list) |
 | `Workflow` | same | `steps` (a tuple) and `interactive` (htmx mode). Rejects duplicate keys and requires exactly one `freebies` step. |
 | Shared steps and workflows | [`characters/chargen/definitions.py`](../../characters/chargen/definitions.py) | Module-level `Step` constants (`ATTRIBUTE`, `ABILITY`, `BACKGROUNDS`, `EXTRAS`, `FREEBIES`, `LANGUAGES`, `SPECIALTIES`, `DISCIPLINES`, `VIRTUES`, ...), the tuples `STATS` and `MORTAL`, one `bind(...)` per workflow, and `WORKFLOWS` (character `type` to workflow) |
 | Skip predicates | [`characters/chargen/predicates.py`](../../characters/chargen/predicates.py) | Read-only checks such as `exhausted_freebies`, `no_languages`, `background("allies")` |

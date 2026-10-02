@@ -3,7 +3,7 @@
 from django.http import Http404
 
 from core.access_policy import authorize_route
-from core.model_registry import get_registry
+from core.registries import get_registry
 from core.views.generic import DictView
 
 

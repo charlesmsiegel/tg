@@ -44,7 +44,7 @@ of the rules those follow are enforced here.
 | [`route_policy_manifest.py`](route_policy_manifest.py) | `POLICIES` / `VIEW_POLICIES`: the reviewed view-to-policy list |
 | [`middleware/`](middleware/) | `AuthorizationMiddleware`, `AuthErrorHandlerMiddleware` |
 | [`mixins.py`](mixins.py) | All class-based-view mixins (permission, message, template, creation scoping) |
-| [`model_registry.py`](model_registry.py), [`registry_urls.py`](registry_urls.py) | Declarative CRUD views and URLs for item and location types |
+| [`model_registry.py`](model_registry.py), [`registries.py`](registries.py), [`registry_urls.py`](registry_urls.py) | Declarative CRUD views and URLs for item and location types; `registries.get_registry()` locates an app's registry without importing view code |
 | [`views/`](views/) | Home, books, languages, news, house rules, character templates, public projections, type selection, `DictView`, cached and reference views, registry router, error handlers |
 | [`urls.py`](urls.py) | The `core:` URL namespace, mounted at the site root |
 | [`create_redirects.py`](create_redirects.py) | `resolve_object_type_url()`: from a chosen object type to its create or list page |

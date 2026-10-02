@@ -14,7 +14,8 @@ Terms such as Attributes, Abilities, freebies and ST are defined in the
 
 | Piece | Source | Responsibility |
 |-------|--------|----------------|
-| Workflow registry | [`characters/chargen/registry.py`](../../characters/chargen/registry.py) | `Step` and `Workflow` dataclasses, step-list rows, the `WorkflowViews` and `FreebiePosition` descriptors |
+| Workflow types | [`characters/chargen/workflow.py`](../../characters/chargen/workflow.py) | `Step` and `Workflow` dataclasses; imports nothing from the project |
+| Workflow registry | [`characters/chargen/registry.py`](../../characters/chargen/registry.py) | Step-list rows, the `WorkflowViews` and `FreebiePosition` descriptors (re-exports `Step` and `Workflow`) |
 | Workflow definitions | [`characters/chargen/definitions.py`](../../characters/chargen/definitions.py) | Shared `Step` constants and one `Workflow` per character `type` in `WORKFLOWS` |
 | Skip predicates | [`characters/chargen/predicates.py`](../../characters/chargen/predicates.py) | Read-only checks that decide whether a step applies |
 | Transitions | [`characters/chargen/transitions.py`](../../characters/chargen/transitions.py) | `advance()` (the only forward move) and `previous_position()` |
@@ -181,7 +182,7 @@ replaces its values with the registry's progress for any character that has a wo
   submits the character instead of advancing.
 
 Step views call `advance(self.object, user=self.request.user)` from `form_valid()` once
-their data is valid. `Character.next_stage(user=)` is a thin wrapper.
+their data is valid.
 
 `ChargenBackView` (`characters:chargen_back`, `POST /characters/<pk>/chargen/back/`, route
 policy `LOGIN`) is owner-only. Inside a transaction it re-reads the character with
@@ -194,7 +195,7 @@ then checks `Character.can_navigate_back()`:
 
 Once the storyteller has approved freebies, back navigation is blocked entirely, because
 changing an earlier step could invalidate the freebie allocation. When allowed,
-`Character.prev_stage()` stores `previous_position()`, the nearest earlier step that does
+`retreat(character)` stores `previous_position()`, the nearest earlier step that does
 not skip. `Character.chargen_back_url` exposes the URL only while back navigation is
 allowed; the templates also hide the button from anyone but the owner.
 

@@ -937,8 +937,6 @@ class TestMageAreteValidation(TestCase):
 
     def test_arete_minimum_validation_in_clean(self):
         """clean() raises ValidationError when arete is below 1."""
-        from django.core.exceptions import ValidationError
-
         self.character.arete = 0
         with self.assertRaises(ValidationError) as context:
             self.character.clean()

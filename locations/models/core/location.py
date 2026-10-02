@@ -1,10 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from characters.models.core import CharacterModel
 from core.models import Model, ModelManager, ModelQuerySet
 from core.registry_urls import RegistryURLMixin
-from game.models import Scene
 
 
 class LocationQuerySet(ModelQuerySet):
@@ -34,7 +32,9 @@ class LocationModel(RegistryURLMixin, Model):
         blank=True,
         related_name="contains",
     )
-    owned_by = models.ForeignKey(CharacterModel, blank=True, null=True, on_delete=models.SET_NULL)
+    owned_by = models.ForeignKey(
+        "characters.CharacterModel", blank=True, null=True, on_delete=models.SET_NULL
+    )
 
     gauntlet = models.IntegerField(default=7)
     shroud = models.IntegerField(default=7)
@@ -48,7 +48,7 @@ class LocationModel(RegistryURLMixin, Model):
         verbose_name_plural = "Location"
 
     def get_scenes(self):
-        return Scene.objects.filter(location=self)
+        return self.scene_set.all()
 
     def containment_chains(self, max_depth=10):
         """Where this place sits: one chain per direct container, innermost first.

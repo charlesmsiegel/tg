@@ -7,6 +7,7 @@ This module provides XP spending services for Mummy: The Resurrection characters
 """
 
 from characters.costs import get_xp_cost
+from characters.utils import trait_property_name
 
 from .base import (
     HumanXPSpendingService,
@@ -125,11 +126,11 @@ class MummyXPSpendingService(MtRHumanXPSpendingService):
     @applier("hekau")
     def _apply_hekau(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Hekau XP spending."""
-        from characters.models.mummy.hekau import Hekau
-
-        hekau = Hekau.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
-            xp_request.id, hekau.property_name, xp_request.trait_value, approver
+            xp_request.id,
+            trait_property_name(xp_request.trait_name),
+            xp_request.trait_value,
+            approver,
         )
         return XPApplyResult(
             success=True,

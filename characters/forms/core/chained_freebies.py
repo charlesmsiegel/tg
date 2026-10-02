@@ -14,6 +14,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.utils import get_character_object_type
 from core.cache import get_cached_reference_list
 from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
@@ -210,8 +211,6 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _get_meritflaw_choices(self):
         """Get affordable merit/flaw choices for this character type."""
-        from characters.utils import get_character_object_type
-
         chartype = get_character_object_type(self.instance.type)
         all_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
@@ -247,8 +246,6 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _setup_value_choices(self):
         """Build the example->value choices map for merit/flaws."""
-        from characters.utils import get_character_object_type
-
         value_map = {}
 
         # Get all merit/flaws that might be selected

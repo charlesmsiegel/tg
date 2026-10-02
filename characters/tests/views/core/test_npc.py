@@ -14,7 +14,10 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from characters.models.core.human import Human
+from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vtmhuman import VtMHuman
+from characters.models.werewolf.wtahuman import WtAHuman
+from characters.models.wraith.wtohuman import WtOHuman
 from game.models import Chronicle
 
 
@@ -286,10 +289,6 @@ class NPCProfileCreateViewEdgeCasesTestCase(TestCase):
 
     def test_post_creates_correct_character_type(self):
         """Test POST creates the correct character type for each NPC type."""
-        from characters.models.mage.mtahuman import MtAHuman
-        from characters.models.werewolf.wtahuman import WtAHuman
-        from characters.models.wraith.wtohuman import WtOHuman
-
         test_cases = [
             ("vtm_human", VtMHuman),
             ("wta_human", WtAHuman),

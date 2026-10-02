@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
+from characters.models.mage.resonance import Resonance
 from core.models import BaseResonanceRating
 from items.models.core import ItemModel
 
@@ -67,8 +68,6 @@ class Wonder(ItemModel):
         return self.rank != 0
 
     def add_resonance(self, resonance):
-        from characters.models.mage.resonance import Resonance
-
         # Accept string name or Resonance object
         if isinstance(resonance, str):
             resonance, _ = Resonance.objects.get_or_create(name=resonance)
@@ -85,8 +84,6 @@ class Wonder(ItemModel):
         return 0
 
     def filter_resonance(self, minimum=0, maximum=5):
-        from characters.models.mage.resonance import Resonance
-
         all_res = Resonance.objects.all()
 
         maxed_resonance = [

@@ -16,9 +16,12 @@ from django.urls import reverse
 
 from characters.chargen import get_workflow
 from characters.chargen.registry import progress_rows
+from characters.chargen.transitions import advance
+from characters.models.core import Character
 from core.access_policy import authorize_route
 from core.htmx import hx_redirect, is_fragment_request, mark_fragment, trigger, vary_on_htmx
 from widgets.fields.chained import ChainedChoiceField
+from widgets.widgets.dots import DotRatingInput
 
 VALIDATE_PARAM = "_validate"
 OPTIONS_PARAM = "_options"
@@ -46,8 +49,6 @@ class ChargenStepMixin:
     )
 
     def dispatch(self, request, *args, **kwargs):
-        from characters.models.core import Character
-
         character = get_object_or_404(Character, pk=kwargs["pk"])
         denial = authorize_route(request, type(self), args, kwargs, subject=character)
         if denial is not None:
@@ -80,8 +81,6 @@ class ChargenStepMixin:
                 return self.render_to_response({"object": character})
         if skipping:
             if request.method == "POST":
-                from characters.chargen.transitions import advance
-
                 advance(character, user=request.user)
                 return redirect("characters:character", pk=character.pk)
             if request.method in {"GET", "HEAD"}:
@@ -292,8 +291,6 @@ def use_dot_widgets(form, bounds, alpine=True):
     ``alpine`` picks the driver: the Alpine ``tgDots`` component (interactive
     pages, which load Alpine) or the widget's plain-JavaScript media.
     """
-    from widgets.widgets.dots import DotRatingInput
-
     for name, (minimum, maximum) in bounds.items():
         field = form.fields.get(name)
         if field is not None and type(field.widget) is forms.NumberInput:

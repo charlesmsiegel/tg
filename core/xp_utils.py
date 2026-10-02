@@ -4,6 +4,7 @@ XP awarding utilities.
 This module contains utility functions for atomically awarding XP to characters.
 """
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 
@@ -34,11 +35,6 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
         >>> xp_map = {char1: 3, char2: 2, char3: 0}
         >>> count = award_xp_atomically(Story, story.pk, xp_map)
     """
-    # Import here to avoid circular dependency with game.models
-    from django.core.exceptions import ValidationError
-
-    from characters.models import Character
-
     # Lock the parent to prevent concurrent awards
     parent = parent_model.objects.select_for_update().get(pk=parent_pk)
 
@@ -54,7 +50,7 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
         if xp_amount > 0:
             # Re-fetch and lock each character to ensure fresh data and prevent
             # race conditions with concurrent XP awards from other sources
-            locked_char = Character.objects.select_for_update().get(pk=char.pk)
+            locked_char = type(char).objects.select_for_update().get(pk=char.pk)
             locked_char.xp += xp_amount
             locked_char.save(update_fields=["xp"])
             awarded_count += 1

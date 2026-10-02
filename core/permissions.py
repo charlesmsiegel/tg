@@ -5,6 +5,7 @@ Provides role-based access control with fine-grained permissions for
 characters, items, locations, and other game objects.
 """
 
+from copy import copy
 from enum import Enum
 
 from django.conf import settings
@@ -12,6 +13,10 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import OuterRef, Q
+
+from characters.models.core.character import Character
+from core.models import Model, Observer
+from game.models import Chronicle, STRelationship
 
 
 class Role(Enum):
@@ -140,10 +145,6 @@ class PermissionManager:
     @staticmethod
     def _request_facts(user, request):
         """Five set-based reads, shared by every object on this request."""
-        from characters.models.core.character import Character
-        from core.models import Observer
-        from game.models import Chronicle, STRelationship
-
         cache = request.__dict__.setdefault("_tg_permission_facts", {})
         key = PermissionManager._user_key(user)
         if key not in cache:
@@ -190,8 +191,6 @@ class PermissionManager:
     @staticmethod
     def permission_subject(obj):
         """Do not mistake reverse inheritance links for record subjects."""
-        from core.models import Model
-
         return obj if isinstance(obj, Model) else getattr(obj, "character", None) or obj
 
     @staticmethod
@@ -213,7 +212,6 @@ class PermissionManager:
         # but retain those live permission inputs rather than a stale DB copy.
         if type(cache[key]) is type(obj):
             return obj
-        from copy import copy
 
         resolved = copy(cache[key])
         for name in ("owner_id", "user_id", "chronicle_id", "status", "gameline", "npc"):
@@ -253,8 +251,6 @@ class PermissionManager:
     @staticmethod
     def user_can_manage_creation(user, form, request=None):
         """Derive creation-page ST controls from the selected chronicle scope."""
-        from game.models import Chronicle  # deferred: circular import
-
         value = None
         if form.is_bound:
             value = form.data.get(form.add_prefix("chronicle"))
@@ -304,8 +300,6 @@ class PermissionManager:
                 roles.add(Role.CHRONICLE_HEAD_ST)
             if chronicle.game_storytellers.filter(pk=user.pk).exists():
                 roles.add(Role.GAME_ST)
-
-            from game.models import STRelationship  # deferred: circular import
 
             relationships = list(
                 STRelationship.objects.filter(
@@ -385,8 +379,6 @@ class PermissionManager:
         if owner_id == user.pk or user_id == user.pk:
             roles.add(Role.OWNER)
         if chronicle is not None:
-            from characters.models.core.character import Character
-
             if Character.objects.filter(owner=user, chronicle=chronicle).exists():
                 roles.add(Role.PLAYER)
         if hasattr(obj, "observers") and scope_obj.observers.filter(user=user).exists():
@@ -707,8 +699,6 @@ class PermissionManager:
 
         # 3. Player chronicle access - fetch IDs once, then use pk__in
         if PermissionManager._model_has_field(model, "chronicle"):
-            from characters.models import Character
-
             # PLAYER is based on any owned character in the chronicle.
             player_chronicle_ids = list(
                 Character.objects.filter(owner=user)
@@ -721,8 +711,6 @@ class PermissionManager:
         # A generic relation's identity is (content type, PK), not PK alone.
         # Polymorphic rows carry their concrete type even in a base queryset.
         if PermissionManager._model_has_field(model, "observers"):
-            from core.models import Observer
-
             content_type = (
                 OuterRef("polymorphic_ctype_id")
                 if PermissionManager._model_has_field(model, "polymorphic_ctype")

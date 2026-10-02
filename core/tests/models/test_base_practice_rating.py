@@ -10,6 +10,7 @@ from django.test import TestCase
 
 from characters.models.mage.focus import Practice
 from characters.models.mage.mage import Mage, PracticeRating
+from core.models import BasePracticeRating
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
 
@@ -18,14 +19,10 @@ class TestBasePracticeRatingInheritance(TestCase):
 
     def test_practicerating_inherits_base(self):
         """Test PracticeRating inherits from BasePracticeRating."""
-        from core.models import BasePracticeRating
-
         self.assertTrue(issubclass(PracticeRating, BasePracticeRating))
 
     def test_zonerating_inherits_base(self):
         """Test ZoneRating inherits from BasePracticeRating."""
-        from core.models import BasePracticeRating
-
         self.assertTrue(issubclass(ZoneRating, BasePracticeRating))
 
 

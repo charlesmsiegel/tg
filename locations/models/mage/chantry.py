@@ -8,6 +8,11 @@ from characters.models.mage.effect import Effect
 from core.models import BaseBackgroundRating
 from core.utils import CharacterOrganizationRegistry
 from locations.models.core.location import LocationModel
+from locations.services.chantry_points import (
+    apply_type_grants,
+    has_affordable_effect,
+    has_affordable_purchase,
+)
 
 
 class Chantry(BackgroundBlock, LocationModel):
@@ -243,8 +248,6 @@ class Chantry(BackgroundBlock, LocationModel):
         return self.chantry_type is not None
 
     def set_chantry_type(self, chantry_type):
-        from locations.services.chantry_points import apply_type_grants
-
         self.chantry_type = chantry_type
         self.save()
         apply_type_grants(self)
@@ -312,10 +315,6 @@ class Chantry(BackgroundBlock, LocationModel):
 
     def submission_errors(self):
         """Reasons this chantry cannot be submitted yet; empty when it can."""
-        from locations.services.chantry_points import (
-            has_affordable_effect,
-            has_affordable_purchase,
-        )
 
         def plural(count, word):
             return f"{count} {word}{'' if count == 1 else 's'}"

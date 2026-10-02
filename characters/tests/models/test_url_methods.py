@@ -4,6 +4,13 @@ from django.apps import apps
 from django.test import SimpleTestCase
 from django.urls import NoReverseMatch, resolve
 
+from characters.models.demon.earthbound import Earthbound
+from characters.models.hunter.htrhuman import HtRHuman
+from characters.models.hunter.hunter import Hunter
+from characters.models.mage.companion import Companion
+from characters.models.mage.sorcerer import Sorcerer
+from characters.models.werewolf.nagah import Nagah
+
 
 class ModelURLMethodTests(SimpleTestCase):
     INSTANCE_METHODS = ("get_absolute_url", "get_update_url")
@@ -35,13 +42,6 @@ class ModelURLMethodTests(SimpleTestCase):
                     self.assert_routes(model, name, getattr(model, name))
 
     def test_types_with_their_own_routes_use_them(self):
-        from characters.models.demon.earthbound import Earthbound
-        from characters.models.hunter.htrhuman import HtRHuman
-        from characters.models.hunter.hunter import Hunter
-        from characters.models.mage.companion import Companion
-        from characters.models.mage.sorcerer import Sorcerer
-        from characters.models.werewolf.nagah import Nagah
-
         expected = {
             Earthbound: "characters:demon:update:earthbound",
             HtRHuman: "characters:hunter:update:htrhuman",

@@ -11,6 +11,8 @@ This module provides freebie spending services for Demon: The Fallen characters:
 from django.utils import timezone
 
 from characters.costs import get_freebie_cost
+from characters.models.demon.lore import Lore
+from characters.utils import trait_property_name
 
 from .base import (
     FreebieApplyResult,
@@ -80,13 +82,11 @@ class DtFHumanFreebieSpendingService(HumanFreebieSpendingService):
     def _apply_virtue(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved virtue freebie spending."""
         if deny:
-            from characters.models.core.virtue import Virtue
-
-            virtue = Virtue.objects.filter(name=freebie_request.trait_name).first()
-            if virtue:
-                current_val = getattr(self.character, virtue.property_name, 1)
+            property_name = trait_property_name(freebie_request.trait_name)
+            if hasattr(self.character, property_name):
+                current_val = getattr(self.character, property_name, 1)
                 if current_val > 1:
-                    setattr(self.character, virtue.property_name, current_val - 1)
+                    setattr(self.character, property_name, current_val - 1)
                     self.character.save()
             return FreebieApplyResult(
                 success=True,
@@ -246,8 +246,6 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _apply_lore(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny approved Lore freebie spending."""
         if deny:
-            from characters.models.demon.lore import Lore
-
             lore = Lore.objects.filter(name=freebie_request.trait_name).first()
             if lore:
                 current_val = getattr(self.character, lore.property_name, 0)

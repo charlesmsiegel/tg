@@ -10,8 +10,11 @@ Tests that:
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.template.loader import render_to_string
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+
+from core.views.errors import error_403, error_404, error_500
 
 User = get_user_model()
 
@@ -26,8 +29,6 @@ class TestErrorViews(TestCase):
 
     def test_error_403_view(self):
         """Test that 403 error view returns correct status code."""
-        from core.views.errors import error_403
-
         request = self.factory.get("/fake-url/")
         request.user = self.anon_user
 
@@ -37,8 +38,6 @@ class TestErrorViews(TestCase):
 
     def test_error_404_view(self):
         """Test that 404 error view returns correct status code."""
-        from core.views.errors import error_404
-
         request = self.factory.get("/fake-url/")
         request.user = self.anon_user
 
@@ -48,8 +47,6 @@ class TestErrorViews(TestCase):
 
     def test_error_500_view(self):
         """Test that 500 error view returns correct status code."""
-        from core.views.errors import error_500
-
         request = self.factory.get("/fake-url/")
         request.user = self.anon_user
 
@@ -59,8 +56,6 @@ class TestErrorViews(TestCase):
 
     def test_error_500_does_not_use_the_request_context(self):
         """The 500 page runs no context processor: nothing it shows needs the database."""
-        from core.views.errors import error_500
-
         request = self.factory.get("/fake-url/")
         request.user = self.anon_user
 
@@ -73,8 +68,6 @@ class TestErrorViews(TestCase):
         self.assertNotIn("tl-nav", html)
 
     def test_error_templates_render_without_a_request(self):
-        from django.template.loader import render_to_string
-
         for code in ("401", "403", "404", "500"):
             with self.subTest(code=code):
                 html = render_to_string(f"core/errors/{code}.html")

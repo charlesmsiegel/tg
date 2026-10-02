@@ -9,6 +9,7 @@ This module provides XP spending services for Changeling: The Dreaming character
 """
 
 from characters.costs import get_xp_cost
+from characters.models.core.statistic import Statistic
 
 from .base import (
     HumanXPSpendingService,
@@ -154,9 +155,7 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
     @applier("art")
     def _apply_art(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Art XP spending."""
-        from characters.models.changeling.art import Art
-
-        art = Art.objects.get(name=xp_request.trait_name)
+        art = Statistic.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
             xp_request.id, art.property_name, xp_request.trait_value, approver
         )
@@ -169,9 +168,7 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
     @applier("realm")
     def _apply_realm(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Realm XP spending."""
-        from characters.models.changeling.realm import Realm
-
-        realm = Realm.objects.get(name=xp_request.trait_name)
+        realm = Statistic.objects.get(name=xp_request.trait_name)
         self.character.approve_xp_spend(
             xp_request.id, realm.property_name, xp_request.trait_value, approver
         )

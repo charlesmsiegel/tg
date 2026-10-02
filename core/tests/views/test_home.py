@@ -15,11 +15,21 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 
+from characters.models.changeling.changeling import Changeling
 from characters.models.core import CharacterModel, Human
+from characters.models.demon.demon import Demon
+from characters.models.mage.mage import Mage
+from characters.models.vampire.ghoul import Ghoul
+from characters.models.vampire.vampire import Vampire
+from characters.models.vampire.vtmhuman import VtMHuman
+from characters.models.werewolf.garou import Werewolf
+from characters.models.wraith.wraith import Wraith
 from core.constants import CharacterStatus, ImageStatus
 from core.models import Language, NewsItem
 from core.templatetags.dots import dots
 from core.utils import dice, filepath
+from items.models.mage.wonder import Wonder
+from locations.models.mage.node import Node
 
 os.environ["MOZ_HEADLESS"] = "1"
 
@@ -228,15 +238,6 @@ class TestModel(TestCase):
 
     def test_get_gameline_uses_class_attribute(self):
         """Verify get_gameline uses class attribute, not string parsing."""
-        from characters.models.changeling.changeling import Changeling
-        from characters.models.demon.demon import Demon
-        from characters.models.mage.mage import Mage
-        from characters.models.vampire.vampire import Vampire
-        from characters.models.werewolf.garou import Werewolf
-        from characters.models.wraith.wraith import Wraith
-        from items.models.mage.wonder import Wonder
-        from locations.models.mage.node import Node
-
         # Test character gamelines
         self.assertEqual(Vampire.gameline, "vtm")
         self.assertEqual(Werewolf.gameline, "wta")
@@ -256,10 +257,6 @@ class TestModel(TestCase):
 
     def test_gameline_inheritance(self):
         """Verify subclasses inherit gameline from parent when not overridden."""
-        from characters.models.vampire.ghoul import Ghoul
-        from characters.models.vampire.vampire import Vampire
-        from characters.models.vampire.vtmhuman import VtMHuman
-
         # VtMHuman defines gameline = "vtm"
         self.assertEqual(VtMHuman.gameline, "vtm")
         # Vampire inherits from VtMHuman but doesn't override gameline

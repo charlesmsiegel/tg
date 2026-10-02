@@ -11,22 +11,33 @@ Tests cover:
 
 from datetime import date, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.timezone import now
 
 from characters.models.core import Human
+from core.constants import XPApprovalStatus
+from core.models import CharacterTemplate
 from game.models import (
     Chronicle,
+    FreebieSpendingRecord,
     Gameline,
     Journal,
     JournalEntry,
     ObjectType,
+    Post,
     Scene,
     SettingElement,
     Story,
+    StoryXPRequest,
+    STRelationship,
+    UserSceneReadStatus,
     Week,
     WeeklyXPRequest,
+    XPSpendingRequest,
+    get_next_sunday,
 )
 from locations.models.core import LocationModel
 
@@ -156,7 +167,6 @@ class TestChronicleAdvanced(TestCase):
         """Test that chronicles can have storytellers."""
         gameline = Gameline.objects.create(name="Test Gameline")
         # STRelationship should link user to chronicle
-        from game.models import STRelationship
 
         STRelationship.objects.create(
             user=self.user,
@@ -425,8 +435,6 @@ class TestStrMethods(TestCase):
 
     def test_journal_entry_str(self):
         """Test JournalEntry __str__ method."""
-        from characters.models.core import Human
-
         character = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -458,8 +466,6 @@ class TestStrMethods(TestCase):
 
     def test_st_relationship_str(self):
         """Test STRelationship __str__ method."""
-        from game.models import STRelationship
-
         relationship = STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -473,8 +479,6 @@ class TestStrMethods(TestCase):
 
     def test_st_relationship_str_with_nulls(self):
         """Test STRelationship __str__ with null values."""
-        from game.models import STRelationship
-
         # Need to create without validation since we're testing edge cases
         relationship = STRelationship(
             user=None,
@@ -489,9 +493,6 @@ class TestStrMethods(TestCase):
 
     def test_story_xp_request_str(self):
         """Test StoryXPRequest __str__ method."""
-        from characters.models.core import Human
-        from game.models import StoryXPRequest
-
         story = Story.objects.create(name="Epic Adventure")
         character = Human.objects.create(
             name="Hero Character",
@@ -510,8 +511,6 @@ class TestStrMethods(TestCase):
 
     def test_story_xp_request_str_with_nulls(self):
         """Test StoryXPRequest __str__ with null values."""
-        from game.models import StoryXPRequest
-
         request = StoryXPRequest.objects.create(
             story=None,
             character=None,
@@ -572,8 +571,6 @@ class TestChronicleModel(TestCase):
         """Test Chronicle storyteller_list returns comma-separated names."""
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         gameline = Gameline.objects.create(name="Vampire")
-
-        from game.models import STRelationship
 
         STRelationship.objects.create(
             user=self.user,
@@ -696,8 +693,6 @@ class TestChronicleModel(TestCase):
 
     def test_chronicle_validation_empty_name(self):
         """Test Chronicle validation rejects empty name."""
-        from django.core.exceptions import ValidationError
-
         chronicle = Chronicle(name="")
         with self.assertRaises(ValidationError) as context:
             chronicle.full_clean()
@@ -705,8 +700,6 @@ class TestChronicleModel(TestCase):
 
     def test_chronicle_validation_invalid_year(self):
         """Test Chronicle validation rejects invalid year."""
-        from django.core.exceptions import ValidationError
-
         chronicle = Chronicle(name="Test", year=500)
         with self.assertRaises(ValidationError) as context:
             chronicle.full_clean()
@@ -883,8 +876,6 @@ class TestSceneModel(TestCase):
 
     def test_scene_award_xp_prevents_double_award(self):
         """Test Scene award_xp prevents double-awarding."""
-        from django.core.exceptions import ValidationError
-
         scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
@@ -1034,8 +1025,6 @@ class TestStoryModel(TestCase):
 
     def test_story_validation_empty_name(self):
         """Test Story validation rejects empty name."""
-        from django.core.exceptions import ValidationError
-
         story = Story(name="")
         with self.assertRaises(ValidationError) as context:
             story.full_clean()
@@ -1113,8 +1102,6 @@ class TestStoryModel(TestCase):
 
     def test_story_award_xp_prevents_double_award(self):
         """Test Story award_xp prevents double-awarding."""
-        from django.core.exceptions import ValidationError
-
         story = Story.objects.create(name="One-Time Story")
         character = Human.objects.create(
             name="Hero",
@@ -1174,8 +1161,6 @@ class TestWeekModel(TestCase):
 
     def test_week_validation_missing_end_date(self):
         """Test Week validation requires end_date."""
-        from django.core.exceptions import ValidationError
-
         week = Week(end_date=None)
         with self.assertRaises(ValidationError) as context:
             week.full_clean()
@@ -1217,8 +1202,6 @@ class TestJournalModel(TestCase):
 
     def test_journal_all_entries_ordering(self):
         """Test Journal all_entries returns entries in correct order."""
-        from datetime import timedelta
-
         date1 = now()
         date2 = now() + timedelta(days=1)
 
@@ -1241,8 +1224,6 @@ class TestObjectTypeModel(TestCase):
 
     def test_object_type_validation_empty_name(self):
         """Test ObjectType validation rejects empty name."""
-        from django.core.exceptions import ValidationError
-
         obj = ObjectType(name="", type="char", gameline="mta")
         with self.assertRaises(ValidationError) as context:
             obj.full_clean()
@@ -1250,8 +1231,6 @@ class TestObjectTypeModel(TestCase):
 
     def test_object_type_validation_invalid_type(self):
         """Test ObjectType validation rejects invalid type."""
-        from django.core.exceptions import ValidationError
-
         obj = ObjectType(name="Test", type="invalid", gameline="mta")
         with self.assertRaises(ValidationError) as context:
             obj.full_clean()
@@ -1259,8 +1238,6 @@ class TestObjectTypeModel(TestCase):
 
     def test_object_type_validation_invalid_gameline(self):
         """Test ObjectType validation rejects invalid gameline."""
-        from django.core.exceptions import ValidationError
-
         obj = ObjectType(name="Test", type="char", gameline="invalid")
         with self.assertRaises(ValidationError) as context:
             obj.full_clean()
@@ -1289,8 +1266,6 @@ class TestSettingElementModel(TestCase):
 
     def test_setting_element_validation_empty_name(self):
         """Test SettingElement validation rejects empty name."""
-        from django.core.exceptions import ValidationError
-
         element = SettingElement(name="", description="Test")
         with self.assertRaises(ValidationError) as context:
             element.full_clean()
@@ -1307,8 +1282,6 @@ class TestGamelineModel(TestCase):
 
     def test_gameline_validation_empty_name(self):
         """Test Gameline validation rejects empty name."""
-        from django.core.exceptions import ValidationError
-
         gameline = Gameline(name="")
         with self.assertRaises(ValidationError) as context:
             gameline.full_clean()
@@ -1327,8 +1300,6 @@ class TestSTRelationshipModel(TestCase):
 
     def test_st_relationship_manager_for_user_optimized(self):
         """Test STRelationshipManager.for_user_optimized."""
-        from game.models import STRelationship
-
         STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -1340,10 +1311,6 @@ class TestSTRelationshipModel(TestCase):
 
     def test_st_relationship_unique_constraint(self):
         """Test STRelationship unique constraint."""
-        from django.core.exceptions import ValidationError
-
-        from game.models import STRelationship
-
         STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -1360,10 +1327,6 @@ class TestSTRelationshipModel(TestCase):
 
     def test_st_relationship_validation_missing_user(self):
         """Test STRelationship validation requires user."""
-        from django.core.exceptions import ValidationError
-
-        from game.models import STRelationship
-
         rel = STRelationship(
             user=None,
             chronicle=self.chronicle,
@@ -1510,8 +1473,6 @@ class TestStoryXPRequestModel(TestCase):
 
     def test_story_xp_request_creation(self):
         """Test StoryXPRequest creation with all fields."""
-        from game.models import StoryXPRequest
-
         request = StoryXPRequest.objects.create(
             story=self.story,
             character=self.character,
@@ -1547,8 +1508,6 @@ class TestXPSpendingRequestModel(TestCase):
 
     def test_xp_spending_request_str(self):
         """Test XPSpendingRequest __str__ format."""
-        from game.models import XPSpendingRequest
-
         request = XPSpendingRequest.objects.create(
             character=self.character,
             trait_name="Strength",
@@ -1562,9 +1521,6 @@ class TestXPSpendingRequestModel(TestCase):
 
     def test_xp_spending_request_default_pending(self):
         """Test XPSpendingRequest defaults to pending."""
-        from core.constants import XPApprovalStatus
-        from game.models import XPSpendingRequest
-
         request = XPSpendingRequest.objects.create(
             character=self.character,
             trait_name="Dexterity",
@@ -1591,8 +1547,6 @@ class TestFreebieSpendingRecordModel(TestCase):
 
     def test_freebie_spending_record_str(self):
         """Test FreebieSpendingRecord __str__ format."""
-        from game.models import FreebieSpendingRecord
-
         record = FreebieSpendingRecord.objects.create(
             character=self.character,
             trait_name="Resources",
@@ -1628,8 +1582,6 @@ class TestPostModel(TestCase):
 
     def test_post_str_with_display_name(self):
         """Test Post __str__ with display_name."""
-        from game.models import Post
-
         post = Post.objects.create(
             character=self.character,
             display_name="The Mysterious Stranger",
@@ -1642,8 +1594,6 @@ class TestPostModel(TestCase):
 
     def test_post_str_without_display_name(self):
         """Test Post __str__ without display_name uses character name."""
-        from game.models import Post
-
         post = Post.objects.create(
             character=self.character,
             display_name="",
@@ -1655,8 +1605,6 @@ class TestPostModel(TestCase):
 
     def test_post_manager_for_scene_optimized(self):
         """Test PostManager.for_scene_optimized."""
-        from game.models import Post
-
         self.scene.characters.add(self.character)
         self.scene.add_post(self.character, "", "First post")
         self.scene.add_post(self.character, "", "Second post")
@@ -1684,8 +1632,6 @@ class TestUserSceneReadStatus(TestCase):
 
     def test_user_scene_read_status_str(self):
         """Test UserSceneReadStatus __str__ format."""
-        from game.models import UserSceneReadStatus
-
         status = UserSceneReadStatus.objects.create(
             user=self.user,
             scene=self.scene,
@@ -1702,8 +1648,6 @@ class TestGetNextSunday(TestCase):
 
     def test_get_next_sunday_from_sunday(self):
         """Test get_next_sunday returns same day if already Sunday."""
-        from game.models import get_next_sunday
-
         # January 14, 2024 is a Sunday
         sunday = date(2024, 1, 14)
         result = get_next_sunday(sunday)
@@ -1711,8 +1655,6 @@ class TestGetNextSunday(TestCase):
 
     def test_get_next_sunday_from_monday(self):
         """Test get_next_sunday from Monday."""
-        from game.models import get_next_sunday
-
         # January 15, 2024 is a Monday
         monday = date(2024, 1, 15)
         result = get_next_sunday(monday)
@@ -1721,8 +1663,6 @@ class TestGetNextSunday(TestCase):
 
     def test_get_next_sunday_from_saturday(self):
         """Test get_next_sunday from Saturday."""
-        from game.models import get_next_sunday
-
         # January 13, 2024 is a Saturday
         saturday = date(2024, 1, 13)
         result = get_next_sunday(saturday)
@@ -1754,8 +1694,6 @@ class TestRelatedNames(TestCase):
 
     def test_strelationship_user_related_name(self):
         """Test STRelationship.user has related_name='st_relationships'."""
-        from game.models import STRelationship
-
         STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -1769,8 +1707,6 @@ class TestRelatedNames(TestCase):
 
     def test_strelationship_chronicle_related_name(self):
         """Test STRelationship.chronicle has related_name='st_relationships'."""
-        from game.models import STRelationship
-
         STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -1784,8 +1720,6 @@ class TestRelatedNames(TestCase):
 
     def test_strelationship_gameline_related_name(self):
         """Test STRelationship.gameline has related_name='st_relationships'."""
-        from game.models import STRelationship
-
         STRelationship.objects.create(
             user=self.user,
             chronicle=self.chronicle,
@@ -1799,8 +1733,6 @@ class TestRelatedNames(TestCase):
 
     def test_userscenereadstatus_user_related_name(self):
         """Test UserSceneReadStatus.user has related_name='scene_read_statuses'."""
-        from game.models import UserSceneReadStatus
-
         UserSceneReadStatus.objects.create(
             user=self.user,
             scene=self.scene,
@@ -1814,8 +1746,6 @@ class TestRelatedNames(TestCase):
 
     def test_userscenereadstatus_scene_related_name(self):
         """Test UserSceneReadStatus.scene has related_name='user_read_statuses'."""
-        from game.models import UserSceneReadStatus
-
         UserSceneReadStatus.objects.create(
             user=self.user,
             scene=self.scene,
@@ -1846,22 +1776,16 @@ class STRelationshipIndexTests(TestCase):
 
     def test_st_relationship_user_field_has_db_index(self):
         """Test that STRelationship.user ForeignKey has db_index=True."""
-        from game.models import STRelationship
-
         user_field = STRelationship._meta.get_field("user")
         self.assertTrue(user_field.db_index)
 
     def test_st_relationship_chronicle_field_has_db_index(self):
         """Test that STRelationship.chronicle ForeignKey has db_index=True."""
-        from game.models import STRelationship
-
         chronicle_field = STRelationship._meta.get_field("chronicle")
         self.assertTrue(chronicle_field.db_index)
 
     def test_st_relationship_gameline_field_has_db_index(self):
         """Test that STRelationship.gameline ForeignKey has db_index=True."""
-        from game.models import STRelationship
-
         gameline_field = STRelationship._meta.get_field("gameline")
         self.assertTrue(gameline_field.db_index)
 
@@ -1871,22 +1795,16 @@ class UserSceneReadStatusIndexTests(TestCase):
 
     def test_user_scene_read_status_user_field_has_db_index(self):
         """Test that UserSceneReadStatus.user ForeignKey has db_index=True."""
-        from game.models import UserSceneReadStatus
-
         user_field = UserSceneReadStatus._meta.get_field("user")
         self.assertTrue(user_field.db_index)
 
     def test_user_scene_read_status_scene_field_has_db_index(self):
         """Test that UserSceneReadStatus.scene ForeignKey has db_index=True."""
-        from game.models import UserSceneReadStatus
-
         scene_field = UserSceneReadStatus._meta.get_field("scene")
         self.assertTrue(scene_field.db_index)
 
     def test_user_scene_read_status_has_user_scene_composite_index(self):
         """Test that UserSceneReadStatus has a composite index on (user, scene)."""
-        from game.models import UserSceneReadStatus
-
         indexes = UserSceneReadStatus._meta.indexes
         index_field_sets = [tuple(idx.fields) for idx in indexes]
         self.assertIn(("user", "scene"), index_field_sets)
@@ -1896,10 +1814,6 @@ class TestGamelineColumnChoices(TestCase):
     """Gameline columns accept every configured gameline, Orpheus included."""
 
     def test_choices_come_from_settings(self):
-        from django.conf import settings
-
-        from core.models import CharacterTemplate
-
         for model in (Scene, SettingElement, ObjectType, CharacterTemplate):
             with self.subTest(model=model.__name__):
                 field = model._meta.get_field("gameline")

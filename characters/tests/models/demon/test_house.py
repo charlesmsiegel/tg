@@ -1,6 +1,7 @@
 """Tests for DemonHouse model."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.demon.house import DemonHouse
@@ -52,8 +53,6 @@ class DemonHouseModelTests(TestCase):
 
     def test_celestial_name_unique(self):
         """Test that celestial_name must be unique."""
-        from django.core.exceptions import ValidationError
-
         with self.assertRaises(ValidationError):
             DemonHouse.objects.create(
                 name="Other Devils",

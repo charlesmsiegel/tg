@@ -1,11 +1,11 @@
 """Model URL helpers without importing view code during Django model loading."""
 
+from core.registries import get_registry
+
 
 class RegistryURLMixin:
     @classmethod
     def _registry(cls):
-        from core.model_registry import get_registry
-
         return get_registry(cls._meta.app_label)
 
     def get_absolute_url(self):

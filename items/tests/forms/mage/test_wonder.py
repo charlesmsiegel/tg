@@ -8,6 +8,7 @@ from items.forms.mage.wonder import WonderForm, WonderResonanceRatingForm
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm
 from items.models.mage.talisman import Talisman
+from items.models.mage.wonder import WonderResonanceRating
 
 
 class TestWonderResonanceRatingForm(TestCase):
@@ -305,7 +306,6 @@ class TestWonderFormSave(TestCase):
         wonder = form.save()
 
         # Check that resonance was saved
-        from items.models.mage.wonder import WonderResonanceRating
 
         resonance_ratings = WonderResonanceRating.objects.filter(wonder=wonder)
         self.assertEqual(resonance_ratings.count(), 1)

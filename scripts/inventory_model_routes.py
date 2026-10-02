@@ -5,13 +5,14 @@ import os
 import sys
 from pathlib import Path
 
+import django
+from django.urls import URLResolver, get_resolver
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
 
 
 def inventory(patterns, prefix="", namespaces=()):
-    from django.urls import URLResolver
-
     for pattern in patterns:
         route = prefix + str(pattern.pattern)
         if isinstance(pattern, URLResolver):
@@ -27,8 +28,5 @@ def inventory(patterns, prefix="", namespaces=()):
 
 
 if __name__ == "__main__":
-    import django
-    from django.urls import get_resolver
-
     django.setup()
     print(json.dumps(list(inventory(get_resolver().url_patterns)), indent=2))

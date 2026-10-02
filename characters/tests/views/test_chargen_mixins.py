@@ -2,7 +2,8 @@
 
 from django.test import TestCase
 
-from characters.views.core.chargen_mixins import ChargenProgressMixin
+from characters.views.core.chargen_mixins import ChargenProgressMixin, totals_over
+from characters.views.core.human import HUMAN_CHARGEN_STEPS, HumanCharacterCreationView
 
 
 class FakeBase:
@@ -88,27 +89,18 @@ class TestHumanChargenStepSync(TestCase):
     """HUMAN_CHARGEN_STEPS must cover exactly the view_mapping steps."""
 
     def test_step_labels_match_view_mapping(self):
-        from characters.views.core.human import (
-            HUMAN_CHARGEN_STEPS,
-            HumanCharacterCreationView,
-        )
-
         step_numbers = {start for start, _ in HUMAN_CHARGEN_STEPS}
         mapping_numbers = set(HumanCharacterCreationView.view_mapping.keys())
         self.assertEqual(step_numbers, mapping_numbers)
 
     def test_step_labels_are_ordered(self):
         """Status computation assumes ascending start numbers."""
-        from characters.views.core.human import HUMAN_CHARGEN_STEPS
-
         starts = [start for start, _ in HUMAN_CHARGEN_STEPS]
         self.assertEqual(starts, sorted(starts))
 
 
 class TotalsOverTests(TestCase):
     def test_plain_totals(self):
-        from characters.views.core.chargen_mixins import totals_over
-
         self.assertFalse(totals_over([{"current": 3, "target": 5}]))
         self.assertFalse(totals_over([{"current": 5, "target": 5}]))
         self.assertTrue(totals_over([{"current": 6, "target": 5}]))
@@ -116,8 +108,6 @@ class TotalsOverTests(TestCase):
         self.assertFalse(totals_over([]))
 
     def test_priority_totals_compare_the_sum_of_their_targets(self):
-        from characters.views.core.chargen_mixins import totals_over
-
         def total(*currents):
             return {"groups": [{"current": c} for c in currents], "targets": [10, 8, 6]}
 
@@ -126,8 +116,6 @@ class TotalsOverTests(TestCase):
         self.assertTrue(totals_over([total(10, 8, 7)]))
 
     def test_ranked_priority_totals_compare_each_group_with_its_target(self):
-        from characters.views.core.chargen_mixins import totals_over
-
         def ranked(*pairs):
             groups = [{"current": current, "target": target} for current, target in pairs]
             return {"groups": groups, "targets": [10, 8, 6]}

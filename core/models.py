@@ -15,7 +15,7 @@ from polymorphic.query import PolymorphicQuerySet
 
 from core.base import ValidatedSaveMixin
 from core.constants import CharacterStatus, GameLine, ImageStatus
-from core.utils import filepath
+from core.utils import filepath, get_gameline_name
 from core.validators import (
     validate_gameline,
     validate_image_upload_size,
@@ -56,9 +56,7 @@ class ModelQuerySet(PolymorphicQuerySet):
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        from game.security import staffed_chronicles  # deferred: circular import
-
-        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        scope = models.Q(chronicle__in=Chronicle.objects.staffed_by(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
             scope |= models.Q(chronicle__isnull=True)
         return (
@@ -85,9 +83,7 @@ class ModelQuerySet(PolymorphicQuerySet):
 
     def for_user_chronicles(self, user):
         """Objects in chronicles the user staffs or heads."""
-        from game.security import staffed_chronicles  # deferred: circular import
-
-        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        scope = models.Q(chronicle__in=Chronicle.objects.staffed_by(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
             scope |= models.Q(chronicle__isnull=True)
         return self.filter(scope)
@@ -363,8 +359,6 @@ class PermissionMixin(models.Model):
 
     def add_observer(self, user, granted_by):
         """Grant observer access to a user."""
-        from django.contrib.contenttypes.models import ContentType
-
         content_type = ContentType.objects.get_for_model(self)
         Observer.objects.get_or_create(
             content_type=content_type,
@@ -463,8 +457,6 @@ class Model(PermissionMixin, PolymorphicModel):
         Returns:
             str: Full gameline name from settings (e.g., 'Vampire: the Masquerade')
         """
-        from core.utils import get_gameline_name
-
         return get_gameline_name(self.get_gameline())
 
     def get_heading(self):
@@ -890,106 +882,6 @@ class CharacterTemplate(Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_gameline_display()})"
-
-    def apply_to_character(self, character):
-        """
-        Apply this template to a character instance.
-        Handles FK resolution, attribute setting, and related object creation.
-        """
-        # Import here to avoid circular imports
-        from characters.models.core.archetype import Archetype
-        from characters.models.core.background_block import Background, BackgroundRating
-        from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
-
-        # 1. Apply basic info (nature, demeanor, etc.)
-        for field, value in self.basic_info.items():
-            if value and isinstance(value, str) and value.startswith("FK:"):
-                # Resolve foreign key: "FK:Model:Name"
-                _, model_name, obj_name = value.split(":")
-                if model_name == "Archetype":
-                    try:
-                        obj = Archetype.objects.get(name=obj_name)
-                        setattr(character, field, obj)
-                    except Archetype.DoesNotExist:
-                        pass
-            elif hasattr(character, field):
-                setattr(character, field, value)
-
-        # 2. Apply attributes
-        for attr_name, rating in self.attributes.items():
-            if hasattr(character, attr_name):
-                setattr(character, attr_name, rating)
-
-        # 3. Apply abilities
-        for ability_name, rating in self.abilities.items():
-            if hasattr(character, ability_name):
-                setattr(character, ability_name, rating)
-
-        # 4. Apply backgrounds
-        for bg_data in self.backgrounds:
-            try:
-                background = Background.objects.get(name=bg_data["name"])
-                BackgroundRating.objects.get_or_create(
-                    char=character,
-                    bg=background,
-                    defaults={"rating": bg_data.get("rating", 0)},
-                )
-            except Background.DoesNotExist:
-                pass
-
-        # 5. Apply powers (disciplines, spheres, gifts, etc.)
-        for power_name, rating in self.powers.items():
-            if hasattr(character, power_name):
-                setattr(character, power_name, rating)
-
-        # 6. Apply merits/flaws
-        for mf_data in self.merits_flaws:
-            try:
-                merit_flaw = MeritFlaw.objects.get(name=mf_data["name"])
-                MeritFlawRating.objects.get_or_create(
-                    character=character,
-                    mf=merit_flaw,
-                    defaults={"rating": mf_data.get("rating", 0)},
-                )
-            except MeritFlaw.DoesNotExist:
-                pass
-
-        # 7. Apply languages
-        for lang_name in self.languages:
-            try:
-                language = Language.objects.get(name=lang_name)
-                character.languages.add(language)
-            except Language.DoesNotExist:
-                pass
-
-        # 8. Apply specialties
-        from characters.models.core.ability_block import Ability
-        from characters.models.core.specialty import Specialty
-
-        for specialty_str in self.specialties:
-            # Format: "Ability (Specialty)"
-            if "(" in specialty_str and ")" in specialty_str:
-                ability_name = specialty_str.split("(")[0].strip()
-                specialty_name = specialty_str.split("(")[1].split(")")[0].strip()
-                try:
-                    ability = Ability.objects.get(name=ability_name)
-                except Ability.DoesNotExist:
-                    continue
-                # Specialty is a shared (name, stat) row the character links to.
-                specialty, _ = Specialty.objects.get_or_create(
-                    name=specialty_name, stat=ability.property_name
-                )
-                character.specialties.add(specialty)
-
-        # Save character
-        character.save()
-
-        # 9. Create application record
-        TemplateApplication.objects.create(character=character, template=self)
-
-        # 10. Increment usage counter
-        self.times_used += 1
-        self.save(update_fields=["times_used"])
 
     def clean(self):
         """Validate character template data before saving."""

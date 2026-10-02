@@ -7,6 +7,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 
+from characters.chargen.transitions import retreat
 from characters.models.core import Character
 from characters.models.core.human import Human
 
@@ -57,5 +58,5 @@ class ChargenBackView(LoginRequiredMixin, View):
                     )
                 # creation_status <= 1: nothing to undo, return silently.
                 return destination
-            char.prev_stage()
+            retreat(char)
         return destination

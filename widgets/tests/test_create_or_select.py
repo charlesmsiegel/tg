@@ -207,12 +207,6 @@ class TestWidgetsCreateOrSelectImports(TestCase):
 
     def test_all_exports_available(self):
         """Test all expected exports are available from widgets package."""
-        from widgets import (
-            CreateOrSelectField,
-            CreateOrSelectMixin,
-            CreateOrSelectWidget,
-        )
-
         # Just verify imports work
         self.assertIsNotNone(CreateOrSelectWidget)
         self.assertIsNotNone(CreateOrSelectField)

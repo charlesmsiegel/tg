@@ -12,6 +12,7 @@ from django.template import Context, Template
 from django.test import TestCase
 
 from widgets import render_filterable_list_script
+from widgets.widgets import filterable
 
 
 class TestFilterableListScript(TestCase):
@@ -102,15 +103,11 @@ class TestFilterableListDocumentation(TestCase):
 
     def test_module_docstring_exists(self):
         """Test that the module has documentation."""
-        from widgets.widgets import filterable
-
         self.assertIsNotNone(filterable.__doc__)
         self.assertIn("data-filterable-list", filterable.__doc__)
 
     def test_example_in_docstring(self):
         """Test that the docstring includes usage examples."""
-        from widgets.widgets import filterable
-
         doc = filterable.__doc__
         self.assertIn("data-filter-input", doc)
         self.assertIn("data-filter-select", doc)
@@ -123,16 +120,10 @@ class TestFilterableListImports(TestCase):
 
     def test_imports_from_widgets_package(self):
         """Test that functions can be imported from widgets package."""
-        from widgets import render_filterable_list_script
-
         self.assertIsNotNone(render_filterable_list_script)
 
     def test_imports_from_widgets_filterable_module(self):
         """Test direct import from filterable module."""
-        from widgets.widgets.filterable import (
-            render_filterable_list_script,
-        )
-
         self.assertIsNotNone(
             Path(finders.find("widgets/filterable.js")).read_text(encoding="utf-8")
         )

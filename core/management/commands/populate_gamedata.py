@@ -7,6 +7,7 @@ and provides more control over data loading.
 
 import logging
 import re
+import traceback
 from pathlib import Path
 
 from django.conf import settings
@@ -145,8 +146,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"✗ {relative_path}: {str(e)}"))
                 logger.error(f"Failed to load game data file {relative_path}: {e}", exc_info=True)
                 if options["verbose"]:
-                    import traceback
-
                     self.stdout.write(traceback.format_exc())
 
         # Summary

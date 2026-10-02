@@ -43,9 +43,14 @@ black --check .              # formatting only
   rules rewrite older forms.
 - Module docstrings say what the module is for; class and function docstrings state
   contracts, not history. No commented-out code.
-- Imports at module top. Defer an import inside a function only to break a circular
-  import between apps, with a `# deferred: circular import` comment as `core/models.py`
-  does.
+- Every import is at module top; no imports inside functions or methods. The
+  module-level import graph is acyclic, and a change that needs a cycle restructures
+  instead: name a related model by string (`"game.Chronicle"`), use the reverse accessor
+  (`self.rote_set`, `self.model.group_set.through`) or the field's `related_model`, look a
+  model up with `django.apps.apps.get_model()` at call time, or move the rule into a service
+  that imports both sides. The only imports inside a function are the signal registrations
+  in `AppConfig.ready()`, which Django requires, and optional-dependency guards such as
+  `debug_toolbar` and Playwright.
 - Use `logging.getLogger(__name__)`; the per-app loggers are configured in
   `tg/settings/base.py`. No `print()` in application code; management commands write to
   `self.stdout` / `self.stderr`.
@@ -57,7 +62,8 @@ black --check .              # formatting only
 
 - [ ] `pre-commit run --all-files` passes.
 - [ ] `ruff check .` clean; no new blanket `noqa`.
-- [ ] Imports sorted by ruff; deferred imports justified.
+- [ ] Imports sorted by ruff; none inside a function (except `AppConfig.ready()` signal
+  registration and optional-dependency guards).
 - [ ] `tg_schema` migrations formatted by hand to black style.
 
 ## See also

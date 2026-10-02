@@ -5,8 +5,12 @@ from django.test import TestCase
 from django.urls import reverse
 
 from characters.chargen import get_workflow
+from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
+from characters.models.mage.companion import Companion
+from characters.models.mage.mtahuman import MtAHuman
+from characters.models.mage.sorcerer import LinearMagicPath, PathRating, Sorcerer
 from characters.views.core import GenericCharacterDetailView
 
 
@@ -66,13 +70,9 @@ class SharedChargenTests(TestCase):
                 self.languages(kind, model)
 
     def test_companion_saves_every_language_and_english(self):
-        from characters.models.mage.companion import Companion
-
         self.languages("companion", Companion)
 
     def test_sorcerer_adds_english_alongside_selected_languages(self):
-        from characters.models.mage.sorcerer import Sorcerer
-
         self.languages("sorcerer", Sorcerer)
 
     def test_missing_language_does_not_write_or_advance(self):
@@ -189,9 +189,6 @@ class SharedChargenTests(TestCase):
                     self.assertFalse(character.specialties.exists())
 
     def test_sorcerer_path_specialty_renders_and_saves_without_a_statistic_row(self):
-        from characters.models.core.ability_block import Ability
-        from characters.models.mage.sorcerer import LinearMagicPath, PathRating, Sorcerer
-
         # Rituals is an M2M relation, not a rated ability. The Sorcerer hook must
         # exclude it and include qualifying paths, which aren't Statistic rows.
         Ability.objects.create(name="Rituals", property_name="rituals")
@@ -211,8 +208,6 @@ class SharedChargenTests(TestCase):
         )
 
     def test_mage_secondary_abilities_are_not_allocated_or_overwritten(self):
-        from characters.models.mage.mtahuman import MtAHuman
-
         character = self.character_at(MtAHuman.type, MtAHuman, "abilities", animal_kinship=5)
         url = reverse("characters:character", args=[character.pk])
         form = self.client.get(url).context["form"]
@@ -229,8 +224,6 @@ class SharedChargenTests(TestCase):
         self.assertEqual(character.animal_kinship, 5)
 
     def test_natural_linguist_form_count_drives_saved_languages(self):
-        from characters.models.mage.companion import Companion
-
         character = self.character_at("companion", Companion, "languages")
         MeritFlawRating.objects.create(character=character, mf=self.language, rating=1)
         linguist = MeritFlaw.objects.create(name="Natural Linguist")

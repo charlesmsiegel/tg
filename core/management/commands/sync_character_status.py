@@ -12,6 +12,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from characters.models.core.character import CharacterModel
+from characters.models.core.group import Group
 
 
 class Command(BaseCommand):
@@ -112,8 +113,6 @@ class Command(BaseCommand):
 
     def remove_from_groups(self, character):
         """Remove character from all Groups."""
-        from characters.models.core.group import Group
-
         groups = Group.objects.filter(members=character)
         count = groups.count()
 
@@ -130,8 +129,6 @@ class Command(BaseCommand):
 
     def clear_group_leadership(self, character):
         """Clear Group leadership positions."""
-        from characters.models.core.group import Group
-
         led_groups = Group.objects.filter(leader=character)
         count = led_groups.count()
 

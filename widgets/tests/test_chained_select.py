@@ -10,6 +10,7 @@ from widgets import (
     ChainedModelChoiceField,
     ChainedSelect,
     ChainedSelectMixin,
+    auto_chained_ajax_view,
 )
 
 
@@ -304,13 +305,6 @@ class TestWidgetsImports(TestCase):
 
     def test_all_exports_available(self):
         """Test all expected exports are available from widgets package."""
-        from widgets import (
-            ChainedChoiceField,
-            ChainedSelect,
-            ChainedSelectMixin,
-            auto_chained_ajax_view,
-        )
-
         # Just verify imports work
         self.assertIsNotNone(ChainedChoiceField)
         self.assertIsNotNone(ChainedModelChoiceField)

@@ -1,12 +1,15 @@
 """Tests for mixins in core/mixins.py."""
 
-from django.contrib.auth.models import User
+from unittest.mock import MagicMock, patch
+
+from django import forms
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import RequestFactory, TestCase
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from characters.models.core.character import Character
 from core.mixins import (
@@ -630,7 +633,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_owner_can_access(self):
         """Test that owner can access via URL-based lookup."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -656,7 +658,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_non_owner_denied(self):
         """Test that non-owner is denied access via URL-based lookup."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -679,7 +680,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_admin_can_access(self):
         """Test that admin can access via URL-based lookup."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -705,7 +705,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_staff_can_access(self):
         """Test that staff can access via URL-based lookup."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -731,7 +730,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_sets_attribute(self):
         """Test that URL-based lookup sets the correct attribute on the view."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -772,9 +770,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
                 pass
 
         # Create a mock manager that returns our test object
-        from unittest.mock import MagicMock, patch
-
-        from django.views.generic import CreateView
 
         mock_obj = UserOwnedModel(self.owner)
         mock_manager = MagicMock()
@@ -809,7 +804,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_missing_kwarg_raises_404(self):
         """Test that missing URL kwarg raises Http404."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -831,7 +825,6 @@ class OwnerRequiredMixinURLBasedTest(TestCase):
 
     def test_url_based_invalid_pk_raises_404(self):
         """Test that invalid PK raises Http404."""
-        from django.views.generic import CreateView
 
         class TestView(OwnerRequiredMixin, CreateView):
             owner_check_model = Character
@@ -1142,7 +1135,6 @@ class SpecialUserMixinTest(TestCase):
 
     def test_anonymous_user_is_not_special(self):
         """Test that anonymous user is not special."""
-        from django.contrib.auth.models import AnonymousUser
 
         class TestView(SpecialUserMixin, DetailView):
             model = Character
@@ -1257,7 +1249,6 @@ class ErrorMessageMixinTest(TestCase):
 
     def test_form_invalid_shows_error_message(self):
         """Test that form_invalid shows error message."""
-        from django import forms
 
         class TestForm(forms.Form):
             name = forms.CharField(required=True)

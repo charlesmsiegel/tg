@@ -11,6 +11,12 @@ This module provides XP spending services for Mage: The Ascension characters:
 from django.utils import timezone
 
 from characters.costs import get_xp_cost
+from characters.models.mage.companion import Advantage, AdvantageRating
+from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.resonance import Resonance
+from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, PathRating
+from characters.models.mage.sphere import Sphere
+from characters.models.werewolf.charm import SpiritCharm
 
 from .base import (
     HumanXPSpendingService,
@@ -186,8 +192,6 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     @handler("Resonance")
     def _handle_resonance(self, resonance="", **kwargs) -> XPSpendResult:
         """Handle resonance XP spending."""
-        from characters.models.mage.resonance import Resonance
-
         trait = f"Resonance ({resonance})"
         r = Resonance.objects.get_or_create(name=resonance)[0]
         current_value = self.character.resonance_rating(r)
@@ -242,8 +246,6 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     @applier("sphere")
     def _apply_sphere(self, xp_request, approver) -> XPApplyResult:
         """Apply approved sphere XP spending."""
-        from characters.models.mage.sphere import Sphere
-
         # Validate sphere rating doesn't exceed Arete
         if xp_request.trait_value > self.character.arete:
             return XPApplyResult(
@@ -282,8 +284,6 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     @applier("practice")
     def _apply_practice(self, xp_request, approver) -> XPApplyResult:
         """Apply approved practice XP spending."""
-        from characters.models.mage.focus import Practice
-
         practice = Practice.objects.get(name=xp_request.trait_name)
         self.character.add_practice(practice)
 
@@ -302,8 +302,6 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     @applier("tenet")
     def _apply_tenet(self, xp_request, approver) -> XPApplyResult:
         """Apply approved tenet XP spending."""
-        from characters.models.mage.focus import Tenet
-
         t = Tenet.objects.get(name=xp_request.trait_name)
         self.character.other_tenets.add(t)
 
@@ -322,8 +320,6 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     @applier("remove tenet")
     def _apply_remove_tenet(self, xp_request, approver) -> XPApplyResult:
         """Apply approved tenet removal XP spending."""
-        from characters.models.mage.focus import Tenet
-
         # Remove "Remove " prefix if present
         tenet_name = xp_request.trait_name.replace("Remove ", "")
         tenet = Tenet.objects.get(name=tenet_name)
@@ -463,8 +459,6 @@ class SorcererXPSpendingService(MtAHumanXPSpendingService):
     @applier("path")
     def _apply_path(self, xp_request, approver) -> XPApplyResult:
         """Apply approved sorcerer path XP spending."""
-        from characters.models.mage.sorcerer import LinearMagicPath, PathRating
-
         path = LinearMagicPath.objects.get(name=xp_request.trait_name)
         pr, created = PathRating.objects.get_or_create(
             character=self.character,
@@ -489,8 +483,6 @@ class SorcererXPSpendingService(MtAHumanXPSpendingService):
     @applier("ritual")
     def _apply_ritual(self, xp_request, approver) -> XPApplyResult:
         """Apply approved sorcerer ritual XP spending."""
-        from characters.models.mage.sorcerer import LinearMagicRitual
-
         ritual = LinearMagicRitual.objects.get(name=xp_request.trait_name)
         self.character.rituals.add(ritual)
 
@@ -568,8 +560,6 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
     @applier("advantage")
     def _apply_advantage(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Special Advantage XP spending."""
-        from characters.models.mage.companion import Advantage, AdvantageRating
-
         advantage = Advantage.objects.get(name=xp_request.trait_name)
         ar, created = AdvantageRating.objects.get_or_create(
             character=self.character,
@@ -594,8 +584,6 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
     @applier("charm")
     def _apply_charm(self, xp_request, approver) -> XPApplyResult:
         """Apply approved Spirit Charm XP spending."""
-        from characters.models.werewolf.charm import SpiritCharm
-
         charm = SpiritCharm.objects.get(name=xp_request.trait_name)
         self.character.charms.add(charm)
 

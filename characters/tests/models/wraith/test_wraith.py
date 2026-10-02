@@ -1,6 +1,7 @@
 """Tests for Wraith model."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.costs import get_freebie_cost, get_xp_cost
@@ -1003,8 +1004,6 @@ class TestWraithAngstValidation(WraithTestCase):
 
     def test_angst_minimum_validation_in_clean(self):
         """clean() raises ValidationError when angst is below 1."""
-        from django.core.exceptions import ValidationError
-
         self.wraith.angst = 0
         with self.assertRaises(ValidationError) as context:
             self.wraith.clean()

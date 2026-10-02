@@ -1,9 +1,7 @@
 from django.db import models
 
-from characters.models.core import CharacterModel
 from core.models import Model, ModelManager, ModelQuerySet
 from core.registry_urls import RegistryURLMixin
-from locations.models.core import LocationModel
 
 
 class ItemQuerySet(ModelQuerySet):
@@ -20,8 +18,8 @@ ItemModelManager = ModelManager.from_queryset(ItemQuerySet)
 class ItemModel(RegistryURLMixin, Model):
     type = "item"
 
-    owned_by = models.ManyToManyField(CharacterModel, blank=True)
-    located_at = models.ManyToManyField(LocationModel, blank=True)
+    owned_by = models.ManyToManyField("characters.CharacterModel", blank=True)
+    located_at = models.ManyToManyField("locations.LocationModel", blank=True)
 
     objects = ItemModelManager()
 

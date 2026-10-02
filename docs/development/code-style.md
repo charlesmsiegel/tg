@@ -71,6 +71,27 @@ routing import in `tg/asgi.py` that must follow `get_asgi_application()` (`E402`
 The same directories as black are excluded. Run `ruff check .` to lint and
 `ruff check --fix .` to apply safe fixes.
 
+### Imports
+
+Every import sits at the top of its module; nothing imports inside a function or method.
+The module-level import graph of the project is acyclic. When a change would need a cycle
+(a model reaching a model that imports it, a model calling a service that imports the
+model), restructure instead of deferring the import:
+
+- name the related model by string in the field (`ForeignKey("game.Chronicle", ...)`)
+  and reach the class through the field (`self._meta.get_field("location").related_model`,
+  `self.characters.model`);
+- use the reverse accessor instead of importing the other model (`self.rote_set.all()`,
+  `self.model.group_set.through`);
+- look a model up at call time with `django.apps.apps.get_model("characters", "Group")`;
+- or move the rule into a service module that imports both sides (for example
+  `characters/services/templates.py`, `game/scene_chat.py`).
+
+The only imports inside a function are the signal registrations in `AppConfig.ready()`
+(`accounts/apps.py`, `game/apps.py`), which Django requires because the receivers import
+models, and the optional-dependency guards (`debug_toolbar`, Playwright in the browser
+tests).
+
 [`pyproject.toml`](../../pyproject.toml) is tracked in git even though `.gitignore`
 lists it; git ignores only untracked files, so your edits to it show up as normal
 changes.

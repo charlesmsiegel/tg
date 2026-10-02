@@ -14,13 +14,13 @@ from random import choice, randint
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
-from game.models import Chronicle
+from characters.models.core.human import Human
+from game.models import Chronicle, Scene
+from locations.models.core.location import LocationModel
 
 
 def human_classes():
     """Map each gameline code to its mortal character model (``vtm`` -> VtMHuman)."""
-    from characters.models.core.human import Human
-
     classes = {"wod": Human}
     pending = list(Human.__subclasses__())
     while pending:
@@ -165,9 +165,6 @@ class Command(BaseCommand):
 
     def create_scenes(self, chronicle, characters, count):
         """Create test scenes."""
-        from game.models import Scene
-        from locations.models.core.location import LocationModel
-
         self.stdout.write(f"\nCreating {count} test scenes...")
 
         # Create a test location

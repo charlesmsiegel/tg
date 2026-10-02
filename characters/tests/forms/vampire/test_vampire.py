@@ -316,8 +316,6 @@ class TestVampireCreationFormSave(VampireCreationFormTestCase):
 
     def test_save_with_path_sets_path_rating(self):
         """Saving form with a path sets path_rating to minimum."""
-        from characters.models.vampire.vampire import Vampire
-
         form = VampireCreationForm(
             data={
                 "name": "Test Vampire",

@@ -145,7 +145,8 @@ Here `gameline` is a model field, not a class attribute, so `CharacterTemplate`
 overrides `get_gameline()` to return the stored code; `get_heading()` and the `tl` filter
 `gameline_code` then theme template pages in the template's gameline.
 
-`apply_to_character(character)` copies the template onto a character: `basic_info`
+`characters.services.templates.apply_template(template, character)` copies the template onto a
+character: `basic_info`
 values of the form `"FK:Archetype:<name>"` are resolved to `Archetype` rows; attributes,
 abilities and powers are set when the character has a matching attribute; backgrounds
 (`BackgroundRating`, keyed by `char`) and merits and flaws (`MeritFlawRating`) are looked

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -155,8 +156,6 @@ class Werewolf(WtAHuman):
         ]
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         super().clean()
         errors = {}
         if self.gnosis < 1:

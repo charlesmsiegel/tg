@@ -5,7 +5,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
 
-from core.model_registry import get_registry
+from core.registries import get_registry
 from core.utils import get_gameline_name
 from core.views.generic import DictView
 from core.views.public_object import PublicObjectDetailView, render_public_object_list

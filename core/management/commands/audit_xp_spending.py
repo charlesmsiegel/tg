@@ -8,9 +8,11 @@ Checks for:
 - Weekly/Story XP request issues
 """
 
+import csv
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
+from django.db.models import Sum
 from django.utils import timezone
 
 from characters.models.core.character import CharacterModel
@@ -85,7 +87,6 @@ class Command(BaseCommand):
 
         # ``xp`` is the unspent balance: a spend's cost is deducted when it is filed
         # (a denial refunds it), so approved and pending costs are already taken out.
-        from django.db.models import Sum
 
         available = char.xp
 
@@ -240,8 +241,6 @@ class Command(BaseCommand):
 
     def export_results(self, filename):
         """Export results to CSV file."""
-        import csv
-
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
                 "character_id",

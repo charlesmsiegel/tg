@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from accounts.models import Profile
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -11,6 +13,4 @@ def create_user_profile(sender, instance, created, **kwargs):
     ensuring atomic creation of User and Profile together.
     """
     if created:
-        from accounts.models import Profile
-
         Profile.objects.create(user=instance)

@@ -1,3 +1,5 @@
+import math
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -221,8 +223,6 @@ class Freehold(LocationModel):
 
     def get_holdings_required(self):
         """Calculate Holdings dots required (feature points / 3, rounded up)"""
-        import math
-
         return math.ceil(self.get_total_feature_points() / 3)
 
     def has_power(self, power_name):

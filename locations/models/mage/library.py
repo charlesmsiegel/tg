@@ -2,6 +2,8 @@ import random
 
 from django.db import models
 
+from characters.models.mage.faction import MageFaction
+from items.models.mage.grimoire import Grimoire
 from locations.models.core.location import LocationModel
 
 
@@ -48,9 +50,6 @@ class Library(LocationModel):
             self.add_book(book)
 
     def random_book(self):
-        from characters.models.mage.faction import MageFaction
-        from items.models.mage.grimoire import Grimoire
-
         book = Grimoire.objects.create(
             name=Grimoire.PLACEHOLDER_NAME, owner=self.owner, chronicle=self.chronicle
         )

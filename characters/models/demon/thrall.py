@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from characters.costs import get_freebie_cost
 from characters.models.demon.dtf_human import DtFHuman
+from characters.models.demon.pact import Pact
 from core.utils import add_dot
 
 
@@ -78,8 +79,6 @@ class Thrall(DtFHuman):
 
     def get_pacts(self):
         """Get all pacts this thrall has with demons."""
-        from characters.models.demon.pact import Pact
-
         return Pact.objects.filter(thrall=self).select_related("demon", "thrall")
 
     def get_active_pacts(self):

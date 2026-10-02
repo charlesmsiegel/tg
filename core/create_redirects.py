@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import Http404
 from django.urls import NoReverseMatch, reverse
 
+from core.registries import get_registry
 from game.models import ObjectType
 
 APP_NAMES = {"char": "characters", "obj": "items", "loc": "locations"}
@@ -45,8 +46,6 @@ def resolve_object_type_url(category, type_name, action="create", gameline=None)
         raise Http404("Unknown object type")
 
     if category in {"obj", "loc"}:
-        from core.model_registry import get_registry
-
         registry = get_registry(APP_NAMES[category])
         entry = registry.resolve(type_name, gameline)
         return registry.selection_url(entry, action)

@@ -4,11 +4,15 @@ from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 from characters.costs import get_freebie_cost
+from characters.models.core.background_block import BackgroundRating
+from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.lore_block import LoreBlock
+from characters.models.demon.pact import Pact
+from characters.models.demon.ritual import Ritual
 from characters.models.demon.visage import Visage
 from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
@@ -196,7 +200,6 @@ class Demon(LoreBlock, DtFHuman):
         """Get low torment apocalyptic form traits."""
         if self.apocalyptic_form:
             return self.apocalyptic_form.low_torment_traits.all()
-        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 
         return ApocalypticFormTrait.objects.none()
 
@@ -204,7 +207,6 @@ class Demon(LoreBlock, DtFHuman):
         """Get high torment apocalyptic form traits."""
         if self.apocalyptic_form:
             return self.apocalyptic_form.high_torment_traits.all()
-        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 
         return ApocalypticFormTrait.objects.none()
 
@@ -260,8 +262,6 @@ class Demon(LoreBlock, DtFHuman):
         Get rituals available to learn based on house and lore knowledge.
         Returns rituals not yet learned that the demon has the primary lore for.
         """
-        from characters.models.demon.ritual import Ritual
-
         if not self.house:
             return Ritual.objects.none()
 
@@ -286,8 +286,6 @@ class Demon(LoreBlock, DtFHuman):
 
     def ritual_knowledge_xp_cost(self):
         """Get starting rituals based on Ritual Knowledge background."""
-        from characters.models.core.background_block import BackgroundRating
-
         ritual_knowledge_ratings = BackgroundRating.objects.filter(
             char=self, bg__property_name="ritual_knowledge"
         )
@@ -301,14 +299,10 @@ class Demon(LoreBlock, DtFHuman):
 
     def get_pacts(self):
         """Get all pacts this demon has with thralls."""
-        from characters.models.demon.pact import Pact
-
         return Pact.objects.filter(demon=self).select_related("demon", "thrall")
 
     def add_pact(self, thrall, terms="", faith_payment=0, enhancements=None):
         """Create a new pact with a thrall."""
-        from characters.models.demon.pact import Pact
-
         if enhancements is None:
             enhancements = []
 

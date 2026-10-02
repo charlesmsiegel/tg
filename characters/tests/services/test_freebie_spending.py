@@ -1,5 +1,6 @@
 """Tests for Freebie spending service."""
 
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -7,8 +8,16 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.mage.mage import Mage
+from characters.models.mage.sphere import Sphere
+from characters.models.vampire.clan import VampireClan
+from characters.models.vampire.discipline import Discipline
+from characters.models.vampire.ghoul import Ghoul
 from characters.models.vampire.vampire import Vampire
+from characters.models.werewolf.bastet import Bastet
+from characters.models.werewolf.garou import Werewolf
+from characters.models.werewolf.rite import Rite
 from characters.services.freebie_spending import (
+    FeraFreebieSpendingService,
     FreebieApplyResult,
     FreebieSpendingServiceFactory,
     FreebieSpendResult,
@@ -16,8 +25,8 @@ from characters.services.freebie_spending import (
     MageFreebieSpendingService,
     VampireFreebieSpendingService,
 )
-from characters.services.xp_spending import XPSpendingServiceFactory
-from game.models import Chronicle, FreebieSpendingRecord
+from characters.services.xp_spending import FeraXPSpendingService, XPSpendingServiceFactory
+from game.models import Chronicle, FreebieSpendingRecord, XPSpendingRequest
 
 
 class TestFreebieSpendResult(TestCase):
@@ -276,7 +285,6 @@ class TestMageFreebieSpendingService(TestCase):
             freebies=30,
             forces=1,
         )
-        from characters.models.mage.sphere import Sphere
 
         self.forces = Sphere.objects.filter(name="Forces").first()
         if not self.forces:
@@ -456,7 +464,6 @@ class TestSphereAreteFreebiValidation(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        from characters.models.mage.sphere import Sphere
 
         self.forces = Sphere.objects.filter(name="Forces").first()
         if not self.forces:
@@ -513,9 +520,6 @@ class TestVampireDisciplineFreebies(TestCase):
     """Every Discipline costs 7 freebies per dot, in clan or out."""
 
     def setUp(self):
-        from characters.models.vampire.clan import VampireClan
-        from characters.models.vampire.discipline import Discipline
-
         self.user = User.objects.create_user(username="kindred_owner")
         self.potence = Discipline.objects.create(name="Potence", property_name="potence")
         self.auspex = Discipline.objects.create(name="Auspex", property_name="auspex")
@@ -537,8 +541,6 @@ class TestVampireDisciplineFreebies(TestCase):
         self.assertEqual(self.vampire.freebies, 1)
 
     def test_ghoul_discipline_costs_seven(self):
-        from characters.models.vampire.ghoul import Ghoul
-
         ghoul = Ghoul.objects.create(name="Test Ghoul", owner=self.user, freebies=7)
         starting_potence = ghoul.potence
         result = FreebieSpendingServiceFactory.get_service(ghoul).spend("Discipline", self.potence)
@@ -567,9 +569,6 @@ class TestEveryFeraBreedSpendsFeraTraits(TestCase):
     )
 
     def test_every_breed_is_served_by_a_fera_service(self):
-        from characters.services.freebie_spending import FeraFreebieSpendingService
-        from characters.services.xp_spending import FeraXPSpendingService
-
         for breed in self.BREEDS:
             with self.subTest(breed=breed):
                 self.assertTrue(
@@ -583,8 +582,6 @@ class TestEveryFeraBreedSpendsFeraTraits(TestCase):
                 )
 
     def test_every_breed_buys_rage_with_freebies(self):
-        from django.apps import apps
-
         user = User.objects.create_user(username="fera_owner")
         for breed in self.BREEDS:
             with self.subTest(breed=breed):
@@ -604,10 +601,6 @@ class TestWerewolfRiteSpending(TestCase):
     """Rites land in rites_known, for Garou and Fera alike."""
 
     def setUp(self):
-        from characters.models.werewolf.bastet import Bastet
-        from characters.models.werewolf.garou import Werewolf
-        from characters.models.werewolf.rite import Rite
-
         self.user = User.objects.create_user(username="rite_owner")
         self.rite = Rite.objects.create(name="Rite of Cleansing", level=1)
         self.characters = [
@@ -624,8 +617,6 @@ class TestWerewolfRiteSpending(TestCase):
                 self.assertIn(self.rite, character.rites_known.all())
 
     def test_approved_xp_rite_request_learns_the_rite(self):
-        from game.models import XPSpendingRequest
-
         for character in self.characters:
             with self.subTest(type=character.type):
                 request = XPSpendingRequest.objects.create(

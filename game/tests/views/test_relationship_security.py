@@ -3,7 +3,9 @@ from django.test import TestCase
 from django.utils import timezone
 
 from characters.models.core.human import Human
+from game.forms import PostForm
 from game.models import Chronicle, Gameline, Journal, Scene, STRelationship
+from game.scene_chat import create_post
 
 
 class RelationshipSecurityTests(TestCase):
@@ -119,6 +121,15 @@ class RelationshipSecurityTests(TestCase):
         self.scene.refresh_from_db()
         self.assertEqual(self.scene.visibility, Scene.Visibility.CHRONICLE)
 
+    def _post_as(self, character, message):
+        form = PostForm(
+            {"character": character.pk, "display_name": character.name, "message": message},
+            user=character.owner,
+            scene=self.scene,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        return create_post(self.scene, form)
+
     def test_other_gameline_st_post_does_not_clear_waiting_flag(self):
         character = Human.objects.create(
             name="Other line ST character",
@@ -129,7 +140,20 @@ class RelationshipSecurityTests(TestCase):
         self.scene.waiting_for_st = True
         self.scene.save(update_fields=["waiting_for_st"])
 
-        self.scene.add_post(character, character.name, "A character response")
+        self._post_as(character, "A character response")
 
         self.scene.refresh_from_db()
         self.assertTrue(self.scene.waiting_for_st)
+
+    def test_matching_st_post_clears_waiting_flag(self):
+        character = Human.objects.create(
+            name="Scene ST character", owner=self.st, chronicle=self.first
+        )
+        self.scene.characters.add(character)
+        self.scene.waiting_for_st = True
+        self.scene.save(update_fields=["waiting_for_st"])
+
+        self._post_as(character, "The storyteller answers")
+
+        self.scene.refresh_from_db()
+        self.assertFalse(self.scene.waiting_for_st)

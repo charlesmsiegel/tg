@@ -12,6 +12,7 @@ from django.views.generic import CreateView, DetailView, FormView, ListView, Upd
 
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.core.background_block import Background
+from core.ajax import dropdown_options_response
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
@@ -176,8 +177,6 @@ class LoadExamplesView(View):
     """
 
     def get(self, request, *args, **kwargs):
-        from core.ajax import dropdown_options_response
-
         object_id = request.GET.get("object", "")
         if not object_id.isascii() or not object_id.isdecimal():
             raise Http404

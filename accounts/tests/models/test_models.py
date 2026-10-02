@@ -1,11 +1,16 @@
 """Tests for accounts models (Profile)."""
 
+from datetime import date, timedelta
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils import timezone
 
 from characters.models.core import Human
-from game.models import Chronicle, Gameline, STRelationship
+from game.models import Chronicle, Gameline, JournalEntry, STRelationship, Week, WeeklyXPRequest
+from items.models.core import ItemModel
+from locations.models.core import LocationModel
 
 
 class TestProfileCreation(TestCase):
@@ -196,9 +201,6 @@ class TestProfileTemplateQueryCaching(TestCase):
     """Relations used by profile templates must be cached with their rows."""
 
     def setUp(self):
-        from items.models.core import ItemModel
-        from locations.models.core import LocationModel
-
         self.st_user = User.objects.create_user("st-cache", "st-cache@test.com", "password")
         self.player_user = User.objects.create_user(
             "player-cache", "player-cache@test.com", "password"
@@ -241,10 +243,6 @@ class TestProfileTemplateQueryCaching(TestCase):
                 self.assertIsNotNone(rows[0].owner.profile.pk)
 
     def test_updated_journals_cache_characters(self):
-        from django.utils import timezone
-
-        from game.models import JournalEntry
-
         JournalEntry.objects.create(
             journal=self.character.journal,
             st_message="",
@@ -432,9 +430,6 @@ class TestProfileObjectQueries(TestCase):
     """Test Profile methods for querying owned objects."""
 
     def setUp(self):
-        from items.models.core import ItemModel
-        from locations.models.core import LocationModel
-
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.char1 = Human.objects.create(name="Character 1", owner=self.user, concept="Test")
         self.char2 = Human.objects.create(name="Character 2", owner=self.user, concept="Test")
@@ -474,10 +469,6 @@ class TestUnfulfilledWeeklyXPRequests(TestCase):
     """
 
     def setUp(self):
-        from datetime import date, timedelta
-
-        from game.models import Week
-
         self.player = User.objects.create_user("player", "player@test.com", "password")
         self.st_user = User.objects.create_user("st", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -522,8 +513,6 @@ class TestUnfulfilledWeeklyXPRequests(TestCase):
 
     def test_unfulfilled_excludes_pairs_with_existing_requests(self):
         """Test that existing XP requests are excluded from results."""
-        from game.models import WeeklyXPRequest
-
         # Create XP request for week1
         WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=False)
 
@@ -568,10 +557,6 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
     """Test the get_unfulfilled_weekly_xp_requests_to_approve method."""
 
     def setUp(self):
-        from datetime import date, timedelta
-
-        from game.models import Week
-
         self.player = User.objects.create_user("player", "player@test.com", "password")
         self.st_user = User.objects.create_user("st", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -599,8 +584,6 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
 
     def test_returns_unapproved_requests(self):
         """Test that method returns character/week pairs with unapproved requests."""
-        from game.models import WeeklyXPRequest
-
         # Create unapproved request
         WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=False)
 
@@ -612,8 +595,6 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
 
     def test_excludes_approved_requests(self):
         """Test that approved requests are excluded."""
-        from game.models import WeeklyXPRequest
-
         # Create approved request
         WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=True)
         # Create unapproved request
@@ -629,8 +610,6 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
 
     def test_returns_empty_when_no_unapproved_requests(self):
         """Test that method returns empty list when all requests are approved."""
-        from game.models import WeeklyXPRequest
-
         WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=True)
 
         results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()

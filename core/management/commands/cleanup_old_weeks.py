@@ -10,7 +10,7 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
-from game.models import Week
+from game.models import Week, WeeklyXPRequest
 
 
 class Command(BaseCommand):
@@ -53,7 +53,6 @@ class Command(BaseCommand):
 
         if options["keep_with_pending"]:
             # Filter out weeks with pending requests
-            from game.models import WeeklyXPRequest
 
             weeks_with_pending = WeeklyXPRequest.objects.filter(approved=False).values_list(
                 "week_id", flat=True

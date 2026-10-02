@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import CheckConstraint, Q, prefetch_related_objects
+from django.db.models import CheckConstraint, Q, Sum, prefetch_related_objects
 from django.urls import reverse
 
 from characters.costs import get_freebie_cost, get_xp_cost
@@ -15,6 +16,7 @@ from characters.models.core.specialty import Specialty
 from core.linked_stat import linked_stat_fields
 from core.models import Language
 from core.utils import add_dot, get_short_gameline_name
+from game.models import FreebieSpendingRecord
 
 # Module-level because Meta.constraints can't access class attributes
 _willpower = linked_stat_fields("willpower", default=3, min_permanent=1)
@@ -274,8 +276,6 @@ class Human(
         Returns:
             FreebieSpendingRecord instance
         """
-        from game.models import FreebieSpendingRecord
-
         return FreebieSpendingRecord.objects.create(
             character=self,
             trait_name=trait_name,
@@ -298,8 +298,6 @@ class Human(
         Returns:
             int: Total freebie points spent
         """
-        from django.db.models import Sum
-
         spent = self.freebie_spendings.aggregate(total=Sum("cost"))["total"] or 0
         return self.freebies + spent
 
@@ -316,8 +314,6 @@ class Human(
         Raises:
             ValidationError: If freebies have already been approved or amount is invalid
         """
-        from django.core.exceptions import ValidationError
-
         # Lock the character to prevent concurrent awards
         character = Human.objects.select_for_update().get(pk=self.pk)
 
@@ -341,14 +337,10 @@ class Human(
         return character
 
     def is_group_member(self):
-        from characters.models.core.group import Group
-
-        return Group.objects.filter(members=self).exists()
+        return self.group_set.exists()
 
     def get_group(self):
-        from characters.models.core.group import Group
-
-        return Group.objects.filter(members=self).first()
+        return self.group_set.first()
 
     def add_willpower(self):
         add_dot(self, "willpower", 10)
@@ -694,8 +686,6 @@ class Human(
             or cost is not None
             or category is not None
         ):
-            from characters.models.core.character import Character
-
             return Character.spend_xp(
                 self, trait_name or "", trait_display or "", cost or 0, category or "", trait_value
             )

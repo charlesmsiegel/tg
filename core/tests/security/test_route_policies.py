@@ -9,8 +9,8 @@ from django.urls import get_resolver
 
 from characters.models.core import CharacterModel, Group
 from core.access_policy import PROJECT_PREFIXES, authorize_route, route_policy
-from core.model_registry import get_registry
 from core.models import CharacterTemplate
+from core.registries import get_registry
 from core.route_policy_manifest import POLICIES, VIEW_POLICIES
 from items.models.core import ItemModel
 from locations.models.core import LocationModel

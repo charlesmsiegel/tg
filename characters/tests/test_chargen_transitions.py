@@ -3,10 +3,15 @@ from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 
 from characters.chargen.transitions import advance, previous_position
-from characters.models.core import Character
+from characters.models.core import Character, Human
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.demon.demon import Demon
 from characters.models.mage.sorcerer import Sorcerer
 from characters.models.vampire.vampire import Vampire
+from characters.models.werewolf.bastet import Bastet
+from characters.models.werewolf.fomor import Fomor
+from characters.models.werewolf.garou import Werewolf
+from characters.models.wraith.wraith import Wraith
 
 
 class TransitionTests(TestCase):
@@ -70,13 +75,6 @@ class TransitionTests(TestCase):
         self.assertFalse(character.languages.exists())
 
     def test_freebie_filter_uses_registry_positions_and_concrete_content_types(self):
-        from characters.models.core import Human
-        from characters.models.demon.demon import Demon
-        from characters.models.werewolf.bastet import Bastet
-        from characters.models.werewolf.fomor import Fomor
-        from characters.models.werewolf.garou import Werewolf
-        from characters.models.wraith.wraith import Wraith
-
         for model, correct, wrong in (
             (Werewolf, 7, 5),
             (Wraith, 9, 7),

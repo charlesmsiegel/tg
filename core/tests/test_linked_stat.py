@@ -13,6 +13,7 @@ from unittest.mock import Mock
 from django.db.models import CheckConstraint
 
 from core.linked_stat import LinkedStat, LinkedStatAccessor, linked_stat_constraints
+from core.templatetags.dots import linked_dots
 
 
 class TestLinkedStatAccessor:
@@ -388,8 +389,6 @@ class TestLinkedStatTemplateFilters:
 
     def test_linked_dots_with_accessor(self):
         """Test linked_dots filter with LinkedStatAccessor."""
-        from core.templatetags.dots import linked_dots
-
         instance = Mock()
         instance.willpower = 7
         instance.temporary_willpower = 5
@@ -403,8 +402,6 @@ class TestLinkedStatTemplateFilters:
 
     def test_linked_dots_with_tuple(self):
         """Test linked_dots filter with tuple."""
-        from core.templatetags.dots import linked_dots
-
         result = linked_dots((7, 5), 10)
 
         assert "●●●●●●●○○○" in result
@@ -412,8 +409,6 @@ class TestLinkedStatTemplateFilters:
 
     def test_linked_dots_with_dict(self):
         """Test linked_dots filter with dict."""
-        from core.templatetags.dots import linked_dots
-
         result = linked_dots({"permanent": 7, "temporary": 5}, 10)
 
         assert "●●●●●●●○○○" in result

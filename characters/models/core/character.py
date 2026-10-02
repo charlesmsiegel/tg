@@ -1,13 +1,16 @@
+from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import CheckConstraint, OuterRef, Q, Subquery
+from django.db.models import CheckConstraint, OuterRef, Q, Subquery, Sum
 from django.urls import reverse
 from django.utils import timezone
 
+from characters.chargen import get_workflow
 from characters.chargen.registry import FreebiePosition
 from core.constants import CharacterStatus
 from core.models import Model, ModelManager, ModelQuerySet
 from core.utils import CharacterOrganizationRegistry
+from game.models import Chronicle, XPSpendingRequest
 
 # In play or still being built (including sheets returned for revision).
 ACTIVE_STATUSES = (
@@ -48,10 +51,7 @@ class CharacterQuerySet(ModelQuerySet):
         This complex query is used across multiple character list views to ensure
         consistent ordering by chronicle, then by first group membership, then by name.
         """
-        # Import here to avoid circular imports
-        from characters.models.core.group import Group
-
-        CharacterGroup = Group.members.through
+        CharacterGroup = self.model.group_set.through
         first_group_id = Subquery(
             CharacterGroup.objects.filter(character_id=OuterRef("pk"))
             .order_by("group_id")
@@ -72,9 +72,7 @@ class CharacterQuerySet(ModelQuerySet):
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        from game.security import staffed_chronicles  # deferred: circular import
-
-        scope = Q(chronicle__in=staffed_chronicles(user))
+        scope = Q(chronicle__in=Chronicle.objects.staffed_by(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
             scope |= Q(chronicle__isnull=True)
         return (
@@ -91,8 +89,6 @@ class CharacterQuerySet(ModelQuerySet):
         Uses database-level filtering with polymorphic_ctype to avoid loading all
         characters into memory.
         """
-        from django.apps import apps
-
         q_objects = Q(pk__in=[])
         for model in apps.get_app_config("characters").get_models():
             if not issubclass(model, Character):
@@ -236,17 +232,6 @@ class Character(CharacterModel):
             return "Spirit"
         return self.type.replace("_", " ").title()
 
-    def next_stage(self, *, user):
-        from characters.chargen.transitions import advance
-
-        return advance(self, user=user)
-
-    def prev_stage(self):
-        from characters.chargen.transitions import previous_position
-
-        self.creation_status = previous_position(self)
-        self.save(update_fields=["creation_status"])
-
     def has_concept(self):
         return self.concept != ""
 
@@ -260,8 +245,6 @@ class Character(CharacterModel):
     def can_navigate_back(self):
         """Whether chargen back-navigation is currently allowed. Single source
         of truth shared by chargen_back_url and ChargenBackView."""
-        from characters.chargen import get_workflow
-
         workflow = get_workflow(self.type)
         if workflow and not 1 <= self.creation_status <= len(workflow.steps):
             return False
@@ -332,8 +315,6 @@ class Character(CharacterModel):
         Raises:
             ValidationError: If insufficient XP or invalid parameters
         """
-        from game.models import XPSpendingRequest
-
         # Use select_for_update to lock the row and prevent race conditions
         char = Character.objects.select_for_update().get(pk=self.pk)
 
@@ -374,8 +355,6 @@ class Character(CharacterModel):
         Raises:
             ValidationError: If request invalid or already processed
         """
-        from game.models import XPSpendingRequest
-
         char = Character.objects.select_for_update().get(pk=self.pk)
 
         try:
@@ -417,8 +396,6 @@ class Character(CharacterModel):
         Returns:
             XPSpendingRequest instance
         """
-        from game.models import XPSpendingRequest
-
         return XPSpendingRequest.objects.create(
             character=self,
             trait_name=trait_name,
@@ -488,8 +465,6 @@ class Character(CharacterModel):
         Returns:
             int: Total XP spent
         """
-        from django.db.models import Sum
-
         total = (
             self.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))["total"] or 0
         )
@@ -524,11 +499,9 @@ def attach_first_groups(characters):
     annotation in one query (polymorphic, so each is its concrete Cabal, Pack, ...).
     Returns the characters as a list.
     """
-    from characters.models.core.group import Group  # deferred: circular import
-
     characters = list(characters)
     ids = {c.first_group_id for c in characters if getattr(c, "first_group_id", None)}
-    groups = Group.objects.in_bulk(ids) if ids else {}
+    groups = apps.get_model("characters", "Group").objects.in_bulk(ids) if ids else {}
     for character in characters:
         character.first_group = groups.get(getattr(character, "first_group_id", None))
     return characters

@@ -1,8 +1,10 @@
 """Tests for MummyRelic model."""
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.test import TestCase
 
+from characters.models.mage.resonance import Resonance
 from items.models.mummy.relic import MummyRelic, RelicResonanceRating
 
 
@@ -208,8 +210,6 @@ class TestRelicResonanceRating(TestCase):
 
     def test_relic_resonance_rating_creation(self):
         """Test creating a RelicResonanceRating."""
-        from characters.models.mage.resonance import Resonance
-
         relic = MummyRelic.objects.create(name="Resonance Test Relic")
         resonance = Resonance.objects.create(name="Test Resonance")
         rating = RelicResonanceRating.objects.create(
@@ -223,10 +223,6 @@ class TestRelicResonanceRating(TestCase):
 
     def test_relic_resonance_unique_together(self):
         """Test unique_together constraint on relic+resonance."""
-        from django.db import IntegrityError
-
-        from characters.models.mage.resonance import Resonance
-
         relic = MummyRelic.objects.create(name="Unique Test Relic")
         resonance = Resonance.objects.create(name="Unique Resonance")
         RelicResonanceRating.objects.create(relic=relic, resonance=resonance, rating=2)
