@@ -51,7 +51,9 @@ the current models, and changes for older databases are applied by the `tg_schem
 ## How it connects to other apps
 
 - **game**: `Profile.is_st` and `is_st_for` read `game.models.STRelationship` and
-  `Chronicle.head_st`. The dashboard reads `Scene`, `Story`, `Week`, `WeeklyXPRequest`,
+  `Chronicle.head_st`: a user is a storyteller when they head any chronicle or hold any
+  relationship row, which is also who `PermissionManager.can_manage_scope` accepts. The
+  dashboard reads `Scene`, `Story`, `Week`, `WeeklyXPRequest`,
   `Journal` and `XPSpendingRequest`, and filters them with the read audiences in
   [`game/security.py`](../game/security.py). The weekly XP endpoints use
   `game.forms.WeeklyXPRequestForm` and `game.spending_approval.require_spending_approver`.

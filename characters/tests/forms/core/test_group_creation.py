@@ -90,6 +90,18 @@ class TestGroupCreationFormInitialization(GroupCreationFormTestCase):
         self.assertIn("coterie", group_type_values)
         self.assertIn("motley", group_type_values)
 
+    def test_form_initializes_for_head_st_without_relationship_row(self):
+        """A chronicle's head ST gets every group type with no STRelationship row."""
+        head = User.objects.create_user(username="head", email="head@test.com", password="pw")
+        Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+
+        form = GroupCreationForm(user=head)
+
+        group_type_values = [choice[0] for choice in form.fields["group_type"].choices]
+        self.assertIn("cabal", group_type_values)
+        self.assertIn("pack", group_type_values)
+        self.assertIn("coterie", group_type_values)
+
 
 class TestGroupTypeFiltering(GroupCreationFormTestCase):
     """Test group type choice filtering."""

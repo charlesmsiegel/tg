@@ -134,6 +134,17 @@ class TestCharacterCreationFormInitialization(CharacterCreationFormTestCase):
         self.assertIn("vtm", gameline_codes)
         self.assertIn("wta", gameline_codes)
 
+    def test_form_initializes_for_head_st_without_relationship_row(self):
+        """A chronicle's head ST gets the storyteller choices with no STRelationship row."""
+        head = User.objects.create_user(username="head", email="head@test.com", password="pw")
+        Chronicle.objects.create(name="Headed Chronicle", head_st=head)
+
+        form = CharacterCreationForm(user=head)
+
+        gameline_codes = [code for code, _ in form.fields["gameline"].choices]
+        self.assertIn("vtm", gameline_codes)
+        self.assertIn("wta", gameline_codes)
+
 
 class TestGamelineFiltering(CharacterCreationFormTestCase):
     """Test gameline choice filtering."""

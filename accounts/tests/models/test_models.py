@@ -69,6 +69,21 @@ class TestSTRelationships(TestCase):
         """Test that is_st() returns False for non-storytellers."""
         self.assertFalse(self.player_user.profile.is_st())
 
+    def test_is_st_returns_true_for_head_st_without_relationship_row(self):
+        """A chronicle's head ST counts as a storyteller with no STRelationship row."""
+        head = User.objects.create_user(username="head", email="head@test.com", password="pw")
+        Chronicle.objects.create(name="Headed", head_st=head)
+
+        self.assertFalse(STRelationship.objects.filter(user=head).exists())
+        self.assertTrue(head.profile.is_st())
+
+    def test_is_st_returns_false_for_game_storyteller(self):
+        """Game storytellers are view-only and are not storytellers."""
+        viewer = User.objects.create_user(username="gst", email="gst@test.com", password="pw")
+        self.chronicle.game_storytellers.add(viewer)
+
+        self.assertFalse(viewer.profile.is_st())
+
     def test_st_relations_returns_chronicles(self):
         """Test that st_relations() returns ST's chronicles."""
         STRelationship.objects.create(
