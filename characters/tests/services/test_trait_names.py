@@ -21,8 +21,9 @@ class SplitBackgroundTraitNameTests(SimpleTestCase):
             ("Contacts", "Police (Vice)"),
         )
 
-    def test_surrounding_whitespace_is_dropped(self):
+    def test_padded_note_round_trips(self):
+        """A note stored with padding comes back as stored, so its rating still matches."""
         self.assertEqual(
-            split_background_trait_name("  Allies ( Street gang )  "),
-            ("Allies", "Street gang"),
+            split_background_trait_name("Allies ( Street gang )"),
+            ("Allies", " Street gang "),
         )
