@@ -22,6 +22,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.services.trait_names import split_background_trait_name
 
 
 @dataclass
@@ -574,20 +575,37 @@ class HumanXPSpendingService(XPSpendingService):
 
     @applier("background")
     def _apply_background(self, xp_request, approver) -> XPApplyResult:
-        """Apply approved existing background XP spending."""
-        # Parse background name and note from trait_name
+        """Apply approved existing background XP spending.
+
+        The request stores only the display name the rating had when the player
+        spent the XP. If no rating matches it now (renamed, deleted, or the note
+        changed), or the rating no longer sits one dot below the value the
+        player paid for, the approval is refused and the request stays pending
+        so the storyteller sees why and the XP is not lost.
+        """
         trait_name = xp_request.trait_name
-        if " (" in trait_name:
-            bg_name, note = trait_name.split(" (")
-            note = note.rstrip(")")
-        else:
-            bg_name = trait_name
-            note = ""
+        bg_name, note = split_background_trait_name(trait_name)
 
         bgr = self.character.backgrounds.filter(bg__name=bg_name, note=note).first()
-        if bgr:
-            bgr.rating += 1
-            bgr.save()
+        if bgr is None:
+            return XPApplyResult(
+                success=False,
+                trait=trait_name,
+                message="",
+                error=f"No background rating matches {trait_name}; deny the request to refund it.",
+            )
+        if bgr.rating + 1 != xp_request.trait_value:
+            return XPApplyResult(
+                success=False,
+                trait=trait_name,
+                message="",
+                error=(
+                    f"{trait_name} is now rated {bgr.rating}, but the request paid for"
+                    f" rating {xp_request.trait_value}; deny the request to refund it."
+                ),
+            )
+        bgr.rating = xp_request.trait_value
+        bgr.save()
 
         # Mark as approved
         xp_request.approved = "Approved"
@@ -604,15 +622,8 @@ class HumanXPSpendingService(XPSpendingService):
     @applier("new-background")
     def _apply_new_background(self, xp_request, approver) -> XPApplyResult:
         """Apply approved new background XP spending."""
-        # Parse background name and note from trait_name
         trait_name = xp_request.trait_name
-        if "(" in trait_name:
-            bg_name, note = trait_name.split("(")
-            note = note.rstrip(")").strip()
-            bg_name = bg_name.strip()
-        else:
-            bg_name = trait_name.strip()
-            note = ""
+        bg_name, note = split_background_trait_name(trait_name)
 
         bg = Background.objects.get(name=bg_name)
         BackgroundRating.objects.create(

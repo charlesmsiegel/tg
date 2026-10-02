@@ -841,6 +841,95 @@ class TestApplyBackground(TestCase):
         self.assertEqual(new_bg.rating, 1)
         self.assertEqual(new_bg.note, "Street informants")
 
+    def test_apply_existing_background_without_matching_rating_fails(self):
+        """A request whose rating no longer matches is refused and stays pending."""
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Resources (Old note)",
+            trait_type="background",
+            trait_value=3,
+            cost=6,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertFalse(result.success)
+        self.assertIn("Resources (Old note)", result.error)
+        xp_request.refresh_from_db()
+        self.assertEqual(xp_request.approved, "Pending")
+        self.assertIsNone(xp_request.approved_by)
+        self.bg_rating.refresh_from_db()
+        self.assertEqual(self.bg_rating.rating, 2)
+
+    def test_apply_existing_background_with_parenthesised_note(self):
+        """A note that itself holds parentheses still finds its rating."""
+        contacts = Background.objects.create(name="Contacts", property_name="contacts")
+        rating = BackgroundRating.objects.create(
+            char=self.mage, bg=contacts, rating=1, note="Police (Vice)"
+        )
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Contacts (Police (Vice))",
+            trait_type="background",
+            trait_value=2,
+            cost=3,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertTrue(result.success, result.error)
+        rating.refresh_from_db()
+        self.assertEqual(rating.rating, 2)
+        xp_request.refresh_from_db()
+        self.assertEqual(xp_request.approved, "Approved")
+
+    def test_apply_existing_background_refuses_stale_rating(self):
+        """The rating the request paid for is written, never one dot more."""
+        self.bg_rating.rating = 3
+        self.bg_rating.save()
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Resources (Family wealth)",
+            trait_type="background",
+            trait_value=3,
+            cost=6,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertFalse(result.success)
+        self.assertIn("3", result.error)
+        self.bg_rating.refresh_from_db()
+        self.assertEqual(self.bg_rating.rating, 3)
+        xp_request.refresh_from_db()
+        self.assertEqual(xp_request.approved, "Pending")
+
+    def test_apply_new_background_with_parenthesised_note(self):
+        """A new background keeps the whole note, parentheses included."""
+        Background.objects.create(name="Contacts", property_name="contacts")
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Contacts (Police (Vice))",
+            trait_type="new-background",
+            trait_value=1,
+            cost=5,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertTrue(result.success, result.error)
+        new_bg = self.mage.backgrounds.get(bg__name="Contacts")
+        self.assertEqual(new_bg.note, "Police (Vice)")
+        self.assertEqual(new_bg.rating, 1)
+
 
 class TestApplyWillpower(TestCase):
     """Test applying willpower XP spending requests."""
