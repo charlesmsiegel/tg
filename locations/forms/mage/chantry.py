@@ -273,6 +273,9 @@ class ChantryCreateForm(ChantryFundingMixin, forms.ModelForm):
         widgets = _CHANTRY_WIDGETS
 
     def save(self, commit=True):
+        # ``total_points`` is a declared field here, not a Meta field, so the
+        # ModelForm never copies it onto the instance; and ChantryFundingMixin
+        # leaves an unsaved chantry to its caller. Fund it through the service.
         chantry = super().save(commit=False)
         chantry_points.set_total_points(chantry, self.cleaned_data["total_points"])
         if commit:

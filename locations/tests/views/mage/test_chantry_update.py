@@ -174,6 +174,24 @@ class ChantryUpdateFundingTests(TestCase):
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.total_points, 12)
 
+    def test_save_writes_only_the_form_fields(self):
+        """update_fields: an attribute set on the instance outside the form is not persisted."""
+        form_class = funded(modelform_factory(Chantry, fields=ChantryUpdateView.fields))
+        self.data["name"] = ["Renamed"]
+        form = form_class(
+            {k: v[0] if len(v) == 1 else v for k, v in self.data.items()},
+            instance=Chantry.objects.get(pk=self.chantry.pk),
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        form.instance.creation_status = 5  # not a form field
+        form.save()
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.name, "Renamed")  # a parent-table field
+        self.assertEqual(
+            self.chantry.gauntlet, int(self.data["gauntlet"][0])
+        )  # a child-table field
+        self.assertEqual(self.chantry.creation_status, 1)
+
     def test_a_total_matching_the_stored_one_never_reaches_the_service(self):
         """Only the ModelForm's update_fields write runs; total_points is not among them."""
         self.data["name"] = ["Renamed"]
