@@ -9,6 +9,7 @@ and templates never compute costs themselves.
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import F
 
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
@@ -32,6 +33,69 @@ def _lock_row(model, pk):
 def _lock(chantry):
     """Lock and return the current row for the ``chantry`` instance."""
     return _lock_row(type(chantry), chantry.pk)
+
+
+def funding_error(chantry, total):
+    """Why ``total`` cannot be the chantry's ``total_points``, or None when it can.
+
+    The total may never drop below ``total_cost()``, the points already spent;
+    otherwise ``points`` goes negative and ``rank`` no longer matches what was
+    bought. A chantry not yet saved has spent nothing.
+    """
+    if total < 0:
+        return "Total points must be 0 or higher."
+    spent = chantry.total_cost() if chantry.pk is not None else 0
+    if total < spent:
+        return f"The chantry has already spent {spent} points; the total cannot be lower."
+    return None
+
+
+def set_total_points(chantry, total):
+    """Fund the chantry with exactly ``total`` points. Returns the new total.
+
+    A saved chantry's row is locked, re-checked with ``funding_error`` and written;
+    the passed instance is updated. An unsaved chantry (the create forms build one
+    before saving it) only gets the attribute set, and the caller saves it.
+    """
+    if chantry.pk is None:
+        error = funding_error(chantry, total)
+        if error:
+            raise ValidationError(error)
+        chantry.total_points = total
+        return total
+    with transaction.atomic():
+        locked = _lock(chantry)
+        error = funding_error(locked, total)
+        if error:
+            raise ValidationError(error)
+        locked.total_points = total
+        locked.save(update_fields=["total_points"])
+        chantry.total_points = total
+        return total
+
+
+def add_points(chantry, points):
+    """Add ``points`` to the chantry's funding. Returns the new total.
+
+    One atomic ``UPDATE ... SET total_points = total_points + points``: two
+    concurrent joins each add their own points instead of racing on a read, which
+    ``select_for_update()`` alone cannot guarantee on SQLite. Adding never lowers
+    the total, so no balance check is needed; a negative amount is refused because
+    lowering the total is ``set_total_points``' job.
+    """
+    if points < 0:
+        raise ValidationError("Points can only be added; set the total to lower it.")
+    model = type(chantry)
+    with transaction.atomic():
+        updated = model.objects.filter(pk=chantry.pk).update(
+            total_points=F("total_points") + points
+        )
+        if not updated:
+            raise ValidationError("That chantry no longer exists.")
+        chantry.total_points = model.objects.values_list("total_points", flat=True).get(
+            pk=chantry.pk
+        )
+        return chantry.total_points
 
 
 def _held_rating(chantry, bg):

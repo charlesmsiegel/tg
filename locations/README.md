@@ -34,7 +34,7 @@ in the app; the detailed reference lives in [`docs/`](docs/).
 |------|----------------|
 | [`models/`](models/) | `LocationModel`, `City`, and the subclasses for each gameline |
 | [`registry.py`](registry.py) | One `ModelSpec` per routable model |
-| [`services/chantry_points.py`](services/chantry_points.py) | The single source of chantry point costs, caps and purchase/refund mutations |
+| [`services/chantry_points.py`](services/chantry_points.py) | The single source of chantry point costs, caps, funding and purchase/refund mutations |
 | [`views/`](views/) | Registry-built views, the staff index, the polymorphic detail router, the chantry and freehold wizards |
 | [`urls/`](urls/) | URL modules; each asks the registry for its routes and adds the wizard entry points |
 | [`forms/`](forms/) | Type chooser, owner-limited edit form, chantry wizard forms, node/sanctum/demesne forms with reality-zone formsets, freehold wizard forms, paradox realm forms |

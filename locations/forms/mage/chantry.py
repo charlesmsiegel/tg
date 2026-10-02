@@ -1,10 +1,11 @@
 from django import forms
 from django.db import transaction
-from django.db.models import F
+from django.db.models import Q
 
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
+from core.constants import CharacterStatus
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
 from locations.services import chantry_points
@@ -210,7 +211,28 @@ class ChantryEffectsForm(EffectCreateOrSelectForm):
         self.object.integrated_effects.add(effect)
 
 
-class ChantryCreateForm(forms.ModelForm):
+class ChantryFundingMixin:
+    """Let the points service judge a ``total_points`` value on a chantry ModelForm.
+
+    ``funding_error`` refuses a negative total and, on a saved chantry, a total
+    below what is already spent, so the direct (storyteller) forms cannot leave a
+    chantry with a negative balance.
+    """
+
+    def clean_total_points(self):
+        total = self.cleaned_data["total_points"]
+        error = chantry_points.funding_error(self.instance, total)
+        if error:
+            raise forms.ValidationError(error)
+        return total
+
+
+def funded(form_class):
+    """``form_class`` with ``ChantryFundingMixin`` in front, for registry-built forms."""
+    return type(f"Funded{form_class.__name__}", (ChantryFundingMixin, form_class), {})
+
+
+class ChantryCreateForm(ChantryFundingMixin, forms.ModelForm):
     total_points = forms.IntegerField(
         min_value=0, error_messages={"min_value": "Total points must be 0 or higher."}
     )
@@ -222,11 +244,34 @@ class ChantryCreateForm(forms.ModelForm):
 
     def save(self, commit=True):
         chantry = super().save(commit=False)
-        chantry.total_points = self.cleaned_data["total_points"]
+        chantry_points.set_total_points(chantry, self.cleaned_data["total_points"])
         if commit:
             chantry.save()
             self.save_m2m()
         return chantry
+
+
+def joinable_chantries(character):
+    """Chantries the character's Chantry background may pool its points into.
+
+    Joining only adds points, and points can only be spent while the chantry is
+    still in its wizard, so only unfinished (``Un``) or returned (``Rev``)
+    chantries qualify. Pooling into another player's chantry would raise its rank
+    behind their back, so the chantry must be owned by the character's player or
+    already count the character among its members. It must also share the
+    character's chronicle (or, for a chronicle-less character, have none).
+    """
+    who = Q(members=character)
+    if character.owner_id is not None:
+        who |= Q(owner_id=character.owner_id)
+    queryset = Chantry.objects.filter(
+        who, status__in=[CharacterStatus.UNAPPROVED, CharacterStatus.REVISION_REQUESTED]
+    )
+    if character.chronicle_id is None:
+        queryset = queryset.filter(chronicle__isnull=True)
+    else:
+        queryset = queryset.filter(chronicle_id=character.chronicle_id)
+    return queryset.distinct()
 
 
 class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
@@ -234,8 +279,10 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
 
     ``points`` is the character's Chantry background rating. A new chantry is
     owned by the character's player, starts unfinished in the chantry wizard and
-    is funded with exactly those points. Joining only adds the points; the
-    chosen chantry's owner, chronicle and status are never touched.
+    is funded with exactly those points. Joining only adds the points to one of
+    ``joinable_chantries(character)``; the chosen chantry's owner, chronicle and
+    status are never touched. Both paths fund the chantry through
+    ``locations.services.chantry_points``.
     """
 
     create_or_select_config = {
@@ -262,13 +309,7 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required = False
-        if character.chronicle is None:
-            # A chronicle-less character may only join their own chronicle-less
-            # chantries, not pool points into another player's.
-            queryset = Chantry.objects.filter(chronicle__isnull=True, owner=character.owner)
-        else:
-            queryset = Chantry.objects.filter(chronicle=character.chronicle)
-        self.fields["existing_chantry"].queryset = queryset.exclude(status__in=["Ret", "Dec"])
+        self.fields["existing_chantry"].queryset = joinable_chantries(character)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -285,13 +326,11 @@ class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
                 chantry.chronicle = self.character.chronicle
                 chantry.status = "Un"
                 chantry.creation_status = 1
-                chantry.total_points = self.points
+                chantry_points.set_total_points(chantry, self.points)
                 chantry.save()
                 self.save_m2m()
                 chantry_points.apply_type_grants(chantry)
                 return chantry
-            pk = self.cleaned_data["existing_chantry"].pk
-            # A single atomic UPDATE, not select_for_update() (a no-op on SQLite): two
-            # concurrent joins each add their own points instead of racing on a read.
-            Chantry.objects.filter(pk=pk).update(total_points=F("total_points") + self.points)
-            return Chantry.objects.get(pk=pk)
+            chantry = self.cleaned_data["existing_chantry"]
+            chantry_points.add_points(chantry, self.points)
+            return chantry

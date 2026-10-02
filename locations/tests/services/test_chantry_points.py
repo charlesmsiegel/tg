@@ -376,3 +376,82 @@ class TestLibraryTypeRule(ChantryPointsTestCase):
         chantry.chantry_type = "war"
         chantry.save()
         self.assertEqual(chantry.points, 4)
+
+
+class TestFunding(ChantryPointsTestCase):
+    """``add_points`` and ``set_total_points`` are the only writers of ``total_points``."""
+
+    def test_add_points_adds_exactly_and_updates_the_instance(self):
+        chantry = self.make_chantry(total_points=10)
+        self.assertEqual(svc.add_points(chantry, 5), 15)
+        self.assertEqual(chantry.total_points, 15)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.total_points, 15)
+
+    def test_add_points_uses_the_database_value_not_a_stale_instance(self):
+        chantry = self.make_chantry(total_points=10)
+        Chantry.objects.filter(pk=chantry.pk).update(total_points=100)
+        self.assertEqual(svc.add_points(chantry, 5), 105)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.total_points, 105)
+
+    def test_add_points_refuses_a_negative_amount(self):
+        chantry = self.make_chantry(total_points=10)
+        with self.assertRaises(ValidationError):
+            svc.add_points(chantry, -1)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.total_points, 10)
+
+    def test_add_points_refuses_a_vanished_chantry(self):
+        chantry = self.make_chantry(total_points=10)
+        Chantry.objects.filter(pk=chantry.pk).delete()
+        with self.assertRaises(ValidationError):
+            svc.add_points(chantry, 5)
+
+    def test_set_total_points_writes_the_row_and_the_instance(self):
+        chantry = self.make_chantry(total_points=10)
+        self.assertEqual(svc.set_total_points(chantry, 30), 30)
+        self.assertEqual(chantry.total_points, 30)
+        chantry.refresh_from_db()
+        self.assertEqual((chantry.total_points, chantry.rank), (30, 3))
+
+    def test_set_total_points_refuses_a_total_below_the_spent_points(self):
+        chantry = self.make_chantry(total_points=20)
+        self.rate(chantry, self.sanctum, 2)  # 10 points spent
+        self.assertIsNotNone(svc.funding_error(chantry, 9))
+        self.assertIsNone(svc.funding_error(chantry, 10))
+        with self.assertRaises(ValidationError):
+            svc.set_total_points(chantry, 9)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.total_points, 20)
+        svc.set_total_points(chantry, 10)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.points, 0)
+
+    def test_set_total_points_counts_integrated_effects_as_spent(self):
+        chantry = self.make_chantry(total_points=20, integrated_effects_score=3)  # 6 spent
+        with self.assertRaises(ValidationError):
+            svc.set_total_points(chantry, 5)
+        self.assertEqual(svc.set_total_points(chantry, 6), 6)
+
+    def test_set_total_points_refuses_a_negative_total(self):
+        chantry = self.make_chantry(total_points=10)
+        with self.assertRaises(ValidationError):
+            svc.set_total_points(chantry, -1)
+        chantry.refresh_from_db()
+        self.assertEqual(chantry.total_points, 10)
+
+    def test_set_total_points_refuses_a_vanished_chantry(self):
+        chantry = self.make_chantry(total_points=10)
+        Chantry.objects.filter(pk=chantry.pk).delete()
+        with self.assertRaises(ValidationError):
+            svc.set_total_points(chantry, 5)
+
+    def test_set_total_points_on_an_unsaved_chantry_only_sets_the_attribute(self):
+        chantry = Chantry(name="Unsaved")
+        self.assertEqual(svc.set_total_points(chantry, 12), 12)
+        self.assertEqual(chantry.total_points, 12)
+        self.assertIsNone(chantry.pk)
+        with self.assertRaises(ValidationError):
+            svc.set_total_points(Chantry(name="Negative"), -1)
+        self.assertIsNone(svc.funding_error(Chantry(name="Fresh"), 0))

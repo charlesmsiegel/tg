@@ -70,20 +70,20 @@ class ChantryBackgroundStepMixin:
     def test_join_existing_only_adds_points_and_membership(self):
         existing = Chantry.objects.create(
             name="Old Tower",
-            owner=self.other,
+            owner=self.owner,
             chronicle=self.chronicle,
-            status="App",
-            creation_status=7,
+            status="Un",
+            creation_status=2,
             total_points=10,
         )
         response = self.client.post(self.url, {"existing_chantry": existing.pk, "name": "Ignored"})
         self.assertEqual(response.status_code, 302)
         existing.refresh_from_db()
         self.assertEqual(existing.total_points, 13)
-        self.assertEqual(existing.owner, self.other)
+        self.assertEqual(existing.owner, self.owner)
         self.assertEqual(existing.chronicle, self.chronicle)
-        self.assertEqual(existing.status, "App")
-        self.assertEqual(existing.creation_status, 7)
+        self.assertEqual(existing.status, "Un")
+        self.assertEqual(existing.creation_status, 2)
         self.assertEqual(existing.name, "Old Tower")
         self.assertIn(self.character.pk, existing.members.values_list("pk", flat=True))
         self.assertFalse(Chantry.objects.filter(name="Ignored").exists())
@@ -107,6 +107,35 @@ class ChantryBackgroundStepMixin:
         self.assertIn("existing_chantry", response.context["form"].errors)
         self.character.refresh_from_db()
         self.assertEqual(self.character.creation_status, self.chantry_step)
+
+    def test_another_players_approved_chantry_cannot_be_joined(self):
+        """Pooling points into someone else's chantry would raise its rank unspendably."""
+        existing = Chantry.objects.create(
+            name="Their Tower",
+            owner=self.other,
+            chronicle=self.chronicle,
+            status="App",
+            creation_status=7,
+            total_points=10,
+        )
+        response = self.client.post(self.url, {"existing_chantry": existing.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("existing_chantry", response.context["form"].errors)
+        existing.refresh_from_db()
+        self.assertEqual(existing.total_points, 10)
+        self.assertFalse(existing.members.filter(pk=self.character.pk).exists())
+        self.rating.refresh_from_db()
+        self.assertFalse(self.rating.complete)
+
+    def test_another_players_draft_cannot_be_joined(self):
+        draft = Chantry.objects.create(
+            name="Their Draft", owner=self.other, chronicle=self.chronicle, status="Un"
+        )
+        response = self.client.post(self.url, {"existing_chantry": draft.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("existing_chantry", response.context["form"].errors)
+        draft.refresh_from_db()
+        self.assertEqual(draft.total_points, 0)
 
     def test_retired_chantry_cannot_be_joined(self):
         retired = Chantry.objects.create(
@@ -197,7 +226,7 @@ class TestChantryStepDoubleSubmit(TestCase):
             name="Race Tower",
             owner=self.owner,
             chronicle=self.chronicle,
-            status="App",
+            status="Un",
             total_points=10,
         )
         view = self._build_view()

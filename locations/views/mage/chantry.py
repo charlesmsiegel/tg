@@ -26,6 +26,7 @@ from locations.forms.mage.chantry import (
     ChantryCreateForm,
     ChantryEffectsForm,
     ChantryPointForm,
+    funded,
 )
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
@@ -108,6 +109,10 @@ ChantryListView = registry.view("locations.Chantry", "list")
 class _ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """All-fields create form for Mage STs of the chosen chronicle, and staff."""
 
+    def get_form_class(self):
+        # ``total_points`` is an ordinary field here; the points service still judges it.
+        return funded(super().get_form_class())
+
     def get_initial(self):
         initial = super().get_initial()
         if self.request.GET.get("chronicle"):
@@ -152,6 +157,10 @@ ChantryCreateView = registry.view("locations.Chantry", "create")
 
 class _ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     """Direct edit form; the route policy (OBJECT_ST_WRITE) limits it to scoped STs and staff."""
+
+    def get_form_class(self):
+        # The points service refuses a ``total_points`` below what is already spent.
+        return funded(super().get_form_class())
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

@@ -9,7 +9,7 @@ from characters.models.mage.cabal import Cabal
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from locations.models.core.location import LocationModel
-from locations.models.mage.chantry import Chantry
+from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 from locations.tests.views.mage.chantry_fixtures import add_chantry_actors, submitted_values
 from locations.views.mage.chantry import ChantryUpdateView
 
@@ -110,3 +110,44 @@ class ChantryUpdateRoundTripTests(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.snapshot(), before)
+
+
+class ChantryUpdateFundingTests(TestCase):
+    """The direct form may not lower ``total_points`` below what is already spent."""
+
+    def setUp(self):
+        add_chantry_actors(self)
+        self.chantry = Chantry.objects.create(
+            name="Funded",
+            owner=self.player,
+            chronicle=self.chronicle,
+            status="Un",
+            total_points=12,
+        )
+        sanctum, _ = Background.objects.get_or_create(
+            property_name="sanctum", defaults={"name": "Sanctum"}
+        )
+        ChantryBackgroundRating.objects.create(chantry=self.chantry, bg=sanctum, rating=2)  # 10
+        self.url = self.chantry.get_update_url()
+        self.client.force_login(self.st)
+        self.data = submitted_values(self.client.get(self.url))
+
+    def test_a_total_below_the_spent_points_is_a_form_error(self):
+        self.data["total_points"] = ["9"]
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("total_points", response.context["form"].errors)
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.total_points, 12)
+
+    def test_a_total_equal_to_the_spent_points_is_saved(self):
+        self.data["total_points"] = ["10"]
+        self.assertEqual(self.client.post(self.url, self.data).status_code, 302)
+        self.chantry.refresh_from_db()
+        self.assertEqual((self.chantry.total_points, self.chantry.points), (10, 0))
+
+    def test_a_negative_total_is_a_form_error(self):
+        self.data["total_points"] = ["-1"]
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("total_points", response.context["form"].errors)

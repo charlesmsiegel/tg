@@ -91,11 +91,12 @@ in [chantries](chantries.md).
 
 | Form | Kind | Use |
 |------|------|-----|
-| `ChantryCreateForm` | `ModelForm` | Wizard entry: `name`, `chronicle`, `contained_within`, `description`, `faction`, `leadership_type`, `season`, `chantry_type`, the barriers, and `total_points` (0 or more). `save()` copies `total_points` and saves many-to-many data. |
+| `ChantryCreateForm` | `ModelForm` with `ChantryFundingMixin` | Wizard entry: `name`, `chronicle`, `contained_within`, `description`, `faction`, `leadership_type`, `season`, `chantry_type`, the barriers, and `total_points` (0 or more). `save()` funds the chantry with `chantry_points.set_total_points()` and saves many-to-many data. |
 | `ChantryPointForm` | `Form` (chained selects, conditional fields) | Wizard step 1. Constructor takes `chantry`, the instance the view resolved. `category` (`-----`, `Integrated Effects`, `New Background`, `Existing Background`; only the affordable ones are offered) and `example` chained to it; `note` and `display_alt_name` for new backgrounds. `clean()` re-checks with the points service; `save()` calls `buy_ie_dot()` or `buy_background_dot()` and lets their `ValidationError` propagate for the view to show. |
 | `ChantryEffectsForm` | `characters.forms.mage.effect.EffectCreateOrSelectForm` | Wizard step 2. Constructor takes `chantry`; `select` is limited to affordable effects within the rank. `save()` adds the effect to `integrated_effects`. |
 | `ChantrySelectOrCreateForm` | `ModelForm` with `CreateOrSelectMixin` | Character wizards' Chantry step; see below |
 | `ChantryRemoveForm` | `Form` | Validates and applies one refund (`rating`, `ie` or `effect`) through the points service; not used by any view |
+| `ChantryFundingMixin` | Mixin | `clean_total_points()` asks `chantry_points.funding_error()`: never negative, never below what a saved chantry has spent. `funded(form_class)` adds it in front of the registry-built direct create and update forms. |
 
 #### `ChantrySelectOrCreateForm`
 
@@ -104,15 +105,21 @@ Constructor: `ChantrySelectOrCreateForm(data, character=<Human>, points=<int>)`.
 `name` and the chantry detail fields. All fields are optional; creating requires a
 name, joining requires a selection.
 
-- The chantries offered are those in the character's chronicle, or, for a character
-  with no chronicle, the chronicle-less chantries owned by the same player; retired
-  and deceased chantries are excluded.
+- The chantries offered are `joinable_chantries(character)`: unfinished (`Un`) or
+  returned (`Rev`) chantries that the character's player owns or that already list
+  the character in `members`, in the character's chronicle (or chronicle-less for a
+  character with no chronicle). Joining only adds points, and points can only be
+  spent while the chantry is in its wizard, so an approved, submitted, retired or
+  deceased chantry is never offered; nor is another player's draft, since the points
+  would raise its rank behind that player's back. Pooling points into someone else's
+  chantry needs an invitation or storyteller step and has no form yet. A POST naming a
+  chantry outside the queryset is a field error and changes nothing.
 - `save()` always commits, inside a transaction. Creating sets the owner (the
-  character's player), chronicle, `status = "Un"`, `creation_status = 1` and
-  `total_points = points`, saves many-to-many data and applies type grants. Joining
-  adds `points` to the chosen chantry's `total_points` with a single `UPDATE ... SET
-  total_points = total_points + points` and leaves its owner, chronicle and status
-  alone. It returns the chantry.
+  character's player), chronicle, `status = "Un"`, `creation_status = 1`, funds the
+  chantry with `chantry_points.set_total_points(chantry, points)`, saves many-to-many
+  data and applies type grants. Joining calls `chantry_points.add_points(chantry,
+  points)`, a single `UPDATE ... SET total_points = total_points + points`, and leaves
+  the owner, chronicle and status alone. It returns the chantry.
 
 ### `NodeForm`, `SanctumForm`, `DemesneForm`
 
