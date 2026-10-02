@@ -1,6 +1,9 @@
 """The direct chantry edit form: scoped-ST access and a lossless round trip."""
 
-from django.forms.models import model_to_dict
+from unittest import mock
+
+from django.core.exceptions import ValidationError
+from django.forms.models import model_to_dict, modelform_factory
 from django.test import TestCase
 
 from characters.models.core.background_block import Background
@@ -8,8 +11,10 @@ from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
+from locations.forms.mage.chantry import funded
 from locations.models.core.location import LocationModel
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
+from locations.services import chantry_points
 from locations.tests.views.mage.chantry_fixtures import add_chantry_actors, submitted_values
 from locations.views.mage.chantry import ChantryUpdateView
 
@@ -151,3 +156,32 @@ class ChantryUpdateFundingTests(TestCase):
         response = self.client.post(self.url, self.data)
         self.assertEqual(response.status_code, 200)
         self.assertIn("total_points", response.context["form"].errors)
+
+    def test_the_total_is_written_by_the_service_under_its_lock(self):
+        """Points spent between validation and save are seen at save time."""
+        form_class = funded(modelform_factory(Chantry, fields=ChantryUpdateView.fields))
+        self.data["total_points"] = ["12"]
+        form = form_class(
+            {k: v[0] if len(v) == 1 else v for k, v in self.data.items()},
+            instance=Chantry.objects.get(pk=self.chantry.pk),
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        sanctum = Background.objects.get(property_name="sanctum")
+        ChantryBackgroundRating.objects.get(chantry=self.chantry, bg=sanctum).delete()
+        ChantryBackgroundRating.objects.create(chantry=self.chantry, bg=sanctum, rating=3)  # 15
+        with self.assertRaises(ValidationError):
+            form.save()
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.total_points, 12)
+
+    def test_a_funding_error_at_save_time_is_a_form_error_and_saves_nothing(self):
+        self.data["total_points"] = ["20"]
+        self.data["name"] = ["Renamed"]
+        with mock.patch.object(
+            chantry_points, "set_total_points", side_effect=ValidationError("Spent meanwhile.")
+        ):
+            response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("total_points", response.context["form"].errors)
+        self.chantry.refresh_from_db()
+        self.assertEqual((self.chantry.name, self.chantry.total_points), ("Funded", 12))

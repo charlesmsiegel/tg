@@ -105,9 +105,13 @@ chantry goes through them:
 | `ChantryCreateForm` (wizard entry) | `set_total_points()` on the unsaved chantry with the entered total |
 | `ChantrySelectOrCreateForm`, creating | `set_total_points()` with the character's Chantry background rating |
 | `ChantrySelectOrCreateForm`, joining | `add_points()` with that rating, as one atomic `UPDATE` |
-| The direct create and update forms | `ChantryFundingMixin.clean_total_points()` asks `funding_error()`; the storyteller cannot lower the total below what is spent |
+| The direct create and update forms | `ChantryFundingMixin`: `clean_total_points()` asks `funding_error()` for a field error, and on a saved chantry `save()` keeps the stored total out of the ModelForm's own `UPDATE` and writes the new one with `set_total_points()` under its lock, so a storyteller edit cannot race a player's purchase into a negative balance. A refusal at save time (`ValidationError`) rolls the whole save back and becomes a form error. |
 
-`rank` follows `total_points`, so funding a chantry is the only way to raise its rank.
+`add_points()` only funds a chantry whose status is in `OPEN_STATUSES` (`Un`, `Rev`),
+checked in the same `UPDATE`: points joined into a chantry that left the wizard could
+never be spent. `set_total_points()` has no status rule, since storytellers edit
+approved chantries. `rank` follows `total_points`, so funding a chantry is the only way
+to raise its rank.
 
 ### Rank
 
@@ -165,7 +169,7 @@ been deleted. `MAX_BACKGROUND_RATING` is 5 and `MAX_IE_SCORE` is 10.
 | `apply_type_grants(chantry)` | Mutation | For a library-type chantry, creates the Library rating at the floor or raises it to the floor; does nothing for other types |
 | `funding_error(chantry, total)` | Predicate | Why `total` cannot be the chantry's `total_points` (negative, or below `total_cost()` on a saved chantry), or `None` |
 | `set_total_points(chantry, total)` | Mutation | Sets `total_points` after `funding_error`; on a saved chantry locks and writes the row and updates the instance, on an unsaved one only sets the attribute for the caller to save. Returns the total |
-| `add_points(chantry, points)` | Mutation | Adds a non-negative amount with one atomic `UPDATE ... SET total_points = total_points + points` (no read, so concurrent joins never lose points); refuses a vanished chantry. Returns the new total |
+| `add_points(chantry, points)` | Mutation | Adds a non-negative amount with one atomic `UPDATE ... SET total_points = total_points + points` (no read, so concurrent joins never lose points) whose `WHERE` also requires a status in `OPEN_STATUSES`; refuses a vanished chantry or one that left the wizard. Returns the new total |
 
 ## Three ways to create a chantry
 

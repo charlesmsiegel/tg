@@ -96,7 +96,7 @@ in [chantries](chantries.md).
 | `ChantryEffectsForm` | `characters.forms.mage.effect.EffectCreateOrSelectForm` | Wizard step 2. Constructor takes `chantry`; `select` is limited to affordable effects within the rank. `save()` adds the effect to `integrated_effects`. |
 | `ChantrySelectOrCreateForm` | `ModelForm` with `CreateOrSelectMixin` | Character wizards' Chantry step; see below |
 | `ChantryRemoveForm` | `Form` | Validates and applies one refund (`rating`, `ie` or `effect`) through the points service; not used by any view |
-| `ChantryFundingMixin` | Mixin | `clean_total_points()` asks `chantry_points.funding_error()`: never negative, never below what a saved chantry has spent. `funded(form_class)` adds it in front of the registry-built direct create and update forms. |
+| `ChantryFundingMixin` | Mixin | `clean_total_points()` asks `chantry_points.funding_error()`: never negative, never below what a saved chantry has spent. On a saved chantry `save(commit=True)` writes the new total through `chantry_points.set_total_points()` (locked and re-checked) inside the same transaction as the other fields, and may raise `ValidationError`; the update view turns that into a form error. `funded(form_class)` adds it in front of the registry-built direct create and update forms. |
 
 #### `ChantrySelectOrCreateForm`
 
@@ -118,8 +118,11 @@ name, joining requires a selection.
   character's player), chronicle, `status = "Un"`, `creation_status = 1`, funds the
   chantry with `chantry_points.set_total_points(chantry, points)`, saves many-to-many
   data and applies type grants. Joining calls `chantry_points.add_points(chantry,
-  points)`, a single `UPDATE ... SET total_points = total_points + points`, and leaves
-  the owner, chronicle and status alone. It returns the chantry.
+  points)`, a single `UPDATE ... SET total_points = total_points + points` that also
+  requires the chantry still to be in `Un`/`Rev`, and leaves the owner, chronicle and
+  status alone. It returns the chantry. `save()` raises `ValidationError` when the
+  chantry was deleted or approved after validation;
+  `CharacterChantryBackgroundView` rolls back the claim and shows it as a form error.
 
 ### `NodeForm`, `SanctumForm`, `DemesneForm`
 

@@ -169,7 +169,13 @@ class _ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        response = super().form_valid(form)
+        try:
+            response = super().form_valid(form)
+        except ValidationError as exc:
+            # The points service refused the total at save time (points were spent
+            # meanwhile); the form's save rolled everything back.
+            form.add_error("total_points", exc)
+            return self.form_invalid(form)
         if "chantry_type" in form.changed_data:
             apply_type_grants(self.object)
         return response

@@ -455,3 +455,17 @@ class TestFunding(ChantryPointsTestCase):
         with self.assertRaises(ValidationError):
             svc.set_total_points(Chantry(name="Negative"), -1)
         self.assertIsNone(svc.funding_error(Chantry(name="Fresh"), 0))
+
+    def test_add_points_refuses_a_chantry_that_left_the_wizard(self):
+        """Points joined into an approved chantry could never be spent."""
+        for status in ("Sub", "App", "Ret", "Dec"):
+            with self.subTest(status=status):
+                chantry = self.make_chantry(total_points=10, status=status)
+                with self.assertRaises(ValidationError):
+                    svc.add_points(chantry, 5)
+                chantry.refresh_from_db()
+                self.assertEqual(chantry.total_points, 10)
+        for status in ("Un", "Rev"):
+            with self.subTest(status=status):
+                chantry = self.make_chantry(total_points=10, status=status)
+                self.assertEqual(svc.add_points(chantry, 5), 15)
