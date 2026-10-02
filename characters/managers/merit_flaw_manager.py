@@ -46,10 +46,11 @@ class MeritFlawManager:
         Returns:
             int: Number of languages the character knows
         """
+        merit_flaw_model = _model("MeritFlaw")
         mf_list = self.character.merits_and_flaws.all().values_list("name", flat=True)
         if "Language" not in mf_list:
             return 0
-        language_rating = self.mf_rating(_model("MeritFlaw").objects.get(name="Language"))
+        language_rating = self.mf_rating(merit_flaw_model.objects.get(name="Language"))
         if "Natural Linguist" in mf_list:
             language_rating *= 2
         return language_rating
@@ -74,10 +75,9 @@ class MeritFlawManager:
         Returns:
             bool: True if successfully added, False if rating is invalid
         """
+        merit_flaw_rating_model = _model("MeritFlawRating")
         if rating in mf.get_ratings():
-            mfr, _ = _model("MeritFlawRating").objects.get_or_create(
-                character=self.character, mf=mf
-            )
+            mfr, _ = merit_flaw_rating_model.objects.get_or_create(character=self.character, mf=mf)
             mfr.rating = rating
             mfr.save()
             return True
@@ -96,21 +96,21 @@ class MeritFlawManager:
         Returns:
             QuerySet: Filtered MeritFlaw queryset
         """
+        merit_flaw_model = _model("MeritFlaw")
+        merit_flaw_rating_model = _model("MeritFlawRating")
         character_type = self.character.type
         if character_type in ["fomor"]:
             character_type = "human"
 
         # Get merits/flaws not yet taken
-        new_mfs = _model("MeritFlaw").objects.exclude(pk__in=self.character.merits_and_flaws.all())
+        new_mfs = merit_flaw_model.objects.exclude(pk__in=self.character.merits_and_flaws.all())
 
         # Get merits/flaws taken but not at max rating
-        non_max_mf = (
-            _model("MeritFlawRating")
-            .objects.filter(character=self.character)
-            .exclude(Q(rating=F("mf__max_rating")))
+        non_max_mf = merit_flaw_rating_model.objects.filter(character=self.character).exclude(
+            Q(rating=F("mf__max_rating"))
         )
 
-        had_mfs = _model("MeritFlaw").objects.filter(pk__in=non_max_mf)
+        had_mfs = merit_flaw_model.objects.filter(pk__in=non_max_mf)
         mf = new_mfs | had_mfs
 
         # If at max flaws, only show merits (positive ratings)
@@ -133,9 +133,10 @@ class MeritFlawManager:
         Returns:
             int: Rating value, or 0 if not taken
         """
+        merit_flaw_rating_model = _model("MeritFlawRating")
         try:
-            return _model("MeritFlawRating").objects.get(character=self.character, mf=mf).rating
-        except _model("MeritFlawRating").DoesNotExist:
+            return merit_flaw_rating_model.objects.get(character=self.character, mf=mf).rating
+        except merit_flaw_rating_model.DoesNotExist:
             return 0
 
     def has_max_flaws(self):
@@ -154,11 +155,10 @@ class MeritFlawManager:
         Returns:
             int: Sum of all negative merit/flaw ratings
         """
-        result = (
-            _model("MeritFlawRating")
-            .objects.filter(character=self.character, rating__lt=0)
-            .aggregate(Sum("rating"))
-        )
+        merit_flaw_rating_model = _model("MeritFlawRating")
+        result = merit_flaw_rating_model.objects.filter(
+            character=self.character, rating__lt=0
+        ).aggregate(Sum("rating"))
         return result["rating__sum"] or 0
 
     def total_merits(self):
@@ -168,11 +168,10 @@ class MeritFlawManager:
         Returns:
             int: Sum of all positive merit/flaw ratings
         """
-        result = (
-            _model("MeritFlawRating")
-            .objects.filter(character=self.character, rating__gt=0)
-            .aggregate(Sum("rating"))
-        )
+        merit_flaw_rating_model = _model("MeritFlawRating")
+        result = merit_flaw_rating_model.objects.filter(
+            character=self.character, rating__gt=0
+        ).aggregate(Sum("rating"))
         return result["rating__sum"] or 0
 
     def meritflaw_freebies(self, form):

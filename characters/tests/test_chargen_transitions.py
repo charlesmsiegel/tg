@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 
-from characters.chargen.transitions import advance, previous_position
+from characters.chargen.transitions import advance, previous_position, retreat
 from characters.models.core import Character, Human
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.demon.demon import Demon
@@ -72,6 +72,13 @@ class TransitionTests(TestCase):
     def test_previous_position_skips_empty_steps_without_side_effects(self):
         character = self.vampire(creation_status=13)
         self.assertEqual(previous_position(character), 7)
+        self.assertFalse(character.languages.exists())
+
+    def test_retreat_stores_the_previous_position(self):
+        character = self.vampire(creation_status=13)
+        retreat(character)
+        character.refresh_from_db()
+        self.assertEqual(character.creation_status, 7)
         self.assertFalse(character.languages.exists())
 
     def test_freebie_filter_uses_registry_positions_and_concrete_content_types(self):

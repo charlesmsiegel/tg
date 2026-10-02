@@ -17,10 +17,10 @@ ROOT = Path(__file__).resolve().parents[2]
 PACKAGES = ("accounts", "characters", "core", "game", "items", "locations", "widgets", "tg")
 SKIP_DIRS = {"migrations", "__pycache__"}
 
-# Imports inside functions that Django's app loading makes necessary.
+# Imports that Django's app loading makes necessary: (file, function, module).
 ALLOWED_FUNCTION_IMPORTS = {
-    ("accounts/apps.py", "accounts.signals"),
-    ("game/apps.py", "game.signals"),
+    ("accounts/apps.py", "ready", "accounts.signals"),
+    ("game/apps.py", "ready", "game.signals"),
 }
 
 
@@ -51,21 +51,29 @@ def resolve(name, modules):
 class ImportPlacementTests(SimpleTestCase):
     def test_imports_sit_at_module_scope(self):
         offenders = []
+
+        def visit(node, scope, relative):
+            for child in ast.iter_child_nodes(node):
+                if isinstance(child, ast.Import | ast.ImportFrom):
+                    if scope is None:
+                        continue
+                    imported = {alias.name for alias in child.names}
+                    if isinstance(child, ast.ImportFrom):
+                        imported = {child.module or ""}
+                    if any(
+                        (relative, scope.name, name) in ALLOWED_FUNCTION_IMPORTS
+                        for name in imported
+                    ):
+                        continue
+                    offenders.append(f"{relative}:{child.lineno} {ast.unparse(child)}")
+                elif isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+                    visit(child, child, relative)
+                else:
+                    visit(child, scope, relative)
+
         for path in sorted(project_modules().values()):
             tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
-            for scope in ast.walk(tree):
-                if not isinstance(scope, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
-                    continue
-                for node in ast.walk(scope):
-                    if not isinstance(node, ast.Import | ast.ImportFrom):
-                        continue
-                    relative = str(path.relative_to(ROOT))
-                    imported = {alias.name for alias in node.names}
-                    if isinstance(node, ast.ImportFrom):
-                        imported = {node.module or ""}
-                    if any((relative, name) in ALLOWED_FUNCTION_IMPORTS for name in imported):
-                        continue
-                    offenders.append(f"{relative}:{node.lineno} {ast.unparse(node)}")
+            visit(tree, None, str(path.relative_to(ROOT)))
         self.assertEqual(
             offenders, [], "Imports inside functions or classes:\n" + "\n".join(offenders)
         )
@@ -100,31 +108,41 @@ class ImportGraphTests(SimpleTestCase):
                     continue
                 edges[module].update(t for t in targets if t and t != module)
 
-        # Tarjan's strongly connected components; any component of two or more
-        # modules is a cycle.
+        # Tarjan's strongly connected components, iterative so a deep import chain
+        # cannot overflow the stack; any component of two or more modules is a cycle.
         index, low, stack, on_stack, cycles = {}, {}, [], set(), []
-        counter = iter(range(10**9))
 
-        def strong(v):
-            index[v] = low[v] = next(counter)
-            stack.append(v)
-            on_stack.add(v)
-            for w in edges[v]:
-                if w not in index:
-                    strong(w)
-                    low[v] = min(low[v], low[w])
-                elif w in on_stack:
-                    low[v] = min(low[v], index[w])
-            if low[v] == index[v]:
-                component = []
-                while True:
-                    w = stack.pop()
-                    on_stack.discard(w)
-                    component.append(w)
-                    if w == v:
+        def strong(root):
+            work = [(root, iter(sorted(edges[root])))]
+            index[root] = low[root] = len(index)
+            stack.append(root)
+            on_stack.add(root)
+            while work:
+                node, children = work[-1]
+                for child in children:
+                    if child not in index:
+                        index[child] = low[child] = len(index)
+                        stack.append(child)
+                        on_stack.add(child)
+                        work.append((child, iter(sorted(edges[child]))))
                         break
-                if len(component) > 1:
-                    cycles.append(sorted(component))
+                    if child in on_stack:
+                        low[node] = min(low[node], index[child])
+                else:
+                    work.pop()
+                    if work:
+                        parent = work[-1][0]
+                        low[parent] = min(low[parent], low[node])
+                    if low[node] == index[node]:
+                        component = []
+                        while True:
+                            member = stack.pop()
+                            on_stack.discard(member)
+                            component.append(member)
+                            if member == node:
+                                break
+                        if len(component) > 1:
+                            cycles.append(sorted(component))
 
         for module in sorted(modules):
             if module not in index:

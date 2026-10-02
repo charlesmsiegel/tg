@@ -42,6 +42,21 @@ class TestMageCreationForm(TestCase):
         form = MageCreationForm(user=self.player)
         self.assertNotIn(nephandi, form.fields["affiliation"].queryset)
 
+    def test_allowed_chained_parent_follows_the_affiliation_queryset(self):
+        """The chained-select endpoint trusts the form, not the request, for parents."""
+        nephandi = MageFaction.objects.create(name="Nephandi", parent=None)
+        nephandic_faction = MageFaction.objects.create(name="Infernalists", parent=nephandi)
+        form = MageCreationForm(user=self.player)
+
+        self.assertTrue(form.allowed_chained_parent("faction", self.affiliation.pk))
+        self.assertTrue(form.allowed_chained_parent("subfaction", self.faction.pk))
+        # A restricted affiliation and a faction under it are refused as parents.
+        self.assertFalse(form.allowed_chained_parent("faction", nephandi.pk))
+        self.assertFalse(form.allowed_chained_parent("subfaction", nephandic_faction.pk))
+        # A faction is never a valid parent for the faction field, nor a missing id.
+        self.assertFalse(form.allowed_chained_parent("faction", self.faction.pk))
+        self.assertFalse(form.allowed_chained_parent("subfaction", 999999))
+
     def test_form_excludes_marauders_for_non_st(self):
         """Test form excludes Marauders for non-storytellers."""
         marauders = MageFaction.objects.create(name="Marauders", parent=None)
