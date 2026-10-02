@@ -10,7 +10,12 @@ from django.db.models import Sum
 
 
 def _model(name):
-    """A characters model, looked up when called so this module imports no models."""
+    """A characters model, looked up when called so this module imports no models.
+
+    ``characters.models.core.human`` imports these managers while the models are
+    still loading, so a plain import here would be a cycle (see
+    ``core/tests/test_import_graph.py``).
+    """
     return apps.get_model("characters", name)
 
 
