@@ -21,6 +21,8 @@ CASES = (
     (Changeling, "art", "Chicanery", "chicanery", True),
     (Changeling, "realm", "Actor", "actor", True),
     (Vampire, "virtue", "Conscience", "conscience", False),
+    # The vampire chained form labels this virtue with a hyphen.
+    (Vampire, "virtue", "Self-Control", "self_control", False),
     (Mummy, "hekau", "Alchemy", "alchemy", False),
 )
 
