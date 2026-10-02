@@ -97,9 +97,7 @@ def add_points(chantry, points):
         )
         if not updated:
             raise ValidationError("That chantry no longer exists or is no longer being built.")
-        chantry.total_points = model.objects.values_list("total_points", flat=True).get(
-            pk=chantry.pk
-        )
+        chantry.refresh_from_db(fields=["total_points"])
         return chantry.total_points
 
 

@@ -96,7 +96,7 @@ in [chantries](chantries.md).
 | `ChantryEffectsForm` | `characters.forms.mage.effect.EffectCreateOrSelectForm` | Wizard step 2. Constructor takes `chantry`; `select` is limited to affordable effects within the rank. `save()` adds the effect to `integrated_effects`. |
 | `ChantrySelectOrCreateForm` | `ModelForm` with `CreateOrSelectMixin` | Character wizards' Chantry step; see below |
 | `ChantryRemoveForm` | `Form` | Validates and applies one refund (`rating`, `ie` or `effect`) through the points service; not used by any view |
-| `ChantryFundingMixin` | Mixin | `clean_total_points()` asks `chantry_points.funding_error()`: never negative, never below what a saved chantry has spent. On a saved chantry `save(commit=True)` writes the new total through `chantry_points.set_total_points()` (locked and re-checked) inside the same transaction as the other fields, and may raise `ValidationError`; the update view turns that into a form error. `funded(form_class)` adds it in front of the registry-built direct create and update forms. |
+| `ChantryFundingMixin` | Mixin | When the submitted `total_points` differs from the stored one, `clean_total_points()` asks `chantry_points.funding_error()`: never negative, never below what a saved chantry has spent. On a saved chantry `save(commit=True)` writes the other fields with `update_fields` (never `total_points`), then a differing total through `chantry_points.set_total_points()` (locked and re-checked), in one transaction; it may raise `ValidationError`, which the update view turns into a form error. A total matching the stored one is left untouched. The submitted total is absolute, so a join between page load and save is replaced by it. `funded(form_class)` adds it in front of the registry-built direct create and update forms. |
 
 #### `ChantrySelectOrCreateForm`
 
@@ -110,9 +110,11 @@ name, joining requires a selection.
   the character in `members`, in the character's chronicle (or chronicle-less for a
   character with no chronicle). Joining only adds points, and points can only be
   spent while the chantry is in its wizard, so an approved, submitted, retired or
-  deceased chantry is never offered; nor is another player's draft, since the points
-  would raise its rank behind that player's back. Pooling points into someone else's
-  chantry needs an invitation or storyteller step and has no form yet. A POST naming a
+  deceased chantry is never offered; nor is another player's draft the character
+  does not belong to, since the points would raise its rank behind that player's
+  back. Membership is the invitation: a storyteller (or the owner, through the
+  direct form) adds the character to `members`, and the character may then pool
+  points into that draft. There is no other invitation form yet. A POST naming a
   chantry outside the queryset is a field error and changes nothing.
 - `save()` always commits, inside a transaction. Creating sets the owner (the
   character's player), chronicle, `status = "Un"`, `creation_status = 1`, funds the

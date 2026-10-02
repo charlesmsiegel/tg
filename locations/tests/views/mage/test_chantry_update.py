@@ -160,7 +160,7 @@ class ChantryUpdateFundingTests(TestCase):
     def test_the_total_is_written_by_the_service_under_its_lock(self):
         """Points spent between validation and save are seen at save time."""
         form_class = funded(modelform_factory(Chantry, fields=ChantryUpdateView.fields))
-        self.data["total_points"] = ["12"]
+        self.data["total_points"] = ["13"]
         form = form_class(
             {k: v[0] if len(v) == 1 else v for k, v in self.data.items()},
             instance=Chantry.objects.get(pk=self.chantry.pk),
@@ -173,6 +173,34 @@ class ChantryUpdateFundingTests(TestCase):
             form.save()
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.total_points, 12)
+
+    def test_a_total_matching_the_stored_one_never_reaches_the_service(self):
+        """Only the ModelForm's update_fields write runs; total_points is not among them."""
+        self.data["name"] = ["Renamed"]
+        with mock.patch.object(chantry_points, "set_total_points") as set_total:
+            self.assertEqual(self.client.post(self.url, self.data).status_code, 302)
+        set_total.assert_not_called()
+        self.chantry.refresh_from_db()
+        self.assertEqual((self.chantry.name, self.chantry.total_points), ("Renamed", 12))
+
+    def test_an_edited_total_is_written_by_the_service(self):
+        self.data["total_points"] = ["30"]
+        with mock.patch.object(
+            chantry_points, "set_total_points", wraps=chantry_points.set_total_points
+        ) as set_total:
+            self.assertEqual(self.client.post(self.url, self.data).status_code, 302)
+        set_total.assert_called_once()
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.total_points, 30)
+
+    def test_an_unchanged_total_is_not_rechecked(self):
+        """Pre-existing overspend blocks only an edit of the total, not unrelated edits."""
+        Chantry.objects.filter(pk=self.chantry.pk).update(total_points=4)  # 10 spent
+        self.data = submitted_values(self.client.get(self.url))
+        self.data["name"] = ["Renamed"]
+        self.assertEqual(self.client.post(self.url, self.data).status_code, 302)
+        self.chantry.refresh_from_db()
+        self.assertEqual((self.chantry.name, self.chantry.total_points), ("Renamed", 4))
 
     def test_a_funding_error_at_save_time_is_a_form_error_and_saves_nothing(self):
         self.data["total_points"] = ["20"]
