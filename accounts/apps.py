@@ -1,6 +1,8 @@
 from django.apps import AppConfig
 
-import accounts.checks  # noqa: F401  (registers the system checks)
+# Registers the system checks. It runs while apps are still loading, which is
+# safe only because accounts.checks imports no models.
+import accounts.checks  # noqa: F401
 
 
 class AccountsConfig(AppConfig):
