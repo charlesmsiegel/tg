@@ -126,3 +126,17 @@ class ApprovalSecurityTests(TestCase):
         self.assertEqual(record.approved, "Pending")
         self.assertEqual(self.character.freebies, 5)
         self.assertEqual(self.character.charisma, 3)
+
+    def test_failed_background_approval_leaves_request_pending(self):
+        request = XPSpendingRequest.objects.create(
+            character=self.character,
+            trait_name="Resources (Gone)",
+            trait_type="background",
+            trait_value=2,
+            cost=3,
+        )
+        with self.assertRaises(SpendingDecisionError):
+            self.decide(XPSpendingRequest, self.character, request.pk, self.st, "approve")
+        request.refresh_from_db()
+        self.assertEqual(request.approved, "Pending")
+        self.assertIsNone(request.approved_by)

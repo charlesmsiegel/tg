@@ -23,6 +23,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.services.trait_names import split_background_trait_name
 from game.models import FreebieSpendingRecord
 
 logger = logging.getLogger(__name__)
@@ -917,10 +918,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
     def _apply_background(self, freebie_request, approver, deny=False) -> FreebieApplyResult:
         """Apply or deny background freebie spending (a new background or a raise)."""
         if deny:
-            # The spend recorded ``"<background> (<note>)"``; strip exactly one closing
-            # parenthesis so a note that ends in one survives.
-            bg_name, _, note = freebie_request.trait_name.partition(" (")
-            note = note.removesuffix(")")
+            bg_name, note = split_background_trait_name(freebie_request.trait_name)
             row = self.character.backgrounds.filter(bg__name=bg_name, note=note).first()
             return self._revert_rating_row(freebie_request, row)
 

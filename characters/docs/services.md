@@ -76,7 +76,14 @@ A storyteller decides the request through `game.spending_approval.decide_spendin
 the request and the character, then calls:
 
 - `service.apply(request, approver)`: the applier sets the trait (usually through
-  `Character.approve_xp_spend()`) and marks the request `Approved`.
+  `Character.approve_xp_spend()`) and marks the request `Approved`. An applier that
+  cannot make the change returns `success=False` without touching the request;
+  `decide_spending_request()` then raises `SpendingDecisionError`, the request stays
+  `Pending` and the XP stays reserved until the storyteller denies it. The `background`
+  applier does this when no `BackgroundRating` matches the recorded name and note
+  (`characters.services.trait_names.split_background_trait_name` parses the stored
+  `"Name (note)"` string) or when the rating is no longer one dot below the value the
+  request paid for; on success it writes that value rather than adding a dot.
 - `service.deny(request, denier)`: refunds the cost and marks the request `Denied`.
 
 Player-facing XP spending goes through `game.xp_spend` and `game.forms.XPSpendForm`, and

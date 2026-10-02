@@ -278,6 +278,44 @@ class TestHumanFreebieSpendingBackgrounds(TestCase):
         bg_rating.refresh_from_db()
         self.assertEqual(bg_rating.rating, 3)
 
+    def test_deny_existing_background_with_parenthesised_note_reverts(self):
+        """Denial reverts a background whose note holds parentheses."""
+        contacts = Background.objects.create(name="Contacts", property_name="contacts")
+        bg_rating = BackgroundRating.objects.create(
+            char=self.mage, bg=contacts, rating=2, note="Police (Vice)"
+        )
+        service = HumanFreebieSpendingService(self.mage)
+        self.assertTrue(service.spend("Existing Background", bg_rating).success)
+        bg_rating.refresh_from_db()
+        self.assertEqual(bg_rating.rating, 3)
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+        self.assertEqual(record.trait_name, "Contacts (Police (Vice))")
+
+        storyteller = User.objects.create_user("contacts_storyteller")
+        result = service.deny(record, storyteller)
+
+        self.assertTrue(result.success, result.error)
+        bg_rating.refresh_from_db()
+        self.assertEqual(bg_rating.rating, 2)
+
+    def test_deny_new_background_with_parenthesised_note_removes_it(self):
+        """Denying a new-background record whose note holds parentheses removes it."""
+        contacts = Background.objects.create(name="Contacts", property_name="contacts")
+        BackgroundRating.objects.create(char=self.mage, bg=contacts, rating=1, note="Police (Vice)")
+        record = FreebieSpendingRecord.objects.create(
+            character=self.mage,
+            trait_name="Contacts (Police (Vice))",
+            trait_type="new-background",
+            trait_value=1,
+            cost=1,
+        )
+        service = HumanFreebieSpendingService(self.mage)
+
+        result = service.deny(record, User.objects.create_user("new_bg_storyteller"))
+
+        self.assertTrue(result.success, result.error)
+        self.assertFalse(self.mage.backgrounds.filter(bg=contacts).exists())
+
 
 class TestMageFreebieSpendingService(TestCase):
     """Test MageFreebieSpendingService Mage-specific spending."""
