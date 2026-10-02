@@ -84,15 +84,10 @@ class Profile(ValidatedSaveMixin, models.Model):
     def is_st(self):
         """Whether the user can act as a storyteller for at least one chronicle.
 
-        True for the ``head_st`` of any chronicle and for the holder of an
-        ``STRelationship`` row for an existing chronicle, the same people
-        ``PermissionManager.can_manage_scope`` accepts. A relationship row whose chronicle
-        was deleted (``chronicle`` is ``SET_NULL``) staffs nothing and does not count. Game
-        storytellers (``Chronicle.game_storytellers``) are view-only and do not count;
-        staff status is left to callers, which keeps this a data predicate. Callers that
-        need the answer more than once per request should keep the result rather than
-        call again: each call is one query, a subquery rather than a join so the planner
-        has no multi-valued OR to work around.
+        The ``head_st`` of any chronicle, or the holder of an ``STRelationship`` row for an
+        existing chronicle (a row left with ``chronicle=NULL`` staffs nothing): the same
+        people ``PermissionManager.can_manage_scope`` accepts. Game storytellers and staff
+        do not count on their own. One query per call; keep the result within a request.
         """
         staffed = STRelationship.objects.filter(user=self.user).values("chronicle_id")
         return Chronicle.objects.filter(Q(head_st=self.user) | Q(pk__in=staffed)).exists()

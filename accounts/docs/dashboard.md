@@ -92,7 +92,8 @@ game storytellers too.
 
 To add a notification, add a selector to `ProfileDashboard` and an `_add_count` line in
 `_player_notification_count` or `_storyteller_notification_count`. Keep the calls
-explicit: each one is a query per page render (cached for 60 seconds per user).
+explicit: each one is a query per page render (cached for 60 seconds per user, so a user
+just made a storyteller sees the storyteller counts once that cache expires).
 
 ## Profile page
 
