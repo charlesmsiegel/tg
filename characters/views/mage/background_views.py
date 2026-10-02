@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -99,24 +100,31 @@ class CharacterChantryBackgroundView(GenericBackgroundView):
     def form_valid(self, form):
         character = self.get_object()
         rating_model = type(self.current_background)
-        with transaction.atomic():
-            # Claim the rating before saving anything else, so a second near-simultaneous
-            # POST that also passed GenericBackgroundView's pre-check finds it already
-            # complete and backs off instead of double-adding points or double-creating.
-            claimed = rating_model.objects.filter(
-                pk=self.current_background.pk, complete=False
-            ).update(complete=True)
-            if not claimed:
-                return HttpResponseRedirect(character.get_absolute_url())
-            chantry = form.save()
-            chantry.members.add(character)
-            self.current_background.note = chantry.name
-            self.current_background.url = chantry.get_absolute_url()
-            self.current_background.complete = True
-            self.current_background.save()
-            if not character.backgrounds.filter(
-                bg__property_name=self.background_name, complete=False
-            ).exists():
-                advance(character, user=self.request.user)
-                character.save()
+        try:
+            with transaction.atomic():
+                # Claim the rating before saving anything else, so a second
+                # near-simultaneous POST that also passed GenericBackgroundView's
+                # pre-check finds it already complete and backs off instead of
+                # double-adding points or double-creating.
+                claimed = rating_model.objects.filter(
+                    pk=self.current_background.pk, complete=False
+                ).update(complete=True)
+                if not claimed:
+                    return HttpResponseRedirect(character.get_absolute_url())
+                chantry = form.save()
+                chantry.members.add(character)
+                self.current_background.note = chantry.name
+                self.current_background.url = chantry.get_absolute_url()
+                self.current_background.complete = True
+                self.current_background.save()
+                if not character.backgrounds.filter(
+                    bg__property_name=self.background_name, complete=False
+                ).exists():
+                    advance(character, user=self.request.user)
+                    character.save()
+        except ValidationError as exc:
+            # The points service refused the join (the chantry was deleted or
+            # approved meanwhile); the rollback released the claim.
+            form.add_error(None, exc)
+            return self.form_invalid(form)
         return HttpResponseRedirect(character.get_absolute_url())

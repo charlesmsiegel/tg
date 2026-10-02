@@ -5,7 +5,6 @@ from django.db.models import Q
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
-from core.constants import CharacterStatus
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
 from locations.services import chantry_points
@@ -212,12 +211,21 @@ class ChantryEffectsForm(EffectCreateOrSelectForm):
 
 
 class ChantryFundingMixin:
-    """Let the points service judge a ``total_points`` value on a chantry ModelForm.
+    """Route a chantry ModelForm's ``total_points`` through the points service.
 
-    ``funding_error`` refuses a negative total and, on a saved chantry, a total
-    below what is already spent, so the direct (storyteller) forms cannot leave a
-    chantry with a negative balance.
+    ``clean_total_points`` asks ``funding_error`` early, for a field error: never a
+    negative total and, on a saved chantry, never below what is already spent. On
+    a saved chantry ``save(commit=True)`` keeps the stored total out of the
+    ModelForm's own UPDATE and writes the new one with ``set_total_points``, which
+    locks the row and re-checks, so a direct (storyteller) edit cannot race a
+    player's purchase into a negative balance. A new chantry has spent nothing, so
+    its INSERT carries the validated total. ``save()`` may raise
+    ``ValidationError``; with ``commit=False`` the caller funds the chantry itself.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._stored_total = self.instance.total_points
 
     def clean_total_points(self):
         total = self.cleaned_data["total_points"]
@@ -225,6 +233,21 @@ class ChantryFundingMixin:
         if error:
             raise forms.ValidationError(error)
         return total
+
+    def _post_clean(self):
+        super()._post_clean()
+        if self.instance.pk is not None and "total_points" in self.cleaned_data:
+            # construct_instance() copied the new total onto the instance; save()
+            # writes it through the service instead.
+            self.instance.total_points = self._stored_total
+
+    def save(self, commit=True):
+        is_new = self.instance.pk is None
+        with transaction.atomic():
+            chantry = super().save(commit)
+            if commit and not is_new and "total_points" in self.cleaned_data:
+                chantry_points.set_total_points(chantry, self.cleaned_data["total_points"])
+        return chantry
 
 
 def funded(form_class):
@@ -264,9 +287,7 @@ def joinable_chantries(character):
     who = Q(members=character)
     if character.owner_id is not None:
         who |= Q(owner_id=character.owner_id)
-    queryset = Chantry.objects.filter(
-        who, status__in=[CharacterStatus.UNAPPROVED, CharacterStatus.REVISION_REQUESTED]
-    )
+    queryset = Chantry.objects.filter(who, status__in=chantry_points.OPEN_STATUSES)
     if character.chronicle_id is None:
         queryset = queryset.filter(chronicle__isnull=True)
     else:

@@ -13,9 +13,12 @@ from django.db.models import F
 
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
+from core.constants import CharacterStatus
 
 MAX_BACKGROUND_RATING = 5
 MAX_IE_SCORE = 10
+# Statuses in which the chantry wizard runs, so added points can still be spent.
+OPEN_STATUSES = (CharacterStatus.UNAPPROVED, CharacterStatus.REVISION_REQUESTED)
 
 
 def _lock_row(model, pk):
@@ -75,11 +78,13 @@ def set_total_points(chantry, total):
 
 
 def add_points(chantry, points):
-    """Add ``points`` to the chantry's funding. Returns the new total.
+    """Add ``points`` to a chantry still in its wizard. Returns the new total.
 
     One atomic ``UPDATE ... SET total_points = total_points + points``: two
     concurrent joins each add their own points instead of racing on a read, which
-    ``select_for_update()`` alone cannot guarantee on SQLite. Adding never lowers
+    ``select_for_update()`` alone cannot guarantee on SQLite. The same statement
+    checks the status, so a chantry approved between a form's validation and its
+    save is refused: points added to it could never be spent. Adding never lowers
     the total, so no balance check is needed; a negative amount is refused because
     lowering the total is ``set_total_points``' job.
     """
@@ -87,11 +92,11 @@ def add_points(chantry, points):
         raise ValidationError("Points can only be added; set the total to lower it.")
     model = type(chantry)
     with transaction.atomic():
-        updated = model.objects.filter(pk=chantry.pk).update(
+        updated = model.objects.filter(pk=chantry.pk, status__in=OPEN_STATUSES).update(
             total_points=F("total_points") + points
         )
         if not updated:
-            raise ValidationError("That chantry no longer exists.")
+            raise ValidationError("That chantry no longer exists or is no longer being built.")
         chantry.total_points = model.objects.values_list("total_points", flat=True).get(
             pk=chantry.pk
         )

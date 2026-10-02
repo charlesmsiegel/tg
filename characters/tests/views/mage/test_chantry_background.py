@@ -1,6 +1,9 @@
 """Regression tests for the Chantry background step in the Mage-family wizards."""
 
+from unittest import mock
+
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.core.background_block import Background, BackgroundRating
@@ -12,6 +15,7 @@ from characters.views.mage.mage import MageChantryView
 from game.models import Chronicle
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm
 from locations.models.mage.chantry import Chantry
+from locations.services import chantry_points
 
 
 class ChantryBackgroundStepMixin:
@@ -136,6 +140,25 @@ class ChantryBackgroundStepMixin:
         self.assertIn("existing_chantry", response.context["form"].errors)
         draft.refresh_from_db()
         self.assertEqual(draft.total_points, 0)
+
+    def test_a_join_refused_at_save_time_is_a_form_error_and_claims_nothing(self):
+        """A chantry approved between validation and save leaves the step unfinished."""
+        existing = Chantry.objects.create(
+            name="Closing", owner=self.owner, chronicle=self.chronicle, status="Un", total_points=10
+        )
+        with mock.patch.object(
+            chantry_points, "add_points", side_effect=ValidationError("No longer being built.")
+        ):
+            response = self.client.post(self.url, {"existing_chantry": existing.pk})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+        existing.refresh_from_db()
+        self.assertEqual(existing.total_points, 10)
+        self.assertFalse(existing.members.filter(pk=self.character.pk).exists())
+        self.rating.refresh_from_db()
+        self.assertFalse(self.rating.complete)
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.creation_status, self.chantry_step)
 
     def test_retired_chantry_cannot_be_joined(self):
         retired = Chantry.objects.create(
