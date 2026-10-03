@@ -203,6 +203,52 @@ cannot clear the flag. Unlinked zones whose old links were removed before this
 migration have no recoverable provenance and are not guessed to be player zones.
 See [nodes](nodes.md#reality-zones).
 
+#### Reviewing zones orphaned before migration 0012
+
+Old zones whose last place was removed before this release have no stored origin.
+Migration 0012 cannot distinguish copied private names from independent staff
+references. Before deploying the public zone pages, staff should review these
+candidates in the trusted application environment after applying the migration.
+Confirm the intended database first. Candidate names and descriptions may be
+private; keep the output out of public channels.
+
+In `python manage.py shell`, this read-only query lists up to 200 unclassified,
+unlinked candidates. A matching name alone is not evidence of private origin.
+Check available records or backups and make an explicit decision for each zone.
+
+```python
+from django.db.models import Exists, OuterRef
+from locations.models.mage.reality_zone import RealityZone
+
+last_reviewed_pk = 0
+candidates = RealityZone.objects.filter(is_player_zone=False, pk__gt=last_reviewed_pk)
+for relation in RealityZone.get_location_relations():
+    linked = relation.related_model.objects.filter(
+        reality_zone_id=OuterRef("pk")
+    ).non_polymorphic()
+    candidates = candidates.filter(~Exists(linked))
+for row in candidates.order_by("pk").values("pk", "name", "description")[:200]:
+    print(row)
+```
+
+For the next page, set `last_reviewed_pk` to the last reviewed PK and repeat the
+query. After staff confirms specific zones are player-origin, fill the explicit ID
+list below and run this separate classification step. An empty list changes
+nothing. This marks only the chosen records private; it does not delete or rename
+data, and it never automatically declassifies a zone. Leave confirmed independent
+references unselected. If provenance is uncertain, staff must decide rather than
+applying a blanket update or a name-based heuristic.
+
+```python
+confirmed_private_zone_ids = []  # Fill only with individually reviewed PKs.
+RealityZone.objects.filter(
+    pk__in=confirmed_private_zone_ids, is_player_zone=False
+).update(is_player_zone=True)
+```
+
+Verify each selected zone now has `is_player_zone=True`, is absent from anonymous
+lists and returns 404 to anonymous detail requests; staff can still read it.
+
 ## Changeling: the Dreaming (`ctd`)
 
 Source: [`locations/models/changeling/`](../models/changeling/).
