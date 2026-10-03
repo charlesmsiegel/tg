@@ -240,6 +240,9 @@ class ChantryFundingMixin:
     def save(self, commit=True):
         if self.instance.pk is None or not commit:
             return super().save(commit)
+        # A ValidationError from the service rolls the transaction back but leaves
+        # the in-memory edits on self.instance; the view then re-renders the form
+        # from its submitted data, so the stale instance is never saved or shown.
         with transaction.atomic():
             chantry = super().save(commit=False)
             fields = [
