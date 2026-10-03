@@ -241,8 +241,9 @@ class ChantryFundingMixin:
         if self.instance.pk is None or not commit:
             return super().save(commit)
         # A ValidationError from the service rolls the transaction back but leaves
-        # the in-memory edits on self.instance; the view then re-renders the form
-        # from its submitted data, so the stale instance is never saved or shown.
+        # the in-memory edits on self.instance; the update view refreshes its object
+        # and re-renders the form from its submitted data, so the stale instance is
+        # never saved or shown.
         with transaction.atomic():
             chantry = super().save(commit=False)
             fields = [
@@ -256,6 +257,8 @@ class ChantryFundingMixin:
             if "total_points" in self.changed_data:
                 chantry_points.set_total_points(chantry, self.cleaned_data["total_points"])
             else:
+                # The submitted total equals the stored one, so nothing was written;
+                # re-read it so the instance also reflects a join that landed meanwhile.
                 chantry.refresh_from_db(fields=["total_points"])
         return chantry
 
