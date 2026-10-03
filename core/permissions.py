@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import OuterRef, Q
+from django.db.models import Exists, OuterRef, Q
 
 from characters.models.core.character import Character
 from core.models import Model, Observer
@@ -401,6 +401,21 @@ class PermissionManager:
         Returns:
             Boolean permission result
         """
+        # A shared zone can carry an old copied name or private practices from
+        # any linked place. Public cards and partial roles cannot disclose it.
+        if getattr(
+            getattr(obj, "_meta", None), "label_lower", None
+        ) == "locations.realityzone" and permission in {
+            Permission.VIEW_FULL,
+            Permission.VIEW_PARTIAL,
+        }:
+            return (
+                obj.pk is None
+                or PermissionManager.filter_reality_zones_for_user(
+                    user, type(obj).objects.filter(pk=obj.pk)
+                ).exists()
+            )
+
         roles = PermissionManager.get_user_roles(user, obj, request=request)
 
         if (
@@ -669,12 +684,59 @@ class PermissionManager:
         return filters
 
     @staticmethod
+    def _build_full_view_location_filter(user: User, queryset) -> Q:
+        """Fresh SQL for location VIEW_FULL roles, excluding partial audiences."""
+        if not user.is_authenticated:
+            return Q(pk__in=[])
+        if user.is_staff or user.is_superuser:
+            return Q()
+        readable = PermissionManager._build_owner_filter(user, queryset.model)
+        chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
+        if chronicle_model:
+            readable |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
+        return readable
+
+    @staticmethod
+    def filter_full_view_locations_for_user(user: User, queryset):
+        """Batch linked-place reads without per-object role lookups or snapshots."""
+        return queryset.filter(
+            PermissionManager._build_full_view_location_filter(user, queryset)
+        ).distinct()
+
+    @staticmethod
+    def filter_reality_zones_for_user(user: User, queryset):
+        """Standalone reference zones are public; every linked place needs VIEW_FULL.
+
+        The full-view SQL predicates are owner, staff and chronicle storyteller
+        roles, matching user_has_permission on locations. Players and observers
+        have partial access only. NOT EXISTS keeps list cost independent of rows
+        and denies a mixed-audience shared zone even if one place is readable.
+        """
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            return queryset
+        linked = Q(pk__in=[])
+        for relation in queryset.model.get_location_relations():
+            model = relation.related_model
+            places = model.objects.filter(reality_zone_id=OuterRef("pk")).non_polymorphic()
+            linked |= Q(Exists(places))
+            # Link existence must use all places, not just the unreadable ones.
+            unreadable_places = places.exclude(
+                PermissionManager._build_full_view_location_filter(user, places)
+            )
+            queryset = queryset.filter(~Exists(unreadable_places))
+        # Removing a player's last place does not declassify its old zone.
+        return queryset.filter(Q(is_player_zone=False) | linked)
+
+    @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """Filter private VIEW_FULL/VIEW_PARTIAL audiences, not public cards.
 
         SQL mirrors the role predicates; fixture matrices pin their parity.
         Observer subqueries correlate content type as well as object identity.
         """
+        if queryset.model._meta.label_lower == "locations.realityzone":
+            return PermissionManager.filter_reality_zones_for_user(user, queryset)
+
         # Full/partial legacy querysets never render the public projection.
         # Anonymous public cards are handled by the route policy instead.
         if not user.is_authenticated:

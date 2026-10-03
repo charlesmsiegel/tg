@@ -3,7 +3,7 @@ Reality zone practice ratings as key/value rows (Spread C9), enhanced first, the
 hindered (negative, in rubric). Hidden when there is no zone.
   {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with zone=object.reality_zone span="tl-span-6" %}
 {% endcomment %}
-{% if zone %}
+{% if zone and zone == object or zone and reality_zone_perms.can_view_full %}
     {% with positive=zone.get_positive_practices negative=zone.get_negative_practices %}
         <section class="tl-section {{ span }}" id="reality-zone">
             <div class="tl-section__head">

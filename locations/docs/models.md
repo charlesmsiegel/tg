@@ -182,8 +182,72 @@ Rules helpers (none of them save):
 `practices` (M2M `characters.Practice` through `ZoneRating`, whose `rating` is -10 to
 10). It carries `type = "reality_zone"` and `gameline = "mta"` as class attributes and
 `RegistryURLMixin` for its URLs. Helpers: `get_positive_practices()`,
-`get_negative_practices()` and `get_applied_to()` (the nodes, Horizon realms, sanctums
-and sectors that use it). See [nodes](nodes.md#reality-zones).
+`get_negative_practices()` and `get_applied_to()` (the nodes, Horizon realms, sanctums,
+demesnes and sectors that use it, including inherited realm types).
+
+Zones can be shared: each place keeps a nullable `SET_NULL` foreign key, not a
+one-to-one link. Place forms create a neutrally named `Reality Zone` when no zone is
+linked and otherwise reuse it without changing its name. Editing its practice
+ratings affects every linked place. Staff can give the zone an independent name.
+
+A staff-created standalone zone is public reference data. Reading a linked zone requires
+`VIEW_FULL` on every linked place, even when a place has a public card; partial
+player or observer access does not disclose zone names or practices. This also
+protects names copied by older versions without rewriting staff-owned zone names.
+The non-editable `is_player_zone` flag is sticky: forms set it on new player zones,
+and `LocationModel.save()` sets it atomically with any new link. Migration
+`tg_schema.0012_protect_player_reality_zones` adds it to older databases and marks
+every currently linked zone. Deleting, detaching or reassigning the last place never
+makes such a zone public; only staff can read its orphaned zone. A stale zone save
+cannot clear the flag. Unlinked zones whose old links were removed before this
+migration have no recoverable provenance and are not guessed to be player zones.
+See [nodes](nodes.md#reality-zones).
+
+#### Reviewing zones orphaned before migration 0012
+
+Old zones whose last place was removed before this release have no stored origin.
+Migration 0012 cannot distinguish copied private names from independent staff
+references. Before deploying the public zone pages, staff should review these
+candidates in the trusted application environment after applying the migration.
+Confirm the intended database first. Candidate names and descriptions may be
+private; keep the output out of public channels.
+
+In `python manage.py shell`, this read-only query lists up to 200 unclassified,
+unlinked candidates. A matching name alone is not evidence of private origin.
+Check available records or backups and make an explicit decision for each zone.
+
+```python
+from django.db.models import Exists, OuterRef
+from locations.models.mage.reality_zone import RealityZone
+
+last_reviewed_pk = 0
+candidates = RealityZone.objects.filter(is_player_zone=False, pk__gt=last_reviewed_pk)
+for relation in RealityZone.get_location_relations():
+    linked = relation.related_model.objects.filter(
+        reality_zone_id=OuterRef("pk")
+    ).non_polymorphic()
+    candidates = candidates.filter(~Exists(linked))
+for row in candidates.order_by("pk").values("pk", "name", "description")[:200]:
+    print(row)
+```
+
+For the next page, set `last_reviewed_pk` to the last reviewed PK and repeat the
+query. After staff confirms specific zones are player-origin, fill the explicit ID
+list below and run this separate classification step. An empty list changes
+nothing. This marks only the chosen records private; it does not delete or rename
+data, and it never automatically declassifies a zone. Leave confirmed independent
+references unselected. If provenance is uncertain, staff must decide rather than
+applying a blanket update or a name-based heuristic.
+
+```python
+confirmed_private_zone_ids = []  # Fill only with individually reviewed PKs.
+RealityZone.objects.filter(
+    pk__in=confirmed_private_zone_ids, is_player_zone=False
+).update(is_player_zone=True)
+```
+
+Verify each selected zone now has `is_player_zone=True`, is absent from anonymous
+lists and returns 404 to anonymous detail requests; staff can still read it.
 
 ## Changeling: the Dreaming (`ctd`)
 
