@@ -8,7 +8,7 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from characters.models.core.human import Human
-from characters.models.mage.focus import Practice
+from characters.models.mage.focus import CorruptedPractice, Practice, SpecializedPractice
 from core.constants import CharacterStatus
 from core.models import Observer
 from core.permissions import Permission, PermissionManager
@@ -135,6 +135,124 @@ class RealityZoneVisibilityTests(TestCase):
             response = self.client.get(self.list_url)
         self.assertNotContains(response, "Private zone")
         self.assertEqual(len(first), len(many))
+        self.assertLessEqual(len(many), 3)
+
+    def test_detail_query_count_does_not_grow_with_applied_places(self):
+        zone, _ = self.make_zone(Sanctum)
+        self.client.force_login(self.owner)
+        self.client.get(zone.get_absolute_url())  # Warm process-global content types.
+        with CaptureQueriesContext(connection) as first:
+            self.client.get(zone.get_absolute_url())
+        for index in range(20):
+            Sanctum.objects.create(
+                name=f"Shared place {index}",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                reality_zone=zone,
+            )
+        with CaptureQueriesContext(connection) as many:
+            response = self.client.get(zone.get_absolute_url())
+        self.assertContains(response, "Shared place 19")
+        self.assertEqual(len(response.context["applied_locations"]), 21)
+        self.assertEqual(len(first), len(many))
+        self.assertLessEqual(len(many), 16)
+
+    def test_detail_query_count_does_not_grow_with_practice_ratings(self):
+        self.client.force_login(self.owner)
+        zone, _ = self.make_zone(Sanctum)
+        for index, rating in enumerate((1, -1)):
+            practice = Practice.objects.create(name=f"Initial practice {index}")
+            ZoneRating.objects.create(zone=zone, practice=practice, rating=rating)
+        self.client.get(zone.get_absolute_url())
+        with CaptureQueriesContext(connection) as first:
+            self.client.get(zone.get_absolute_url())
+        for index in range(20):
+            practice = Practice.objects.create(name=f"Shared practice {index}")
+            ZoneRating.objects.create(zone=zone, practice=practice, rating=1 if index % 2 else -1)
+        with CaptureQueriesContext(connection) as many:
+            response = self.client.get(zone.get_absolute_url())
+        self.assertContains(response, "Shared practice 19")
+        self.assertEqual(len(first), len(many))
+        self.assertLessEqual(len(many), 16)
+
+    def test_zone_permission_queries_are_fresh_and_one_per_check(self):
+        zone, _ = self.make_zone(Sanctum)
+        with self.assertNumQueries(1):
+            self.assertTrue(
+                PermissionManager.user_has_permission(self.owner, zone, Permission.VIEW_FULL)
+            )
+        with self.assertNumQueries(1):
+            self.assertFalse(
+                PermissionManager.user_has_permission(self.other, zone, Permission.VIEW_FULL)
+            )
+        Sanctum.objects.create(name="Other private place", owner=self.other, reality_zone=zone)
+        with self.assertNumQueries(1):
+            self.assertFalse(
+                PermissionManager.user_has_permission(self.owner, zone, Permission.VIEW_FULL)
+            )
+
+    def test_practice_join_preserves_existing_base_practice_links(self):
+        specialized = SpecializedPractice.objects.create(name="A specialized practice")
+        corrupted = CorruptedPractice.objects.create(name="A corrupted practice")
+        ZoneRating.objects.create(zone=self.standalone, practice=specialized, rating=1)
+        ZoneRating.objects.create(zone=self.standalone, practice=corrupted, rating=-1)
+        response = self.client.get(self.standalone.get_absolute_url())
+        # A ZoneRating FK uses a base Practice; keep its existing route even for
+        # specialized/corrupted rows, whose base detail resolves polymorphically.
+        for practice in (specialized, corrupted):
+            self.assertContains(
+                response,
+                f'href="{reverse("characters:mage:practice", args=[practice.pk])}"',
+            )
+
+    def test_former_owner_cannot_read_player_zone_after_last_place_is_deleted(self):
+        zone, place = self.make_zone(Sanctum)
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.get(zone.get_absolute_url()).status_code, 200)
+        place.delete()
+        self.assertEqual(self.client.get(zone.get_absolute_url()).status_code, 404)
+        self.assertNotContains(self.client.get(self.list_url), zone.name)
+
+    def test_full_view_location_sql_matches_central_permissions(self):
+        head = User.objects.create_user("zone_head")
+        game_st = User.objects.create_user("zone_game_st")
+        other_line_st = User.objects.create_user("zone_other_line_st")
+        self.chronicle.head_st = head
+        self.chronicle.save()
+        self.chronicle.game_storytellers.add(game_st)
+        other_line = Gameline.objects.create(name="Vampire: the Masquerade")
+        STRelationship.objects.create(
+            user=other_line_st, chronicle=self.chronicle, gameline=other_line
+        )
+        STRelationship.objects.create(user=self.st, chronicle=self.chronicle, gameline=other_line)
+        for model in (Node, Sanctum, Demesne, HorizonRealm, Sector):
+            zone, place = self.make_zone(model)
+            Observer.objects.create(content_object=place, user=self.observer)
+            for user in (
+                AnonymousUser(),
+                self.owner,
+                self.other,
+                self.st,
+                self.wrong_st,
+                self.player,
+                self.observer,
+                self.staff,
+                head,
+                game_st,
+                other_line_st,
+            ):
+                with self.subTest(model=model, user=user):
+                    expected = PermissionManager.user_has_permission(
+                        user, place, Permission.VIEW_FULL
+                    )
+                    readable = PermissionManager.filter_full_view_locations_for_user(
+                        user, model.objects.filter(pk=place.pk)
+                    )
+                    self.assertEqual(list(readable), [place] if expected else [])
+                    self.assertEqual(
+                        PermissionManager.user_has_permission(user, zone, Permission.VIEW_FULL),
+                        expected,
+                    )
 
     def test_sector_create_choices_hide_private_zones_and_reject_forged_selection(self):
         zone, _ = self.make_zone(Sanctum)

@@ -47,14 +47,14 @@ class RealityZoneFormMixin:
     def __init__(self, *args, request=None, **kwargs):
         super().__init__(*args, **kwargs)
         zone_id = self.instance.reality_zone_id
-        self.can_edit_reality_zone = (
-            zone_id is None
-            or request is None
-            or PermissionManager.filter_queryset_for_user(
+        self.can_edit_reality_zone = zone_id is None or (
+            request is not None
+            and PermissionManager.filter_queryset_for_user(
                 request.user, RealityZone.objects.filter(pk=zone_id)
             ).exists()
         )
         if not self.can_edit_reality_zone:
+            # Missing actor context must also fail closed for an existing zone.
             # Do not fetch, initialize or bind the shared zone's private rows.
             # Descriptive parent edits can proceed at the parent's current rank.
             self.reality_zone = None
