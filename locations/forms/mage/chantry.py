@@ -261,7 +261,12 @@ class ChantryFundingMixin:
 
 
 def funded(form_class):
-    """``form_class`` with ``ChantryFundingMixin`` in front, for registry-built forms."""
+    """``form_class`` with ``ChantryFundingMixin`` in front, for registry-built forms.
+
+    The direct create and update views get their ModelForm from the registry's
+    ``fields`` list through ``modelform_factory`` on every request, so there is no
+    class in the source tree to subclass; the views wrap the result instead.
+    """
     return type(f"Funded{form_class.__name__}", (ChantryFundingMixin, form_class), {})
 
 
