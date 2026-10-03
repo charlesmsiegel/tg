@@ -10,8 +10,10 @@ class TestMeleeWeaponDetailView(TestCase):
         self.url = self.item.get_absolute_url()
 
     def test_object_detail_view_status_code(self):
+        self.client.force_login(get_user_model().objects.create_user("detail-staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_object_detail_view_templates(self):
         self.client.force_login(

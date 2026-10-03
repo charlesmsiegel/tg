@@ -350,8 +350,8 @@ class TestCompanionDetailViewWithOwnership(TestCase):
         """Test that other users cannot view companion."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.companion.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_unapproved_visible_to_owner(self):
         """Test that unapproved companion is visible to owner."""
@@ -369,5 +369,5 @@ class TestCompanionDetailViewWithOwnership(TestCase):
         self.companion.refresh_from_db()
         self.client.login(username="other", password="password")
         response = self.client.get(self.companion.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")

@@ -58,8 +58,10 @@ class TestPackDetailView(TestCase):
         self.pack = Pack.objects.create(name="Test Pack")
 
     def test_pack_detail_view_status_code(self):
+        self.client.force_login(get_user_model().objects.create_user("detail-staff", is_staff=True))
         response = self.client.get(f"/characters/groups/{self.pack.id}/")
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_pack_detail_view_templates(self):
         self.client.force_login(

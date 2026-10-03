@@ -153,7 +153,8 @@ subject=None)` then returns `None` (continue), returns a response, or raises.
 
 | Policy | What `authorize_route` does |
 |--------|-----------------------------|
-| `PUBLIC_READ`, `PUBLIC_INDEX`, `PUBLIC_CARD` | Nothing: anyone may call the view |
+| `PUBLIC_READ`, `PUBLIC_INDEX` | Nothing: anyone may call the view |
+| `PUBLIC_CARD` | Passes to the projection, which checks detail-card visibility itself |
 | `ROUTER` | Nothing here; the view is a `DictView` that authorizes the object and each target itself |
 | `ACTION` | Non-POST gets 405; anonymous gets a plain 401. The action class checks the object |
 | `WIDGET` | Anonymous gets JSON `{"error": "Authentication required"}` with 401 |
@@ -161,7 +162,7 @@ subject=None)` then returns `None` (continue), returns a response, or raises.
 | `STAFF_WRITE` | Anonymous gets 401; a signed-in non-staff user gets `PermissionDenied` |
 | `OBJECT_LIST` | For anyone but staff, `GET`/`HEAD` is answered by `render_public_object_list()` (the public-card list) instead of the view |
 | `CHARGEN_STEP` | Loads the object (a `LocationModel` for `locations.*` views, else a `CharacterModel`) and requires `EDIT_FULL` and status `Un` or `Rev`; otherwise 404 |
-| `OBJECT_DETAIL` | Loads the object. With `VIEW_FULL` the view runs. Otherwise `GET`/`HEAD` gets `PublicObjectDetailView` (name, `public_info`, approved image) and other methods get 404 |
+| `OBJECT_DETAIL` | Loads the object. With `VIEW_FULL` the view runs. Otherwise `GET`/`HEAD` gets `PublicObjectDetailView` (name, `public_info`, approved image) only for `PUB` or `CHR` in a readable chronicle; hidden objects and other methods get 404 |
 | `OBJECT_WRITE`, `OBJECT_ACTION`, `OBJECT_ST_WRITE` | See below |
 
 For the three write policies the object is loaded and:

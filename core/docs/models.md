@@ -62,12 +62,15 @@ choices. Other helpers: `has_name()`, `set_name()`, `update_status()`, `has_sour
 
 An abstract mixin that adds:
 
-- `visibility`: `"PUB"` (Public), `"PRI"` (Private, the default), `"CHR"` (Chronicle
-  Only) or `"CUS"` (Custom). Only the public-card list
-  (`core.views.public_object.render_public_object_list`) reads it: `PUB` rows are listed
-  for everyone and `CHR` rows for users who can read the object's chronicle. `CUS` has no
-  behaviour of its own. Full access is always decided by `PermissionManager`, never by
-  this field.
+- `visibility`: `"PUB"` (Public), `"PRI"` (Private, the default) or `"CHR"` (Chronicle
+  Only). Detail cards admit everyone for `PUB`, and users who can read the object's
+  chronicle for `CHR`. `PRI` details require `VIEW_FULL`; partial player/observer roles
+  alone are insufficient. Unknown values fail closed for non-full viewers. The retired
+  `CUS` choice is backfilled to `PRI` by guarded `tg_schema.0011_retire_custom_visibility`.
+  Full access remains decided by `PermissionManager`, independent of this field.
+  Public-card lists additionally retain their existing role-based discovery audience;
+  that collection filter does not grant access to a private detail card. See
+  [Authorization](../../docs/architecture/authorization.md#public-cards-and-the-visibility-field).
 - `observers`: a `GenericRelation` to `Observer`.
 - `add_observer(user, granted_by)` and `remove_observer(user)`.
 

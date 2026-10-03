@@ -97,8 +97,9 @@ Not for game rules or sheet content (use `wod-toolkit`) or generic Django refact
     `core.mixins` or an action's `permission` / `has_permission`, never in view bodies or
     templates. Templates read the `object_perms` booleans.
 17. **Never reveal what a user may not see.** A hidden or missing object gets the same
-    404; a player object the user cannot fully view gets its public card, never its
-    private fields; a 403 only follows a successful view check. *Why:* a 403 or a
+    404; a player object the user cannot fully view gets a card only when `visibility`
+    admits it (`PUB`, or `CHR` in a readable chronicle), never its private fields;
+    `PRI` requires full access; a 403 only follows a successful view check. *Why:* a 403 or a
     different 404 confirms the object exists.
 18. **Only staff change `owner`, `chronicle`, `gameline`, `status`, `npc`, `xp`,
     `freebies_approved`, `approved`, `approved_by` through a write route**; everyone
@@ -180,7 +181,7 @@ Run the sections that match the diff. Every unchecked box is a finding.
 **New or changed route**
 - [ ] Exactly one policy (manifest or registry), the narrowest that fits; removed views
   removed from the manifest.
-- [ ] Hidden objects give the same 404 as missing ones; public card for partial viewers.
+- [ ] Hidden objects give the same 404 as missing ones; visibility gates non-full cards.
 - [ ] No POST on detail views; no button-name dispatch; actions use `ObjectActionView`.
 - [ ] Protected fields cannot be changed by non-staff; update views scope their form.
 - [ ] Queries bounded: `select_related` / `prefetch_related`, no per-row queries in

@@ -6,22 +6,38 @@ from types import SimpleNamespace
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.template import Context, Engine
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.views.generic import ListView
 
 from characters.models.core import Character, CharacterModel
 from characters.models.core.human import Human
 from core.middleware.authorization import AuthorizationMiddleware
 from core.mixins import VisibilityFilterMixin
-from core.models import Observer
+from core.models import Observer, PermissionMixin
 from core.permission_context import get_object_permissions, prepare_permission_objects
 from core.permissions import Permission, PermissionManager
 from game.models import Chronicle, Gameline, STRelationship
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
+
+
+class VisibilityChoiceTests(SimpleTestCase):
+    def test_only_supported_public_card_visibility_choices_are_available(self):
+        field = PermissionMixin._meta.get_field("visibility")
+        self.assertEqual(
+            dict(field.choices), {"PUB": "Public", "PRI": "Private", "CHR": "Chronicle Only"}
+        )
+        self.assertEqual(field.default, "PRI")
+
+    def test_retired_custom_visibility_fails_field_validation(self):
+        for model in (Human, ItemModel, LocationModel):
+            with self.subTest(model=model.__name__):
+                with self.assertRaises(ValidationError):
+                    model._meta.get_field("visibility").clean("CUS", model())
 
 
 class PermissionContextTests(TestCase):
@@ -164,7 +180,7 @@ class PermissionContextTests(TestCase):
                     chronicle=self.chronicle,
                 )
                 for status in ("Un", "Rev", "Sub", "App", "Ret", "Dec")
-                for visibility in ("PUB", "PRI", "CHR", "CUS")
+                for visibility in ("PUB", "PRI", "CHR")
             ]
             objects.append(model.objects.create(name="Shared", owner=None))
             Observer.objects.create(

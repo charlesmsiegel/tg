@@ -2,6 +2,7 @@
 
 from django.core.files.storage import default_storage
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import View
@@ -12,10 +13,35 @@ from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.constants import ImageStatus
 from core.models import CharacterTemplate
-from core.permissions import PermissionManager
+from core.permissions import Permission, PermissionManager
 from game.security import readable_chronicles
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
+
+
+def can_view_public_card(request, obj):
+    """Visibility-only admission for callers that already checked full access."""
+    if obj.visibility == "PUB":
+        return True
+    chronicle_id = getattr(obj, "chronicle_id", None)
+    return bool(
+        obj.visibility == "CHR"
+        and chronicle_id is not None
+        and readable_chronicles(request.user).filter(pk=chronicle_id).exists()
+    )
+
+
+def can_view_public_object(request, obj):
+    """Admit a detail card without treating partial roles as full access.
+
+    Full viewers retain access regardless of the discovery setting. Otherwise
+    only public objects or objects in a readable chronicle have a card; private,
+    legacy custom and unknown values fail closed. The projection checks this
+    independently so direct callers cannot bypass its admission rule.
+    """
+    return PermissionManager.user_has_permission(
+        request.user, obj, Permission.VIEW_FULL, request=request
+    ) or can_view_public_card(request, obj)
 
 
 class PublicObjectDetailView(View):
@@ -26,6 +52,8 @@ class PublicObjectDetailView(View):
         obj = self.resolved_object
         if obj is None:
             obj = get_object_or_404(self.model_class, pk=kwargs["pk"])
+        if not can_view_public_object(request, obj):
+            raise Http404("Object not found")
         image_url = None
         if obj.image and obj.image_status == ImageStatus.APPROVED:
             image_url = obj.image.url

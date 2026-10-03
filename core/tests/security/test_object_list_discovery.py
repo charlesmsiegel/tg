@@ -52,13 +52,11 @@ class PublicListDiscoveryTests(TestCase):
                 self.assertNotIn("object_list", response.context)
                 for row in response.context["public_objects"]:
                     self.assertEqual(set(row), {"name", "public_info", "image_url", "url"})
-                # A directly reachable card is not full/private read authority.
+                # A private row is hidden on detail routes as well as in discovery.
                 detail = self.client.get(private.get_absolute_url())
-                self.assertEqual(detail.status_code, 200)
-                self.assertTemplateUsed(detail, "core/public_object_detail.html")
-                self.assertContains(detail, private.name)
-                self.assertNotContains(detail, "SECRET FULL SHEET")
-                self.assertNotIn("object", detail.context)
+                self.assertEqual(detail.status_code, 404)
+                self.assertNotContains(detail, private.name, status_code=404)
+                self.assertNotContains(detail, "SECRET FULL SHEET", status_code=404)
 
     def test_anonymous_discovers_unowned_public_cards(self):
         self.assert_public_discovery()

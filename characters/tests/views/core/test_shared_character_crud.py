@@ -289,7 +289,7 @@ class CharacterCRUDSecurityTests(TestCase):
 
     def test_public_route_still_uses_safe_projection(self):
         HtRHuman.objects.filter(pk=self.character.pk).update(
-            visibility="public", public_info="Public biography", st_notes="Secret storyteller notes"
+            visibility="PUB", public_info="Public biography", st_notes="Secret storyteller notes"
         )
         response = self.client.get(self.character.get_absolute_url())
         self.assertEqual(response.status_code, 200)

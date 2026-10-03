@@ -98,19 +98,27 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_group_detail_requires_auth(self):
-        """GroupDetailView should require authentication."""
+    def test_private_group_detail_hidden_without_auth(self):
+        """A private group does not expose a public card to anonymous users."""
         url = reverse("characters:group", args=[self.group.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
-    def test_group_detail_accessible_when_authenticated(self):
-        """GroupDetailView should be accessible when authenticated."""
+    def test_private_group_detail_hidden_from_authenticated_non_owner(self):
+        """Signing in alone does not grant access to a private group."""
+        self.client.login(username="testuser", password="testpass123")
+        url = reverse("characters:group", args=[self.group.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
+
+    def test_private_group_detail_accessible_to_owner(self):
+        """A private group's owner retains full detail access."""
+        self.group.owner = self.user
+        self.group.save(update_fields=["owner"])
         self.client.login(username="testuser", password="testpass123")
         url = reverse("characters:group", args=[self.group.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["object_perms"].can_view_full)

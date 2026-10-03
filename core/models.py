@@ -345,10 +345,13 @@ class PermissionMixin(models.Model):
             ("PUB", "Public"),
             ("PRI", "Private"),
             ("CHR", "Chronicle Only"),
-            ("CUS", "Custom"),
         ],
         default="PRI",
-        help_text="Controls baseline visibility",
+        help_text=(
+            "Public detail cards are open to everyone; Chronicle Only cards require a readable "
+            "chronicle or full access; Private requires full access. "
+            "Full details require separate permission."
+        ),
     )
 
     # Generic relation to observers

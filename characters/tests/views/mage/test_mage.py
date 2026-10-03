@@ -53,14 +53,14 @@ class TestMageDetailView(TestCase):
         """Test that characters are hidden from other users (404)."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.mage.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404 (not login redirect)."""
         response = self.client.get(self.mage.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used for mage detail view."""
@@ -79,9 +79,9 @@ class TestMageDetailView(TestCase):
         )
         self.client.login(username="other", password="password")
         response = self.client.get(unapproved.get_absolute_url())
-        # Should be 403 or 404 (denied/hidden from other users)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        # Private characters remain hidden even before approval
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_unapproved_visible_to_owner(self):
         """Test that unapproved characters are visible to owners."""

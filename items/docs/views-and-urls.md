@@ -82,7 +82,7 @@ Every item action names one of these policies. The evaluator is
 
 | Policy | Used by | Effect |
 |--------|---------|--------|
-| `OBJECT_DETAIL` | Detail of every item type | Users with `VIEW_FULL` on the object see the page. Others get the public projection (`core/public_object_detail.html`: name, public info and an approved image) on GET, and a 404 on other methods. |
+| `OBJECT_DETAIL` | Detail of every item type | Users with `VIEW_FULL` on the object see the page. Others get the public projection (`core/public_object_detail.html`: name, public info and an approved image) on GET/HEAD only for `PUB`, or `CHR` in a readable chronicle. `PRI`, unknown values and other methods return 404. |
 | `OBJECT_LIST` | List of every item type | Staff and superusers see the per-type list, filtered by `VisibilityFilterMixin`. Everyone else gets the shared public list (`core/public_object_list.html`) on GET. |
 | `OBJECT_CREATE` | Create of every item type | Login required; anonymous users get a 401 response. |
 | `OBJECT_WRITE` | Update of every item type | Requires `EDIT_FULL` (403 otherwise). For non-staff POSTs, changing `owner`, `chronicle`, `gameline`, `status`, `npc`, `xp`, `freebies_approved`, `approved` or `approved_by` is refused. |
@@ -105,7 +105,7 @@ Because non-staff users always receive the public list, the per-type list templa
    subclass; `Material` and `Medium` are excluded because they are not items) and
    returns 404 for an unregistered type;
 3. authorizes the type's registry detail view against the object (so a user without
-   `VIEW_FULL` gets the public projection);
+   `VIEW_FULL` gets a visibility-admitted public projection or 404);
 4. renders the type's detail view with the object already resolved.
 
 Most item types use `items:item` as their `get_absolute_url()` target, so links to an

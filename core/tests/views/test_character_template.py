@@ -151,13 +151,13 @@ class CharacterTemplateDetailViewTest(TestCase):
             description="Test Description",
         )
 
-    def test_requires_login(self):
-        """Anonymous visitors see only a template's public card."""
+    def test_private_template_is_hidden_from_anonymous_visitors(self):
+        """A template's default private setting hides its public card too."""
         response = self.client.get(
             reverse("core:character_template_detail", kwargs={"pk": self.template.pk})
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_st_can_view_detail(self):
         """Test that ST can view template details."""

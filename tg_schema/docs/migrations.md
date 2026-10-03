@@ -8,7 +8,7 @@ or reading a migration before changing the models it touches. The general rules 
 
 ## Common properties
 
-All eight migrations share these properties:
+All migrations share these properties:
 
 - one `migrations.RunPython(forward, migrations.RunPython.noop)` operation, in a single
   linear chain (`0001` has `initial = True`; each later one depends on the previous);
@@ -37,6 +37,7 @@ and `test_every_migration_runs_when_its_models_are_gone` runs each forward funct
 | `0006_sheet_cover_facts` | `characters.Werewolf` | Column |
 | `0007_assign_story_chronicles` | `game.Story` | Data |
 | `0008_unique_scene_read_status` | `game_userscenereadstatus` | Data and unique index (raw SQL) |
+| `0011_retire_custom_visibility` | All 53 concrete roots storing `PermissionMixin.visibility` | Data (raw SQL) |
 
 ## 0001_scene_visibility
 
@@ -154,6 +155,28 @@ and `test_every_migration_runs_when_its_models_are_gone` runs each forward funct
   rebuilds the table without the constraint (as older databases have it) and checks the
   merge, the deletion of orphaned rows, that an existing constraint is left alone, that a
   renamed marker column skips the migration, and the cascade.
+
+## 0011_retire_custom_visibility
+
+[`0011_retire_custom_visibility.py`](../migrations/0011_retire_custom_visibility.py)
+
+- **Change**: retires the unsupported `CUS` (Custom) visibility choice by replacing
+  only those values with `PRI`. The abstract `PermissionMixin` and `core.models.Model`
+  create no table of their own; the migration freezes all 53 concrete owning tables,
+  including character reference data, `CharacterModel`, `Group`, `CharacterTemplate`,
+  `ItemModel` and `LocationModel`. Descendant tables inherit the root's column and
+  are not updated separately.
+- **Guards**: looks up each live model and field without importing app models, and
+  skips a missing or renamed model, field, table or column, or a field that is no
+  longer stored locally. SQL runs on the migration's connection with quoted table
+  and column names. A rerun leaves data unchanged; reversal is a no-op.
+- **Data**: `PUB`, `PRI`, `CHR` and other stored values are unchanged. Existing owner,
+  storyteller and observer grants are unchanged. `PRI` preserves the restriction on
+  detail-card admission to full viewers; list discovery permissions are unchanged.
+- **Tests**: [`test_retire_custom_visibility.py`](../tests/test_retire_custom_visibility.py)
+  checks all owning tables, unchanged values, idempotence, missing and renamed schema,
+  field ownership, unrelated visibility columns, the supplied non-default connection
+  and the no-op reverse.
 
 ## See also
 

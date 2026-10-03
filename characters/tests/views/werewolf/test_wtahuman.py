@@ -61,8 +61,8 @@ class TestWtAHumanDetailView(WtAHumanViewTestCase):
     def test_unauthenticated_returns_404(self):
         """Unauthenticated users get 404 (hidden for privacy)."""
         response = self.client.get(self.wtahuman.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_context_contains_object(self):
         """Detail view context contains the character object."""

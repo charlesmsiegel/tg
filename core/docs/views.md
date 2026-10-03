@@ -104,8 +104,12 @@ projection, never the object itself.
 
 - `PublicObjectDetailView` renders `core/public_object_detail.html` with
   `public_object = {name, public_info, image_url}`. `image_url` is set only when the image
-  is approved. The `OBJECT_DETAIL` policy and `DictView` routers render it for a `GET`
-  from a user without `VIEW_FULL`.
+  is approved. The `OBJECT_DETAIL` policy and `DictView` routers render it for `GET`/`HEAD`
+  from a user without `VIEW_FULL` only when `can_view_public_card(request, obj)` admits
+  them: `PUB`, or `CHR` in a readable chronicle. `PRI`, legacy `CUS` and unknown values
+  are hidden as `404` from non-full viewers. Callers that just checked full access use
+  the visibility-only helper; the projection independently calls
+  `can_view_public_object(request, obj)` to retain full-reader access and guard direct use.
 - `render_public_object_list(request, model_class, extra_context=None)` renders
   `core/public_object_list.html` for the `OBJECT_LIST` policy. Staff see every row;
   everyone else sees rows with `visibility="PUB"` (templates must also be `is_public`),
@@ -161,14 +165,15 @@ middleware, because the router authorizes the object and the chosen target itsel
 | `view_mapping` | `{key: view class}`; may be a property |
 | `default_redirect` | URL name (redirect) or view class (rendered) when the key is not mapped |
 | `protected_object` | Require `VIEW_FULL` before routing |
-| `public_view_class` | View rendered for a `GET`/`HEAD` without `VIEW_FULL` (usually `PublicObjectDetailView`) |
+| `public_view_class` | View rendered for a visibility-admitted `GET`/`HEAD` without `VIEW_FULL` (usually `PublicObjectDetailView`) |
 | `chargen_router` | Creation wizard mode (below) |
 
 `handle_request()` (used for both GET and POST):
 
 1. Loads the object.
-2. With `protected_object` and no `VIEW_FULL`: renders `public_view_class` for reads,
-   otherwise 404.
+2. With `protected_object` and no `VIEW_FULL`: renders `public_view_class` for reads only
+   when detail-card visibility admits the user, otherwise 404. It passes the resolved object
+   and honors any target-policy denial response.
 3. With `chargen_router`, when the key is a mapped step: a user without `EDIT_FULL` is
    sent to the default page if they can view the object (reads only), otherwise 404.
 4. For a mapped key, calls `authorize_route()` for the target view with the loaded object

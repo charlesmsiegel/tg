@@ -33,7 +33,7 @@ recipe is [changing the schema](../docs/guides/changing-the-schema.md); the page
 | Path | Responsibility |
 |------|----------------|
 | [`schema.py`](schema.py) | `live_model`, `live_field`, `table_names`, `table_columns`, `add_missing_columns` |
-| [`migrations/`](migrations/) | The chain `0001` to `0008`, one `RunPython` each |
+| [`migrations/`](migrations/) | The chain `0001` to `0011`, one `RunPython` each |
 | [`apps.py`](apps.py) | `TGSchemaConfig` (`name = "tg_schema"`) |
 | [`tests/`](tests/) | Generic guards for every migration, plus one test module per migration |
 
@@ -54,7 +54,7 @@ fields `null=True` or a default.
 
 - It is in `INSTALLED_APPS` ([`tg/settings/base.py`](../tg/settings/base.py)), so
   `python manage.py migrate` runs its migrations.
-- It changes tables of `game`, `characters` and `locations` (see
+- It changes tables of `core`, `game`, `characters`, `items` and `locations` (see
   [migrations](docs/migrations.md)). Models that rely on a migration say so in a comment:
   `game.models.UserSceneReadStatus` (0008) and
   `locations.models.mage.chantry.ChantryBackgroundRating` (0002).
