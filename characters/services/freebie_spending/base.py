@@ -313,7 +313,10 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
                 success=False,
                 trait=trait_name,
                 message="",
-                error=f"Cannot revert {trait_name}: no revert is registered for {trait_type!r} spends",
+                error=(
+                    f"Cannot revert {trait_name}: no revert is registered "
+                    f"for {trait_type!r} spends"
+                ),
             )
 
         try:
@@ -428,7 +431,9 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         such as a Banality reduction). The revert refuses when the column no longer holds
         ``trait_value``: the player raised the trait again, or something else changed it,
         and undoing that later change would not be this spend's reversal. ``mirror``
-        names columns kept equal to the trait (a temporary pool).
+        names a temporary pool the spend raised along with the trait; it loses the same
+        ``step`` and is clamped to ``[0, restored]``, so points the player spent from
+        the pool since the freebie spend are not refilled.
         """
         trait_name = freebie_request.trait_name
         if not hasattr(self.character, property_name):
@@ -446,7 +451,8 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         restored = expected - step
         setattr(self.character, property_name, restored)
         for name in mirror:
-            setattr(self.character, name, restored)
+            pool = getattr(self.character, name) - step
+            setattr(self.character, name, max(0, min(restored, pool)))
         self.character.save()
         return FreebieApplyResult(
             success=True,
