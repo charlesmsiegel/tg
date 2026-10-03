@@ -202,7 +202,8 @@ class NodeForm(RealityZoneFormMixin, forms.ModelForm):
 
         self.resonance_formset.full_clean()
         self.merit_flaw_formset.full_clean()
-        self.reality_zone_formset.full_clean()
+        if self.can_edit_reality_zone:
+            self.reality_zone_formset.full_clean()
 
         if not self.resonance_formset.is_valid():
             raise forms.ValidationError("Please correct the resonance errors below")
@@ -210,7 +211,7 @@ class NodeForm(RealityZoneFormMixin, forms.ModelForm):
         if not self.merit_flaw_formset.is_valid():
             raise forms.ValidationError("Please correct the merit/flaw errors below")
 
-        if not self.reality_zone_formset.is_valid():
+        if self.can_edit_reality_zone and not self.reality_zone_formset.is_valid():
             raise forms.ValidationError("Please correct the reality zone errors below")
 
         # get rank either from kwargs or form

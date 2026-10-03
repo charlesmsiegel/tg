@@ -6,7 +6,12 @@ formset manager adds rows. Renders nothing when the form has no such formset (th
 demesne edit form). Used by the node, sanctum and demesne forms.
   {% include "locations/mage/tl/zone_formset.html" with formset=form.reality_zone_formset %}
 {% endcomment %}
-{% if formset.management_form %}
+{% if form.can_edit_reality_zone == False %}
+    <section class="tl-locgroup">
+        <h2 class="tl-subhead">Reality zone</h2>
+        <p class="tl-note">The shared reality zone and rank are read-only here because some linked places are private. You can still edit this place; ask staff to change the shared ratings.</p>
+    </section>
+{% elif formset.management_form %}
     <section class="tl-locgroup">
         <h2 class="tl-subhead">Reality zone</h2>
         {% if formset.non_form_errors %}

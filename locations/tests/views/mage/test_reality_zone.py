@@ -172,7 +172,7 @@ class RealityZoneVisibilityTests(TestCase):
             [self.standalone],
         )
 
-    def test_parent_zone_form_denies_read_and_write_for_a_shared_private_zone(self):
+    def test_shared_zone_form_is_read_only_and_rejects_forged_nested_edits(self):
         zone, place = self.make_zone(Sanctum)
         Sanctum.objects.create(name="Other private place", owner=self.other, reality_zone=zone)
         positive = Practice.objects.create(name="Private shared practice")
@@ -181,8 +181,71 @@ class RealityZoneVisibilityTests(TestCase):
         second = ZoneRating.objects.create(zone=zone, practice=negative, rating=-1)
         self.client.force_login(self.owner)
         response = self.client.get(place.get_update_url())
-        self.assertEqual(response.status_code, 404)
-        self.assertNotContains(response, positive.name, status_code=404)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, positive.name)
+        self.assertNotContains(response, 'name="reality_zone-')
+        self.assertContains(response, "shared reality zone")
+        form = response.context["form"]
+        self.assertIsNone(form.reality_zone_formset)
+        self.assertTrue(form.fields["rank"].disabled)
+        response = self.client.post(
+            place.get_update_url(),
+            {
+                "name": place.name,
+                "description": "Must not be partially saved",
+                "rank": 2,
+                "reality_zone-TOTAL_FORMS": 2,
+                "reality_zone-INITIAL_FORMS": 2,
+                "reality_zone-0-id": first.pk,
+                "reality_zone-0-zone": zone.pk,
+                "reality_zone-0-practice": positive.pk,
+                "reality_zone-0-rating": 2,
+                "reality_zone-1-id": second.pk,
+                "reality_zone-1-zone": zone.pk,
+                "reality_zone-1-practice": negative.pk,
+                "reality_zone-1-rating": -2,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("read-only", str(response.context["form"].non_field_errors()))
+        first.refresh_from_db()
+        second.refresh_from_db()
+        place.refresh_from_db()
+        self.assertEqual((first.rating, second.rating), (1, -1))
+        self.assertEqual(place.rank, 0)
+        self.assertEqual(place.description, "")
+
+    def test_owner_can_edit_parent_description_without_reading_shared_zone(self):
+        zone, place = self.make_zone(Sanctum)
+        other = Sanctum.objects.create(
+            name="Other private place", owner=self.other, reality_zone=zone
+        )
+        practice = Practice.objects.create(name="Hidden shared practice")
+        rating = ZoneRating.objects.create(zone=zone, practice=practice, rating=1)
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            place.get_update_url(), {"name": place.name, "description": "Edited description"}
+        )
+        self.assertEqual(response.status_code, 302)
+        place.refresh_from_db()
+        other.refresh_from_db()
+        rating.refresh_from_db()
+        self.assertEqual(place.description, "Edited description")
+        self.assertEqual(place.rank, 0)
+        self.assertEqual((place.reality_zone_id, other.reality_zone_id), (zone.pk, zone.pk))
+        self.assertEqual(rating.rating, 1)
+
+    def test_staff_can_edit_a_shared_zone_from_its_parent_form(self):
+        zone, place = self.make_zone(Sanctum)
+        Sanctum.objects.create(name="Other private place", owner=self.other, reality_zone=zone)
+        positive = Practice.objects.create(name="Shared positive practice")
+        negative = Practice.objects.create(name="Shared negative practice")
+        first = ZoneRating.objects.create(zone=zone, practice=positive, rating=1)
+        second = ZoneRating.objects.create(zone=zone, practice=negative, rating=-1)
+        self.client.force_login(self.staff)
+        response = self.client.get(place.get_update_url())
+        self.assertContains(response, positive.name)
+        self.assertFalse(response.context["form"].fields["rank"].disabled)
         response = self.client.post(
             place.get_update_url(),
             {
@@ -200,12 +263,27 @@ class RealityZoneVisibilityTests(TestCase):
                 "reality_zone-1-rating": -2,
             },
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
         first.refresh_from_db()
         second.refresh_from_db()
-        place.refresh_from_db()
-        self.assertEqual((first.rating, second.rating), (1, -1))
-        self.assertEqual(place.rank, 0)
+        self.assertEqual((first.rating, second.rating), (2, -2))
+
+    def test_linking_a_staff_reference_classifies_it_without_automatic_declassification(self):
+        zone = self.standalone
+        self.assertContains(self.client.get(zone.get_absolute_url()), zone.name)
+        place = Sanctum.objects.create(
+            name="Private player place", owner=self.owner, reality_zone=zone
+        )
+        zone.refresh_from_db()
+        self.assertTrue(zone.is_player_zone)
+        self.assertEqual(self.client.get(zone.get_absolute_url()).status_code, 404)
+        place.reality_zone = None
+        place.save()
+        zone.refresh_from_db()
+        self.assertTrue(zone.is_player_zone)
+        self.assertEqual(self.client.get(zone.get_absolute_url()).status_code, 404)
+        self.client.force_login(self.staff)
+        self.assertContains(self.client.get(zone.get_absolute_url()), zone.name)
 
     def test_deleted_last_place_does_not_publish_its_legacy_zone(self):
         zone, place = self.make_zone(Sanctum)

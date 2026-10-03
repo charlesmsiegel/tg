@@ -1,6 +1,7 @@
 """Shared zone form behavior preserves zone identities and independent names."""
 
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
 
 from characters.models.mage.focus import Practice
 from locations.forms.mage.demesne import DemesneForm
@@ -93,3 +94,52 @@ class RealityZonePlaceFormTests(TestCase):
                     f"Positive Reality Zone Ratings must sum to {label} rating",
                     form.non_field_errors(),
                 )
+
+    def test_inaccessible_shared_zones_are_not_bound_and_parent_edits_preserve_them(self):
+        owner = User.objects.create_user("shared_place_owner")
+        other = User.objects.create_user("shared_other_owner")
+        request = RequestFactory().post("/")
+        request.user = owner
+        for model, form_class in ((Node, NodeForm), (Sanctum, SanctumForm), (Demesne, DemesneForm)):
+            with self.subTest(model=model):
+                zone = RealityZone.objects.create(name="Another owner's zone")
+                place = model.objects.create(
+                    name="My place", rank=1, owner=owner, reality_zone=zone
+                )
+                Sanctum.objects.create(name="Other private place", owner=other, reality_zone=zone)
+                rating = ZoneRating.objects.create(zone=zone, practice=self.positive, rating=1)
+                data = {
+                    key: value
+                    for key, value in self.data().items()
+                    if not key.startswith("reality_zone-")
+                }
+                data["description"] = "A permitted descriptive edit"
+                form = form_class(instance=place, data=data, request=request)
+                self.assertIsNone(form.reality_zone)
+                self.assertIsNone(form.reality_zone_formset)
+                self.assertTrue(form.fields["rank"].disabled)
+                self.assertTrue(form.is_valid(), form.errors)
+                saved = form.save()
+                rating.refresh_from_db()
+                self.assertEqual(saved.description, "A permitted descriptive edit")
+                self.assertEqual(saved.reality_zone_id, zone.pk)
+                self.assertEqual(saved.rank, 1)
+                self.assertEqual(rating.rating, 1)
+
+    def test_read_only_shared_rank_changes_are_rejected_without_saving(self):
+        owner = User.objects.create_user("shared_rank_owner")
+        other = User.objects.create_user("shared_rank_other")
+        zone = RealityZone.objects.create(name="Restricted shared zone")
+        place = Sanctum.objects.create(name="My place", rank=1, owner=owner, reality_zone=zone)
+        Sanctum.objects.create(name="Other place", owner=other, reality_zone=zone)
+        request = RequestFactory().post("/")
+        request.user = owner
+        form = SanctumForm(
+            instance=place,
+            request=request,
+            data={"name": place.name, "rank": 2, "description": "Must not save"},
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("read-only", str(form.non_field_errors()))
+        place.refresh_from_db()
+        self.assertEqual((place.rank, place.description), (1, ""))

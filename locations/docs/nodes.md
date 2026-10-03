@@ -150,7 +150,8 @@ enforce the same read permission. The detail view lists practices by sign and th
 places returned by `get_applied_to()`.
 Player-origin zones retain private classification after all their links are removed;
 only staff can read those orphans. Inline editing forms enforce the same shared-zone
-permission before exposing or saving practice rows.
+permission before exposing or saving practice rows, while allowing parent edits
+with rank and inaccessible shared ratings read-only.
 
 Sanctum and Demesne edit pages differ: a Sanctum edits through `SanctumForm` (with the
 zone formset), while the Demesne edit page is a generated form of `name`,

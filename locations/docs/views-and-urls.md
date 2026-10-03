@@ -115,9 +115,10 @@ Linked-zone reads deliberately require `VIEW_FULL`, not just a public place card
 partial player/observer access. For shared zones, access to one place is insufficient.
 The same permission gates inline zone displays and registry form choices, including
 validation of submitted zone IDs. The nullable many-to-one links remain unchanged.
-An edit form with an inline zone formset also returns 404 if its shared zone is
-unreadable, preventing an owner of one place from reading or modifying another
-place's shared practices. A player-origin zone keeps its classification after its
+An edit form with an unreadable shared zone still allows parent edits. Its rank is
+read-only and no private zone formset is fetched, initialized or bound. Forged rank
+or nested-zone edits produce a clear form error and save nothing. Staff can edit
+shared ratings through the ordinary form. A player-origin zone keeps its classification after its
 last place is deleted, detached or reassigned; its orphan is readable only by staff.
 
 ## Routes outside the registry
