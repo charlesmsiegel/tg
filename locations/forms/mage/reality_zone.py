@@ -3,6 +3,7 @@ from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 
 from characters.models.mage.focus import Practice
+from core.permissions import PermissionManager
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
 
@@ -41,8 +42,25 @@ RealityZonePracticeRatingFormSet = inlineformset_factory(
 class RealityZoneFormMixin:
     """Shared balancing and persistence for a place's potentially shared zone."""
 
-    def __init__(self, *args, **kwargs):
+    requires_reality_zone_permissions = True
+
+    def __init__(self, *args, request=None, **kwargs):
         super().__init__(*args, **kwargs)
+        zone_id = self.instance.reality_zone_id
+        self.can_edit_reality_zone = (
+            zone_id is None
+            or request is None
+            or PermissionManager.filter_queryset_for_user(
+                request.user, RealityZone.objects.filter(pk=zone_id)
+            ).exists()
+        )
+        if not self.can_edit_reality_zone:
+            # Do not fetch, initialize or bind the shared zone's private rows.
+            # Descriptive parent edits can proceed at the parent's current rank.
+            self.reality_zone = None
+            self.reality_zone_formset = None
+            self.fields["rank"].disabled = True
+            return
         self.reality_zone = (
             self.instance.reality_zone
             if self.instance.reality_zone_id
@@ -55,9 +73,22 @@ class RealityZoneFormMixin:
         )
 
     def is_valid(self):
-        return super().is_valid() and self.reality_zone_formset.is_valid()
+        return super().is_valid() and (
+            not self.can_edit_reality_zone or self.reality_zone_formset.is_valid()
+        )
 
     def clean_reality_zone(self, rank):
+        if not self.can_edit_reality_zone:
+            # The inline formset's prefix is independent of the parent form's.
+            prefix = "reality_zone-"
+            posted_rank = self.data.get(self.add_prefix("rank"))
+            if any(key.startswith(prefix) for key in self.data) or (
+                posted_rank is not None and str(posted_rank) != str(self.initial["rank"])
+            ):
+                raise forms.ValidationError(
+                    "Rank and shared reality zone ratings are read-only here; ask staff to edit them."
+                )
+            return
         if not self.reality_zone_formset.is_valid():
             return
         ratings = [
@@ -72,6 +103,8 @@ class RealityZoneFormMixin:
             raise forms.ValidationError(f"Positive Reality Zone Ratings must sum to {label} rating")
 
     def save_reality_zone(self, place):
+        if not self.can_edit_reality_zone:
+            return
         # Names belong to the zone itself, never to one of its linked places.
         # Existing shared zones retain both their identity and staff-edited name.
         if self.reality_zone.pk is None:

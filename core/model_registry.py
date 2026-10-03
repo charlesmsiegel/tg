@@ -18,7 +18,6 @@ from core.mixins import (
     VisibilityFilterMixin,
     prepare_created_object,
 )
-from core.permission_context import get_object_permissions
 from core.permissions import Permission, PermissionManager
 from core.route_policy_manifest import POLICIES
 from core.template_resolution import shared_template_names
@@ -103,31 +102,36 @@ class RegistryViewMixin(PermissionContextMixin):
         context = super().get_context_data(**kwargs)
         zone = getattr(context.get("object"), "reality_zone", None)
         if zone is not None:
-            context["reality_zone_perms"] = get_object_permissions(self.request, zone)
+            # Plain zones have read capability, not character spending powers.
+            context["reality_zone_perms"] = {
+                "can_view_full": PermissionManager.user_has_permission(
+                    self.request.user, zone, Permission.VIEW_FULL, request=self.request
+                )
+            }
         if self.registry_action == "list" and self.registry_spec is not None:
             context.setdefault("list_title", self.registry_spec.plural_label)
             context.setdefault("list_heading", f"{self.registry_spec.gameline}_heading")
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if getattr(self.get_form_class(), "requires_reality_zone_permissions", False):
+            # Decide the nested form's audience before any private row is bound.
+            kwargs["request"] = self.request
+        return kwargs
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        zone = getattr(form, "reality_zone", None)
-        if (
-            zone is not None
-            and zone.pk is not None
-            and not PermissionManager.user_has_permission(
-                self.request.user, zone, Permission.VIEW_FULL, request=self.request
-            )
-        ):
-            # Inline formsets expose and mutate the existing zone, not just the
-            # place being edited. A place owner cannot cross a shared boundary.
-            raise Http404("Object not found")
         # Zone selectors are another read surface for historical copied names.
         for form_field in form.fields.values():
             queryset = getattr(form_field, "queryset", None)
             if queryset is not None and queryset.model._meta.label_lower == "locations.realityzone":
                 form_field.queryset = PermissionManager.filter_queryset_for_user(
                     self.request.user, queryset
+                )
+                form_field.help_text = (
+                    "Linking a zone restricts it to viewers of all linked places. "
+                    "Removing the link does not make the zone public again."
                 )
         for name, changes in (self.registry_form_updates or {}).items():
             if name in form.fields:
