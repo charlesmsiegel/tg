@@ -3,9 +3,10 @@
 This page describes what a production installation of the site needs and how to install
 and update one: settings selection, environment variables, the database, Redis, the ASGI
 server, static and media files, and the order of commands for a first deploy and for an
-update. It is for whoever runs the server. The repository defines the Django side only;
-where it says nothing (reverse proxy, process manager, TLS), this page states what the
-application requires from them rather than prescribing a configuration.
+update. It is for whoever runs the server. For a fresh Ubuntu Server host,
+[`clean_install.sh`](../../clean_install.sh) provides a complete nginx, systemd, Redis and
+Daphne installation. The rest of this page documents the individual pieces and the manual
+equivalents.
 
 ## What a production host runs
 
@@ -14,12 +15,47 @@ application requires from them rather than prescribing a configuration.
 | Django application under an ASGI server | [`tg/asgi.py`](../../tg/asgi.py), `daphne` in [`requirements.txt`](../../requirements.txt) | HTTP pages and the scene-chat WebSocket |
 | Redis | Settings only ([`tg/settings/production.py`](../../tg/settings/production.py)) | Cache, sessions and the Channels layer |
 | Database | SQLite by default ([`tg/settings/base.py`](../../tg/settings/base.py)) | All application data |
-| Reverse proxy | Nothing | TLS, `/static/` and `/media/`, WebSocket upgrade, request size limits |
-| Process manager | Nothing | Starts, restarts and supervises the ASGI server |
+| Reverse proxy | [`clean_install.sh`](../../clean_install.sh) installs nginx | TLS, `/static/` and `/media/`, WebSocket upgrade, request size limits |
+| Process manager | [`clean_install.sh`](../../clean_install.sh) installs `tg.service` | Starts, restarts and supervises the ASGI server |
 
 Writable paths under the repository root: `db.sqlite3` and its directory (SQLite writes
 journal files beside it), `logs/`, `media/` (uploads) and `collected_static/` (written by
 `collectstatic`).
+
+## Automated clean Ubuntu Server install
+
+For a new Ubuntu Server VM, clone the repository, copy your production `.env` into the
+repository root, and run:
+
+```bash
+./clean_install.sh
+```
+
+Run it as the normal login user, **not** with `sudo`; it asks for sudo authorization
+immediately and keeps that authorization alive for the install. The script never rewrites
+`.env`. It requires `DJANGO_ENVIRONMENT=production`, a real `SECRET_KEY`, and at least one
+`DJANGO_ALLOWED_HOSTS` entry.
+
+The installer:
+
+- installs Python build dependencies, nginx, Redis, SQLite tools, TLS tools and ACL support;
+- creates/reuses `.venv` and installs `requirements.txt`;
+- runs `makemigrations`, `migrate`, `collectstatic`, `populate_gamedata`, and
+  `check --deploy`;
+- installs and enables `tg.service`, running Daphne on `127.0.0.1:8000`;
+- configures nginx on ports 80 and 443, including WebSocket proxying and direct static/media
+  serving;
+- creates a self-signed first-boot TLS certificate so HTTPS works immediately, then performs
+  an HTTPS smoke test through nginx.
+
+The self-signed certificate is intentionally only a bootstrap certificate. Replace
+`/etc/ssl/tg/tg-selfsigned.crt` and `/etc/ssl/tg/tg-selfsigned.key` (or update the nginx
+site) with a trusted certificate for normal public use. The script is safe to rerun: it does
+not reset or delete the database, and the game-data loader is designed to be rerunnable.
+
+It deliberately does not create a superuser because that would make the otherwise
+non-interactive install stop for account credentials. After installation, run
+`.venv/bin/python manage.py createsuperuser` if the host needs an admin account.
 
 ## Selecting the production settings
 
