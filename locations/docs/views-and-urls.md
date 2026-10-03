@@ -45,7 +45,7 @@ declared policy in `RegistryViewMixin.dispatch()`; other routes are checked by
 | `OBJECT_WRITE` | Update of most types | `EDIT_FULL` required; non-staff POSTs may not change `owner`, `chronicle`, `status` and the other approval fields |
 | `OBJECT_ST_WRITE` | `Chantry` update | As `OBJECT_WRITE`, and the user must hold a scoped editor role (admin, head storyteller or storyteller of the chantry's chronicle) |
 | `OBJECT_ACTION` | `ParadoxRealm` update | `EDIT_FULL` required, with the same approval-field guard |
-| `PUBLIC_READ` / `STAFF_WRITE` | `RealityZone` | Anyone reads; staff create and edit |
+| `PUBLIC_READ` / `STAFF_WRITE` | `RealityZone` | Standalone zones are public; linked zones require full access to every place; staff create and edit |
 | `CHARGEN_STEP` | The chantry wizard steps and freehold wizard steps | `EDIT_FULL` required and the object's `status` must be `Un` or `Rev`; otherwise 404 |
 | `ROUTER` | `GenericLocationDetailView`, `ChantryCreationView`, `FreeholdCreationView` | No check at the router; the target view is authorized |
 | `PUBLIC_INDEX` | `LocationIndexView` | Anyone; the view decides what to show |
@@ -105,8 +105,20 @@ staff. The form submits with GET to `core:object_type_redirect` with
 | `_NodeCreateView`, `_DemesneCreateView`, `_LibraryCreateView`, `_SanctumCreateView`, `_ParadoxRealmCreateView` | [`views/mage/`](../views/mage/) | `FormView`s: `prepare_created_object()`, `form.save()`, redirect to the new object |
 | `_ParadoxRealmUpdateView` | [`views/mage/paradox_realm.py`](../views/mage/paradox_realm.py) | `FormView` bound to the realm |
 | `_NodeDetailView`, `_ParadoxRealmDetailView`, `_HavenDetailView` | [`views/mage/`](../views/mage/), [`views/vampire/`](../views/vampire/) | Add rating rows (Resonance, merits and flaws, obstacles, atmospheres) to the context |
-| `_RealityZoneDetailView` | [`views/mage/reality_zone.py`](../views/mage/reality_zone.py) | Positive and negative practices, and the places using the zone that the viewer may see |
+| `_RealityZoneDetailView` / `_RealityZoneListView` | [`views/mage/reality_zone.py`](../views/mage/reality_zone.py) | Standalone zones or zones whose linked places the viewer can all fully view; practices and applied places on detail |
 | `_FreeholdDetailView`, `_FreeholdCreateView`, `_FreeholdUpdateView` | [`views/changeling/freehold.py`](../views/changeling/freehold.py) | Feature points and Holdings in the context; see [freeholds](freeholds.md) |
+
+Reality-zone reads keep the reference-data route policy so standalone zones do not
+require login. `ViewPermissionMixin` guards detail (hidden and missing zones both
+return 404), and `VisibilityFilterMixin` filters the list through `PermissionManager`.
+Linked-zone reads deliberately require `VIEW_FULL`, not just a public place card or
+partial player/observer access. For shared zones, access to one place is insufficient.
+The same permission gates inline zone displays and registry form choices, including
+validation of submitted zone IDs. The nullable many-to-one links remain unchanged.
+An edit form with an inline zone formset also returns 404 if its shared zone is
+unreadable, preventing an owner of one place from reading or modifying another
+place's shared practices. A player-origin zone keeps its classification after its
+last place is deleted, detached or reassigned; its orphan is readable only by staff.
 
 ## Routes outside the registry
 

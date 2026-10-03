@@ -1,11 +1,12 @@
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 
+from core.mixins import ViewPermissionMixin, VisibilityFilterMixin
 from core.permissions import Permission, PermissionManager
 from locations.models.mage.reality_zone import ZoneRating
 from locations.registry import registry
 
 
-class _RealityZoneDetailView(DetailView):
+class _RealityZoneDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -22,6 +23,10 @@ class _RealityZoneDetailView(DetailView):
 
 
 RealityZoneDetailView = registry.view("locations.RealityZone", "detail")
+
+
+class _RealityZoneListView(VisibilityFilterMixin, ListView):
+    """Reference zones with linked player places use their full-view audience."""
 
 
 RealityZoneListView = registry.view("locations.RealityZone", "list")

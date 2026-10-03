@@ -5,10 +5,9 @@ from characters.models.mage.resonance import Resonance
 from core.models import Number
 from core.widgets import AutocompleteTextInput
 from game.models import ObjectType
-from locations.forms.mage.reality_zone import RealityZonePracticeRatingFormSet
+from locations.forms.mage.reality_zone import RealityZoneFormMixin
 from locations.models.mage import Node
 from locations.models.mage.node import NodeMeritFlawRating, NodeResonanceRating
-from locations.models.mage.reality_zone import RealityZone
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
@@ -120,7 +119,7 @@ NodeMeritFlawRatingFormSet = forms.inlineformset_factory(
 )
 
 
-class NodeForm(forms.ModelForm):
+class NodeForm(RealityZoneFormMixin, forms.ModelForm):
     class Meta:
         model = Node
         fields = (
@@ -160,24 +159,11 @@ class NodeForm(forms.ModelForm):
             data=self.data if self.is_bound else None,
             prefix="merit_flaw",
         )
-        # Initialize RealityZone instance
-        if self.instance.pk and self.instance.reality_zone:
-            self.reality_zone = self.instance.reality_zone
-        else:
-            self.reality_zone = RealityZone()
-
-        # Initialize RealityZonePracticeRatingFormSet
-        self.reality_zone_formset = RealityZonePracticeRatingFormSet(
-            instance=self.reality_zone,
-            data=self.data if self.is_bound else None,
-            prefix="reality_zone",
-        )
 
     def is_valid(self):
         valid = super().is_valid()
         valid = valid and self.resonance_formset.is_valid()
         valid = valid and self.merit_flaw_formset.is_valid()
-        valid = valid and self.reality_zone_formset.is_valid()
         return valid
 
     def save(self, commit=True):
@@ -200,15 +186,7 @@ class NodeForm(forms.ModelForm):
             self.merit_flaw_formset.instance = node
             self.merit_flaw_formset.save()
 
-            # Save the RealityZone
-            self.reality_zone.name = node.name  # Or get from form if you have a RealityZoneForm
-            self.reality_zone.save()
-            node.reality_zone = self.reality_zone
-            node.save()
-
-            # Save the RealityZonePracticeRatingFormSet
-            self.reality_zone_formset.instance = self.reality_zone
-            self.reality_zone_formset.save()
+            self.save_reality_zone(node)
 
         return node
 
@@ -255,25 +233,7 @@ class NodeForm(forms.ModelForm):
             if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
         )
 
-        total_rz_rating = sum(
-            form.cleaned_data.get("rating", 0)
-            for form in self.reality_zone_formset
-            if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
-        )
-
-        total_positive_rz_rating = sum(
-            form.cleaned_data.get("rating", 0)
-            for form in self.reality_zone_formset
-            if form.cleaned_data
-            and not form.cleaned_data.get("DELETE", False)
-            and form.cleaned_data.get("rating", 0) > 0
-        )
-
-        if total_rz_rating != 0:
-            raise forms.ValidationError("Reality Zone Ratings must total 0")
-
-        if total_positive_rz_rating != rank:
-            raise forms.ValidationError("Positive Reality Zone Ratings must sum to Node rating")
+        self.clean_reality_zone(rank)
 
         points_remaining = (
             3 * rank - (total_resonance_rating - rank) - total_mf_rating - ratio - size

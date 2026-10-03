@@ -2180,6 +2180,7 @@ registry = ModelRegistry(
                 "list": ActionSpec(
                     "locations.views.mage.reality_zone.RealityZoneListView",
                     "PUBLIC_READ",
+                    custom="locations.views.mage.reality_zone._RealityZoneListView",
                     routes=(("reality_zone", "reality_zone/"),),
                 ),
                 "create": ActionSpec(

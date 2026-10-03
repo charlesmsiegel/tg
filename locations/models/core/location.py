@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, router, transaction
 
 from core.models import Model, ModelManager, ModelQuerySet
 from core.registry_urls import RegistryURLMixin
@@ -97,4 +97,31 @@ class LocationModel(RegistryURLMixin, Model):
         if errors:
             raise ValidationError(errors)
 
-    # Note: save() method inherited from Model base class already calls full_clean()
+    def save(self, *args, **kwargs):
+        zone_id = getattr(self, "reality_zone_id", None)
+        update_fields = kwargs.get("update_fields", args[3] if len(args) > 3 else None)
+        if update_fields is not None:
+            # Django also accepts generators and (on 5.2) positional arguments.
+            # Inspect once without consuming an iterator before the actual save.
+            update_fields = frozenset(update_fields)
+            if "update_fields" in kwargs:
+                kwargs["update_fields"] = update_fields
+            elif len(args) > 3:
+                args = (*args[:3], update_fields, *args[4:])
+        if zone_id is None or (
+            update_fields is not None
+            and not {"reality_zone", "reality_zone_id"}.intersection(update_fields)
+        ):
+            return super().save(*args, **kwargs)
+        using = kwargs.get("using", args[2] if len(args) > 2 else None) or router.db_for_write(
+            type(self), instance=self
+        )
+        # Commit the link and its sticky classification together. A failed place
+        # save must not turn a staff standalone reference into a player zone.
+        with transaction.atomic(using=using):
+            result = super().save(*args, **kwargs)
+            zone_model = self._meta.get_field("reality_zone").remote_field.model
+            zone_model.objects.using(using).filter(pk=zone_id, is_player_zone=False).update(
+                is_player_zone=True
+            )
+            return result
