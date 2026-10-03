@@ -203,6 +203,14 @@ class ChantryUpdateFundingTests(TestCase):
         self.chantry.refresh_from_db()
         self.assertEqual((self.chantry.name, self.chantry.total_points), ("Renamed", 12))
 
+    def test_an_edited_total_is_absolute_and_replaces_a_concurrent_join(self):
+        """Documented: an edit-the-total form cannot preserve points joined after page load."""
+        chantry_points.add_points(self.chantry, 3)  # a character joined after the page loaded
+        self.data["total_points"] = ["20"]
+        self.assertEqual(self.client.post(self.url, self.data).status_code, 302)
+        self.chantry.refresh_from_db()
+        self.assertEqual(self.chantry.total_points, 20)
+
     def test_an_edited_total_is_written_by_the_service(self):
         self.data["total_points"] = ["30"]
         with mock.patch.object(
