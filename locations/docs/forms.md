@@ -112,10 +112,12 @@ name, joining requires a selection.
   spent while the chantry is in its wizard, so an approved, submitted, retired or
   deceased chantry is never offered; nor is another player's draft the character
   does not belong to, since the points would raise its rank behind that player's
-  back. Membership is the invitation: a storyteller (or the owner, through the
-  direct form) adds the character to `members`, and the character may then pool
-  points into that draft. There is no other invitation form yet. A POST naming a
-  chantry outside the queryset is a field error and changes nothing.
+  back. Membership is the invitation: a scoped Mage storyteller or staff member
+  adds the character to `members` through the direct update form (the only way to
+  edit that list; owners are refused there), and the character may then pool
+  points into that draft. That is the one remaining way to raise another player's
+  chantry rank, and it is a storyteller's decision. A POST naming a chantry
+  outside the queryset is a field error and changes nothing.
 - `save()` always commits, inside a transaction. Creating sets the owner (the
   character's player), chronicle, `status = "Un"`, `creation_status = 1`, funds the
   chantry with `chantry_points.set_total_points(chantry, points)`, saves many-to-many
