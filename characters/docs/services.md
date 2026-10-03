@@ -102,7 +102,9 @@ trait), `_revert_catalogue_column()` (a column named by an `Attribute`, `Sphere`
 `Discipline` or similar row looked up by display name) and `_revert_rating_row()` (a
 `BackgroundRating`, practice or path rating) refuse unless the trait still holds
 `trait_value`, then restore the value before the spend, deleting a rating row the spend
-created. A player who raised the same trait again therefore cannot have the later raise
+created. A temporary pool the spend raised with its trait (Willpower, Glamour) loses the
+same point and is clamped to the restored value, so points spent from the pool since are
+not refilled. A player who raised the same trait again therefore cannot have the later raise
 undone in place of the denied one: two pending spends on one trait are denied newest
 first, and the refusal message says so. The same check applies to pools the character
 spends in play (Quintessence, Rote Points, temporary Renown, Pathos, Corpus): a pool that

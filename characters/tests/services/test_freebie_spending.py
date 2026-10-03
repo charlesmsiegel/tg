@@ -699,13 +699,17 @@ class TestFreebieDenialReverts(TestCase):
             self.mage.save()
             raise RuntimeError("catalogue exploded")
 
-        with mock.patch.object(
-            MageFreebieSpendingService, "_apply_attribute", side_effect=partial_then_raise
+        with (
+            mock.patch.object(
+                MageFreebieSpendingService, "_apply_attribute", side_effect=partial_then_raise
+            ),
+            self.assertLogs("characters.services.freebie_spending.base", level="ERROR") as logs,
         ):
             result = self.service.deny(record, self.st_user)
 
         self.assertFalse(result.success)
         self.assertEqual(result.error, "Could not revert Strength: an unexpected error was logged")
+        self.assertIn("catalogue exploded", "\n".join(logs.output))
         self.assertNotIn("exploded", result.error)
         self.assert_untouched(record, freebies=15, strength=2)
 
@@ -824,7 +828,31 @@ class TestFreebieDenialReverts(TestCase):
         record.refresh_from_db()
         self.assertEqual(record.approved, "Pending")
 
+    def test_willpower_denial_does_not_refill_a_spent_temporary_pool(self):
+        """The spend set temporary Willpower to the new permanent value, so the revert
+        takes the same point back from the pool and clamps it, rather than resetting the
+        pool to full and handing back points spent in play since."""
+        self.mage.willpower = 3
+        self.mage.temporary_willpower = 3
+        self.mage.save()
+        self.assertTrue(self.service.spend("Willpower").success)
+        self.mage.refresh_from_db()
+        self.assertEqual((self.mage.willpower, self.mage.temporary_willpower), (4, 4))
+        Mage.objects.filter(pk=self.mage.pk).update(temporary_willpower=2)
+        self.mage.refresh_from_db()
+        record = FreebieSpendingRecord.objects.get(character=self.mage, approved="Pending")
+
+        deny = self.service.deny(record, self.st_user)
+
+        self.assertTrue(deny.success, deny.error)
+        self.mage.refresh_from_db()
+        self.assertEqual((self.mage.willpower, self.mage.temporary_willpower), (3, 1))
+
     def test_old_new_background_record_spelled_background_still_deletes(self):
+        """A record written before new backgrounds were spelled ``new-background`` holds
+        ``trait_value`` 1, which the revert reads as "this spend created the row"; a
+        rating-1 row raised from 0 outside the freebie flow would be deleted the same
+        way, as it was before this change."""
         BackgroundRating.objects.create(char=self.mage, bg=self.resources, rating=1, note="Old")
         record = self.record(
             trait_name="Resources (Old)", trait_type="background", trait_value=1, cost=1
