@@ -16,6 +16,7 @@ class RealityZonePlaceFormTests(TestCase):
     def setUpTestData(cls):
         cls.positive = Practice.objects.create(name="Positive Practice")
         cls.negative = Practice.objects.create(name="Negative Practice")
+        cls.staff = User.objects.create_user("zone_form_staff", is_staff=True)
 
     def data(self, **changes):
         data = {
@@ -59,7 +60,9 @@ class RealityZonePlaceFormTests(TestCase):
                 zone = RealityZone.objects.create(name="Staff's independent name")
                 place = model.objects.create(name="Original place", rank=1, reality_zone=zone)
                 shared = Sanctum.objects.create(name="Sharing place", reality_zone=zone)
-                form = form_class(instance=place, data=self.data())
+                request = RequestFactory().post("/")
+                request.user = self.staff
+                form = form_class(instance=place, data=self.data(), request=request)
                 self.assertTrue(form.is_valid(), form.errors)
                 count = RealityZone.objects.count()
                 saved = form.save()
@@ -143,3 +146,46 @@ class RealityZonePlaceFormTests(TestCase):
         self.assertIn("read-only", str(form.non_field_errors()))
         place.refresh_from_db()
         self.assertEqual((place.rank, place.description), (1, ""))
+
+    def test_existing_zone_without_request_is_never_initialized_or_bound(self):
+        for model, form_class in ((Node, NodeForm), (Sanctum, SanctumForm), (Demesne, DemesneForm)):
+            with self.subTest(model=model):
+                zone = RealityZone.objects.create(name="Private existing zone")
+                place = model.objects.create(name="My place", rank=1, reality_zone=zone)
+                rating = ZoneRating.objects.create(zone=zone, practice=self.positive, rating=1)
+                form = form_class(instance=place, data=self.data())
+                self.assertFalse(form.can_edit_reality_zone)
+                self.assertIsNone(form.reality_zone)
+                self.assertIsNone(form.reality_zone_formset)
+                self.assertTrue(form.fields["rank"].disabled)
+                self.assertFalse(form.is_valid())
+                self.assertIn("read-only", str(form.non_field_errors()))
+                rating.refresh_from_db()
+                self.assertEqual(rating.rating, 1)
+
+    def test_missing_request_allows_parent_only_edits_without_reading_zone(self):
+        zone = RealityZone.objects.create(name="Private existing zone")
+        place = Sanctum.objects.create(name="My place", rank=1, reality_zone=zone)
+        form = SanctumForm(
+            instance=place,
+            data={"name": place.name, "description": "A parent-only edit"},
+        )
+        self.assertTrue(form.fields["rank"].disabled)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        place.refresh_from_db()
+        self.assertEqual((place.rank, place.reality_zone_id), (1, zone.pk))
+        self.assertEqual(place.description, "A parent-only edit")
+
+    def test_same_request_form_access_is_fresh_after_another_private_link(self):
+        owner = User.objects.create_user("fresh_zone_owner")
+        other = User.objects.create_user("fresh_zone_other")
+        zone = RealityZone.objects.create(name="Initially accessible zone")
+        place = Sanctum.objects.create(name="My place", owner=owner, reality_zone=zone)
+        request = RequestFactory().get("/")
+        request.user = owner
+        self.assertTrue(SanctumForm(instance=place, request=request).can_edit_reality_zone)
+        Sanctum.objects.create(name="Other private place", owner=other, reality_zone=zone)
+        denied = SanctumForm(instance=place, request=request)
+        self.assertFalse(denied.can_edit_reality_zone)
+        self.assertIsNone(denied.reality_zone_formset)

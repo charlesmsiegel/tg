@@ -137,11 +137,14 @@ ratings sum to the place's rank, and saves the zone and ratings. A new zone is n
 `commit=False` saves neither zones nor ratings. `NodeForm` also carries Resonance and
 merit/flaw formsets and the node point budget.
 Registry views pass the request to the mixin before any private row is bound. When
-the requester cannot fully view every linked place, the form has no zone instance
-or zone formset and its rank is read-only. Descriptive parent edits remain usable;
+the request is missing or its user cannot fully view every linked place, the form
+has no zone instance or zone formset and its rank is read-only. Descriptive parent edits remain usable;
 forged rank or nested-zone changes fail validation and save nothing. Staff retain
 the full shared-zone form. New form-created zones start with sticky player
 provenance and never become public by losing their last place.
+Programmatic edits of existing zones must also pass an explicit request; omitting
+it permits only parent descriptive edits. New-zone creation can omit the request
+because it cannot bind an existing zone's private rows.
 See [nodes](nodes.md#creating-and-editing-a-node-nodeform) and
 [reality zones](nodes.md#reality-zones).
 

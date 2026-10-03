@@ -1,7 +1,7 @@
 """Tests for Sanctum forms."""
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 
 from characters.models.mage.focus import Practice
 from locations.forms.mage.sanctum import SanctumForm
@@ -48,7 +48,9 @@ class TestSanctumForm(TestCase):
         """Test form with existing sanctum instance."""
         rz = RealityZone.objects.create(name="Test RZ")
         sanctum = Sanctum.objects.create(name="Test Sanctum", rank=2, reality_zone=rz)
-        form = SanctumForm(instance=sanctum)
+        request = RequestFactory().get("/")
+        request.user = User.objects.create_user("sanctum_form_staff", is_staff=True)
+        form = SanctumForm(instance=sanctum, request=request)
         self.assertEqual(form.reality_zone, rz)
 
     def test_form_without_existing_reality_zone(self):

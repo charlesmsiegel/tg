@@ -121,6 +121,13 @@ or nested-zone edits produce a clear form error and save nothing. Staff can edit
 shared ratings through the ordinary form. A player-origin zone keeps its classification after its
 last place is deleted, detached or reassigned; its orphan is readable only by staff.
 
+Detail loads linked places through fresh full-view SQL predicates shared with the
+zone's audience filter, rather than computing a role snapshot for each place.
+Practice ratings join their practice objects, keeping their existing display
+links. Query-budget tests keep list cost constant as zones grow and detail cost
+constant as linked places or ratings of existing concrete types grow. No zone
+permission result is cached across users, requests or link changes.
+
 ## Routes outside the registry
 
 | Path | URL name | View | Purpose |

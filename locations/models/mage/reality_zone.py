@@ -59,13 +59,17 @@ class RealityZone(RegistryURLMixin, models.Model):
             return super().save(*args, **kwargs)
 
     def get_positive_practices(self):
-        return ZoneRating.objects.filter(zone=self, rating__gt=0).order_by(
-            "-rating", "practice__name"
+        return (
+            ZoneRating.objects.filter(zone=self, rating__gt=0)
+            .select_related("practice")
+            .order_by("-rating", "practice__name")
         )
 
     def get_negative_practices(self):
-        return ZoneRating.objects.filter(zone=self, rating__lt=0).order_by(
-            "rating", "practice__name"
+        return (
+            ZoneRating.objects.filter(zone=self, rating__lt=0)
+            .select_related("practice")
+            .order_by("rating", "practice__name")
         )
 
     def get_applied_to(self):

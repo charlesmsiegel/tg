@@ -684,6 +684,26 @@ class PermissionManager:
         return filters
 
     @staticmethod
+    def _build_full_view_location_filter(user: User, queryset) -> Q:
+        """Fresh SQL for location VIEW_FULL roles, excluding partial audiences."""
+        if not user.is_authenticated:
+            return Q(pk__in=[])
+        if user.is_staff or user.is_superuser:
+            return Q()
+        readable = PermissionManager._build_owner_filter(user, queryset.model)
+        chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
+        if chronicle_model:
+            readable |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
+        return readable
+
+    @staticmethod
+    def filter_full_view_locations_for_user(user: User, queryset):
+        """Batch linked-place reads without per-object role lookups or snapshots."""
+        return queryset.filter(
+            PermissionManager._build_full_view_location_filter(user, queryset)
+        ).distinct()
+
+    @staticmethod
     def filter_reality_zones_for_user(user: User, queryset):
         """Standalone reference zones are public; every linked place needs VIEW_FULL.
 
@@ -699,13 +719,11 @@ class PermissionManager:
             model = relation.related_model
             places = model.objects.filter(reality_zone_id=OuterRef("pk")).non_polymorphic()
             linked |= Q(Exists(places))
-            if user.is_authenticated:
-                readable = PermissionManager._build_owner_filter(user, model)
-                chronicle_model = PermissionManager._get_chronicle_related_model(places)
-                if chronicle_model:
-                    readable |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
-                places = places.exclude(readable)
-            queryset = queryset.filter(~Exists(places))
+            # Link existence must use all places, not just the unreadable ones.
+            unreadable_places = places.exclude(
+                PermissionManager._build_full_view_location_filter(user, places)
+            )
+            queryset = queryset.filter(~Exists(unreadable_places))
         # Removing a player's last place does not declassify its old zone.
         return queryset.filter(Q(is_player_zone=False) | linked)
 

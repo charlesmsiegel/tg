@@ -8,7 +8,8 @@ Tests cover:
 - Positive ratings summing to demesne rank
 """
 
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
 
 from characters.models.mage.focus import Practice
 from characters.tests.utils import mage_setup
@@ -27,6 +28,12 @@ class TestDemesneFormSetup(TestCase):
         mage_setup()
         cls.practice1 = Practice.objects.first()
         cls.practice2 = Practice.objects.exclude(pk=cls.practice1.pk).first()
+        cls.staff = User.objects.create_user("demesne_form_staff", is_staff=True)
+
+    def staff_request(self):
+        request = RequestFactory().post("/")
+        request.user = self.staff
+        return request
 
 
 class TestDemesneFormBasics(TestDemesneFormSetup):
@@ -86,7 +93,7 @@ class TestDemesneFormBasics(TestDemesneFormSetup):
         reality_zone = RealityZone.objects.create(name="Test Zone")
         demesne = Demesne.objects.create(name="Test Demesne", rank=2, reality_zone=reality_zone)
 
-        form = DemesneForm(instance=demesne)
+        form = DemesneForm(instance=demesne, request=self.staff_request())
 
         self.assertEqual(form.reality_zone.pk, reality_zone.pk)
 
@@ -359,7 +366,7 @@ class TestDemesneFormEditing(TestDemesneFormSetup):
             "reality_zone-1-DELETE": "",
         }
 
-        form = DemesneForm(data=form_data, instance=demesne)
+        form = DemesneForm(data=form_data, instance=demesne, request=self.staff_request())
         self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
         updated_demesne = form.save()
 
