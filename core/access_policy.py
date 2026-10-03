@@ -9,7 +9,7 @@ from core.permissions import Permission, PermissionManager
 from core.route_policy_manifest import VIEW_POLICIES
 from core.views.public_object import (
     PublicObjectDetailView,
-    can_view_public_object,
+    can_view_public_card,
     render_public_object_list,
 )
 from locations.models.core import LocationModel
@@ -111,7 +111,7 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
             request.user, obj, Permission.VIEW_FULL, request=request
         ):
             return None
-        if request.method not in {"GET", "HEAD"} or not can_view_public_object(request, obj):
+        if request.method not in {"GET", "HEAD"} or not can_view_public_card(request, obj):
             raise Http404("Object not found")
 
         return PublicObjectDetailView.as_view(model_class=model, resolved_object=obj)(

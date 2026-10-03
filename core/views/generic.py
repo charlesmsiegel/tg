@@ -7,7 +7,7 @@ from django.views.generic import DetailView, ListView
 from core.access_policy import authorize_route
 from core.cache import CACHE_TIMEOUT_LONG, cache_page_per_visitor
 from core.permissions import Permission, PermissionManager
-from core.views.public_object import can_view_public_object
+from core.views.public_object import can_view_public_card
 from widgets.widgets.formset_manager import render_formset_manager_script
 
 
@@ -74,7 +74,7 @@ class DictView(View):
             if (
                 is_read
                 and self.public_view_class is not None
-                and can_view_public_object(request, obj)
+                and can_view_public_card(request, obj)
             ):
                 denial = authorize_route(request, self.public_view_class, args, kwargs, subject=obj)
                 if denial is not None:

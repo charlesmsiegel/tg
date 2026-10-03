@@ -5,6 +5,8 @@ owner, storyteller and observer grants are untouched. PermissionMixin and Model 
 abstract, so their visibility field lives in many unrelated concrete table roots,
 not one core table. The frozen list below includes every current owning table,
 including reference-data roots and CharacterTemplate, once per physical column.
+Keep this historical list frozen; later schema changes need their own migrations,
+not edits to this snapshot to satisfy a current-model coverage audit.
 
 Only the old value changes. A missing/renamed model, field, table or column is
 skipped so later releases remain migratable. Reversing never restores the retired

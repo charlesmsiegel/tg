@@ -19,24 +19,29 @@ from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
 
+def can_view_public_card(request, obj):
+    """Visibility-only admission for callers that already checked full access."""
+    if obj.visibility == "PUB":
+        return True
+    chronicle_id = getattr(obj, "chronicle_id", None)
+    return bool(
+        obj.visibility == "CHR"
+        and chronicle_id is not None
+        and readable_chronicles(request.user).filter(pk=chronicle_id).exists()
+    )
+
+
 def can_view_public_object(request, obj):
     """Admit a detail card without treating partial roles as full access.
 
     Full viewers retain access regardless of the discovery setting. Otherwise
     only public objects or objects in a readable chronicle have a card; private,
-    legacy custom and unknown values fail closed.
+    legacy custom and unknown values fail closed. The projection checks this
+    independently so direct callers cannot bypass its admission rule.
     """
-    if PermissionManager.user_has_permission(
+    return PermissionManager.user_has_permission(
         request.user, obj, Permission.VIEW_FULL, request=request
-    ):
-        return True
-    if obj.visibility == "PUB":
-        return True
-    return bool(
-        obj.visibility == "CHR"
-        and obj.chronicle_id is not None
-        and readable_chronicles(request.user).filter(pk=obj.chronicle_id).exists()
-    )
+    ) or can_view_public_card(request, obj)
 
 
 class PublicObjectDetailView(View):

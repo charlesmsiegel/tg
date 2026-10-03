@@ -105,9 +105,11 @@ projection, never the object itself.
 - `PublicObjectDetailView` renders `core/public_object_detail.html` with
   `public_object = {name, public_info, image_url}`. `image_url` is set only when the image
   is approved. The `OBJECT_DETAIL` policy and `DictView` routers render it for `GET`/`HEAD`
-  from a user without `VIEW_FULL` only when `can_view_public_object(request, obj)` admits
+  from a user without `VIEW_FULL` only when `can_view_public_card(request, obj)` admits
   them: `PUB`, or `CHR` in a readable chronicle. `PRI`, legacy `CUS` and unknown values
-  are hidden as `404` from non-full viewers. The projection rechecks admission itself.
+  are hidden as `404` from non-full viewers. Callers that just checked full access use
+  the visibility-only helper; the projection independently calls
+  `can_view_public_object(request, obj)` to retain full-reader access and guard direct use.
 - `render_public_object_list(request, model_class, extra_context=None)` renders
   `core/public_object_list.html` for the `OBJECT_LIST` policy. Staff see every row;
   everyone else sees rows with `visibility="PUB"` (templates must also be `is_public`),
