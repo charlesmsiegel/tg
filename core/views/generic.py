@@ -7,6 +7,7 @@ from django.views.generic import DetailView, ListView
 from core.access_policy import authorize_route
 from core.cache import CACHE_TIMEOUT_LONG, cache_page_per_visitor
 from core.permissions import Permission, PermissionManager
+from core.views.public_object import can_view_public_object
 from widgets.widgets.formset_manager import render_formset_manager_script
 
 
@@ -70,11 +71,17 @@ class DictView(View):
         )
 
         if self.protected_object and not can_view_full:
-            if is_read and self.public_view_class is not None:
-                authorize_route(request, self.public_view_class, args, kwargs, subject=obj)
-                return self.public_view_class.as_view(model_class=self.model_class)(
-                    request, *args, **kwargs
-                )
+            if (
+                is_read
+                and self.public_view_class is not None
+                and can_view_public_object(request, obj)
+            ):
+                denial = authorize_route(request, self.public_view_class, args, kwargs, subject=obj)
+                if denial is not None:
+                    return denial
+                return self.public_view_class.as_view(
+                    model_class=self.model_class, resolved_object=obj
+                )(request, *args, **kwargs)
 
             raise Http404("Object not found")
 

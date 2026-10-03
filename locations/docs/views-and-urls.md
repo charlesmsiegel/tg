@@ -39,7 +39,7 @@ declared policy in `RegistryViewMixin.dispatch()`; other routes are checked by
 
 | Policy | Used by | Effect |
 |--------|---------|--------|
-| `OBJECT_DETAIL` | Detail of every location type | `VIEW_FULL` shows the page; otherwise GET returns the public projection (name, public info, approved image) and other methods 404 |
+| `OBJECT_DETAIL` | Detail of every location type | `VIEW_FULL` shows the page; otherwise GET/HEAD returns the public projection (name, public info, approved image) only for `PUB`, or `CHR` in a readable chronicle. `PRI`, unknown values and other methods return 404 |
 | `OBJECT_LIST` | List of every location type | Staff and superusers see the per-type list (filtered by `VisibilityFilterMixin`); others get the shared public list |
 | `OBJECT_CREATE` | Create of every location type; `ChantryBasicsView`, `FreeholdBasicsView` | Login required (401 for anonymous users) |
 | `OBJECT_WRITE` | Update of most types | `EDIT_FULL` required; non-staff POSTs may not change `owner`, `chronicle`, `status` and the other approval fields |

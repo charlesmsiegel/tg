@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.forms import formset_factory
 from django.http import Http404, HttpResponse
 from django.test import RequestFactory, TestCase
@@ -12,6 +13,7 @@ from django.views.generic import CreateView, TemplateView
 from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from core.views.generic import DictView, MultipleFormsetsMixin
+from core.views.public_object import PublicObjectDetailView
 from game.models import Chronicle
 
 User = get_user_model()
@@ -56,6 +58,22 @@ class DictViewTest(TestCase):
         view = TestDictView()
         obj = view.get_object(pk=self.character.pk)
         self.assertEqual(obj, self.character)
+
+    def test_protected_router_hides_private_objects_before_public_handoff(self):
+        class ProtectedRouter(DictView):
+            model_class = Character
+            protected_object = True
+            public_view_class = PublicObjectDetailView
+            key_property = "status"
+            default_redirect = "core:home"
+
+        for user in (AnonymousUser(), User.objects.create_user("unrelated_router_reader")):
+            for method in ("get", "head"):
+                with self.subTest(user=user, method=method):
+                    request = getattr(self.factory, method)("/")
+                    request.user = user
+                    with self.assertRaisesMessage(Http404, "Object not found"):
+                        ProtectedRouter.as_view()(request, pk=self.character.pk)
 
     def test_is_valid_key_returns_true_for_mapped_key(self):
         """Test is_valid_key returns True when key exists in view_mapping."""

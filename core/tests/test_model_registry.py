@@ -262,7 +262,7 @@ class RegistryBehaviorTests(RegistryTestCase):
 
     def test_workflow_router_keeps_public_card(self):
         obj = Chantry.objects.create(
-            name="Visible name", description="HIDDEN CHANTRY", owner=self.owner
+            name="Visible name", description="HIDDEN CHANTRY", owner=self.owner, visibility="PUB"
         )
         for user in (None, self.other):
             if user:
@@ -361,9 +361,19 @@ def smoke_case(app, label):
         self.assertEqual(obj.name, values["name"])
         self.client.logout()
         response = self.client.get(registry.url(entry.model, "detail", obj.pk))
-        self.assertEqual(response.status_code, 200, label)
         if "description" in values:
+            # Player-object defaults are private even on the typed detail route.
+            self.assertEqual(response.status_code, 404, label)
+            self.assertNotContains(response, values["name"], status_code=404)
+            self.assertTemplateNotUsed(response, "core/public_object_detail.html")
+            entry.model.objects.filter(pk=obj.pk).update(visibility="PUB")
+            response = self.client.get(registry.url(entry.model, "detail", obj.pk))
+            self.assertEqual(response.status_code, 200, label)
+            self.assertTemplateUsed(response, "core/public_object_detail.html")
+            self.assertContains(response, values["name"])
             self.assertNotContains(response, values["description"])
+        else:
+            self.assertEqual(response.status_code, 200, label)
         response = self.client.post(registry.url(entry.model, "create"), {"name": "Unauthorized"})
         self.assertIn(response.status_code, {401, 403}, label)
 

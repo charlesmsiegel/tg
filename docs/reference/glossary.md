@@ -64,7 +64,7 @@ for developers and agents who know Django but not the games, or the games but no
 | Story | `game.models.Story`: a named story arc in a chronicle, the unit of story XP (`StoryXPRequest.story`). |
 | `tg_schema` | The app whose committed, guarded migrations update legacy databases ([`tg_schema/`](../../tg_schema/)); see [Changing the schema](../guides/changing-the-schema.md). |
 | `type` | The unique snake_case class attribute of every polymorphic model (`"vampire"`, `"wonder"`); keys workflows, routers and registries. |
-| Visibility | `core.models.PermissionMixin.visibility`: `PUB` (public), `PRI` (private, default), `CHR` (chronicle only), `CUS` (custom). Scenes have their own: `CHRONICLE`, `PARTICIPANTS`, `PUBLIC`. |
+| Visibility | `core.models.PermissionMixin.visibility`: `PUB` (public), `PRI` (private, default), `CHR` (chronicle only). Detail cards honor this field; role-derived `VisibilityTier` is separate. Scenes have their own: `CHRONICLE`, `PARTICIPANTS`, `PUBLIC`. |
 | Visibility tier | `VisibilityTier.FULL`, `PARTIAL` or `NONE`: how much of an object a viewer sees. |
 | Week | `game.models.Week`: a seven-day period ending on `end_date`, the unit of weekly XP. |
 | Workflow | `characters.chargen.workflow.Workflow`: the ordered chargen steps of one character type, in `WORKFLOWS` ([`characters/chargen/definitions.py`](../../characters/chargen/definitions.py)). |

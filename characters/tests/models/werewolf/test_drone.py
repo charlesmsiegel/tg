@@ -112,8 +112,7 @@ class TestDroneDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/werewolf/drone/detail.html")
 
     def test_drone_detail_view_requires_login(self):
-        """Test detail view requires authentication."""
+        """Test private detail is hidden from anonymous visitors."""
         response = self.client.get(self.drone.get_absolute_url())
-        # Should return 404 (hidden for unauthenticated users)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")

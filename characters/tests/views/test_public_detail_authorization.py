@@ -28,6 +28,8 @@ class PublicCharacterDetailTests(TestCase):
         self.url = reverse("characters:character", kwargs={"pk": self.character.pk})
 
     def test_anonymous_and_other_player_get_only_public_card(self):
+        self.character.visibility = "PUB"
+        self.character.save(update_fields=["visibility"])
         for user in (None, self.other):
             with self.subTest(user=user):
                 if user:
@@ -43,6 +45,8 @@ class PublicCharacterDetailTests(TestCase):
                 self.assertNotIn("character", response.context)
 
     def test_anonymous_and_other_player_cannot_post_current_step(self):
+        self.character.visibility = "PUB"
+        self.character.save(update_fields=["visibility"])
         for user in (None, self.other):
             with self.subTest(user=user):
                 if user:
@@ -153,9 +157,10 @@ class CreatedObjectPublicCardTests(TestCase):
                         ),
                     }
                 obj = model.objects.create(
-                    name=f"Private {model.__name__}",
+                    name=f"Public {model.__name__}",
                     owner=owner,
                     status="App",
+                    visibility="PUB",
                     public_info="Public description",
                     description="OWNER ONLY DETAIL",
                     **extra,
@@ -210,9 +215,10 @@ class MageStepAuthorizationTests(TestCase):
                 else:
                     self.client.force_login(user)
                 response = self.client.get(self.url)
-                self.assertEqual(response.status_code, 200)
-                self.assertContains(response, "Unfinished mage")
-                self.assertNotContains(response, "PRIVATE MAGE NOTES")
+                self.assertEqual(response.status_code, 404)
+                self.assertTemplateNotUsed(response, "core/public_object_detail.html")
+                self.assertNotContains(response, "Unfinished mage", status_code=404)
+                self.assertNotContains(response, "PRIVATE MAGE NOTES", status_code=404)
                 self.assertIn(self.client.post(self.url, {}).status_code, {403, 404})
                 self.mage.refresh_from_db()
                 self.assertEqual(self.mage.creation_status, 5)

@@ -124,9 +124,11 @@ class TestBloodstoneDetailView(TestCase):
         self.url = self.bloodstone.get_absolute_url()
 
     def test_detail_view_status_code(self):
-        """Test detail view returns 200."""
+        """Test a full reader can render the private detail view."""
+        self.client.force_login(get_user_model().objects.create_user("detail-staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template(self):
         """Test detail view uses correct template."""

@@ -30,10 +30,18 @@ class CityAuthorizationTests(TestCase):
         )
 
     def test_public_card_hides_private_fields(self):
+        self.city.visibility = "PUB"
+        self.city.save(update_fields=["visibility"])
         response = self.client.get(reverse("locations:location", args=[self.city.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Draft city")
         self.assertNotContains(response, "PRIVATE ST NOTES")
+
+    def test_private_city_detail_is_hidden_from_anonymous_visitors(self):
+        response = self.client.get(reverse("locations:location", args=[self.city.pk]))
+        self.assertEqual(response.status_code, 404)
+        self.assertNotContains(response, "Draft city", status_code=404)
+        self.assertNotContains(response, "PRIVATE ST NOTES", status_code=404)
 
     def test_private_city_is_unlisted_but_public_city_is_discoverable(self):
         City.objects.create(name="Public city", visibility="PUB")

@@ -42,11 +42,11 @@ class WeaponAuthorizationTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Weapon.objects.get(name="Owned sword").owner, self.owner)
 
-    def test_anonymous_gets_only_public_detail(self):
+    def test_anonymous_cannot_read_private_detail(self):
         response = self.client.get(reverse("items:weapon", kwargs={"pk": self.weapon.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Private sword")
-        self.assertNotContains(response, "SECRET")
+        self.assertEqual(response.status_code, 404)
+        self.assertNotContains(response, "Private sword", status_code=404)
+        self.assertNotContains(response, "SECRET", status_code=404)
 
     def test_anonymous_index_uses_public_fields_only(self):
         Weapon.objects.create(

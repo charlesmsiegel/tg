@@ -86,15 +86,15 @@ class TestChargenValidationRendering(TestCase):
     def test_non_owner_non_staff_does_not_see_ability_form(self):
         """The is_approved_user fix combines staff OR special-user; confirm it
         did not widen access — a plain non-owner (not staff, not ST) still
-        gets the not-owner fallback, not the validation form."""
+        cannot view the private character or its validation form."""
         char = MtAHuman.objects.create(
             name="Mage Ability Human", owner=self.owner, creation_status=2
         )
         User.objects.create_user(username="stranger", password="password")
         self.client.login(username="stranger", password="password")
         response = self.client.get(char.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "abilities-validation-status")
+        self.assertEqual(response.status_code, 404)
+        self.assertNotContains(response, "abilities-validation-status", status_code=404)
 
     def test_abilities_validation_absent_before_ability_step(self):
         """The ability validation include must not render outside the

@@ -56,6 +56,8 @@ class GroupPermissionContextTests(TestCase):
 
     def test_edit_action_uses_capability_even_with_different_leader(self):
         group = self.create_group()
+        group.visibility = "PUB"
+        group.save(update_fields=["visibility"])
         edit_link = f'href="{group.get_update_url()}"'
         for user, allowed in ((self.creator, True), (self.leader_owner, False)):
             self.client.force_login(user)

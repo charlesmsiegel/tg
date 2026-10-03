@@ -86,7 +86,7 @@ permission-controlled `object` (see [Templates](#permissions-in-templates)).
 |--------|-------|---------|
 | `PUBLIC_READ` | None. | Reference-data detail and list views, the home page (`core.views.home.HomeListView`), and the sign-up, login and password-reset forms. |
 | `PUBLIC_INDEX` | None. | The character, item and location index pages (`*IndexView`). |
-| `PUBLIC_CARD` | None. | `core.views.public_object.PublicObjectDetailView`. |
+| `PUBLIC_CARD` | The projection itself checks detail-card visibility. | `core.views.public_object.PublicObjectDetailView`. |
 | `ROUTER` | None here; the `DictView` authorizes its target (below). | `core.views.generic.DictView` subclasses that dispatch by object type or chargen step. |
 | `LOGIN` | Signed in, else 401. | Pages that need a user but no object rule. |
 | `ACCOUNT` | Signed in, else 401. | `accounts` views; each checks its own object rules. |
@@ -96,7 +96,7 @@ permission-controlled `object` (see [Templates](#permissions-in-templates)).
 | `WIDGET` | Signed in, else JSON `401`. | `widgets.views.auto_chained_ajax_view`. |
 | `STAFF_WRITE` | Signed in (else 401) and `is_staff`/`is_superuser` (else `PermissionDenied`). | Create and update views for reference data. |
 | `OBJECT_LIST` | Non-staff `GET`/`HEAD` are answered with the public card list (`render_public_object_list`); the view itself only runs for staff and for other methods. | List views of player objects. |
-| `OBJECT_DETAIL` | `VIEW_FULL` on the object runs the view; otherwise `GET`/`HEAD` get the public card and other methods a `404`. | Detail views of player objects. |
+| `OBJECT_DETAIL` | `VIEW_FULL` on the object runs the view; otherwise `GET`/`HEAD` get a visibility-admitted public card, and hidden objects or other methods get a `404`. | Detail views of player objects. |
 | `OBJECT_WRITE` | `EDIT_FULL` on the object, plus the field guard below. | Update and delete views of player objects. |
 | `OBJECT_ACTION` | Same as `OBJECT_WRITE` without the form-field part of the guard. | Other object views that modify a player object. |
 | `OBJECT_ST_WRITE` | `OBJECT_WRITE` plus a scoped editor role (`ADMIN`, `CHRONICLE_HEAD_ST` or `CHRONICLE_ST`). | Player-object forms only storytellers may use, such as the Chantry update view. |
@@ -122,7 +122,8 @@ policy is `ROUTER`, and it authorizes the chosen target itself by calling `autho
 with the resolved object:
 
 - With `protected_object = True`, a viewer without `VIEW_FULL` gets `public_view_class` for
-  `GET`/`HEAD` (if set) or a `404`.
+  `GET`/`HEAD` only when detail-card visibility admits them (and the class is set), else a
+  `404`. The public view receives the already resolved object.
 - With `chargen_router = True`, a viewer without `EDIT_FULL` is sent to the default (detail)
   view if they can read the object, otherwise gets a `404`.
 
@@ -211,8 +212,8 @@ Scoped editors keep all permissions in every status.
 ### Visibility tiers
 
 `get_visibility_tier(user, obj)` returns `VisibilityTier.FULL` (holds `VIEW_FULL`), `PARTIAL`
-(holds only `VIEW_PARTIAL`, for example a fellow player or an observer) or `NONE`. Detail views
-guarded by `VIEW_FULL` show partial viewers the public card instead.
+(holds only `VIEW_PARTIAL`, for example a fellow player or an observer) or `NONE`. These
+role-derived tiers do not override the stored `visibility` field's detail-card admission rule.
 
 ### Querysets
 
@@ -327,16 +328,40 @@ Staff read every scene. `SceneDetailView` has no permission mixin; the middlewar
 
 ## Public cards and the `visibility` field
 
-Anonymous visitors and users without `VIEW_FULL` never see a player object's private fields.
-Instead:
+Full access is always decided by `PermissionManager`: owners, authorized storytellers and
+staff retain their full detail views regardless of the stored `visibility` value. Anonymous
+visitors and users without `VIEW_FULL` never see a player object's private fields.
+
+For detail cards, `can_view_public_object(request, obj)` in
+[`core/views/public_object.py`](../../core/views/public_object.py) admits:
+
+- `PUB`: everyone, including anonymous visitors
+- `CHR`: users whose `game.security.readable_chronicles` include the object's chronicle;
+  a missing chronicle admits nobody without full access
+- `PRI` (the default): nobody without `VIEW_FULL`; a partial player or observer role alone
+  does not admit a card
+
+Hidden and missing detail objects return the same `404`. Unknown visibility values and legacy
+`CUS` rows fail closed for non-full viewers. `CUS` is no longer a choice; guarded migration
+`tg_schema.0011_retire_custom_visibility` converts existing `CUS` values to `PRI` so those rows
+remain editable. Role-derived `VisibilityTier` and the stored visibility setting are separate
+concepts; this change does not alter role permissions or reference-data `PUBLIC_READ` routes.
+
+The projection and collection behavior is:
 
 - `OBJECT_DETAIL` routes render `PublicObjectDetailView` ([`core/views/public_object.py`](../../core/views/public_object.py)):
-  the object's `name`, `public_info` and, if `image_status` is approved, its image.
+  the admitted object's `name`, `public_info` and, if `image_status` is approved, its image.
+  Protected `DictView` routes and the projection itself enforce the same admission rule for
+  `GET` and `HEAD`.
 - `OBJECT_LIST` routes render `render_public_object_list`: at most 250 rows of `name`,
   `public_info`, image and link. For non-staff it includes objects with `visibility="PUB"`,
   and for signed-in users also objects returned by `filter_queryset_for_user` and objects with
   `visibility="CHR"` in their `readable_chronicles`. For character templates the
   `visibility="PUB"` branch also requires `is_public=True`.
+
+The collection's existing role-based discovery includes partial readers and is not authority
+to open a private detail card. `CharacterTemplate.is_public` remains a collection-selection
+flag; detail admission follows `visibility` and full-read permissions.
 
 ## Approvals
 

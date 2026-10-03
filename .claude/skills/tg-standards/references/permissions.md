@@ -66,8 +66,10 @@ output only as a suggestion.
 - A missing object and a hidden one get the same response. `ViewPermissionMixin` and
   `PermissionRequiredMixin` raise 404 on denial by default; `ObjectActionView.authorize()`
   raises 404 when the user lacks `VIEW_FULL`, before checking `permission`.
-- `OBJECT_DETAIL` shows a non-full viewer the public card (`name`, `public_info`, approved
-  image) on GET and 404 on other methods. Never render private fields for them.
+- `OBJECT_DETAIL` shows a non-full viewer a public card (`name`, `public_info`, approved
+  image) on GET/HEAD only for `PUB`, or `CHR` in a readable chronicle. `PRI` and unknown
+  values are hidden as 404; other methods also get 404. Partial roles do not override this
+  admission rule. Never render private fields for non-full viewers.
 - The middleware answers a plain-text 404 for private `game` records, scenes and chronicles
   the user cannot read, and for a `pk` that is not a positive integer.
 - A 403 (`EditPermissionMixin`, `SpendFreebiesPermissionMixin`, `STAFF_WRITE`) is fine only
@@ -129,7 +131,7 @@ for app routes.
 
 - [ ] One policy per routed view (manifest or registry), narrowest fit, sorted entry.
 - [ ] Object access via `PermissionManager` with `request=`; no hand-rolled role checks.
-- [ ] Hidden equals missing; partial viewers see the public card only.
+- [ ] Hidden equals missing; visibility admits non-full cards, which contain only public fields.
 - [ ] Protected fields untouched by forms; owner edits use a limited form.
 - [ ] Templates use `object_perms`.
 - [ ] Denial tests for every audience that must be refused.

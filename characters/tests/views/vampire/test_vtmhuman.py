@@ -79,14 +79,14 @@ class TestVtMHumanDetailView(VtMHumanViewTestCase):
         """Test that characters are hidden from other users."""
         self.client.login(username="otheruser", password="testpassword")
         response = self.client.get(self.vtmhuman.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404."""
         response = self.client.get(self.vtmhuman.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used."""

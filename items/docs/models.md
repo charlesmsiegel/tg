@@ -19,7 +19,7 @@ Every item therefore inherits:
 | `name`, `description`, `public_info`, `st_notes` | `name` is required; `Model.clean()` rejects a blank name |
 | `owner` (User), `chronicle` (`game.Chronicle`) | Both nullable, `SET_NULL` |
 | `status` | `CharacterStatus` codes (`Un`, `Sub`, `App`, `Rev`, `Ret`, `Dec`), default `Un` |
-| `visibility` | `PUB`, `PRI`, `CHR`, `CUS`; default `PRI` |
+| `visibility` | `PUB`, `PRI`, `CHR`; default `PRI`. Public detail cards are visible to everyone; Chronicle Only requires a readable chronicle or full access; Private requires full access. Full details require separate permission. Legacy `CUS` values are migrated to `PRI` by `tg_schema.0011`. |
 | `image`, `image_status` | Images need approval before the public views show them |
 | `sources` | M2M to `core.BookReference`; add with `add_source(book_title, page_number)` |
 | `display`, `freebies_approved`, `observers` | Shared with every `core.Model` |

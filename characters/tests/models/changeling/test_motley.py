@@ -31,9 +31,10 @@ class TestMotleyDetailView(TestCase):
         self.player = User.objects.create_user(username="User1", password="12345")
         self.motley = Motley.objects.create(name="Test Motley")
 
-    def test_motley_detail_view_status_code(self):
+    def test_private_motley_detail_is_hidden_from_anonymous_visitors(self):
         response = self.client.get(f"/characters/groups/{self.motley.id}/")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
 
     def test_motley_detail_view_templates(self):
         self.client.force_login(

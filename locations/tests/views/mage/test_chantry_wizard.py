@@ -62,11 +62,11 @@ class ChantryRoutingTests(TestCase):
                 self.assertTemplateUsed(response, "locations/mage/chantry/detail.html")
                 self.assertTemplateNotUsed(response, "locations/mage/chantry/locgen.html")
 
-    def test_non_owner_gets_the_public_card_or_404(self):
+    def test_unrelated_storyteller_cannot_read_or_post_private_draft(self):
         self.client.force_login(self.other_st)
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "core/public_object_detail.html")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed(response, "core/public_object_detail.html")
         self.assertTemplateNotUsed(response, "locations/mage/chantry/locgen.html")
         self.assertEqual(self.client.post(self.url, {}).status_code, 404)
         self.chantry.refresh_from_db()
