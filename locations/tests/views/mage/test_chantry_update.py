@@ -138,12 +138,14 @@ class ChantryUpdateFundingTests(TestCase):
         self.data = submitted_values(self.client.get(self.url))
 
     def test_a_total_below_the_spent_points_is_a_form_error(self):
+        """Edited together with another field, the total is still checked and nothing saves."""
         self.data["total_points"] = ["9"]
+        self.data["name"] = ["Renamed"]
         response = self.client.post(self.url, self.data)
         self.assertEqual(response.status_code, 200)
         self.assertIn("total_points", response.context["form"].errors)
         self.chantry.refresh_from_db()
-        self.assertEqual(self.chantry.total_points, 12)
+        self.assertEqual((self.chantry.name, self.chantry.total_points), ("Funded", 12))
 
     def test_a_total_equal_to_the_spent_points_is_saved(self):
         self.data["total_points"] = ["10"]

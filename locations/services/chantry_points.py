@@ -78,7 +78,10 @@ def set_total_points(chantry, total):
 
 
 def add_points(chantry, points):
-    """Add ``points`` to a chantry still in its wizard. Returns the new total.
+    """Add ``points`` to a chantry still in its wizard.
+
+    Returns the total read back after the UPDATE, which may already include a
+    concurrent join's points; the passed instance is refreshed to the same value.
 
     One atomic ``UPDATE ... SET total_points = total_points + points``: two
     concurrent joins each add their own points instead of racing on a read, which
