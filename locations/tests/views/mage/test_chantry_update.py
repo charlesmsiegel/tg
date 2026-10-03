@@ -230,6 +230,9 @@ class ChantryUpdateFundingTests(TestCase):
         ):
             response = self.client.post(self.url, self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("total_points", response.context["form"].errors)
+        self.assertIn("Spent meanwhile.", response.context["form"].errors["total_points"])
+        # The page's object shows the stored chantry, not the refused edits.
+        self.assertEqual(response.context["object"].name, "Funded")
+        self.assertEqual(response.context["object"].total_points, 12)
         self.chantry.refresh_from_db()
         self.assertEqual((self.chantry.name, self.chantry.total_points), ("Funded", 12))

@@ -151,7 +151,7 @@ class ChantryBackgroundStepMixin:
         ):
             response = self.client.post(self.url, {"existing_chantry": existing.pk})
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["form"].errors)
+        self.assertIn("No longer being built.", response.context["form"].non_field_errors())
         existing.refresh_from_db()
         self.assertEqual(existing.total_points, 10)
         self.assertFalse(existing.members.filter(pk=self.character.pk).exists())
