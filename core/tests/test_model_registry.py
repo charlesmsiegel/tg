@@ -284,14 +284,15 @@ class RegistryBehaviorTests(RegistryTestCase):
         obj.refresh_from_db()
         self.assertEqual(obj.name, "Steel")
 
-    def test_public_reality_zone_does_not_expose_private_location_stats(self):
+    def test_linked_reality_zone_requires_full_location_access(self):
         zone = RealityZone.objects.create(name="Public reference")
         node = Node.objects.create(
             name="PRIVATE NODE LINK", rank=5, owner=self.owner, visibility="PRI", reality_zone=zone
         )
         response = self.client.get(zone.get_absolute_url())
-        self.assertContains(response, zone.name)
-        self.assertNotContains(response, node.name)
+        self.assertEqual(response.status_code, 404)
+        self.assertNotContains(response, zone.name, status_code=404)
+        self.assertNotContains(response, node.name, status_code=404)
         self.client.force_login(self.owner)
         self.assertContains(self.client.get(zone.get_absolute_url()), node.name)
 

@@ -266,7 +266,7 @@ class TestDemesneFormSave(TestDemesneFormSetup):
         demesne = form.save()
 
         self.assertIsNotNone(demesne.reality_zone)
-        self.assertEqual(demesne.reality_zone.name, "New Demesne")
+        self.assertEqual(demesne.reality_zone.name, "Reality Zone")
 
     def test_save_creates_zone_ratings(self):
         """Test that saving creates ZoneRatings for the demesne's reality zone."""

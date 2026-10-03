@@ -101,9 +101,9 @@ tass_per_week         = points_remaining − quintessence_per_week
 ### Saving
 
 `save(commit=True)` saves the node with the computed output, saves the Resonance and
-merit/flaw formsets against it, names the reality zone after the node, saves it, links
-it to the node and saves the practice ratings. On edit it reuses the node's existing
-reality zone; on create it makes a new one.
+merit/flaw formsets against it, links its reality zone and saves the practice ratings.
+It reuses an existing zone without renaming it; otherwise it creates a neutrally named
+`Reality Zone`. `commit=False` does not save the zone or its ratings.
 
 ### Views
 
@@ -122,29 +122,35 @@ A `RealityZone` describes which practices work well or badly in a place. It is a
 model with `name`, `description` and `practices` (M2M `characters.Practice` through
 `ZoneRating`, `rating` -10 to 10). `get_positive_practices()` and
 `get_negative_practices()` return the ratings above and below zero, strongest first;
-`get_applied_to()` lists the nodes, Horizon realms, sanctums and sectors that use the
+`get_applied_to()` lists the nodes, Horizon realms, sanctums, demesnes and sectors that use the
 zone.
 
 `Node`, `Sanctum`, `Demesne`, `HorizonRealm` and `Sector` each have a `reality_zone`
-foreign key.
+nullable `SET_NULL` foreign key, so several places can share one zone.
 
 ### Where zones come from
 
-`NodeForm`, `SanctumForm` and `DemesneForm` each build a zone alongside the place:
+`NodeForm`, `SanctumForm` and `DemesneForm` use `RealityZoneFormMixin`:
 
 - they bind `RealityZonePracticeRatingFormSet` (prefix `reality_zone`) to the place's
   existing zone, or to a new unsaved one;
 - they require the ratings to total 0 and the positive ratings to sum to the place's
   rank;
-- on save they name the zone after the place, save it, link it, and save the ratings.
+- on save they create a neutrally named zone only if needed, preserve any existing
+  name, link it, and save the ratings. Editing shared ratings affects all linked places.
 
 The practice choices exclude `SpecializedPractice` and `CorruptedPractice`. The
 formset allows deleting rows.
 
 Reality zones also have their own pages (`locations:mage:reality_zone`, list, create
-and update). Those are reference-data routes: anyone may read them and only staff may
-create or edit them. The detail view lists the practices by sign and, from
-`get_applied_to()`, only the places the viewer has `VIEW_FULL` on.
+and update). Standalone zones are public reference data; linked zones require
+`VIEW_FULL` on every linked place, even for places with public cards. Only staff may
+create or edit zones directly. List, detail, inline displays and zone form choices
+enforce the same read permission. The detail view lists practices by sign and the
+places returned by `get_applied_to()`.
+Player-origin zones retain private classification after all their links are removed;
+only staff can read those orphans. Inline editing forms enforce the same shared-zone
+permission before exposing or saving practice rows.
 
 Sanctum and Demesne edit pages differ: a Sanctum edits through `SanctumForm` (with the
 zone formset), while the Demesne edit page is a generated form of `name`,

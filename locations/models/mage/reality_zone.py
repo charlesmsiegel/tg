@@ -1,5 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, router, transaction
 from django.db.models import CheckConstraint, Q
 
 from characters.models.mage.focus import Practice
@@ -34,6 +34,9 @@ class RealityZone(RegistryURLMixin, models.Model):
     name = models.CharField(max_length=100)
     practices = models.ManyToManyField(Practice, through=ZoneRating, blank=True)
     description = models.TextField(default="")
+    # Sticky provenance, backfilled for existing links by tg_schema 0012. A
+    # detached player zone must not become a public standalone reference.
+    is_player_zone = models.BooleanField(default=False, editable=False)
 
     class Meta:
         verbose_name = "Reality Zone"
@@ -41,6 +44,19 @@ class RealityZone(RegistryURLMixin, models.Model):
 
     def get_heading(self):
         return "mta_heading"
+
+    def save(self, *args, **kwargs):
+        using = kwargs.get("using", args[2] if len(args) > 2 else None) or router.db_for_write(
+            type(self), instance=self
+        )
+        with transaction.atomic(using=using):
+            if self.pk is not None:
+                previous = (
+                    type(self).objects.using(using).select_for_update().filter(pk=self.pk).first()
+                )
+                if previous is not None:
+                    self.is_player_zone = self.is_player_zone or previous.is_player_zone
+            return super().save(*args, **kwargs)
 
     def get_positive_practices(self):
         return ZoneRating.objects.filter(zone=self, rating__gt=0).order_by(
@@ -53,12 +69,20 @@ class RealityZone(RegistryURLMixin, models.Model):
         )
 
     def get_applied_to(self):
-        applied_to = []
-        applied_to.extend(self.node_set.all())
-        applied_to.extend(self.horizonrealm_set.all())
-        applied_to.extend(self.sanctum_set.all())
-        applied_to.extend(self.sector_set.all())
-        return applied_to
+        return [
+            location
+            for relation in self.get_location_relations()
+            for location in getattr(self, relation.get_accessor_name()).all()
+        ]
+
+    @classmethod
+    def get_location_relations(cls):
+        """Include every zone-bearing location, including inherited realm types."""
+        return tuple(
+            relation
+            for relation in cls._meta.related_objects
+            if relation.field.name == "reality_zone"
+        )
 
     def __str__(self):
         return self.name

@@ -182,8 +182,26 @@ Rules helpers (none of them save):
 `practices` (M2M `characters.Practice` through `ZoneRating`, whose `rating` is -10 to
 10). It carries `type = "reality_zone"` and `gameline = "mta"` as class attributes and
 `RegistryURLMixin` for its URLs. Helpers: `get_positive_practices()`,
-`get_negative_practices()` and `get_applied_to()` (the nodes, Horizon realms, sanctums
-and sectors that use it). See [nodes](nodes.md#reality-zones).
+`get_negative_practices()` and `get_applied_to()` (the nodes, Horizon realms, sanctums,
+demesnes and sectors that use it, including inherited realm types).
+
+Zones can be shared: each place keeps a nullable `SET_NULL` foreign key, not a
+one-to-one link. Place forms create a neutrally named `Reality Zone` when no zone is
+linked and otherwise reuse it without changing its name. Editing its practice
+ratings affects every linked place. Staff can give the zone an independent name.
+
+A staff-created standalone zone is public reference data. Reading a linked zone requires
+`VIEW_FULL` on every linked place, even when a place has a public card; partial
+player or observer access does not disclose zone names or practices. This also
+protects names copied by older versions without rewriting staff-owned zone names.
+The non-editable `is_player_zone` flag is sticky: forms set it on new player zones,
+and `LocationModel.save()` sets it atomically with any new link. Migration
+`tg_schema.0012_protect_player_reality_zones` adds it to older databases and marks
+every currently linked zone. Deleting, detaching or reassigning the last place never
+makes such a zone public; only staff can read its orphaned zone. A stale zone save
+cannot clear the flag. Unlinked zones whose old links were removed before this
+migration have no recoverable provenance and are not guessed to be player zones.
+See [nodes](nodes.md#reality-zones).
 
 ## Changeling: the Dreaming (`ctd`)
 
