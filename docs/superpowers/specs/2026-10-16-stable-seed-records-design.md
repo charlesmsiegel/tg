@@ -120,5 +120,6 @@ remaining grades and limitations honestly; use verified findings to select the n
 
 ## Review status
 
-The user approved the conceptual direction. This written specification is ready for their
-review. Implementation and its written plan have not yet been approved.
+The user approved this specification and its implementation plan, and selected the
+recommended native execution approach. The title pilot and independent review fixes are
+implemented; validation and remaining quality gaps are recorded in `docs/code-overview-run.md`.

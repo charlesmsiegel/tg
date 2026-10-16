@@ -1,6 +1,6 @@
 # Stable Seed Records Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Reload the twelve Mummy titles by permanent identity while preserving existing rows and references.
 
@@ -38,13 +38,13 @@
 
 **Interfaces:** Produces `MummyTitle.seed_key`: CharField(max_length=150, null=True, blank=True, editable=False), plus `UniqueConstraint(fields=["seed_key"], name="unique_mummy_title_seed_key")`. Migration entry point: `add_mummy_title_seed_key(apps, schema_editor) -> None`, dependent on `0012_protect_player_reality_zones`.
 
-- [ ] Write failing model tests: two NULL keys succeed; repeated `mummy.title.pharaoh` raises IntegrityError inside a savepoint; the field is non-editable and length 150.
-- [ ] Run `.venv/bin/python manage.py test characters.tests.models.mummy.test_mummy_title` and confirm missing-field/constraint failure.
-- [ ] Add the model field/constraint. Write migration tests using TransactionTestCase and actual schema introspection: missing column is added without losing an existing title; missing unique index is added; a second run adds nothing; removed model/field/table skips; duplicate non-NULL keys are rejected, multiple NULL keys allowed. Restore modified schema in cleanup.
-- [ ] Run `.venv/bin/python manage.py test tg_schema.tests.test_mummy_title_seed_key` and confirm the missing migration fails.
-- [ ] Implement the migration using live_model/live_field/table_names/table_columns and guarded DDL. Quote identifiers through the connection; add a unique index if no equivalent unique constraint exists. Import no app models, ignore historical apps, use RunPython.noop reverse, and do not adopt data here.
-- [ ] Run both new test modules plus `tg_schema.tests.test_schema_helpers`; require all passing, including removed-model guards.
-- [ ] Commit: `Add stable seed identities to Mummy titles`.
+- [x] Write failing model tests: two NULL keys succeed; repeated `mummy.title.pharaoh` raises IntegrityError inside a savepoint; the field is non-editable and length 150.
+- [x] Run `.venv/bin/python manage.py test characters.tests.models.mummy.test_mummy_title` and confirm missing-field/constraint failure.
+- [x] Add the model field/constraint. Write migration tests using TransactionTestCase and actual schema introspection: missing column is added without losing an existing title; missing unique index is added; a second run adds nothing; removed model/field/table skips; duplicate non-NULL keys are rejected, multiple NULL keys allowed. Restore modified schema in cleanup.
+- [x] Run `.venv/bin/python manage.py test tg_schema.tests.test_mummy_title_seed_key` and confirm the missing migration fails.
+- [x] Implement the migration using live_model/live_field/table_names/table_columns and guarded DDL. Quote identifiers through the connection; add a unique index if no equivalent unique constraint exists. Import no app models, ignore historical apps, use RunPython.noop reverse, and do not adopt data here.
+- [x] Run both new test modules plus `tg_schema.tests.test_schema_helpers`; require all passing, including removed-model guards.
+- [x] Commit: `Add stable seed identities to Mummy titles`.
 
 ### Task 2: Validated input contract
 
@@ -52,11 +52,11 @@
 
 **Interfaces:** `SeedDataError(ValueError)`; `read_seed_records(model, path: Path, *, allowed_fields: frozenset[str], legacy_fields: frozenset[str]) -> list[dict]`. Each record has exactly `key`, `export`, `legacy_lookup`, `fields`. Task 3 consumes this validated list. Require every record's fields to equal the configured allowed_fields; legacy_lookup is a nonempty subset of legacy_fields. Both configurations must reference concrete, non-relational model fields and exclude PK/seed_key.
 
-- [ ] Write failing SimpleTestCase tests using temporary JSON files and MummyTitle metadata. A valid Pharaoh record returns unchanged. Parameterize invalid top-level type, non-object records, missing/extra properties, duplicate object properties, duplicate keys/exports, invalid identifiers or Python keywords, empty/malformed/over-150-character keys, empty legacy selectors, unknown fields, missing allowed fields, relation/PK/seed_key injection and invalid configuration. Assert SeedDataError with file path and no database access.
-- [ ] Run `.venv/bin/python manage.py test core.tests.test_seed_data` and confirm missing reader failure.
-- [ ] Implement the reader using json.load with duplicate-property detection. Keys follow `[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+`, maximum 150 characters. Validate types before using sets/dicts. Wrap file/JSON/contract errors in SeedDataError with path and record index where available. Do not catch database/programming exceptions in this layer.
-- [ ] Add missing-file and malformed-JSON tests; require path-bearing errors and zero writes. Run the module and require all passing.
-- [ ] Commit: `Validate structured seed catalogue records`.
+- [x] Write failing SimpleTestCase tests using temporary JSON files and MummyTitle metadata. A valid Pharaoh record returns unchanged. Parameterize invalid top-level type, non-object records, missing/extra properties, duplicate object properties, duplicate keys/exports, invalid identifiers or Python keywords, empty/malformed/over-150-character keys, empty legacy selectors, unknown fields, missing allowed fields, relation/PK/seed_key injection and invalid configuration. Assert SeedDataError with file path and no database access.
+- [x] Run `.venv/bin/python manage.py test core.tests.test_seed_data` and confirm missing reader failure.
+- [x] Implement the reader using json.load with duplicate-property detection. Keys follow `[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+`, maximum 150 characters. Validate types before using sets/dicts. Wrap file/JSON/contract errors in SeedDataError with path and record index where available. Do not catch database/programming exceptions in this layer.
+- [x] Add missing-file and malformed-JSON tests; require path-bearing errors and zero writes. Run the module and require all passing.
+- [x] Commit: `Validate structured seed catalogue records`.
 
 ### Task 3: Atomic adoption and updates
 
@@ -64,12 +64,12 @@
 
 **Interfaces:** `load_seed_records(model, path: Path, *, allowed_fields: frozenset[str], legacy_fields: frozenset[str]) -> dict[str, models.Model]`. It calls Task 2's reader before opening a write transaction, uses the default database, and returns export names mapped to saved objects.
 
-- [ ] Write failing TestCase tests: fresh create; repeat load retains count/PK; adoption by original unique name retains PK despite changed rank/description; key lookup supports display-name change; unrelated fields/rows are retained; removed records are not deleted; title remains linked to a Mummy. Use existing Mummy fixture conventions from `characters/tests/models/mummy/test_mummy.py`.
-- [ ] Run `.venv/bin/python manage.py test core.tests.test_seed_data` and confirm loader tests fail.
-- [ ] Implement the loader with one atomic block for the catalogue. Lock matches with select_for_update. Resolve by seed_key first, otherwise evaluate the legacy selector and reject multiple matches or a match with another key. Assign the immutable key on adoption/creation, assign declared content fields, call full_clean then save; return objects by export. Do not suppress errors or retry conflicts automatically. Error messages for adoption failures include the record key and selector.
-- [ ] Add tests using rank_level as a permitted nonunique legacy selector to prove ambiguity rejection. Test conflicting keys, invalid model values, a later unique-name collision rolling back earlier adoption/update, and database exceptions propagating. Test an existing keyed title renamed onto another title's name: both original rows remain unchanged after failure. Update/create failures may surface ValidationError or IntegrityError; both must roll back.
-- [ ] Run the complete module and Mummy model tests; require all passing.
-- [ ] Commit: `Load seed catalogues atomically by permanent identity`.
+- [x] Write failing TestCase tests: fresh create; repeat load retains count/PK; adoption by original unique name retains PK despite changed rank/description; key lookup supports display-name change; unrelated fields/rows are retained; removed records are not deleted; title remains linked to a Mummy. Use existing Mummy fixture conventions from `characters/tests/models/mummy/test_mummy.py`.
+- [x] Run `.venv/bin/python manage.py test core.tests.test_seed_data` and confirm loader tests fail.
+- [x] Implement the loader with one atomic block for the catalogue. Lock matches with select_for_update. Resolve by seed_key first, otherwise evaluate the legacy selector and reject multiple matches or a match with another key. Assign the immutable key on adoption/creation, assign declared content fields, call full_clean then save; return objects by export. Do not suppress errors or retry conflicts automatically. Error messages for adoption failures include the record key and selector.
+- [x] Add tests using rank_level as a permitted nonunique legacy selector to prove ambiguity rejection. Test conflicting keys, invalid model values, a later unique-name collision rolling back earlier adoption/update, and database exceptions propagating. Test an existing keyed title renamed onto another title's name: both original rows remain unchanged after failure. Update/create failures may surface ValidationError or IntegrityError; both must roll back.
+- [x] Run the complete module and Mummy model tests; require all passing.
+- [x] Commit: `Load seed catalogues atomically by permanent identity`.
 
 ### Task 4: Convert Mummy titles and preserve command behavior
 
@@ -77,13 +77,13 @@
 
 **Interfaces:** Wrapper invokes Task 3 with MummyTitle, `Path(__file__).with_suffix(".json")`, allowed_fields `{name, rank_level, description}`, legacy_fields `{name}`. Preserve twelve explicit exports: pharaoh, high_priest, vizier, keeper_of_balance, judge_of_souls, guardian, preserver, lorekeeper, elder, mentor, seeker, neophyte. Keys use `mummy.title.<export>`. Legacy names and initial fields exactly match the original script.
 
-- [ ] Add a static expected-data fixture in the integration test copied from the original twelve entries. Test Command.load_file against the real wrapper: exactly twelve correct titles and all exports from runpy.run_path. Re-run after modifying database descriptions and prove authoritative restoration with unchanged PKs. Test an imported wrapper in isolated sys.modules state, cleaning up after the test.
-- [ ] Run `.venv/bin/python manage.py test core.tests.management.commands.test_populate_mummy_titles`; confirm structured-file/seed-key assertions fail against the old wrapper.
-- [ ] Move the twelve records into JSON without editing their content. Replace repeated ORM calls with the loader and explicit export assignments. Do not change discovery or command filtering.
-- [ ] Test `populate_gamedata --gameline mummy --only titles` through call_command; assert the selected wrapper loads and JSON/helper files are not discovered as scripts. Ensure temporary import cache state never leaks into other tests.
-- [ ] Document immutable keys, authoritative content updates, legacy adoption, conflict/rollback behavior and required migrate-before-populate rollout. Clearly distinguish unchanged Python catalogues from this pilot.
-- [ ] Run new integration tests, existing population command/source tests, model CRUD field guards, all schema tests and lint/checks. Require green focused checks.
-- [ ] Commit: `Separate Mummy title content from seed execution`.
+- [x] Add a static expected-data fixture in the integration test copied from the original twelve entries. Test Command.load_file against the real wrapper: exactly twelve correct titles and all exports from runpy.run_path. Re-run after modifying database descriptions and prove authoritative restoration with unchanged PKs. Test an imported wrapper in isolated sys.modules state, cleaning up after the test.
+- [x] Run `.venv/bin/python manage.py test core.tests.management.commands.test_populate_mummy_titles`; confirm structured-file/seed-key assertions fail against the old wrapper.
+- [x] Move the twelve records into JSON without editing their content. Replace repeated ORM calls with the loader and explicit export assignments. Do not change discovery or command filtering.
+- [x] Test `populate_gamedata --gameline mummy --only titles` through call_command; assert the selected wrapper loads and JSON/helper files are not discovered as scripts. Ensure temporary import cache state never leaks into other tests.
+- [x] Document immutable keys, authoritative content updates, legacy adoption, conflict/rollback behavior and required migrate-before-populate rollout. Clearly distinguish unchanged Python catalogues from this pilot.
+- [x] Run new integration tests, existing population command/source tests, model CRUD field guards, all schema tests and lint/checks. Require green focused checks.
+- [x] Commit: `Separate Mummy title content from seed execution`.
 
 ### Task 5: Verify, review and publish the next stack entry
 
@@ -104,4 +104,5 @@
 The plan covers all spec components, preserves the loader/wrapper interfaces, and adds each
 Review Focus case to its owning task. No broader catalogue conversion, duplicate repair,
 relationship language or automatic concurrency retry is included. The user approved the
-written specification; this plan awaits review and execution-method selection.
+written specification and this plan, selecting native execution. Implementation and review
+fixes are complete; see `docs/code-overview-run.md` for final verification and remaining gaps.
