@@ -172,6 +172,13 @@ markup. It:
 
 ## Testing
 
+A successful post's composer reply and its group broadcast are separate frames. A quiet
+interval after the reply does not prove the broadcast has finished rendering. The socket
+harness uses `receive_until` when a test requires a roll frame, with a bounded deadline
+and unchanged per-viewer HTML assertions. A regression deliberately delays rendering past
+the old 0.3-second quiet window. `drain` remains useful when observing an idle connection.
+
+
 | Path | Covers |
 |------|--------|
 | `game/tests/consumers/test_scene_chat_socket.py` | Connect and close codes, posting, `sync`, group events |

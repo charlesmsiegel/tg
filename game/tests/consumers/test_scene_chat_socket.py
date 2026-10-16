@@ -1,5 +1,6 @@
 """The scene chat socket's HTML protocol (Step 11), end to end through Channels."""
 
+import asyncio
 import json
 
 from asgiref.sync import async_to_sync
@@ -63,6 +64,20 @@ class SocketTestBase(ActionAudienceMixin, TransactionTestCase):
             frames.append(output)
             if output["type"] == "websocket.close":
                 break
+        return frames
+
+    async def receive_until(self, communicator, predicate, timeout=5):
+        """Wait for a protocol condition, not an idle gap between valid frames."""
+        frames = []
+        deadline = asyncio.get_running_loop().time() + timeout
+        while not predicate(frames):
+            remaining = deadline - asyncio.get_running_loop().time()
+            if remaining <= 0 or await communicator.receive_nothing(remaining):
+                self.fail(f"Expected socket frame condition before deadline; received {frames!r}")
+            output = await communicator.receive_output()
+            frames.append(output)
+            if output["type"] == "websocket.close":
+                self.assertTrue(predicate(frames), "Socket closed before expected frame")
         return frames
 
     @staticmethod

@@ -1,13 +1,15 @@
 """Live posts over the scene socket carry the roll strip and move read markers (C4)."""
 
+import asyncio
 from unittest import mock
 
+from game.consumers import SceneChatConsumer
 from game.models import Post, UserSceneReadStatus
 from game.tests.consumers.test_scene_chat_socket import SocketTestBase
 
 
 class LiveRollStripTests(SocketTestBase):
-    def test_a_live_roll_renders_the_strip_for_every_viewer(self):
+    def _assert_live_roll_strip(self):
         async def scenario():
             owner = await self.open("owner")
             st = await self.open("st")
@@ -15,8 +17,12 @@ class LiveRollStripTests(SocketTestBase):
                 await self.send(
                     owner, action="post", character="", display_name="", message="Duck /roll 3"
                 )
-                owner_frames = await self.drain(owner)
-            return owner_frames, await self.drain(st)
+
+                def has_roll(frames):
+                    return 'data-roll="roll"' in self.text(frames)
+
+                owner_frames = await self.receive_until(owner, has_roll)
+            return owner_frames, await self.receive_until(st, has_roll)
 
         owner_frames, st_frames = self.run_async(scenario)
         [post] = self.posts()
@@ -30,6 +36,20 @@ class LiveRollStripTests(SocketTestBase):
                 self.assertIn('<span class="tl-die is-hit" aria-hidden="true">9</span>', text)
                 self.assertIn('<span class="tl-die is-one" aria-hidden="true">1</span>', text)
                 self.assertNotIn("tl-unread", text)
+
+    def test_a_live_roll_renders_the_strip_for_every_viewer(self):
+        self._assert_live_roll_strip()
+
+    def test_delayed_roll_broadcast_is_not_mistaken_for_end_of_stream(self):
+        original = SceneChatConsumer.__dict__["post_html"]
+
+        async def delayed(consumer, post_id):
+            # Deliberately exceed the harness's old 0.3s quiet-window heuristic.
+            await asyncio.sleep(0.5)
+            return await original.__get__(consumer, type(consumer))(post_id)
+
+        with mock.patch.object(SceneChatConsumer, "post_html", delayed):
+            self._assert_live_roll_strip()
 
     def test_synced_old_roll_renders_as_text(self):
         old = Post.objects.create(
