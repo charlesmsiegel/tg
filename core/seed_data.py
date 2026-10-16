@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 from django.core.exceptions import FieldDoesNotExist
+from django.db import models, transaction
 
 KEY_PATTERN = re.compile(r"[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+")
 RECORD_PROPERTIES = {"key", "export", "legacy_lookup", "fields"}
@@ -75,3 +76,37 @@ def read_seed_records(
         return records
     except (OSError, UnicodeError, ValueError) as error:
         raise SeedDataError(f"{path}: {error}") from error
+
+
+def load_seed_records(
+    model, path: Path, *, allowed_fields: frozenset[str], legacy_fields: frozenset[str]
+) -> dict[str, "models.Model"]:
+    """Adopt or update a catalogue atomically, retaining database identities.
+
+    Declared content fields are authoritative. Removed records are not deleted.
+    Conflicting concurrent loads may fail; callers can retry the whole catalogue.
+    """
+    records = read_seed_records(
+        model, path, allowed_fields=allowed_fields, legacy_fields=legacy_fields
+    )
+    exports = {}
+    with transaction.atomic():
+        for record in records:
+            key, lookup = record["key"], record["legacy_lookup"]
+            locked = model.objects.select_for_update()
+            obj = locked.filter(seed_key=key).first()
+            if obj is None:
+                matches = list(locked.filter(**lookup)[:2])
+                if len(matches) > 1 or (matches and matches[0].seed_key is not None):
+                    raise SeedDataError(f"{path}: cannot adopt {key!r} with {lookup!r}")
+                obj = matches[0] if matches else model()
+                obj.seed_key = key
+            for name, value in record["fields"].items():
+                setattr(obj, name, value)
+            obj.full_clean()
+            if obj.pk is None:
+                obj.save()
+            else:
+                obj.save(update_fields=allowed_fields | {"seed_key"})
+            exports[record["export"]] = obj
+    return exports
