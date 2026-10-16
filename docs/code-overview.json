@@ -114,13 +114,14 @@
     }
   ],
   "analysis": {
-    "source_commit": "6e29f3bc06864e1646ba40d417f49e0a9e65c08e",
+    "source_commit": "5d20f9aa7f48e211ba96d8bfc7a0cad85b1269e8",
     "django_target": "5.2",
     "scope": "clean Git snapshot; ignored generated migrations and local databases omitted",
     "plain_javascript": "ungraded",
     "coverage_artifact": null,
     "goal": "B+ in every manageable metric; not yet achieved",
-    "coding_skills_revision": "319291e747b1fb07e6a5077e1b89df881c43fc46",
-    "coding_skills_repository": "https://github.com/charlesmsiegel/coding-skills"
+    "coding_skills_revision": "497038d1fc32fdf61b1387e9c5f897d50a3daead",
+    "coding_skills_repository": "https://github.com/charlesmsiegel/coding-skills",
+    "partial_refresh": "All health and summary pages refreshed; characters/core/populate_db/tg_schema plus repository atlas/theory/measurement refreshed; other atlas/theory/measurement snapshots unchanged."
   }
 }

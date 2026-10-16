@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>repository — codebase atlas</title>
+<title>repository — Codebase Atlas</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Design tokens are code-visualization's, verbatim. The three document types in
-   a code overview sit next to each other in one nav bar; sharing the palette is
-   what makes them read as one artifact rather than three tools' output. */
 :root{
   --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
   --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
@@ -48,43 +45,45 @@ header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
 h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
 .doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
 .doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
-main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
-
-/* ---------- tabs: code-visualization's contract, so one shell serves all four
-   documents. code-overview forces this template on assemble.py and on
-   build_measurement.py, so the markup those two emit has to fit here. ------- */
 nav.tabs{
-  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
-  padding:0 28px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
 }
-/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
-   renders as a stray rule under the header. */
-nav.tabs:empty{display:none;border:none}
 nav.tabs button{
-  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
-  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
 }
 nav.tabs button:hover{color:var(--text)}
 nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-section.panel{display:none}
-section.panel.active{display:block}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- content primitives (shared with code-visualization) ---------- */
-h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
-h2:first-child{margin-top:0}
-h3{font-size:16px;font-weight:600;margin:22px 0 8px}
-p{margin:8px 0;max-width:940px;color:var(--text)}
-ul,ol{margin:8px 0 8px 22px;max-width:940px}
-li{margin:4px 0}
-a{color:var(--accent)}
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
 .dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
 code,.mono{font-family:var(--mono);font-size:.92em}
 p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
 .grid{display:grid;gap:14px;margin:12px 0}
-.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
 .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .grid>*{min-width:0}
 .kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
@@ -106,63 +105,57 @@ details{border:1px solid var(--border);border-radius:8px;margin:10px 0;backgroun
 details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
 details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
 details .body{padding:12px 16px}
+
+/* tables */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
-thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
 tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
 .bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
 .bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
 .bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
 
-/* ---------- grade components ---------- */
-/* Grade colour is bound to the band, not to the score, so the letter and the
-   colour can never disagree — the two are read together at a glance. */
-.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
-.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
-.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
-.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
-.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
-.gradecard .what{flex:1 1 260px;min-width:0}
-.gradecard .what h2{margin:0 0 4px;font-size:19px}
-.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.catrow:last-child{border-bottom:none}
-.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
-.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
-.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
-.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
-.catrow .bar>i{background:var(--grade)}
-.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
-@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
-.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
-.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
-.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
-.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
-.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
-.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
-.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
-/* The type token and the category name are short and identify the row; letting
-   them wrap mid-word to buy width for a long description makes the table harder
-   to scan, not easier. The description column is the one that should give. */
-td code.ftype{white-space:nowrap;overflow-wrap:normal}
-td.cat{white-space:nowrap}
-/* A file:line split across two lines is not a citation anyone can copy. The
-   wrapper scrolls if a path is genuinely too deep for the viewport. */
-td code.floc{white-space:nowrap;overflow-wrap:normal}
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
 footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
-footer.doc a{color:var(--text-dim)}
-@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
 </style>
 </head>
 <body>
 <header class="doc">
   <div class="doc-label">CODEBASE ATLAS</div>
-  <h1 class="doc-title">repository — codebase atlas</h1>
+  <h1 class="doc-title">repository — Codebase Atlas</h1>
   <p class="doc-sub"></p>
-  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+  <div class="doc-meta">updated 2026-10-16 · 6e29f3bc → 5d20f9aa</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -182,7 +175,6 @@ footer.doc a{color:var(--text-dim)}
 .co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
 @media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
 </style><nav class="co-nav" aria-label="code overview"><div class="co-row"><span class="co-here">⌂ Overall Code Map</span></div><div class="co-row"><span class="co-lbl">This repository</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../accounts/docs/codemap.html">accounts</a><a href="../characters/docs/codemap.html">characters</a><a href="../core/docs/codemap.html">core</a><a href="../game/docs/codemap.html">game</a><a href="../items/docs/codemap.html">items</a><a href="../locations/docs/codemap.html">locations</a><a href="../tg_schema/docs/codemap.html">tg_schema</a><a href="../widgets/docs/codemap.html">widgets</a><a href="../tg/docs/codemap.html">tg</a><a href="../populate_db/docs/codemap.html">populate_db</a><a href="../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
-<!--DOC_NAV-->
 <nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
 <button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
 <button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
@@ -192,6 +184,7 @@ footer.doc a{color:var(--text-dim)}
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
 <button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <h2>A chronicle is the boundary around play</h2>
 <p>Tellurium Games is a Django monolith for World of Darkness tabletop chronicles. Characters, places and items share ownership and visibility rules; scenes turn character participation into posts and experience. Start with <code>docs/architecture/overview.md</code>, then follow the policy boundary before reading a game-line subclass.</p>
@@ -209,13 +202,15 @@ Domain --> UI[Spread templates and htmx]
 </pre></div></div>
 <p>Module-level coupling is expected in this monolith. The static graph includes type-only imports and export conventions; its strongly connected components do not prove runtime import failure. Package graphs cannot resolve host-app imports outside their selected directory; use the repository graph for cross-app questions. No model calls or statistical evaluation pipeline were found by the automated LLM scan.</p>
 
+<h3>Stable title identity pilot</h3><p>Twelve Mummy titles now separate JSON content from script execution. Permanent keys adopt existing rows and update content without replacing primary keys. Both the loader and wrapper export bindings are transactional, including direct imports. Other catalogues retain their existing script semantics. <code>core/seed_data.py:81</code>, <code>populate_db/mummy/titles.py:11</code>, <code>characters/models/mummy/mummy_title.py:13</code>, <code>tg_schema/migrations/0013_mummy_title_seed_key.py:14</code></p>
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">2,339</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">265,527</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">2,346</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">266,219</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">3</div><div class="l">languages</div></div>
   <div class="kpi good"><div class="n">41%</div><div class="l">test code share</div></div>
 </div>
@@ -223,12 +218,12 @@ Domain --> UI[Spread templates and htmx]
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>234,442</td><td class='num'>1,417</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>88.3%</td></tr>
-<tr><td>HTML</td><td class='num'>22,885</td><td class='num'>862</td><td><div class="bar "><i style="width:9.8%"></i></div></td><td class='num'>8.6%</td></tr>
+<tbody><tr><td>Python</td><td class='num'>234,987</td><td class='num'>1,423</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>88.3%</td></tr>
+<tr><td>HTML</td><td class='num'>22,885</td><td class='num'>862</td><td><div class="bar "><i style="width:9.7%"></i></div></td><td class='num'>8.6%</td></tr>
 <tr><td>JavaScript</td><td class='num'>3,241</td><td class='num'>35</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>1.2%</td></tr>
-<tr><td>JSON</td><td class='num'>1,980</td><td class='num'>3</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.7%</td></tr>
+<tr><td>JSON</td><td class='num'>2,126</td><td class='num'>4</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.8%</td></tr>
 <tr><td>CSS</td><td class='num'>1,472</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.6%</td></tr>
-<tr><td>Markdown</td><td class='num'>1,055</td><td class='num'>15</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.4%</td></tr>
+<tr><td>Markdown</td><td class='num'>1,056</td><td class='num'>15</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.4%</td></tr>
 <tr><td>Shell</td><td class='num'>319</td><td class='num'>3</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.1%</td></tr>
 <tr><td>YAML</td><td class='num'>90</td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr>
 <tr><td>TOML</td><td class='num'>43</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr></tbody></table></div>
@@ -237,16 +232,16 @@ Domain --> UI[Spread templates and htmx]
 <h2>Top-level directories</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
-<tbody><tr><td><code>characters/</code></td><td class='num'>103,559</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
-<tr><td><code>populate_db/</code></td><td class='num'>62,174</td><td><div class="bar "><i style="width:60.0%"></i></div></td></tr>
-<tr><td><code>core/</code></td><td class='num'>31,321</td><td><div class="bar "><i style="width:30.2%"></i></div></td></tr>
+<tbody><tr><td><code>characters/</code></td><td class='num'>103,582</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>populate_db/</code></td><td class='num'>62,281</td><td><div class="bar "><i style="width:60.1%"></i></div></td></tr>
+<tr><td><code>core/</code></td><td class='num'>31,767</td><td><div class="bar "><i style="width:30.7%"></i></div></td></tr>
 <tr><td><code>locations/</code></td><td class='num'>25,857</td><td><div class="bar "><i style="width:25.0%"></i></div></td></tr>
 <tr><td><code>game/</code></td><td class='num'>14,890</td><td><div class="bar "><i style="width:14.4%"></i></div></td></tr>
 <tr><td><code>items/</code></td><td class='num'>12,451</td><td><div class="bar "><i style="width:12.0%"></i></div></td></tr>
 <tr><td><code>accounts/</code></td><td class='num'>5,561</td><td><div class="bar "><i style="width:5.4%"></i></div></td></tr>
 <tr><td><code>widgets/</code></td><td class='num'>5,070</td><td><div class="bar "><i style="width:4.9%"></i></div></td></tr>
 <tr><td><code>scripts/</code></td><td class='num'>1,676</td><td><div class="bar "><i style="width:1.6%"></i></div></td></tr>
-<tr><td><code>tg_schema/</code></td><td class='num'>1,366</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>tg_schema/</code></td><td class='num'>1,482</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>tg/</code></td><td class='num'>880</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>(root)/</code></td><td class='num'>632</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>.github/</code></td><td class='num'>90</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
@@ -312,8 +307,8 @@ Domain --> UI[Spread templates and htmx]
 
 <div class="kpis">
   <div class="kpi accent"><div class="n">13</div><div class="l">modules</div></div>
-  <div class="kpi"><div class="n">4,967</div><div class="l">file-level imports</div></div>
-  <div class="kpi"><div class="n">3,175</div><div class="l">runtime loads</div></div>
+  <div class="kpi"><div class="n">4,976</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">3,179</div><div class="l">runtime loads</div></div>
   <div class="kpi bad"><div class="n">1</div><div class="l">cycles</div></div>
   <div class="kpi"><div class="n">13</div><div class="l">top-level arms</div></div>
 </div>
@@ -322,7 +317,7 @@ Domain --> UI[Spread templates and htmx]
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"cycle","size":379,"fanIn":2,"fanOut":1,"meta":"(repo root) \u00b7 5 files \u00b7 in dependency cycle #1"},{"id":"accounts","label":"accounts","group":"cycle","size":5401,"fanIn":4,"fanOut":5,"meta":"accounts \u00b7 65 files \u00b7 in dependency cycle #1"},{"id":"characters","label":"characters","group":"cycle","size":103522,"fanIn":9,"fanOut":5,"meta":"characters \u00b7 1175 files \u00b7 in dependency cycle #1"},{"id":"core","label":"core","group":"cycle","size":31214,"fanIn":8,"fanOut":12,"meta":"core \u00b7 241 files \u00b7 in dependency cycle #1"},{"id":"game","label":"game","group":"cycle","size":14788,"fanIn":8,"fanOut":6,"meta":"game \u00b7 115 files \u00b7 in dependency cycle #1"},{"id":"items","label":"items","group":"cycle","size":12451,"fanIn":8,"fanOut":5,"meta":"items \u00b7 271 files \u00b7 in dependency cycle #1"},{"id":"locations","label":"locations","group":"cycle","size":25857,"fanIn":8,"fanOut":6,"meta":"locations \u00b7 391 files \u00b7 in dependency cycle #1"},{"id":"populate_db","label":"populate_db","group":"cycle","size":62174,"fanIn":2,"fanOut":5,"meta":"populate_db \u00b7 105 files \u00b7 in dependency cycle #1"},{"id":"scripts","label":"scripts","group":"cycle","size":1676,"fanIn":1,"fanOut":7,"meta":"scripts \u00b7 10 files \u00b7 in dependency cycle #1"},{"id":"source_static/images","label":"images","group":"source_static","size":0,"fanIn":1,"fanOut":0,"meta":"source_static/images \u00b7 2 files"},{"id":"tg","label":"tg","group":"cycle","size":826,"fanIn":2,"fanOut":2,"meta":"tg \u00b7 9 files \u00b7 in dependency cycle #1"},{"id":"tg_schema","label":"tg_schema","group":"cycle","size":1302,"fanIn":1,"fanOut":5,"meta":"tg_schema \u00b7 28 files \u00b7 in dependency cycle #1"},{"id":"widgets","label":"widgets","group":"cycle","size":5070,"fanIn":6,"fanOut":1,"meta":"widgets \u00b7 43 files \u00b7 in dependency cycle #1"}],"links":[{"source":"","target":"populate_db","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"accounts","target":"characters","weight":47,"imports":22,"loads":25,"kind":"mixed","cycle":true},{"source":"accounts","target":"core","weight":26,"imports":7,"loads":19,"kind":"mixed","cycle":true},{"source":"accounts","target":"game","weight":14,"imports":14,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"core","weight":605,"imports":273,"loads":332,"kind":"mixed","cycle":true},{"source":"characters","target":"game","weight":105,"imports":105,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"items","weight":24,"imports":22,"loads":2,"kind":"mixed","cycle":true},{"source":"characters","target":"locations","weight":24,"imports":20,"loads":4,"kind":"mixed","cycle":true},{"source":"characters","target":"widgets","weight":23,"imports":16,"loads":7,"kind":"mixed","cycle":true},{"source":"core","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"accounts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"characters","weight":131,"imports":127,"loads":4,"kind":"mixed","cycle":true},{"source":"core","target":"game","weight":83,"imports":78,"loads":5,"kind":"mixed","cycle":true},{"source":"core","target":"items","weight":59,"imports":33,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"locations","weight":63,"imports":37,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"populate_db","weight":8,"imports":0,"loads":8,"kind":"resource","cycle":true},{"source":"core","target":"scripts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"source_static/images","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"core","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"tg_schema","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"widgets","weight":12,"imports":11,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"characters","weight":50,"imports":50,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"core","weight":63,"imports":29,"loads":34,"kind":"mixed","cycle":true},{"source":"game","target":"items","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"widgets","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"items","target":"characters","weight":55,"imports":45,"loads":10,"kind":"mixed","cycle":true},{"source":"items","target":"core","weight":103,"imports":24,"loads":79,"kind":"mixed","cycle":true},{"source":"items","target":"game","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"widgets","weight":3,"imports":3,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"characters","weight":90,"imports":82,"loads":8,"kind":"mixed","cycle":true},{"source":"locations","target":"core","weight":112,"imports":47,"loads":65,"kind":"mixed","cycle":true},{"source":"locations","target":"game","weight":31,"imports":31,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"widgets","weight":4,"imports":3,"loads":1,"kind":"mixed","cycle":true},{"source":"populate_db","target":"characters","weight":91,"imports":91,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"core","weight":12,"imports":12,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"game","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"items","weight":26,"imports":26,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"scripts","target":"characters","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"core","weight":14,"imports":10,"loads":4,"kind":"mixed","cycle":true},{"source":"scripts","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"widgets","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"tg","target":"accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":true},{"source":"tg","target":"game","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"characters","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"core","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"game","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"locations","weight":4,"imports":4,"loads":0,"kind":"import","cycle":true},{"source":"widgets","target":"characters","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"cycle","size":379,"fanIn":2,"fanOut":1,"meta":"(repo root) \u00b7 5 files \u00b7 in dependency cycle #1"},{"id":"accounts","label":"accounts","group":"cycle","size":5401,"fanIn":4,"fanOut":5,"meta":"accounts \u00b7 65 files \u00b7 in dependency cycle #1"},{"id":"characters","label":"characters","group":"cycle","size":103545,"fanIn":9,"fanOut":5,"meta":"characters \u00b7 1176 files \u00b7 in dependency cycle #1"},{"id":"core","label":"core","group":"cycle","size":31660,"fanIn":8,"fanOut":12,"meta":"core \u00b7 244 files \u00b7 in dependency cycle #1"},{"id":"game","label":"game","group":"cycle","size":14788,"fanIn":8,"fanOut":6,"meta":"game \u00b7 115 files \u00b7 in dependency cycle #1"},{"id":"items","label":"items","group":"cycle","size":12451,"fanIn":8,"fanOut":5,"meta":"items \u00b7 271 files \u00b7 in dependency cycle #1"},{"id":"locations","label":"locations","group":"cycle","size":25857,"fanIn":8,"fanOut":6,"meta":"locations \u00b7 391 files \u00b7 in dependency cycle #1"},{"id":"populate_db","label":"populate_db","group":"cycle","size":62281,"fanIn":2,"fanOut":5,"meta":"populate_db \u00b7 106 files \u00b7 in dependency cycle #1"},{"id":"scripts","label":"scripts","group":"cycle","size":1676,"fanIn":1,"fanOut":7,"meta":"scripts \u00b7 10 files \u00b7 in dependency cycle #1"},{"id":"source_static/images","label":"images","group":"source_static","size":0,"fanIn":1,"fanOut":0,"meta":"source_static/images \u00b7 2 files"},{"id":"tg","label":"tg","group":"cycle","size":826,"fanIn":2,"fanOut":2,"meta":"tg \u00b7 9 files \u00b7 in dependency cycle #1"},{"id":"tg_schema","label":"tg_schema","group":"cycle","size":1418,"fanIn":1,"fanOut":5,"meta":"tg_schema \u00b7 30 files \u00b7 in dependency cycle #1"},{"id":"widgets","label":"widgets","group":"cycle","size":5070,"fanIn":6,"fanOut":1,"meta":"widgets \u00b7 43 files \u00b7 in dependency cycle #1"}],"links":[{"source":"","target":"populate_db","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"accounts","target":"characters","weight":47,"imports":22,"loads":25,"kind":"mixed","cycle":true},{"source":"accounts","target":"core","weight":26,"imports":7,"loads":19,"kind":"mixed","cycle":true},{"source":"accounts","target":"game","weight":14,"imports":14,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"core","weight":605,"imports":273,"loads":332,"kind":"mixed","cycle":true},{"source":"characters","target":"game","weight":105,"imports":105,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"items","weight":24,"imports":22,"loads":2,"kind":"mixed","cycle":true},{"source":"characters","target":"locations","weight":24,"imports":20,"loads":4,"kind":"mixed","cycle":true},{"source":"characters","target":"widgets","weight":23,"imports":16,"loads":7,"kind":"mixed","cycle":true},{"source":"core","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"accounts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"characters","weight":134,"imports":130,"loads":4,"kind":"mixed","cycle":true},{"source":"core","target":"game","weight":83,"imports":78,"loads":5,"kind":"mixed","cycle":true},{"source":"core","target":"items","weight":59,"imports":33,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"locations","weight":63,"imports":37,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"populate_db","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":true},{"source":"core","target":"scripts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"source_static/images","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"core","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"tg_schema","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"widgets","weight":12,"imports":11,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"characters","weight":50,"imports":50,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"core","weight":63,"imports":29,"loads":34,"kind":"mixed","cycle":true},{"source":"game","target":"items","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"widgets","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"items","target":"characters","weight":55,"imports":45,"loads":10,"kind":"mixed","cycle":true},{"source":"items","target":"core","weight":103,"imports":24,"loads":79,"kind":"mixed","cycle":true},{"source":"items","target":"game","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"widgets","weight":3,"imports":3,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"characters","weight":90,"imports":82,"loads":8,"kind":"mixed","cycle":true},{"source":"locations","target":"core","weight":112,"imports":47,"loads":65,"kind":"mixed","cycle":true},{"source":"locations","target":"game","weight":31,"imports":31,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"widgets","weight":4,"imports":3,"loads":1,"kind":"mixed","cycle":true},{"source":"populate_db","target":"characters","weight":91,"imports":91,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"core","weight":13,"imports":13,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"game","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"items","weight":26,"imports":26,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"scripts","target":"characters","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"core","weight":14,"imports":10,"loads":4,"kind":"mixed","cycle":true},{"source":"scripts","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"widgets","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"tg","target":"accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":true},{"source":"tg","target":"game","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"characters","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"core","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"game","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"locations","weight":4,"imports":4,"loads":0,"kind":"import","cycle":true},{"source":"widgets","target":"characters","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -408,8 +403,8 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">1,506</div><div class="l">commits (24 months ago)</div></div>
-  <div class="kpi"><div class="n">1,448</div><div class="l">files touched</div></div>
+  <div class="kpi accent"><div class="n">1,515</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">1,454</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
 </div>
 <div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
@@ -421,7 +416,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <script type="application/json">{"items":[{"name":"game/models.py","value":1223,"metric":94,"meta":"196 branches \u00b7 2 authors"},{"name":"game/views.py","value":1044,"metric":87,"meta":"99 branches \u00b7 2 authors"},{"name":"core/models.py","value":794,"metric":76,"meta":"81 branches \u00b7 2 authors"},{"name":"characters/models/mage/mage.py","value":773,"metric":41,"meta":"124 branches \u00b7 2 authors"},{"name":"characters/models/core/human.py","value":675,"metric":51,"meta":"95 branches \u00b7 3 authors"},{"name":"accounts/views.py","value":467,"metric":65,"meta":"68 branches \u00b7 2 authors"},{"name":"core/mixins.py","value":460,"metric":39,"meta":"88 branches \u00b7 2 authors"},{"name":"characters/views/mage/mage.py","value":421,"metric":123,"meta":"24 branches \u00b7 2 authors"},{"name":"scripts/find_dead_code.py","value":653,"metric":13,"meta":"231 branches \u00b7 1 authors"},{"name":"core/permissions.py","value":691,"metric":25,"meta":"118 branches \u00b7 2 authors"},{"name":"game/forms.py","value":734,"metric":32,"meta":"86 branches \u00b7 2 authors"},{"name":"populate_db/mage/effects_INC.py","value":6136,"metric":4,"meta":"533 branches \u00b7 2 authors"},{"name":"characters/forms/core/xp.py","value":216,"metric":25,"meta":"67 branches \u00b7 2 authors"},{"name":"characters/views/mage/sorcerer.py","value":381,"metric":65,"meta":"25 branches \u00b7 2 authors"},{"name":"locations/forms/mage/chantry.py","value":328,"metric":34,"meta":"47 branches \u00b7 2 authors"},{"name":"characters/models/core/character.py","value":406,"metric":51,"meta":"30 branches \u00b7 2 authors"},{"name":"locations/views/mage/chantry.py","value":397,"metric":40,"meta":"35 branches \u00b7 2 authors"},{"name":"characters/models/wraith/wraith.py","value":619,"metric":31,"meta":"45 branches \u00b7 2 authors"},{"name":"characters/forms/mage/xp.py","value":180,"metric":18,"meta":"77 branches \u00b7 2 authors"},{"name":"characters/models/vampire/vampire.py","value":550,"metric":23,"meta":"60 branches \u00b7 2 authors"},{"name":"locations/models/mage/chantry.py","value":402,"metric":33,"meta":"41 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/garou.py","value":459,"metric":24,"meta":"55 branches \u00b7 2 authors"},{"name":"characters/models/demon/demon.py","value":391,"metric":31,"meta":"39 branches \u00b7 2 authors"},{"name":"characters/forms/mage/freebies.py","value":209,"metric":14,"meta":"86 branches \u00b7 2 authors"},{"name":"characters/views/core/__init__.py","value":481,"metric":42,"meta":"24 branches \u00b7 2 authors"},{"name":"accounts/models.py","value":184,"metric":60,"meta":"16 branches \u00b7 2 authors"},{"name":"characters/services/freebie_spending/base.py","value":840,"metric":12,"meta":"82 branches \u00b7 2 authors"},{"name":"locations/views/core/__init__.py","value":143,"metric":26,"meta":"37 branches \u00b7 2 authors"},{"name":"items/models/mage/grimoire.py","value":403,"metric":11,"meta":"88 branches \u00b7 2 authors"},{"name":"characters/views/core/chargen_mixins.py","value":343,"metric":11,"meta":"74 branches \u00b7 2 authors"},{"name":"characters/forms/core/chained_freebies.py","value":248,"metric":18,"meta":"44 branches \u00b7 2 authors"},{"name":"characters/models/changeling/changeling.py","value":362,"metric":20,"meta":"35 branches \u00b7 2 authors"},{"name":"items/views/core/__init__.py","value":184,"metric":20,"meta":"33 branches \u00b7 2 authors"},{"name":"core/views/generic.py","value":218,"metric":15,"meta":"44 branches \u00b7 2 authors"},{"name":"locations/forms/mage/node.py","value":211,"metric":20,"meta":"32 branches \u00b7 2 authors"},{"name":"game/consumers.py","value":256,"metric":14,"meta":"43 branches \u00b7 2 authors"},{"name":"populate_db/archetypes.py","value":324,"metric":7,"meta":"85 branches \u00b7 2 authors"},{"name":"characters/views/mage/companion.py","value":277,"metric":59,"meta":"9 branches \u00b7 2 authors"},{"name":"locations/services/chantry_points.py","value":288,"metric":11,"meta":"52 branches \u00b7 1 authors"},{"name":"characters/forms/core/npc_profile.py","value":557,"metric":11,"meta":"46 branches \u00b7 2 authors"},{"name":"locations/models/mage/paradox_realm.py","value":643,"metric":12,"meta":"42 branches \u00b7 2 authors"},{"name":"populate_db/demon/demon_rituals.py","value":963,"metric":4,"meta":"126 branches \u00b7 2 authors"},{"name":"characters/views/core/human.py","value":249,"metric":46,"meta":"10 branches \u00b7 2 authors"},{"name":"characters/services/freebie_spending/mage.py","value":671,"metric":9,"meta":"55 branches \u00b7 2 authors"},{"name":"populate_db/mage/wonders_INC.py","value":3189,"metric":5,"meta":"95 branches \u00b7 2 authors"},{"name":"scripts/inventory_authorization_routes.py","value":198,"metric":8,"meta":"59 branches \u00b7 2 authors"},{"name":"characters/forms/mage/rote.py","value":153,"metric":18,"meta":"25 branches \u00b7 2 authors"},{"name":"widgets/mixins/chained.py","value":258,"metric":7,"meta":"62 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/kinfolk.py","value":160,"metric":16,"meta":"26 branches \u00b7 2 authors"},{"name":"core/management/commands/populate_gamedata.py","value":182,"metric":12,"meta":"35 branches \u00b7 3 authors"},{"name":"characters/models/core/merit_flaw_block.py","value":210,"metric":17,"meta":"24 branches \u00b7 2 authors"},{"name":"characters/forms/mage/mage.py","value":220,"metric":13,"meta":"31 branches \u00b7 2 authors"},{"name":"core/management/commands/validate_data_integrity.py","value":369,"metric":7,"meta":"56 branches \u00b7 2 authors"},{"name":"characters/services/xp_spending/base.py","value":560,"metric":8,"meta":"48 branches \u00b7 2 authors"},{"name":"characters/forms/core/freebies.py","value":80,"metric":17,"meta":"22 branches \u00b7 2 authors"},{"name":"core/utils.py","value":111,"metric":13,"meta":"29 branches \u00b7 2 authors"},{"name":"core/templatetags/sanitize_text.py","value":129,"metric":11,"meta":"34 branches \u00b7 2 authors"},{"name":"characters/views/vampire/vampire_chargen.py","value":206,"metric":34,"meta":"10 branches \u00b7 2 authors"},{"name":"core/management/commands/sync_character_status.py","value":219,"metric":7,"meta":"52 branches \u00b7 2 authors"},{"name":"core/access_policy.py","value":164,"metric":9,"meta":"40 branches \u00b7 2 authors"},{"name":"accounts/forms.py","value":134,"metric":24,"meta":"14 branches \u00b7 2 authors"},{"name":"core/static/core/tl/tl.js","value":177,"metric":7,"meta":"50 branches \u00b7 2 authors"},{"name":"characters/views/wraith/wraith_chargen.py","value":227,"metric":27,"meta":"12 branches \u00b7 2 authors"},{"name":"characters/forms/mage/enhancements.py","value":272,"metric":8,"meta":"42 branches \u00b7 2 authors"},{"name":"locations/models/mage/node.py","value":206,"metric":18,"meta":"18 branches \u00b7 2 authors"},{"name":"characters/views/core/character.py","value":117,"metric":31,"meta":"10 branches \u00b7 2 authors"},{"name":"core/cache.py","value":213,"metric":11,"meta":"29 branches \u00b7 2 authors"},{"name":"core/model_registry.py","value":292,"metric":6,"meta":"54 branches \u00b7 2 authors"},{"name":"core/services/chronicle_data.py","value":212,"metric":8,"meta":"40 branches \u00b7 2 authors"},{"name":"characters/models/demon/earthbound.py","value":242,"metric":19,"meta":"16 branches \u00b7 2 authors"},{"name":"core/management/commands/approve_pending_items.py","value":240,"metric":7,"meta":"45 branches \u00b7 2 authors"},{"name":"core/management/commands/audit_xp_spending.py","value":232,"metric":8,"meta":"36 branches \u00b7 2 authors"},{"name":"core/templatetags/tl.py","value":232,"metric":7,"meta":"41 branches \u00b7 1 authors"},{"name":"characters/models/core/ability_block.py","value":280,"metric":10,"meta":"28 branches \u00b7 2 authors"},{"name":"locations/models/core/location.py","value":104,"metric":18,"meta":"15 branches \u00b7 2 authors"},{"name":"widgets/mixins/conditional.py","value":213,"metric":7,"meta":"40 branches \u00b7 2 authors"},{"name":"characters/rules/allocation.py","value":308,"metric":5,"meta":"56 branches \u00b7 1 authors"},{"name":"characters/models/mage/companion.py","value":184,"metric":20,"meta":"13 branches \u00b7 2 authors"},{"name":"core/management/commands/find_duplicate_objects.py","value":280,"metric":7,"meta":"39 branches \u00b7 2 authors"},{"name":"locations/models/mage/sector.py","value":230,"metric":8,"meta":"33 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":123}</script>
 
 <h2>Hotspot ranking</h2>
-<p class="dim">Score = commits × (branch points + 1). Tests excluded. 910 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: accounts/templates/accounts/detail.html (38), characters/templates/characters/core/background_block/form.html (32), game/templates/game/scene/detail.html (32).</p>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 911 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: accounts/templates/accounts/detail.html (38), characters/templates/characters/core/background_block/form.html (32), game/templates/game/scene/detail.html (32).</p>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
 <tbody><tr><td><code>game/models.py</code></td><td class='num'>94</td><td class='num'>196</td><td class='num'>1,223</td><td class='num'>2</td><td class='num' data-sort='18518'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
@@ -454,6 +449,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 </section>
 <section class="panel" id="flows" role="tabpanel">
+
 
 <h2>Authorize before rendering</h2>
 <div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
@@ -491,8 +487,10 @@ end
 <h2>Load reference data as a real Python script</h2>
 <p><code>core/management/commands/populate_gamedata.py:209</code> now uses the standard script runner inside the existing transaction. A failed script retains its filename in the traceback and reaches the transaction boundary; source scripts remain trusted executable project content.</p>
 
+
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <h2>Shared policy, domain-specific state</h2>
 <table><thead><tr><th>Concern</th><th>Owner</th><th>Review implication</th></tr></thead><tbody>
@@ -505,8 +503,10 @@ end
 <p>The generic registry still has reality-zone knowledge in <code>core/model_registry.py:103</code>, and middleware explicitly lists private game record families in <code>core/middleware/authorization.py:53</code>. These are concrete places where new domain families may require shared infrastructure changes.</p>
 <p>The dependency graph's accounts model/dashboard cycle includes the type-checking-only Profile import in <code>accounts/dashboard.py:22</code>; it is not an executable cycle at that edge. Export-heavy view packages likewise need import-guard verification rather than deleting edges based on the graph alone. <code>core/tests/test_import_graph.py</code> is the executable module-scope import ratchet.</p>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <h2>Protect private objects and point balances</h2>
 <table><thead><tr><th>Invariant</th><th>Evidence</th><th>Limit</th></tr></thead><tbody>
@@ -516,11 +516,13 @@ end
 <tr><td>Legacy spend errors are visible</td><td><code>characters/models/core/human.py:695</code></td><td>The new tests pin failure propagation and unchanged balances on lookup failure; this is not a new concurrency guarantee.</td></tr>
 </tbody></table>
 <h3>Maintainer priorities</h3>
-<ol><li>Keep authorization tests at both transport boundaries when scene audiences change (<code>game/scene_chat.py</code>).</li><li>Choose stable seed identities before promising reconciliation of edited reference text (<code>populate_db/mummy/titles.py:6</code>).</li><li>Treat workflow reordering as a schema/data change (<code>characters/chargen/transitions.py:29</code>).</li><li>Clarify the relationship between location parent and multiple containment chains (<code>locations/models/core/location.py:23</code>).</li></ol>
+<ol><li>Keep authorization tests at both transport boundaries when scene audiences change (<code>game/scene_chat.py</code>).</li><li>Extend the proven title identity contract to other catalogues only after reviewing their legacy selectors and relationships (<code>core/seed_data.py:81</code>).</li><li>Treat workflow reordering as a schema/data change (<code>characters/chargen/transitions.py:29</code>).</li><li>Clarify the relationship between location parent and multiple containment chains (<code>locations/models/core/location.py:23</code>).</li></ol>
 <p>Query-budget tests measure fixture behavior, not production latency distributions. Browser and backend-specific skips must remain visible in the test result. No numerical coverage claim is made without a coverage artifact.</p>
+
 
 </section>
 <section class="panel" id="glossary" role="tabpanel">
+
 
 <h2>Names used by players and code</h2>
 <table><thead><tr><th>Term</th><th>Code meaning</th><th>Where to inspect</th></tr></thead><tbody>
@@ -532,17 +534,325 @@ end
 </tbody></table>
 <p>“Finished” is not a universal transition API: the scene edit form can set the field without invoking the close action's week enrollment and broadcast, as documented in <code>game/docs/scenes.md:30</code>. Callers must choose the lifecycle operation deliberately.</p>
 
-</section><!--DOC_BODY--></main>
-<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+
+</section></main>
+<footer class="doc">Automated tabs regenerated from the source snapshot; authored tabs reviewed for the seed identity pilot. Coverage and JavaScript specialist grades remain unavailable.</footer>
+<div class="viz-tip" id="viz-tip"></div>
 <script>
+/* ============ tabs ============ */
 (function(){
   const btns=[...document.querySelectorAll('nav.tabs button')];
-  function activate(id){
-    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
     btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
     window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
   }
-  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
 })();
 </script>
 </body>

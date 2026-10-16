@@ -91,13 +91,13 @@
 
 **Interfaces:** Consumes Tasks 1–4. Produces a reviewable branch stacked above `quality/code-overview-final`, a verification record, refreshed grades and a PR only after the branch is complete.
 
-- [ ] Run `.venv/bin/python manage.py check`, `.venv/bin/ruff check . --extend-exclude .codex`, `.venv/bin/black --check` on touched Python files, and `git diff --check`; require no errors.
-- [ ] Run `.venv/bin/python manage.py test --parallel 4` with network/socket access enabled and capture the full log in `work/`. Report exact failures; fix regressions rather than masking them. If Chromium still fails independently, retain that limitation and keep the PR a draft.
-- [ ] Apply requesting-code-review and verification-before-completion skills. Review identity adoption, rollback, schema guards and authorization/CRUD exposure; resolve important findings and rerun affected tests.
-- [ ] Re-run root and affected package overview scopes using the prior report's documented commands and current-version Django target. Validate linked report navigation and archive integrity. Record source/tool commits and unchanged scoring, and identify remaining B+ gaps honestly.
-- [ ] Commit refreshed reports: `Record stable seed migration verification and quality results`.
-- [ ] Push branch and create the next stacked PR with concrete behavior, adoption/rollout guidance, validation counts and remaining limitations. Never merge; the user lands stack entries.
-- [ ] Select the next confirmed quality issue using the refreshed evidence. Bring behavior or architecture changes through the applicable design process before implementation.
+- [x] Run `.venv/bin/python manage.py check`, `.venv/bin/ruff check . --extend-exclude .codex`, `.venv/bin/black --check` on touched Python files, and `git diff --check`; require no errors.
+- [x] Run `.venv/bin/python manage.py test --parallel 4` with network/socket access enabled and capture the full log in `work/`. Report exact failures; fix regressions rather than masking them. If Chromium still fails independently, retain that limitation and keep the PR a draft.
+- [x] Apply requesting-code-review and verification-before-completion skills. Review identity adoption, rollback, schema guards and authorization/CRUD exposure; resolve important findings and rerun affected tests.
+- [x] Re-run root and affected package overview scopes using the prior report's documented commands and current-version Django target. Validate linked report navigation and archive integrity. Record source/tool commits and unchanged scoring, and identify remaining B+ gaps honestly.
+- [x] Commit refreshed reports: `Record stable seed migration verification and quality results`.
+- [x] Push branch and create the next stacked PR with concrete behavior, adoption/rollout guidance, validation counts and remaining limitations. Never merge; the user lands stack entries.
+- [x] Select the next confirmed quality issue using the refreshed evidence. Bring behavior or architecture changes through the applicable design process before implementation.
 
 ## Self-review and handoff
 
