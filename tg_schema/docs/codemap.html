@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tg_schema — codebase atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">tg_schema — codebase atlas</h1>
+  <p class="doc-sub"></p>
+  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">tg_schema</span></div><div class="co-row"><span class="co-lbl">tg_schema</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a><a href="../../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<h2>tg_schema — orientation</h2><div class="card hero"><p>Schema migration is guarded convergence of legacy databases toward selected properties of the current models, rather than reconstruction of historical model states. Missing retired structures are skipped and reverse operations intentionally do nothing.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>tg_schema/apps.py:1</code></td><td>App registration makes committed migrations discoverable.</td></tr><tr><td><code>tg_schema/migrations/0010_unique_weekly_xp_request.py:63</code></td><td>A RunPython migration entered through Django migrate.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>tg_schema/README.md:1</code> — Why live schema repair replaces local historical state.</li><li><code>tg_schema/schema.py:15</code> — Safe live-model lookup.</li><li><code>tg_schema/schema.py:45</code> — Guarded column insertion.</li><li><code>tg_schema/migrations/0010_unique_weekly_xp_request.py:1</code> — Data-loss semantics and self-contained repair SQL.</li><li><code>tg_schema/tests/test_assign_story_chronicles.py:1</code> — An example data repair against current models.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
+  n0["Django migrate"]
+  n1["Committed RunPython"]
+  n2["Live introspection"]
+  n3["Guarded DDL or data repair"]
+  n4["Missing structure skip"]
+  n0 --> n1 --> n2 --> n3
+  n2 --> n4</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 27 recognized files and 1366 lines, including tests and recognized assets. Test-source share is not execution coverage. Highest churn × branch review priorities: <code>tg_schema/migrations/0008_unique_scene_read_status.py</code> (score 21), <code>tg_schema/migrations/0004_scene_rolls_and_read_marker.py</code> (score 15), <code>tg_schema/migrations/0003_discipline_property_names.py</code> (score 12). These are attention signals, not defects.</p><h3>Decisions and interpretation limits</h3><p>Django historical migration-state replay is the normal alternative; this accommodates local apps whose historical migrations are not committed. <code>tg_schema/schema.py:3</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">27</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">1,366</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">64%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>1,302</td><td class='num'>26</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>95.3%</td></tr>
+<tr><td>Markdown</td><td class='num'>64</td><td class='num'>1</td><td><div class="bar "><i style="width:4.9%"></i></div></td><td class='num'>4.7%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>828</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>migrations/</code></td><td class='num'>421</td><td><div class="bar "><i style="width:50.8%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>117</td><td><div class="bar "><i style="width:14.1%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>tests/test_retire_custom_visibility.py</code> <span class="badge neutral">test</span></td><td class='num'>180</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>tests/test_unique_weekly_xp_request.py</code> <span class="badge neutral">test</span></td><td class='num'>112</td><td><div class="bar "><i style="width:62.2%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>tests/test_unique_scene_read_status.py</code> <span class="badge neutral">test</span></td><td class='num'>110</td><td><div class="bar "><i style="width:61.1%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>migrations/0011_retire_custom_visibility.py</code></td><td class='num'>91</td><td><div class="bar "><i style="width:50.6%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>tests/test_protect_player_reality_zones.py</code> <span class="badge neutral">test</span></td><td class='num'>85</td><td><div class="bar "><i style="width:47.2%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_scene_rolls_and_read_marker.py</code> <span class="badge neutral">test</span></td><td class='num'>71</td><td><div class="bar "><i style="width:39.4%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>tests/test_assign_story_chronicles.py</code> <span class="badge neutral">test</span></td><td class='num'>58</td><td><div class="bar "><i style="width:32.2%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>migrations/0010_unique_weekly_xp_request.py</code></td><td class='num'>54</td><td><div class="bar "><i style="width:30.0%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>schema.py</code></td><td class='num'>49</td><td><div class="bar "><i style="width:27.2%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>migrations/0008_unique_scene_read_status.py</code></td><td class='num'>48</td><td><div class="bar "><i style="width:26.7%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_schema_helpers.py</code> <span class="badge neutral">test</span></td><td class='num'>48</td><td><div class="bar "><i style="width:26.7%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>tests/test_sheet_cover_facts.py</code> <span class="badge neutral">test</span></td><td class='num'>46</td><td><div class="bar "><i style="width:25.6%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>migrations/0003_discipline_property_names.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:25.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_story_chronicle.py</code> <span class="badge neutral">test</span></td><td class='num'>41</td><td><div class="bar "><i style="width:22.8%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_chantry_rating_linked_object.py</code> <span class="badge neutral">test</span></td><td class='num'>40</td><td><div class="bar "><i style="width:22.2%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>migrations/0012_protect_player_reality_zones.py</code></td><td class='num'>37</td><td><div class="bar "><i style="width:20.6%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_human_age_limits.py</code> <span class="badge neutral">test</span></td><td class='num'>37</td><td><div class="bar "><i style="width:20.6%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>migrations/0009_human_age_limits.py</code></td><td class='num'>35</td><td><div class="bar "><i style="width:19.4%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>migrations/0007_assign_story_chronicles.py</code></td><td class='num'>34</td><td><div class="bar "><i style="width:18.9%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0004_scene_rolls_and_read_marker.py</code></td><td class='num'>31</td><td><div class="bar "><i style="width:17.2%"></i></div></td><td class='num'>4</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>tests/test_retire_custom_visibility.py</code> <span class="badge neutral">test</span></td><td class='num'>11</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>180</td><td class='num'>5</td></tr>
+<tr><td><code>schema.py</code></td><td class='num'>8</td><td><div class="bar warn"><i style="width:72.7%"></i></div></td><td class='num'>49</td><td class='num'>3</td></tr>
+<tr><td><code>tests/test_scene_rolls_and_read_marker.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:72.7%"></i></div></td><td class='num'>71</td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_sheet_cover_facts.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:72.7%"></i></div></td><td class='num'>46</td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_unique_scene_read_status.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:72.7%"></i></div></td><td class='num'>110</td><td class='num'>4</td></tr>
+<tr><td><code>tests/test_schema_helpers.py</code> <span class="badge neutral">test</span></td><td class='num'>7</td><td><div class="bar warn"><i style="width:63.6%"></i></div></td><td class='num'>48</td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_unique_weekly_xp_request.py</code> <span class="badge neutral">test</span></td><td class='num'>7</td><td><div class="bar warn"><i style="width:63.6%"></i></div></td><td class='num'>112</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0008_unique_scene_read_status.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:54.5%"></i></div></td><td class='num'>48</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0010_unique_weekly_xp_request.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:54.5%"></i></div></td><td class='num'>54</td><td class='num'>4</td></tr>
+<tr><td><code>tests/test_chantry_rating_linked_object.py</code> <span class="badge neutral">test</span></td><td class='num'>6</td><td><div class="bar warn"><i style="width:54.5%"></i></div></td><td class='num'>40</td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_protect_player_reality_zones.py</code> <span class="badge neutral">test</span></td><td class='num'>6</td><td><div class="bar warn"><i style="width:54.5%"></i></div></td><td class='num'>85</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0009_human_age_limits.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:45.5%"></i></div></td><td class='num'>35</td><td class='num'>3</td></tr>
+<tr><td><code>migrations/0012_protect_player_reality_zones.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:45.5%"></i></div></td><td class='num'>37</td><td class='num'>3</td></tr>
+<tr><td><code>migrations/0004_scene_rolls_and_read_marker.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:36.4%"></i></div></td><td class='num'>31</td><td class='num'>2</td></tr>
+<tr><td><code>migrations/0007_assign_story_chronicles.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:36.4%"></i></div></td><td class='num'>34</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0011_retire_custom_visibility.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:36.4%"></i></div></td><td class='num'>91</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0003_discipline_property_names.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:18.2%"></i></div></td><td class='num'>45</td><td class='num'>3</td></tr>
+<tr><td><code>tests/test_story_chronicle.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:18.2%"></i></div></td><td class='num'>41</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0006_sheet_cover_facts.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:9.1%"></i></div></td><td class='num'>13</td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_assign_story_chronicles.py</code> <span class="badge neutral">test</span></td><td class='num'>1</td><td><div class="bar warn"><i style="width:9.1%"></i></div></td><td class='num'>58</td><td class='num'>3</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">3</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">3</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":53,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 3 files"},{"id":"migrations","label":"migrations","group":"migrations","size":421,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 13 files"},{"id":"tests","label":"tests","group":"tests","size":828,"fanIn":0,"fanOut":0,"meta":"tests \u00b7 12 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>schema.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0001_scene_visibility.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0002_chantry_rating_linked_object.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0003_discipline_property_names.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0004_scene_rolls_and_read_marker.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0005_story_chronicle.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0006_sheet_cover_facts.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0007_assign_story_chronicles.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0008_unique_scene_read_status.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0009_human_age_limits.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0010_unique_weekly_xp_request.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0011_retire_custom_visibility.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0012_protect_player_reality_zones.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:0.0%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">23</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">26</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">0008_unique_scene_read_status.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"migrations/0008_unique_scene_read_status.py","value":48,"metric":3,"meta":"6 branches \u00b7 1 authors"},{"name":"migrations/0004_scene_rolls_and_read_marker.py","value":31,"metric":3,"meta":"4 branches \u00b7 1 authors"},{"name":"migrations/0003_discipline_property_names.py","value":45,"metric":4,"meta":"2 branches \u00b7 2 authors"},{"name":"migrations/0009_human_age_limits.py","value":35,"metric":2,"meta":"5 branches \u00b7 2 authors"},{"name":"migrations/0007_assign_story_chronicles.py","value":34,"metric":2,"meta":"4 branches \u00b7 1 authors"},{"name":"migrations/0011_retire_custom_visibility.py","value":91,"metric":2,"meta":"4 branches \u00b7 1 authors"},{"name":"schema.py","value":49,"metric":1,"meta":"8 branches \u00b7 1 authors"},{"name":"migrations/0010_unique_weekly_xp_request.py","value":54,"metric":1,"meta":"6 branches \u00b7 1 authors"},{"name":"migrations/0006_sheet_cover_facts.py","value":13,"metric":3,"meta":"1 branches \u00b7 1 authors"},{"name":"migrations/0012_protect_player_reality_zones.py","value":37,"metric":1,"meta":"5 branches \u00b7 1 authors"},{"name":"migrations/0001_scene_visibility.py","value":11,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"migrations/0005_story_chronicle.py","value":11,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"migrations/0002_chantry_rating_linked_object.py","value":11,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":3,"metric":1,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":4}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 1 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: README.md (3).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>migrations/0008_unique_scene_read_status.py</code></td><td class='num'>3</td><td class='num'>6</td><td class='num'>48</td><td class='num'>1</td><td class='num' data-sort='21'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>migrations/0004_scene_rolls_and_read_marker.py</code></td><td class='num'>3</td><td class='num'>4</td><td class='num'>31</td><td class='num'>1</td><td class='num' data-sort='15'><div class="bar bad"><i style="width:71.4%"></i></div></td></tr>
+<tr><td><code>migrations/0003_discipline_property_names.py</code></td><td class='num'>4</td><td class='num'>2</td><td class='num'>45</td><td class='num'>2</td><td class='num' data-sort='12'><div class="bar bad"><i style="width:57.1%"></i></div></td></tr>
+<tr><td><code>migrations/0009_human_age_limits.py</code></td><td class='num'>2</td><td class='num'>5</td><td class='num'>35</td><td class='num'>2</td><td class='num' data-sort='12'><div class="bar bad"><i style="width:57.1%"></i></div></td></tr>
+<tr><td><code>migrations/0007_assign_story_chronicles.py</code></td><td class='num'>2</td><td class='num'>4</td><td class='num'>34</td><td class='num'>1</td><td class='num' data-sort='10'><div class="bar bad"><i style="width:47.6%"></i></div></td></tr>
+<tr><td><code>migrations/0011_retire_custom_visibility.py</code></td><td class='num'>2</td><td class='num'>4</td><td class='num'>91</td><td class='num'>1</td><td class='num' data-sort='10'><div class="bar bad"><i style="width:47.6%"></i></div></td></tr>
+<tr><td><code>schema.py</code></td><td class='num'>1</td><td class='num'>8</td><td class='num'>49</td><td class='num'>1</td><td class='num' data-sort='9'><div class="bar bad"><i style="width:42.9%"></i></div></td></tr>
+<tr><td><code>migrations/0010_unique_weekly_xp_request.py</code></td><td class='num'>1</td><td class='num'>6</td><td class='num'>54</td><td class='num'>1</td><td class='num' data-sort='7'><div class="bar bad"><i style="width:33.3%"></i></div></td></tr>
+<tr><td><code>migrations/0006_sheet_cover_facts.py</code></td><td class='num'>3</td><td class='num'>1</td><td class='num'>13</td><td class='num'>1</td><td class='num' data-sort='6'><div class="bar bad"><i style="width:28.6%"></i></div></td></tr>
+<tr><td><code>migrations/0012_protect_player_reality_zones.py</code></td><td class='num'>1</td><td class='num'>5</td><td class='num'>37</td><td class='num'>1</td><td class='num' data-sort='6'><div class="bar bad"><i style="width:28.6%"></i></div></td></tr>
+<tr><td><code>migrations/0001_scene_visibility.py</code></td><td class='num'>4</td><td class='num'>0</td><td class='num'>11</td><td class='num'>2</td><td class='num' data-sort='4'><div class="bar bad"><i style="width:19.0%"></i></div></td></tr>
+<tr><td><code>migrations/0005_story_chronicle.py</code></td><td class='num'>3</td><td class='num'>0</td><td class='num'>11</td><td class='num'>1</td><td class='num' data-sort='3'><div class="bar bad"><i style="width:14.3%"></i></div></td></tr>
+<tr><td><code>migrations/0002_chantry_rating_linked_object.py</code></td><td class='num'>2</td><td class='num'>0</td><td class='num'>11</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:9.5%"></i></div></td></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>1</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:4.8%"></i></div></td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>3</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:4.8%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>tg_schema — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>Absent retired models or fields are safely skipped</td><td><code>tg_schema/schema.py:15</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Column patches skip tables/columns already absent/present as appropriate</td><td><code>tg_schema/schema.py:51</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Unapplying a migration restores prior data</td><td><code>tg_schema/migrations/0010_unique_weekly_xp_request.py:65</code></td><td><span class="badge warn">partial or outside model</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>Missing live structures are intentional no-ops, which can also conceal an unexpected deployment shape unless inspected. <code>tg_schema/schema.py:51</code></p><h3>Concurrency and shared state</h3><p>Migration execution belongs to deployment; guards improve repeatability but are not a protocol for two migration processes racing. <code>tg_schema/schema.py:55</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> Irreversible deduplication cannot reconstruct deleted rows on downgrade. <code>tg_schema/migrations/0010_unique_weekly_xp_request.py:55</code></div><div class="callout warn"><strong>2.</strong> Live-model lookups mean later definitions can change an old additive patch. <code>tg_schema/schema.py:15</code></div><div class="callout warn"><strong>3.</strong> A skipped missing structure may be expected retirement or an unintended legacy gap; guards alone cannot distinguish them. <code>tg_schema/schema.py:53</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
+
+</section><!--DOC_BODY--></main>
+<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>repository — codebase atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">repository — codebase atlas</h1>
+  <p class="doc-sub"></p>
+  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><span class="co-here">⌂ Overall Code Map</span></div><div class="co-row"><span class="co-lbl">This repository</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../accounts/docs/codemap.html">accounts</a><a href="../characters/docs/codemap.html">characters</a><a href="../core/docs/codemap.html">core</a><a href="../game/docs/codemap.html">game</a><a href="../items/docs/codemap.html">items</a><a href="../locations/docs/codemap.html">locations</a><a href="../tg_schema/docs/codemap.html">tg_schema</a><a href="../widgets/docs/codemap.html">widgets</a><a href="../tg/docs/codemap.html">tg</a><a href="../populate_db/docs/codemap.html">populate_db</a><a href="../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<h2>A chronicle is the boundary around play</h2>
+<p>Tellurium Games is a Django monolith for World of Darkness tabletop chronicles. Characters, places and items share ownership and visibility rules; scenes turn character participation into posts and experience. Start with <code>docs/architecture/overview.md</code>, then follow the policy boundary before reading a game-line subclass.</p>
+<div class="callout warn">Health grades measure detector finding density, not fitness for deployment. Theory grades are independent model judgments. Plain JavaScript has no specialist grade, and no coverage artifact was supplied. Analysis uses a clean Git snapshot of the product commits; ignored local generated migrations, databases and installed skill payloads are omitted from project source.</div>
+<h3>Reading order</h3>
+<ol><li><code>tg/urls.py</code> and <code>tg/asgi.py:23</code>: HTTP and WebSocket entry points differ.</li><li><code>core/middleware/authorization.py:32</code>: undeclared routes go through the central policy evaluator.</li><li><code>core/model_registry.py:83</code>: generated CRUD views enforce policy before custom dispatch.</li><li><code>characters/chargen/transitions.py:20</code>: ordered workflow transitions, permissions and persistence.</li><li><code>game/scene_chat.py:65</code>: common posting path for HTTP and WebSocket.</li><li><code>core/tests/test_query_budgets.py:85</code>: measured query ceilings on shared fixtures.</li></ol>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
+HTTP[HTTP routes] --> Policy[Route policy and object permissions]
+WS[WebSocket consumer] --> Scene[Scene posting service]
+Policy --> Domain[Characters items locations chronicles]
+Domain --> DB[Django ORM and guarded schema patches]
+Scene --> DB
+Scene --> Commit[After-commit channel broadcast]
+Domain --> UI[Spread templates and htmx]
+</pre></div></div>
+<p>Module-level coupling is expected in this monolith. The static graph includes type-only imports and export conventions; its strongly connected components do not prove runtime import failure. Package graphs cannot resolve host-app imports outside their selected directory; use the repository graph for cross-app questions. No model calls or statistical evaluation pipeline were found by the automated LLM scan.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">2,339</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">265,527</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">3</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">41%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>234,442</td><td class='num'>1,417</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>88.3%</td></tr>
+<tr><td>HTML</td><td class='num'>22,885</td><td class='num'>862</td><td><div class="bar "><i style="width:9.8%"></i></div></td><td class='num'>8.6%</td></tr>
+<tr><td>JavaScript</td><td class='num'>3,241</td><td class='num'>35</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>1.2%</td></tr>
+<tr><td>JSON</td><td class='num'>1,980</td><td class='num'>3</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.7%</td></tr>
+<tr><td>CSS</td><td class='num'>1,472</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.6%</td></tr>
+<tr><td>Markdown</td><td class='num'>1,055</td><td class='num'>15</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.4%</td></tr>
+<tr><td>Shell</td><td class='num'>319</td><td class='num'>3</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.1%</td></tr>
+<tr><td>YAML</td><td class='num'>90</td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr>
+<tr><td>TOML</td><td class='num'>43</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr></tbody></table></div>
+<p class="dim">Coverage: 26 file(s) in unrecognized languages are not counted above (.png (11), .ttf (7), .txt (3), .otf (3), (no ext) (1)).</p>
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>characters/</code></td><td class='num'>103,559</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>populate_db/</code></td><td class='num'>62,174</td><td><div class="bar "><i style="width:60.0%"></i></div></td></tr>
+<tr><td><code>core/</code></td><td class='num'>31,321</td><td><div class="bar "><i style="width:30.2%"></i></div></td></tr>
+<tr><td><code>locations/</code></td><td class='num'>25,857</td><td><div class="bar "><i style="width:25.0%"></i></div></td></tr>
+<tr><td><code>game/</code></td><td class='num'>14,890</td><td><div class="bar "><i style="width:14.4%"></i></div></td></tr>
+<tr><td><code>items/</code></td><td class='num'>12,451</td><td><div class="bar "><i style="width:12.0%"></i></div></td></tr>
+<tr><td><code>accounts/</code></td><td class='num'>5,561</td><td><div class="bar "><i style="width:5.4%"></i></div></td></tr>
+<tr><td><code>widgets/</code></td><td class='num'>5,070</td><td><div class="bar "><i style="width:4.9%"></i></div></td></tr>
+<tr><td><code>scripts/</code></td><td class='num'>1,676</td><td><div class="bar "><i style="width:1.6%"></i></div></td></tr>
+<tr><td><code>tg_schema/</code></td><td class='num'>1,366</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>tg/</code></td><td class='num'>880</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>632</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>.github/</code></td><td class='num'>90</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>populate_db/01_resonance.py</code></td><td class='num'>14,117</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>10</td></tr>
+<tr><td><code>populate_db/nouns.py</code></td><td class='num'>6,801</td><td><div class="bar "><i style="width:48.2%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>populate_db/mage/effects_INC.py</code></td><td class='num'>6,136</td><td><div class="bar "><i style="width:43.5%"></i></div></td><td class='num'>533</td></tr>
+<tr><td><code>populate_db/mage/wonders_INC.py</code></td><td class='num'>3,189</td><td><div class="bar "><i style="width:22.6%"></i></div></td><td class='num'>95</td></tr>
+<tr><td><code>populate_db/merits_and_flaws_INC.py</code></td><td class='num'>2,963</td><td><div class="bar "><i style="width:21.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>locations/registry.py</code></td><td class='num'>2,209</td><td><div class="bar "><i style="width:15.6%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>populate_db/specialties.py</code></td><td class='num'>1,886</td><td><div class="bar "><i style="width:13.4%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>items/registry.py</code></td><td class='num'>1,744</td><td><div class="bar "><i style="width:12.4%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>populate_db/demon/demon_merits_and_flaws.py</code></td><td class='num'>1,614</td><td><div class="bar "><i style="width:11.4%"></i></div></td><td class='num'>202</td></tr>
+<tr><td><code>game/tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>1,567</td><td><div class="bar "><i style="width:11.1%"></i></div></td><td class='num'>16</td></tr>
+<tr><td><code>game/tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>1,527</td><td><div class="bar "><i style="width:10.8%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>populate_db/mage/practices_INC.py</code></td><td class='num'>1,466</td><td><div class="bar "><i style="width:10.4%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>populate_db/changeling/cantrips.py</code></td><td class='num'>1,426</td><td><div class="bar "><i style="width:10.1%"></i></div></td><td class='num'>34</td></tr>
+<tr><td><code>game/models.py</code></td><td class='num'>1,223</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>196</td></tr>
+<tr><td><code>characters/tests/services/test_xp_spending.py</code> <span class="badge neutral">test</span></td><td class='num'>1,196</td><td><div class="bar "><i style="width:8.5%"></i></div></td><td class='num'>15</td></tr>
+<tr><td><code>characters/tests/models/changeling/test_changeling.py</code> <span class="badge neutral">test</span></td><td class='num'>1,186</td><td><div class="bar "><i style="width:8.4%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>1,044</td><td><div class="bar "><i style="width:7.4%"></i></div></td><td class='num'>99</td></tr>
+<tr><td><code>accounts/tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>1,039</td><td><div class="bar "><i style="width:7.4%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>populate_db/mage/rotes.py</code></td><td class='num'>1,008</td><td><div class="bar "><i style="width:7.1%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>core/tests/mixins/test_mixins.py</code> <span class="badge neutral">test</span></td><td class='num'>1,001</td><td><div class="bar "><i style="width:7.1%"></i></div></td><td class='num'>14</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>populate_db/mage/effects_INC.py</code></td><td class='num'>533</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>6,136</td><td class='num'>2</td></tr>
+<tr><td><code>scripts/find_dead_code.py</code></td><td class='num'>231</td><td><div class="bar warn"><i style="width:43.3%"></i></div></td><td class='num'>653</td><td class='num'>6</td></tr>
+<tr><td><code>populate_db/demon/demon_merits_and_flaws.py</code></td><td class='num'>202</td><td><div class="bar warn"><i style="width:37.9%"></i></div></td><td class='num'>1,614</td><td class='num'>0</td></tr>
+<tr><td><code>game/models.py</code></td><td class='num'>196</td><td><div class="bar warn"><i style="width:36.8%"></i></div></td><td class='num'>1,223</td><td class='num'>7</td></tr>
+<tr><td><code>populate_db/demon/demon_rituals.py</code></td><td class='num'>126</td><td><div class="bar warn"><i style="width:23.6%"></i></div></td><td class='num'>963</td><td class='num'>1</td></tr>
+<tr><td><code>characters/models/mage/mage.py</code></td><td class='num'>124</td><td><div class="bar warn"><i style="width:23.3%"></i></div></td><td class='num'>773</td><td class='num'>6</td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>118</td><td><div class="bar warn"><i style="width:22.1%"></i></div></td><td class='num'>691</td><td class='num'>6</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>99</td><td><div class="bar warn"><i style="width:18.6%"></i></div></td><td class='num'>1,044</td><td class='num'>4</td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:17.8%"></i></div></td><td class='num'>675</td><td class='num'>7</td></tr>
+<tr><td><code>populate_db/mage/wonders_INC.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:17.8%"></i></div></td><td class='num'>3,189</td><td class='num'>2</td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>88</td><td><div class="bar warn"><i style="width:16.5%"></i></div></td><td class='num'>460</td><td class='num'>4</td></tr>
+<tr><td><code>items/models/mage/grimoire.py</code></td><td class='num'>88</td><td><div class="bar warn"><i style="width:16.5%"></i></div></td><td class='num'>403</td><td class='num'>7</td></tr>
+<tr><td><code>characters/forms/mage/freebies.py</code></td><td class='num'>86</td><td><div class="bar warn"><i style="width:16.1%"></i></div></td><td class='num'>209</td><td class='num'>7</td></tr>
+<tr><td><code>game/forms.py</code></td><td class='num'>86</td><td><div class="bar warn"><i style="width:16.1%"></i></div></td><td class='num'>734</td><td class='num'>5</td></tr>
+<tr><td><code>populate_db/archetypes.py</code></td><td class='num'>85</td><td><div class="bar warn"><i style="width:15.9%"></i></div></td><td class='num'>324</td><td class='num'>2</td></tr>
+<tr><td><code>characters/services/freebie_spending/base.py</code></td><td class='num'>82</td><td><div class="bar warn"><i style="width:15.4%"></i></div></td><td class='num'>840</td><td class='num'>7</td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>81</td><td><div class="bar warn"><i style="width:15.2%"></i></div></td><td class='num'>794</td><td class='num'>6</td></tr>
+<tr><td><code>characters/forms/mage/xp.py</code></td><td class='num'>77</td><td><div class="bar warn"><i style="width:14.4%"></i></div></td><td class='num'>180</td><td class='num'>6</td></tr>
+<tr><td><code>characters/views/core/chargen_mixins.py</code></td><td class='num'>74</td><td><div class="bar warn"><i style="width:13.9%"></i></div></td><td class='num'>343</td><td class='num'>6</td></tr>
+<tr><td><code>accounts/views.py</code></td><td class='num'>68</td><td><div class="bar warn"><i style="width:12.8%"></i></div></td><td class='num'>467</td><td class='num'>7</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">13</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">4,967</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">3,175</div><div class="l">runtime loads</div></div>
+  <div class="kpi bad"><div class="n">1</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">13</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout bad"><b>1 module-level dependency cycle detected</b> — modules that import each other directly or transitively. Cycles make modules impossible to understand or test in isolation.<ul style="margin-top:8px"><li><span class='badge bad'>cycle 1</span> <code></code> ⇄ <code>accounts</code> ⇄ <code>characters</code> ⇄ <code>core</code> ⇄ <code>game</code> ⇄ <code>items</code> ⇄ <code>locations</code> ⇄ <code>populate_db</code> ⇄ <code>scripts</code> ⇄ <code>tg</code> ⇄ <code>tg_schema</code> ⇄ <code>widgets</code></li></ul></div><details><summary>File-level import cycles: 4 strongly-connected groups</summary><div class="body"><p class="dim">Files that (transitively) import each other. In Python these often include type-annotation or lazy in-function imports — less harmful than top-level cycles, but each one still couples the files' lifecycles. Worth explaining case-by-case in the Boundaries tab.</p><ul><li><span class='badge warn'>group 1</span> <code>accounts/dashboard.py</code> ⇄ <code>accounts/models.py</code></li><li><span class='badge warn'>group 2</span> <code>characters/views/__init__.py</code> ⇄ <code>characters/views/core/__init__.py</code></li><li><span class='badge warn'>group 3</span> <code>items/views/__init__.py</code> ⇄ <code>items/views/core/__init__.py</code></li><li><span class='badge warn'>group 4</span> <code>locations/views/__init__.py</code> ⇄ <code>locations/views/core/__init__.py</code></li></ul></div></details>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"cycle","size":379,"fanIn":2,"fanOut":1,"meta":"(repo root) \u00b7 5 files \u00b7 in dependency cycle #1"},{"id":"accounts","label":"accounts","group":"cycle","size":5401,"fanIn":4,"fanOut":5,"meta":"accounts \u00b7 65 files \u00b7 in dependency cycle #1"},{"id":"characters","label":"characters","group":"cycle","size":103522,"fanIn":9,"fanOut":5,"meta":"characters \u00b7 1175 files \u00b7 in dependency cycle #1"},{"id":"core","label":"core","group":"cycle","size":31214,"fanIn":8,"fanOut":12,"meta":"core \u00b7 241 files \u00b7 in dependency cycle #1"},{"id":"game","label":"game","group":"cycle","size":14788,"fanIn":8,"fanOut":6,"meta":"game \u00b7 115 files \u00b7 in dependency cycle #1"},{"id":"items","label":"items","group":"cycle","size":12451,"fanIn":8,"fanOut":5,"meta":"items \u00b7 271 files \u00b7 in dependency cycle #1"},{"id":"locations","label":"locations","group":"cycle","size":25857,"fanIn":8,"fanOut":6,"meta":"locations \u00b7 391 files \u00b7 in dependency cycle #1"},{"id":"populate_db","label":"populate_db","group":"cycle","size":62174,"fanIn":2,"fanOut":5,"meta":"populate_db \u00b7 105 files \u00b7 in dependency cycle #1"},{"id":"scripts","label":"scripts","group":"cycle","size":1676,"fanIn":1,"fanOut":7,"meta":"scripts \u00b7 10 files \u00b7 in dependency cycle #1"},{"id":"source_static/images","label":"images","group":"source_static","size":0,"fanIn":1,"fanOut":0,"meta":"source_static/images \u00b7 2 files"},{"id":"tg","label":"tg","group":"cycle","size":826,"fanIn":2,"fanOut":2,"meta":"tg \u00b7 9 files \u00b7 in dependency cycle #1"},{"id":"tg_schema","label":"tg_schema","group":"cycle","size":1302,"fanIn":1,"fanOut":5,"meta":"tg_schema \u00b7 28 files \u00b7 in dependency cycle #1"},{"id":"widgets","label":"widgets","group":"cycle","size":5070,"fanIn":6,"fanOut":1,"meta":"widgets \u00b7 43 files \u00b7 in dependency cycle #1"}],"links":[{"source":"","target":"populate_db","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"accounts","target":"characters","weight":47,"imports":22,"loads":25,"kind":"mixed","cycle":true},{"source":"accounts","target":"core","weight":26,"imports":7,"loads":19,"kind":"mixed","cycle":true},{"source":"accounts","target":"game","weight":14,"imports":14,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"core","weight":605,"imports":273,"loads":332,"kind":"mixed","cycle":true},{"source":"characters","target":"game","weight":105,"imports":105,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"items","weight":24,"imports":22,"loads":2,"kind":"mixed","cycle":true},{"source":"characters","target":"locations","weight":24,"imports":20,"loads":4,"kind":"mixed","cycle":true},{"source":"characters","target":"widgets","weight":23,"imports":16,"loads":7,"kind":"mixed","cycle":true},{"source":"core","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"accounts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"characters","weight":131,"imports":127,"loads":4,"kind":"mixed","cycle":true},{"source":"core","target":"game","weight":83,"imports":78,"loads":5,"kind":"mixed","cycle":true},{"source":"core","target":"items","weight":59,"imports":33,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"locations","weight":63,"imports":37,"loads":26,"kind":"mixed","cycle":true},{"source":"core","target":"populate_db","weight":8,"imports":0,"loads":8,"kind":"resource","cycle":true},{"source":"core","target":"scripts","weight":7,"imports":4,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"source_static/images","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"core","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"tg_schema","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"core","target":"widgets","weight":12,"imports":11,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"characters","weight":50,"imports":50,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"core","weight":63,"imports":29,"loads":34,"kind":"mixed","cycle":true},{"source":"game","target":"items","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"widgets","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"items","target":"characters","weight":55,"imports":45,"loads":10,"kind":"mixed","cycle":true},{"source":"items","target":"core","weight":103,"imports":24,"loads":79,"kind":"mixed","cycle":true},{"source":"items","target":"game","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"widgets","weight":3,"imports":3,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"characters","weight":90,"imports":82,"loads":8,"kind":"mixed","cycle":true},{"source":"locations","target":"core","weight":112,"imports":47,"loads":65,"kind":"mixed","cycle":true},{"source":"locations","target":"game","weight":31,"imports":31,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"items","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"widgets","weight":4,"imports":3,"loads":1,"kind":"mixed","cycle":true},{"source":"populate_db","target":"characters","weight":91,"imports":91,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"core","weight":12,"imports":12,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"game","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"items","weight":26,"imports":26,"loads":0,"kind":"import","cycle":true},{"source":"populate_db","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"scripts","target":"characters","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"core","weight":14,"imports":10,"loads":4,"kind":"mixed","cycle":true},{"source":"scripts","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"tg","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"scripts","target":"widgets","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"tg","target":"accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":true},{"source":"tg","target":"game","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"characters","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"core","weight":2,"imports":2,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"game","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"items","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"tg_schema","target":"locations","weight":4,"imports":4,"loads":0,"kind":"import","cycle":true},{"source":"widgets","target":"characters","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>game/models.py</code></td><td class='num'>256</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>core/templates/core/tl/field.html</code></td><td class='num'>146</td><td><div class="bar "><i style="width:57.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>core/templates/core/tl/empty.html</code></td><td class='num'>135</td><td><div class="bar "><i style="width:52.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>133</td><td><div class="bar "><i style="width:52.0%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>132</td><td><div class="bar "><i style="width:51.6%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>120</td><td><div class="bar "><i style="width:46.9%"></i></div></td><td class='num'>13</td></tr>
+<tr><td><code>characters/models/core/__init__.py</code></td><td class='num'>74</td><td><div class="bar "><i style="width:28.9%"></i></div></td><td class='num'>10</td></tr>
+<tr><td><code>locations/registry.py</code></td><td class='num'>67</td><td><div class="bar "><i style="width:26.2%"></i></div></td><td class='num'>106</td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>66</td><td><div class="bar "><i style="width:25.8%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>characters/models/core/background_block.py</code></td><td class='num'>64</td><td><div class="bar "><i style="width:25.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>characters/models/mage/focus.py</code></td><td class='num'>62</td><td><div class="bar "><i style="width:24.2%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>items/registry.py</code></td><td class='num'>61</td><td><div class="bar "><i style="width:23.8%"></i></div></td><td class='num'>64</td></tr>
+<tr><td><code>core/templates/core/form.html</code></td><td class='num'>58</td><td><div class="bar "><i style="width:22.7%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>core/templates/core/misc/form_errors.html</code></td><td class='num'>58</td><td><div class="bar "><i style="width:22.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/models/mage/mage.py</code></td><td class='num'>50</td><td><div class="bar "><i style="width:19.5%"></i></div></td><td class='num'>13</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>characters/views/core/__init__.py</code></td><td class='num'>120</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>locations/registry.py</code></td><td class='num'>106</td><td><div class="bar warn"><i style="width:88.3%"></i></div></td><td class='num'>67</td></tr>
+<tr><td><code>core/tests/test_model_registry.py</code></td><td class='num'>72</td><td><div class="bar warn"><i style="width:60.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>items/registry.py</code></td><td class='num'>64</td><td><div class="bar warn"><i style="width:53.3%"></i></div></td><td class='num'>61</td></tr>
+<tr><td><code>game/tests/views/test_views.py</code></td><td class='num'>52</td><td><div class="bar warn"><i style="width:43.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>50</td><td><div class="bar warn"><i style="width:41.7%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>core/tests/test_dead_code_removed.py</code></td><td class='num'>46</td><td><div class="bar warn"><i style="width:38.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/chargen/definitions.py</code></td><td class='num'>43</td><td><div class="bar warn"><i style="width:35.8%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:33.3%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>accounts/tests/views/test_views.py</code></td><td class='num'>36</td><td><div class="bar warn"><i style="width:30.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/tests/views/vampire/test_vtmhuman.py</code></td><td class='num'>34</td><td><div class="bar warn"><i style="width:28.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/views/mage/sorcerer.py</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:27.5%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>scripts/find_dead_code.py</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:27.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>characters/tests/forms/core/test_linked_npc.py</code></td><td class='num'>31</td><td><div class="bar warn"><i style="width:25.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/tests/views/test_werewolf_changeling_forms.py</code></td><td class='num'>31</td><td><div class="bar warn"><i style="width:25.8%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path. 10 computed path(s) and 0 file(s) hit the reporting cap.</p>
+<div class="callout warn"><b>18 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>AGENTS.md</code> <code>CLAUDE.md</code> <code>CONTRIBUTING.md</code> <code>README.md</code> <code>SECURITY.md</code> <code>accounts/templates/accounts/includes/xp_story.html</code> <code>accounts/templates/accounts/includes/xp_story_st.html</code> <code>characters/templates/characters/mage/faction/faction_include.html</code> <code>core/templates/core/tl/section.html</code> <code>source_static/images/changeling.png</code> <code>source_static/images/discord.png</code> <code>source_static/images/mage.png</code> <code>source_static/images/patreon.png</code> <code>source_static/images/vampire.png</code> <code>source_static/images/werewolf.png</code> <code>source_static/images/wod.png</code> <code>source_static/images/wod_header.png</code> <code>source_static/images/wraith.png</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>core/templates/core/tl/field.html</code></td><td class='num'>146</td><td><code>accounts/templates/accounts/auth/password_reset_confirm.html:19</code> <code>accounts/templates/accounts/auth/password_reset_form.html:12</code> <code>accounts/templates/accounts/form.html:41</code> <code>accounts/templates/accounts/signup.html:16</code> <code>accounts/templates/registration/login.html:22</code> <code>characters/templates/characters/changeling/autumn_person/form.html:10</code> <span class='dim'>… 140 more</span></td></tr>
+<tr><td><code>core/templates/core/tl/empty.html</code></td><td class='num'>135</td><td><code>accounts/templates/accounts/detail.html:68</code> <code>accounts/templates/accounts/includes/chronicles.html:24</code> <code>accounts/templates/accounts/includes/journals.html:19</code> <code>accounts/templates/accounts/includes/needs.html:38</code> <code>characters/templates/characters/charlist.html:87</code> <code>characters/templates/characters/core/chargen/freebies.html:5</code> <span class='dim'>… 129 more</span></td></tr>
+<tr><td><code>core/templates/core/form.html</code></td><td class='num'>58</td><td><code>characters/templates/characters/changeling/tl/form.html:1</code> <code>characters/templates/characters/core/character/form.html:1</code> <code>characters/templates/characters/core/human/form.html:1</code> <code>characters/templates/characters/core/human/humanbasics.html:1</code> <code>characters/templates/characters/core/meritflaw/form.html:1</code> <code>characters/templates/characters/core/specialty/form.html:1</code> <span class='dim'>… 52 more</span></td></tr>
+<tr><td><code>core/templates/core/misc/form_errors.html</code></td><td class='num'>58</td><td><code>characters/templates/characters/changeling/tl/form.html:14</code> <code>characters/templates/characters/core/character/form.html:13</code> <code>characters/templates/characters/core/human/form.html:14</code> <code>characters/templates/characters/core/human/humanbasics.html:9</code> <code>characters/templates/characters/core/meritflaw/form.html:8</code> <code>characters/templates/characters/core/specialty/form.html:5</code> <span class='dim'>… 52 more</span></td></tr>
+<tr><td><code>core/templates/core/misc/check.html</code></td><td class='num'>49</td><td><code>characters/templates/characters/changeling/autumn_person/form.html:28</code> <code>characters/templates/characters/changeling/chimera/form.html:14</code> <code>characters/templates/characters/changeling/tl/basics_portrait.html:9</code> <code>characters/templates/characters/changeling/tl/form_story.html:37</code> <code>characters/templates/characters/core/background_block/form.html:33</code> <code>characters/templates/characters/demon/apocalyptic_trait/form.html:9</code> <span class='dim'>… 43 more</span></td></tr>
+<tr><td><code>core/templates/core/tl_base.html</code></td><td class='num'>48</td><td><code>accounts/templates/accounts/detail.html:1</code> <code>accounts/templates/accounts/form.html:1</code> <code>characters/templates/characters/charlist.html:1</code> <code>characters/templates/characters/core/character/detail.html:1</code> <code>characters/templates/characters/core/chargen.html:1</code> <code>characters/templates/characters/core/group/detail.html:1</code> <span class='dim'>… 42 more</span></td></tr>
+<tr><td><code>core/templates/core/public_object_detail.html</code></td><td class='num'>44</td><td><code>characters/tests/models/changeling/test_motley.py:37</code> <code>characters/tests/models/mage/test_cabal.py:42</code> <code>characters/tests/models/mage/test_effect.py:79</code> <code>characters/tests/models/mage/test_rote.py:22</code> <code>characters/tests/models/vampire/test_coterie.py:19</code> <code>characters/tests/models/werewolf/test_drone.py:118</code> <span class='dim'>… 38 more</span></td></tr>
+<tr><td><code>locations/templates/locations/core/location/detail.html</code></td><td class='num'>36</td><td><code>locations/registry.py:542</code> <code>locations/templates/locations/changeling/dream_realm/detail.html:1</code> <code>locations/templates/locations/changeling/freehold/detail.html:1</code> <code>locations/templates/locations/changeling/holding/detail.html:1</code> <code>locations/templates/locations/changeling/trod/detail.html:1</code> <code>locations/templates/locations/core/city/detail.html:1</code> <span class='dim'>… 30 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/reference_detail.html</code></td><td class='num'>35</td><td><code>characters/templates/characters/changeling/cantrip/detail.html:1</code> <code>characters/templates/characters/changeling/chimera/detail.html:1</code> <code>characters/templates/characters/changeling/house/detail.html:1</code> <code>characters/templates/characters/changeling/house_faction/detail.html:1</code> <code>characters/templates/characters/changeling/kith/detail.html:1</code> <code>characters/templates/characters/changeling/legacy/detail.html:1</code> <span class='dim'>… 29 more</span></td></tr>
+<tr><td><code>locations/templates/locations/core/tl_list.html</code></td><td class='num'>35</td><td><code>locations/templates/locations/changeling/dream_realm/list.html:1</code> <code>locations/templates/locations/changeling/freehold/list.html:1</code> <code>locations/templates/locations/changeling/holding/list.html:1</code> <code>locations/templates/locations/changeling/trod/list.html:1</code> <code>locations/templates/locations/core/city/list.html:1</code> <code>locations/templates/locations/core/location/list.html:1</code> <span class='dim'>… 29 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/reference_cover_title.html</code></td><td class='num'>34</td><td><code>characters/templates/characters/changeling/cantrip/list.html:7</code> <code>characters/templates/characters/changeling/chimera/list.html:6</code> <code>characters/templates/characters/changeling/house/list.html:6</code> <code>characters/templates/characters/changeling/house_faction/list.html:6</code> <code>characters/templates/characters/changeling/kith/list.html:6</code> <code>characters/templates/characters/changeling/legacy/list.html:6</code> <span class='dim'>… 28 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/reference_list.html</code></td><td class='num'>34</td><td><code>characters/templates/characters/changeling/cantrip/list.html:1</code> <code>characters/templates/characters/changeling/chimera/list.html:1</code> <code>characters/templates/characters/changeling/house/list.html:1</code> <code>characters/templates/characters/changeling/house_faction/list.html:1</code> <code>characters/templates/characters/changeling/kith/list.html:1</code> <code>characters/templates/characters/changeling/legacy/list.html:1</code> <span class='dim'>… 28 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/reference_no_results.html</code></td><td class='num'>34</td><td><code>characters/templates/characters/changeling/cantrip/list.html:41</code> <code>characters/templates/characters/changeling/chimera/list.html:44</code> <code>characters/templates/characters/changeling/house/list.html:42</code> <code>characters/templates/characters/changeling/house_faction/list.html:28</code> <code>characters/templates/characters/changeling/kith/list.html:30</code> <code>characters/templates/characters/changeling/legacy/list.html:42</code> <span class='dim'>… 28 more</span></td></tr>
+<tr><td><code>locations/templates/locations/tl/field.html</code></td><td class='num'>33</td><td><code>locations/templates/locations/core/city/form.html:7</code> <code>locations/templates/locations/core/location/form.html:13</code> <code>locations/templates/locations/demon/bastion/form.html:8</code> <code>locations/templates/locations/demon/reliquary/form.html:8</code> <code>locations/templates/locations/hunter/huntingground/form.html:7</code> <code>locations/templates/locations/hunter/safehouse/form.html:7</code> <span class='dim'>… 27 more</span></td></tr>
+<tr><td><code>core/templates/core/tl/nav.html</code></td><td class='num'>32</td><td><code>accounts/templates/accounts/form.html:23</code> <code>characters/templates/characters/charlist.html:44</code> <code>characters/templates/characters/core/character/detail.html:81</code> <code>characters/templates/characters/core/chargen.html:35</code> <code>characters/templates/characters/core/group/detail.html:53</code> <code>characters/templates/characters/core/group/form.html:9</code> <span class='dim'>… 26 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/prose_block.html</code></td><td class='num'>29</td><td><code>characters/templates/characters/changeling/autumn_person/detail.html:25</code> <code>characters/templates/characters/changeling/changeling/history_display.html:25</code> <code>characters/templates/characters/changeling/chimera/detail.html:24</code> <code>characters/templates/characters/changeling/inanimae/detail.html:21</code> <code>characters/templates/characters/changeling/nunnehi/detail.html:22</code> <code>characters/templates/characters/demon/display_includes/apocalyptic_form.html:21</code> <span class='dim'>… 23 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/chargen.html</code></td><td class='num'>27</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:1</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:1</code> <code>characters/templates/characters/core/human/attributes.html:1</code> <code>characters/templates/characters/core/human/bio.html:1</code> <code>characters/templates/characters/core/human/chargen.html:1</code> <code>characters/templates/characters/core/human/chargen_form.html:1</code> <span class='dim'>… 21 more</span></td></tr>
+<tr><td><code>characters/templates/characters/mage/form/field.html</code></td><td class='num'>26</td><td><code>characters/templates/characters/mage/companion/basics.html:11</code> <code>characters/templates/characters/mage/corrupted_practice/form.html:4</code> <code>characters/templates/characters/mage/effect/form.html:6</code> <code>characters/templates/characters/mage/faction/form.html:9</code> <code>characters/templates/characters/mage/fellowship/form.html:5</code> <code>characters/templates/characters/mage/form/section_body.html:21</code> <span class='dim'>… 20 more</span></td></tr>
+<tr><td><code>items/templates/items/tl/form.html</code></td><td class='num'>24</td><td><code>items/templates/items/changeling/dross/form.html:1</code> <code>items/templates/items/changeling/treasure/form.html:1</code> <code>items/templates/items/core/item/form.html:1</code> <code>items/templates/items/core/material/form.html:1</code> <code>items/templates/items/core/medium/form.html:1</code> <code>items/templates/items/core/weapon/form.html:1</code> <span class='dim'>… 18 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/ref2_detail.html</code></td><td class='num'>23</td><td><code>characters/templates/characters/demon/apocalyptic_trait/detail.html:1</code> <code>characters/templates/characters/demon/faction/detail.html:1</code> <code>characters/templates/characters/demon/house/detail.html:1</code> <code>characters/templates/characters/demon/lore/detail.html:1</code> <code>characters/templates/characters/demon/pact/detail.html:1</code> <code>characters/templates/characters/demon/ritual/detail.html:1</code> <span class='dim'>… 17 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/ref2_list.html</code></td><td class='num'>23</td><td><code>characters/templates/characters/demon/apocalyptic_trait/list.html:1</code> <code>characters/templates/characters/demon/faction/list.html:1</code> <code>characters/templates/characters/demon/house/list.html:1</code> <code>characters/templates/characters/demon/lore/list.html:1</code> <code>characters/templates/characters/demon/pact/list.html:1</code> <code>characters/templates/characters/demon/ritual/list.html:1</code> <span class='dim'>… 17 more</span></td></tr>
+<tr><td><code>characters/templates/characters/tl/ref2_prose.html</code></td><td class='num'>23</td><td><code>characters/templates/characters/demon/apocalyptic_trait/detail.html:15</code> <code>characters/templates/characters/demon/faction/detail.html:11</code> <code>characters/templates/characters/demon/house/detail.html:19</code> <code>characters/templates/characters/demon/lore/detail.html:26</code> <code>characters/templates/characters/demon/pact/detail.html:29</code> <code>characters/templates/characters/demon/ritual/detail.html:38</code> <span class='dim'>… 17 more</span></td></tr>
+<tr><td><code>game/templates/game/tl/base.html</code></td><td class='num'>22</td><td><code>core/tests/permissions/test_permission_context.py:293</code> <code>game/templates/game/chronicle/detail.html:1</code> <code>game/templates/game/chronicle/list.html:1</code> <code>game/templates/game/freebie_spending_record/detail.html:1</code> <code>game/templates/game/freebie_spending_record/list.html:1</code> <code>game/templates/game/journal/detail.html:1</code> <span class='dim'>… 16 more</span></td></tr>
+<tr><td><code>locations/templates/locations/core/tl_form.html</code></td><td class='num'>21</td><td><code>locations/templates/locations/changeling/dream_realm/form.html:1</code> <code>locations/templates/locations/changeling/freehold/chargen/base.html:1</code> <code>locations/templates/locations/changeling/freehold/form.html:1</code> <code>locations/templates/locations/changeling/holding/form.html:1</code> <code>locations/templates/locations/changeling/trod/form.html:1</code> <code>locations/templates/locations/core/location/form.html:1</code> <span class='dim'>… 15 more</span></td></tr>
+<tr><td><code>items/templates/items/core/item/detail.html</code></td><td class='num'>19</td><td><code>items/registry.py:401</code> <code>items/templates/items/changeling/dross/detail.html:1</code> <code>items/templates/items/changeling/treasure/detail.html:1</code> <code>items/templates/items/core/material/detail.html:1</code> <code>items/templates/items/core/medium/detail.html:1</code> <code>items/templates/items/core/weapon/detail.html:1</code> <span class='dim'>… 13 more</span></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">1,506</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">1,448</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"game/models.py","value":1223,"metric":94,"meta":"196 branches \u00b7 2 authors"},{"name":"game/views.py","value":1044,"metric":87,"meta":"99 branches \u00b7 2 authors"},{"name":"core/models.py","value":794,"metric":76,"meta":"81 branches \u00b7 2 authors"},{"name":"characters/models/mage/mage.py","value":773,"metric":41,"meta":"124 branches \u00b7 2 authors"},{"name":"characters/models/core/human.py","value":675,"metric":51,"meta":"95 branches \u00b7 3 authors"},{"name":"accounts/views.py","value":467,"metric":65,"meta":"68 branches \u00b7 2 authors"},{"name":"core/mixins.py","value":460,"metric":39,"meta":"88 branches \u00b7 2 authors"},{"name":"characters/views/mage/mage.py","value":421,"metric":123,"meta":"24 branches \u00b7 2 authors"},{"name":"scripts/find_dead_code.py","value":653,"metric":13,"meta":"231 branches \u00b7 1 authors"},{"name":"core/permissions.py","value":691,"metric":25,"meta":"118 branches \u00b7 2 authors"},{"name":"game/forms.py","value":734,"metric":32,"meta":"86 branches \u00b7 2 authors"},{"name":"populate_db/mage/effects_INC.py","value":6136,"metric":4,"meta":"533 branches \u00b7 2 authors"},{"name":"characters/forms/core/xp.py","value":216,"metric":25,"meta":"67 branches \u00b7 2 authors"},{"name":"characters/views/mage/sorcerer.py","value":381,"metric":65,"meta":"25 branches \u00b7 2 authors"},{"name":"locations/forms/mage/chantry.py","value":328,"metric":34,"meta":"47 branches \u00b7 2 authors"},{"name":"characters/models/core/character.py","value":406,"metric":51,"meta":"30 branches \u00b7 2 authors"},{"name":"locations/views/mage/chantry.py","value":397,"metric":40,"meta":"35 branches \u00b7 2 authors"},{"name":"characters/models/wraith/wraith.py","value":619,"metric":31,"meta":"45 branches \u00b7 2 authors"},{"name":"characters/forms/mage/xp.py","value":180,"metric":18,"meta":"77 branches \u00b7 2 authors"},{"name":"characters/models/vampire/vampire.py","value":550,"metric":23,"meta":"60 branches \u00b7 2 authors"},{"name":"locations/models/mage/chantry.py","value":402,"metric":33,"meta":"41 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/garou.py","value":459,"metric":24,"meta":"55 branches \u00b7 2 authors"},{"name":"characters/models/demon/demon.py","value":391,"metric":31,"meta":"39 branches \u00b7 2 authors"},{"name":"characters/forms/mage/freebies.py","value":209,"metric":14,"meta":"86 branches \u00b7 2 authors"},{"name":"characters/views/core/__init__.py","value":481,"metric":42,"meta":"24 branches \u00b7 2 authors"},{"name":"accounts/models.py","value":184,"metric":60,"meta":"16 branches \u00b7 2 authors"},{"name":"characters/services/freebie_spending/base.py","value":840,"metric":12,"meta":"82 branches \u00b7 2 authors"},{"name":"locations/views/core/__init__.py","value":143,"metric":26,"meta":"37 branches \u00b7 2 authors"},{"name":"items/models/mage/grimoire.py","value":403,"metric":11,"meta":"88 branches \u00b7 2 authors"},{"name":"characters/views/core/chargen_mixins.py","value":343,"metric":11,"meta":"74 branches \u00b7 2 authors"},{"name":"characters/forms/core/chained_freebies.py","value":248,"metric":18,"meta":"44 branches \u00b7 2 authors"},{"name":"characters/models/changeling/changeling.py","value":362,"metric":20,"meta":"35 branches \u00b7 2 authors"},{"name":"items/views/core/__init__.py","value":184,"metric":20,"meta":"33 branches \u00b7 2 authors"},{"name":"core/views/generic.py","value":218,"metric":15,"meta":"44 branches \u00b7 2 authors"},{"name":"locations/forms/mage/node.py","value":211,"metric":20,"meta":"32 branches \u00b7 2 authors"},{"name":"game/consumers.py","value":256,"metric":14,"meta":"43 branches \u00b7 2 authors"},{"name":"populate_db/archetypes.py","value":324,"metric":7,"meta":"85 branches \u00b7 2 authors"},{"name":"characters/views/mage/companion.py","value":277,"metric":59,"meta":"9 branches \u00b7 2 authors"},{"name":"locations/services/chantry_points.py","value":288,"metric":11,"meta":"52 branches \u00b7 1 authors"},{"name":"characters/forms/core/npc_profile.py","value":557,"metric":11,"meta":"46 branches \u00b7 2 authors"},{"name":"locations/models/mage/paradox_realm.py","value":643,"metric":12,"meta":"42 branches \u00b7 2 authors"},{"name":"populate_db/demon/demon_rituals.py","value":963,"metric":4,"meta":"126 branches \u00b7 2 authors"},{"name":"characters/views/core/human.py","value":249,"metric":46,"meta":"10 branches \u00b7 2 authors"},{"name":"characters/services/freebie_spending/mage.py","value":671,"metric":9,"meta":"55 branches \u00b7 2 authors"},{"name":"populate_db/mage/wonders_INC.py","value":3189,"metric":5,"meta":"95 branches \u00b7 2 authors"},{"name":"scripts/inventory_authorization_routes.py","value":198,"metric":8,"meta":"59 branches \u00b7 2 authors"},{"name":"characters/forms/mage/rote.py","value":153,"metric":18,"meta":"25 branches \u00b7 2 authors"},{"name":"widgets/mixins/chained.py","value":258,"metric":7,"meta":"62 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/kinfolk.py","value":160,"metric":16,"meta":"26 branches \u00b7 2 authors"},{"name":"core/management/commands/populate_gamedata.py","value":182,"metric":12,"meta":"35 branches \u00b7 3 authors"},{"name":"characters/models/core/merit_flaw_block.py","value":210,"metric":17,"meta":"24 branches \u00b7 2 authors"},{"name":"characters/forms/mage/mage.py","value":220,"metric":13,"meta":"31 branches \u00b7 2 authors"},{"name":"core/management/commands/validate_data_integrity.py","value":369,"metric":7,"meta":"56 branches \u00b7 2 authors"},{"name":"characters/services/xp_spending/base.py","value":560,"metric":8,"meta":"48 branches \u00b7 2 authors"},{"name":"characters/forms/core/freebies.py","value":80,"metric":17,"meta":"22 branches \u00b7 2 authors"},{"name":"core/utils.py","value":111,"metric":13,"meta":"29 branches \u00b7 2 authors"},{"name":"core/templatetags/sanitize_text.py","value":129,"metric":11,"meta":"34 branches \u00b7 2 authors"},{"name":"characters/views/vampire/vampire_chargen.py","value":206,"metric":34,"meta":"10 branches \u00b7 2 authors"},{"name":"core/management/commands/sync_character_status.py","value":219,"metric":7,"meta":"52 branches \u00b7 2 authors"},{"name":"core/access_policy.py","value":164,"metric":9,"meta":"40 branches \u00b7 2 authors"},{"name":"accounts/forms.py","value":134,"metric":24,"meta":"14 branches \u00b7 2 authors"},{"name":"core/static/core/tl/tl.js","value":177,"metric":7,"meta":"50 branches \u00b7 2 authors"},{"name":"characters/views/wraith/wraith_chargen.py","value":227,"metric":27,"meta":"12 branches \u00b7 2 authors"},{"name":"characters/forms/mage/enhancements.py","value":272,"metric":8,"meta":"42 branches \u00b7 2 authors"},{"name":"locations/models/mage/node.py","value":206,"metric":18,"meta":"18 branches \u00b7 2 authors"},{"name":"characters/views/core/character.py","value":117,"metric":31,"meta":"10 branches \u00b7 2 authors"},{"name":"core/cache.py","value":213,"metric":11,"meta":"29 branches \u00b7 2 authors"},{"name":"core/model_registry.py","value":292,"metric":6,"meta":"54 branches \u00b7 2 authors"},{"name":"core/services/chronicle_data.py","value":212,"metric":8,"meta":"40 branches \u00b7 2 authors"},{"name":"characters/models/demon/earthbound.py","value":242,"metric":19,"meta":"16 branches \u00b7 2 authors"},{"name":"core/management/commands/approve_pending_items.py","value":240,"metric":7,"meta":"45 branches \u00b7 2 authors"},{"name":"core/management/commands/audit_xp_spending.py","value":232,"metric":8,"meta":"36 branches \u00b7 2 authors"},{"name":"core/templatetags/tl.py","value":232,"metric":7,"meta":"41 branches \u00b7 1 authors"},{"name":"characters/models/core/ability_block.py","value":280,"metric":10,"meta":"28 branches \u00b7 2 authors"},{"name":"locations/models/core/location.py","value":104,"metric":18,"meta":"15 branches \u00b7 2 authors"},{"name":"widgets/mixins/conditional.py","value":213,"metric":7,"meta":"40 branches \u00b7 2 authors"},{"name":"characters/rules/allocation.py","value":308,"metric":5,"meta":"56 branches \u00b7 1 authors"},{"name":"characters/models/mage/companion.py","value":184,"metric":20,"meta":"13 branches \u00b7 2 authors"},{"name":"core/management/commands/find_duplicate_objects.py","value":280,"metric":7,"meta":"39 branches \u00b7 2 authors"},{"name":"locations/models/mage/sector.py","value":230,"metric":8,"meta":"33 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":123}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 910 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: accounts/templates/accounts/detail.html (38), characters/templates/characters/core/background_block/form.html (32), game/templates/game/scene/detail.html (32).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>game/models.py</code></td><td class='num'>94</td><td class='num'>196</td><td class='num'>1,223</td><td class='num'>2</td><td class='num' data-sort='18518'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>87</td><td class='num'>99</td><td class='num'>1,044</td><td class='num'>2</td><td class='num' data-sort='8700'><div class="bar bad"><i style="width:47.0%"></i></div></td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>76</td><td class='num'>81</td><td class='num'>794</td><td class='num'>2</td><td class='num' data-sort='6232'><div class="bar bad"><i style="width:33.7%"></i></div></td></tr>
+<tr><td><code>characters/models/mage/mage.py</code></td><td class='num'>41</td><td class='num'>124</td><td class='num'>773</td><td class='num'>2</td><td class='num' data-sort='5125'><div class="bar bad"><i style="width:27.7%"></i></div></td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>51</td><td class='num'>95</td><td class='num'>675</td><td class='num'>3</td><td class='num' data-sort='4896'><div class="bar bad"><i style="width:26.4%"></i></div></td></tr>
+<tr><td><code>accounts/views.py</code></td><td class='num'>65</td><td class='num'>68</td><td class='num'>467</td><td class='num'>2</td><td class='num' data-sort='4485'><div class="bar bad"><i style="width:24.2%"></i></div></td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>39</td><td class='num'>88</td><td class='num'>460</td><td class='num'>2</td><td class='num' data-sort='3471'><div class="bar bad"><i style="width:18.7%"></i></div></td></tr>
+<tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>123</td><td class='num'>24</td><td class='num'>421</td><td class='num'>2</td><td class='num' data-sort='3075'><div class="bar bad"><i style="width:16.6%"></i></div></td></tr>
+<tr><td><code>scripts/find_dead_code.py</code></td><td class='num'>13</td><td class='num'>231</td><td class='num'>653</td><td class='num'>1</td><td class='num' data-sort='3016'><div class="bar bad"><i style="width:16.3%"></i></div></td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>25</td><td class='num'>118</td><td class='num'>691</td><td class='num'>2</td><td class='num' data-sort='2975'><div class="bar bad"><i style="width:16.1%"></i></div></td></tr>
+<tr><td><code>game/forms.py</code></td><td class='num'>32</td><td class='num'>86</td><td class='num'>734</td><td class='num'>2</td><td class='num' data-sort='2784'><div class="bar bad"><i style="width:15.0%"></i></div></td></tr>
+<tr><td><code>populate_db/mage/effects_INC.py</code></td><td class='num'>4</td><td class='num'>533</td><td class='num'>6,136</td><td class='num'>2</td><td class='num' data-sort='2136'><div class="bar bad"><i style="width:11.5%"></i></div></td></tr>
+<tr><td><code>characters/forms/core/xp.py</code></td><td class='num'>25</td><td class='num'>67</td><td class='num'>216</td><td class='num'>2</td><td class='num' data-sort='1700'><div class="bar bad"><i style="width:9.2%"></i></div></td></tr>
+<tr><td><code>characters/views/mage/sorcerer.py</code></td><td class='num'>65</td><td class='num'>25</td><td class='num'>381</td><td class='num'>2</td><td class='num' data-sort='1690'><div class="bar bad"><i style="width:9.1%"></i></div></td></tr>
+<tr><td><code>locations/forms/mage/chantry.py</code></td><td class='num'>34</td><td class='num'>47</td><td class='num'>328</td><td class='num'>2</td><td class='num' data-sort='1632'><div class="bar bad"><i style="width:8.8%"></i></div></td></tr>
+<tr><td><code>characters/models/core/character.py</code></td><td class='num'>51</td><td class='num'>30</td><td class='num'>406</td><td class='num'>2</td><td class='num' data-sort='1581'><div class="bar bad"><i style="width:8.5%"></i></div></td></tr>
+<tr><td><code>locations/views/mage/chantry.py</code></td><td class='num'>40</td><td class='num'>35</td><td class='num'>397</td><td class='num'>2</td><td class='num' data-sort='1440'><div class="bar bad"><i style="width:7.8%"></i></div></td></tr>
+<tr><td><code>characters/models/wraith/wraith.py</code></td><td class='num'>31</td><td class='num'>45</td><td class='num'>619</td><td class='num'>2</td><td class='num' data-sort='1426'><div class="bar bad"><i style="width:7.7%"></i></div></td></tr>
+<tr><td><code>characters/forms/mage/xp.py</code></td><td class='num'>18</td><td class='num'>77</td><td class='num'>180</td><td class='num'>2</td><td class='num' data-sort='1404'><div class="bar bad"><i style="width:7.6%"></i></div></td></tr>
+<tr><td><code>characters/models/vampire/vampire.py</code></td><td class='num'>23</td><td class='num'>60</td><td class='num'>550</td><td class='num'>2</td><td class='num' data-sort='1403'><div class="bar bad"><i style="width:7.6%"></i></div></td></tr>
+<tr><td><code>locations/models/mage/chantry.py</code></td><td class='num'>33</td><td class='num'>41</td><td class='num'>402</td><td class='num'>2</td><td class='num' data-sort='1386'><div class="bar bad"><i style="width:7.5%"></i></div></td></tr>
+<tr><td><code>characters/models/werewolf/garou.py</code></td><td class='num'>24</td><td class='num'>55</td><td class='num'>459</td><td class='num'>2</td><td class='num' data-sort='1344'><div class="bar bad"><i style="width:7.3%"></i></div></td></tr>
+<tr><td><code>characters/models/demon/demon.py</code></td><td class='num'>31</td><td class='num'>39</td><td class='num'>391</td><td class='num'>2</td><td class='num' data-sort='1240'><div class="bar bad"><i style="width:6.7%"></i></div></td></tr>
+<tr><td><code>characters/forms/mage/freebies.py</code></td><td class='num'>14</td><td class='num'>86</td><td class='num'>209</td><td class='num'>2</td><td class='num' data-sort='1218'><div class="bar bad"><i style="width:6.6%"></i></div></td></tr>
+<tr><td><code>characters/views/core/__init__.py</code></td><td class='num'>42</td><td class='num'>24</td><td class='num'>481</td><td class='num'>2</td><td class='num' data-sort='1050'><div class="bar bad"><i style="width:5.7%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<h2>Authorize before rendering</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+participant B as Browser
+participant M as AuthorizationMiddleware
+participant P as Policy evaluator
+participant V as View
+B->>M: Resolved route and arguments
+M->>P: authorize_route
+alt Hidden or unauthorized
+P-->>B: Denial response
+else Allowed
+P-->>V: Continue
+V-->>B: Template response with object permissions
+end
+</pre></div></div>
+<p><code>core/middleware/authorization.py:32</code> handles ordinary views; registry dispatch separately invokes the same evaluator in <code>core/model_registry.py:83</code>. WebSockets do not pass through this middleware; their audience checks are a separate entry boundary.</p>
+<h2>Commit a scene post before announcing it</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+participant C as HTTP or WebSocket caller
+participant S as Scene service
+participant D as Database transaction
+participant L as Channel layer
+C->>S: Validated PostForm
+S->>D: add_post
+alt Malformed command
+S-->>C: ActionFailed
+else Accepted
+S->>D: Register on_commit callback
+D->>L: Broadcast ids after commit
+L-->>C: Viewer-specific rendered event
+end
+</pre></div></div>
+<p><code>game/scene_chat.py:65</code> is the shared service and <code>game/scene_chat.py:107</code> schedules delivery. Channel failures are logged and do not undo a committed post: durable delivery is outside this mechanism.</p>
+<h2>Load reference data as a real Python script</h2>
+<p><code>core/management/commands/populate_gamedata.py:209</code> now uses the standard script runner inside the existing transaction. A failed script retains its filename in the traceback and reaches the transaction boundary; source scripts remain trusted executable project content.</p>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Shared policy, domain-specific state</h2>
+<table><thead><tr><th>Concern</th><th>Owner</th><th>Review implication</th></tr></thead><tbody>
+<tr><td>Route access</td><td><code>core/access_policy.py</code></td><td>New routes require an explicit reviewed policy.</td></tr>
+<tr><td>Object roles</td><td><code>core/permissions.py</code></td><td>Views must preserve shared visibility semantics.</td></tr>
+<tr><td>Character progress</td><td><code>characters/chargen/transitions.py</code></td><td>Persisted positions make reordering a data migration.</td></tr>
+<tr><td>Scene persistence and notification</td><td><code>game/scene_chat.py</code></td><td>Database success and channel delivery are separate outcomes.</td></tr>
+<tr><td>Legacy database upgrades</td><td><code>tg_schema/schema.py</code></td><td>Guard patches against removed models and columns.</td></tr>
+</tbody></table>
+<p>The generic registry still has reality-zone knowledge in <code>core/model_registry.py:103</code>, and middleware explicitly lists private game record families in <code>core/middleware/authorization.py:53</code>. These are concrete places where new domain families may require shared infrastructure changes.</p>
+<p>The dependency graph's accounts model/dashboard cycle includes the type-checking-only Profile import in <code>accounts/dashboard.py:22</code>; it is not an executable cycle at that edge. Export-heavy view packages likewise need import-guard verification rather than deleting edges based on the graph alone. <code>core/tests/test_import_graph.py</code> is the executable module-scope import ratchet.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>Protect private objects and point balances</h2>
+<table><thead><tr><th>Invariant</th><th>Evidence</th><th>Limit</th></tr></thead><tbody>
+<tr><td>Hidden game records do not reveal existence</td><td><code>core/middleware/authorization.py:72</code></td><td>Requires equivalent checks at every non-HTTP entry point.</td></tr>
+<tr><td>Workflow movement is authorized</td><td><code>characters/chargen/transitions.py:24</code></td><td>Progress is stored by position rather than stable step identity.</td></tr>
+<tr><td>Post broadcasts follow commit</td><td><code>game/scene_chat.py:107</code></td><td>Delivery is best effort; failures are logged.</td></tr>
+<tr><td>Legacy spend errors are visible</td><td><code>characters/models/core/human.py:695</code></td><td>The new tests pin failure propagation and unchanged balances on lookup failure; this is not a new concurrency guarantee.</td></tr>
+</tbody></table>
+<h3>Maintainer priorities</h3>
+<ol><li>Keep authorization tests at both transport boundaries when scene audiences change (<code>game/scene_chat.py</code>).</li><li>Choose stable seed identities before promising reconciliation of edited reference text (<code>populate_db/mummy/titles.py:6</code>).</li><li>Treat workflow reordering as a schema/data change (<code>characters/chargen/transitions.py:29</code>).</li><li>Clarify the relationship between location parent and multiple containment chains (<code>locations/models/core/location.py:23</code>).</li></ol>
+<p>Query-budget tests measure fixture behavior, not production latency distributions. Browser and backend-specific skips must remain visible in the test result. No numerical coverage claim is made without a coverage artifact.</p>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<h2>Names used by players and code</h2>
+<table><thead><tr><th>Term</th><th>Code meaning</th><th>Where to inspect</th></tr></thead><tbody>
+<tr><td>Chronicle</td><td>The scope around play, storyteller roles and scenes</td><td><code>game/models.py</code></td></tr>
+<tr><td>Freebies</td><td>Character-creation point pool, distinct from later XP</td><td><code>characters/models/core/human.py</code></td></tr>
+<tr><td>Scene</td><td>Participants, posts, visibility, closure and XP state</td><td><code>game/models.py:535</code></td></tr>
+<tr><td>ST</td><td>Storyteller; privileges depend on chronicle and game line</td><td><code>core/permissions.py</code></td></tr>
+<tr><td>Parent / contained within</td><td>Two location relationships; breadcrumbs follow containment</td><td><code>locations/models/core/location.py:23</code></td></tr>
+</tbody></table>
+<p>“Finished” is not a universal transition API: the scene edit form can set the field without invoking the close action's week enrollment and broadcast, as documented in <code>game/docs/scenes.md:30</code>. Callers must choose the lifecycle operation deliberately.</p>
+
+</section><!--DOC_BODY--></main>
+<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

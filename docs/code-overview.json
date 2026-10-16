@@ -1,0 +1,126 @@
+{
+  "schema": "code-overview/1",
+  "generated": "2026-10-16",
+  "packages": [
+    {
+      "name": "accounts",
+      "roots": [
+        "accounts"
+      ],
+      "docs": "accounts/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "characters",
+      "roots": [
+        "characters"
+      ],
+      "docs": "characters/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "core",
+      "roots": [
+        "core"
+      ],
+      "docs": "core/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "game",
+      "roots": [
+        "game"
+      ],
+      "docs": "game/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "items",
+      "roots": [
+        "items"
+      ],
+      "docs": "items/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "locations",
+      "roots": [
+        "locations"
+      ],
+      "docs": "locations/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "tg_schema",
+      "roots": [
+        "tg_schema"
+      ],
+      "docs": "tg_schema/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "widgets",
+      "roots": [
+        "widgets"
+      ],
+      "docs": "widgets/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "tg",
+      "roots": [
+        "tg"
+      ],
+      "docs": "tg/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "populate_db",
+      "roots": [
+        "populate_db"
+      ],
+      "docs": "populate_db/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    },
+    {
+      "name": "scripts",
+      "roots": [
+        "scripts"
+      ],
+      "docs": "scripts/docs",
+      "language": "python",
+      "doctor": "python-code-doctor",
+      "notes": "Python and Django analysis; plain JavaScript is ungraded."
+    }
+  ],
+  "analysis": {
+    "source_commit": "6e29f3bc06864e1646ba40d417f49e0a9e65c08e",
+    "django_target": "5.2",
+    "scope": "clean Git snapshot; ignored generated migrations and local databases omitted",
+    "plain_javascript": "ungraded",
+    "coverage_artifact": null,
+    "goal": "B+ in every manageable metric; not yet achieved",
+    "coding_skills_revision": "319291e747b1fb07e6a5077e1b89df881c43fc46",
+    "coding_skills_repository": "https://github.com/charlesmsiegel/coding-skills"
+  }
+}

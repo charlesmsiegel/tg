@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>scripts — Code Theory</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODE THEORY</div>
+  <h1 class="doc-title">scripts — Code Theory</h1>
+  <p class="doc-sub">Does the scripts package express a coherent theory?</p>
+  <div class="doc-meta">generated 2026-10-16 · 6e29f3bc · 3 judges · session-default (exact model ID unavailable)</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/theory.html">⌂ Overall Theory</a><span class="co-sep">/</span><span class="co-here">scripts</span></div><div class="co-row"><span class="co-lbl">scripts</span><a href="summary.html">Summary</a><a href="codemap.html">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="#" aria-current="page">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Theory</span><a href="../../accounts/docs/theory.html">accounts</a><a href="../../characters/docs/theory.html">characters</a><a href="../../core/docs/theory.html">core</a><a href="../../game/docs/theory.html">game</a><a href="../../items/docs/theory.html">items</a><a href="../../locations/docs/theory.html">locations</a><a href="../../tg_schema/docs/theory.html">tg_schema</a><a href="../../widgets/docs/theory.html">widgets</a><a href="../../tg/docs/theory.html">tg</a><a href="../../populate_db/docs/theory.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+
+<nav class="tabs" role="tablist"><button role="tab" data-tab="tab-grade" aria-selected="true" aria-controls="tab-grade">Grade</button>
+<button role="tab" data-tab="tab-theory" aria-selected="false" aria-controls="tab-theory">Theory</button>
+<button role="tab" data-tab="tab-dimensions" aria-selected="false" aria-controls="tab-dimensions">Dimensions</button>
+<button role="tab" data-tab="tab-disagreement" aria-selected="false" aria-controls="tab-disagreement">Disagreement</button></nav>
+<main><section class="panel active" id="tab-grade" role="tabpanel">
+<section class="gradecard g-c"><div><div class="letter">C</div><div class="score">75.0 / 100</div></div><div class="what"><h2>Theory</h2><p class="dim">How well this unit&#39;s code expresses a coherent theory of the problem it solves, in Peter Naur&#39;s sense: can the model be mapped to the world, justified, and can it absorb the next requirement.</p></div></section><div class="callout warn"><strong>This is a reading, not a measurement.</strong> The other grades in this document set rest on something outside the grader — a detector's findings, an inventory with citations. This one is a judgment, and a model auditing abstractions is partly <em>circular</em>: the weakness that produces repetition-with-variants also evaluates whether the repetition was warranted. Three independent judges narrow that; they do not close it. Compare the rows and the evidence, not this letter — and letters from different models are not comparable at all.</div><div class="kpis"><div class="kpi accent"><div class="n">3</div><div class="l">independent judges</div></div><div class="kpi"><div class="n">10</div><div class="l">files</div></div><div class="kpi"><div class="n">1676</div><div class="l">lines</div></div></div>
+
+</section>
+<section class="panel" id="tab-theory" role="tabpanel">
+<p>The theory is the deliverable; the grade is a byproduct of having tried to state it. Each judge wrote independently — where they describe the same system differently, that difference is the finding.</p><div class="card"><h3>Judge 1</h3><p><strong>Theory: </strong>Developer audits combine static approximations and targeted Django introspection to produce reviewable evidence about routes, dead code and template similarity. Reports are clues for human decisions; capture tools provide reproducible before/after artifacts.</p><p class="dim"><strong>Instead of: </strong>A compiler-grade whole-program proof system would resolve every dynamic reference; these tools intentionally report heuristics and candidates.</p><div class="tbl-wrap"><table><thead><tr><th>Plausible next requirement</th><th>Lands as</th><th>Why</th></tr></thead><tbody><tr><td>Recognize another statically expressible URL string construction</td><td><span class="badge good">extension</span></td><td>Extend pure str_parts/computed-reference heuristics.<br><code class="floc">scripts/dead_code_heuristics.py:82</code></td></tr><tr><td>Audit templates in a newly added application</td><td><span class="badge warn">patch</span></td><td>Template collector uses hardcoded app inventory that must be updated.<br><code class="floc">scripts/template_similarity.py:29</code></td></tr><tr><td>Compare rendered templates after a refactor</td><td><span class="badge good">extension</span></td><td>Existing capture/compare commands express this directly.<br><code class="floc">scripts/template_screenshots.py:1</code></td></tr></tbody></table></div></div><div class="card"><h3>Judge 2</h3><p><strong>Theory: </strong>Developer scripts produce review evidence about routes, templates and code shapes rather than treating static matches as semantic proof. They combine source heuristics and selected runtime introspection for this repository.</p><p class="dim"><strong>Instead of: </strong>A sound automatic dead-code eliminator is a plausible expectation; these tools explicitly produce candidates requiring review.</p><div class="tbl-wrap"><table><thead><tr><th>Plausible next requirement</th><th>Lands as</th><th>Why</th></tr></thead><tbody><tr><td>Add a dead-code evidence section</td><td><span class="badge good">extension</span></td><td>The section-based reporting and pure heuristic module provide a seam.<br><code class="floc">scripts/find_dead_code.py:3</code> <code class="floc">scripts/find_dead_code.py:60</code></td></tr><tr><td>Scan newly named chargen view families</td><td><span class="badge warn">patch</span></td><td>The inventory uses an explicit suffix tuple that must be changed.<br><code class="floc">scripts/inventory_chargen_views.py:47</code></td></tr><tr><td>Add a literal-insensitive duplicate comparison</td><td><span class="badge good">extension</span></td><td>Fingerprint normalization already supports this comparison.<br><code class="floc">scripts/inventory_chargen_views.py:38</code></td></tr></tbody></table></div></div><div class="card"><h3>Judge 3</h3><p><strong>Theory: </strong>Developer scripts derive reviewable inventories and heuristic evidence from Django routing, templates and source. They aid explicit human classification rather than silently replacing runtime policy.</p><p class="dim"><strong>Instead of: </strong>An authoritative static verifier would prove reachability and permissions; these tools provide inventories, heuristic candidates and review starting points.</p><div class="tbl-wrap"><table><thead><tr><th>Plausible next requirement</th><th>Lands as</th><th>Why</th></tr></thead><tbody><tr><td>Adjust template similarity threshold</td><td><span class="badge good">extension</span></td><td>The scanner already exposes a threshold parameter.<br><code class="floc">scripts/template_similarity.py:1</code></td></tr><tr><td>Review a newly routed view</td><td><span class="badge good">extension</span></td><td>Generate a starting manifest and classify deliberately rather than using generated runtime policy.<br><code class="floc">scripts/build_route_policy_manifest.py:1</code></td></tr><tr><td>Add a new Django app to every audit automatically</td><td><span class="badge warn">patch</span></td><td>App scopes are hard-coded independently.<br><code class="floc">scripts/template_similarity.py:27</code> <code class="floc">scripts/build_route_policy_manifest.py:36</code></td></tr></tbody></table></div></div>
+
+</section>
+<section class="panel" id="tab-dimensions" role="tabpanel">
+<p>The rows the letter was computed from. A step below <em>holds</em> must cite the evidence that lowered it — dispute the rows, not the grade.</p><div class="tbl-wrap"><table><thead><tr><th>Dimension</th><th class="num">Weight</th><th>Median step</th><th>Spread</th><th>Why</th><th>Evidence</th></tr></thead><tbody><tr><td><strong>Absorption</strong><br><span class="faint">Take 3-5 plausible next requirements. Does each land as a natural extension, or need a patch bolted alongside?</span></td><td class="num">30</td><td>partial<br><span class="faint">partial, partial, partial</span></td><td>0 rung(s)</td><td>New audit sections fit standalone tools; common project scope is repeated as concrete app lists.<br>New scan sections fit, but many classifications depend on project-specific lists.<br>Individual scans extend, but a new app requires updating hard-coded inventories in multiple tools.</td><td><code class="floc">scripts/build_route_policy_manifest.py:36</code><br><code class="floc">scripts/find_dead_code.py:1</code><br><code class="floc">scripts/find_dead_code.py:91</code><br><code class="floc">scripts/inventory_chargen_views.py:47</code><br><code class="floc">scripts/template_similarity.py:27</code><br><code class="floc">scripts/template_similarity.py:29</code><br></td></tr><tr><td><strong>World-mapping</strong><br><span class="faint">Can each part be mapped to an aspect of the problem, and each aspect located in the code — including where the model stops?</span></td><td class="num">25</td><td>holds<br><span class="faint">holds, holds, partial</span></td><td>1 rung(s)</td><td>Route inventory, own-method similarity and candidate terminology closely match developer tasks.<br>Route reachability and method similarity correspond to concrete maintenance questions.<br>Most tools map repository evidence clearly, but screenshot and policy-generation utilities share only the broad developer-support boundary.</td><td><code class="floc">scripts/build_route_policy_manifest.py:1</code><br><code class="floc">scripts/find_dead_code.py:1</code><br><code class="floc">scripts/inventory_chargen_views.py:1</code><br><code class="floc">scripts/template_similarity.py:1</code><br></td></tr><tr><td><strong>Abstraction</strong><br><span class="faint">Do the abstractions carry domain names, make unwritten cases expressible, and reduce what must be held in mind?</span></td><td class="num">20</td><td>partial<br><span class="faint">partial, partial, partial</span></td><td>0 rung(s)</td><td>Pure heuristics extraction is sound, but each CLI retains a separate inventory/bootstrap approach.<br>Pure heuristics are separated well, but hard-coded offered types and class suffixes constrain generality.<br>Standard difflib/hashlib are reused, but app scope is represented separately in scan scripts.</td><td><code class="floc">scripts/build_route_policy_manifest.py:36</code><br><code class="floc">scripts/dead_code_heuristics.py:1</code><br><code class="floc">scripts/find_dead_code.py:95</code><br><code class="floc">scripts/inventory_authorization_routes.py:8</code><br><code class="floc">scripts/inventory_chargen_views.py:47</code><br><code class="floc">scripts/template_similarity.py:18</code><br><code class="floc">scripts/template_similarity.py:27</code><br></td></tr><tr><td><strong>Justification</strong><br><span class="faint">Is it recoverable why each part is what it is, and what was rejected?</span></td><td class="num">15</td><td>holds<br><span class="faint">holds, holds, holds</span></td><td>0 rung(s)</td><td>Docstrings explain normalization, import side effects and why policy generation is review-only.<br>AST normalization choices and isolated database reasoning are explained.<br>Manifest generation is explicitly a review starting point, and template similarity names its algorithm and scope.</td><td><code class="floc">scripts/build_route_policy_manifest.py:1</code><br><code class="floc">scripts/find_dead_code.py:39</code><br><code class="floc">scripts/inventory_chargen_views.py:1</code><br><code class="floc">scripts/inventory_chargen_views.py:4</code><br><code class="floc">scripts/template_similarity.py:1</code><br></td></tr><tr><td><strong>Honest limits</strong><br><span class="faint">Are assumptions no test pins down named? Is duplication honest rather than papered over? Is there reinvention where something existing served?</span></td><td class="num">10</td><td>holds<br><span class="faint">holds, holds, holds</span></td><td>0 rung(s)</td><td>Candidate status, literal normalization and dynamic imports are honestly scoped.<br>False positives, import effects and literal-erasure limits are explicit.<br>Dead-code scanning documents its no-real-database boundary and fails on unsupported database settings.</td><td><code class="floc">scripts/find_dead_code.py:1</code><br><code class="floc">scripts/find_dead_code.py:12</code><br><code class="floc">scripts/find_dead_code.py:39</code><br><code class="floc">scripts/find_dead_code.py:5</code><br><code class="floc">scripts/inventory_chargen_views.py:1</code><br><code class="floc">scripts/inventory_chargen_views.py:94</code><br></td></tr></tbody></table></div>
+
+</section>
+<section class="panel" id="tab-disagreement" role="tabpanel">
+<p class="dim">The three judges agreed within one rung on every dimension. That is weak evidence the code reads consistently — it is not evidence the grade is right.</p>
+
+</section>
+<script type="application/json" id="theory-meta">{"schema":"theory/1","scope":"package","package":"scripts","generated":"2026-10-16","commit":"6e29f3bc","model":"session-default (exact model ID unavailable)","panel_size":3,"score":75.0,"grade":"C","exempt":false,"exempt_reason":"","size":{"files":10,"loc":1676},"theory":"Developer audits combine static approximations and targeted Django introspection to produce reviewable evidence about routes, dead code and template similarity. Reports are clues for human decisions; capture tools provide reproducible before/after artifacts.","dimensions":[{"key":"absorption","label":"Absorption","question":"Take 3-5 plausible next requirements. Does each land as a natural extension, or need a patch bolted alongside?","weight":30.0,"step":0.5,"step_label":"partial","rung":2,"spread":0,"disputed":false,"steps":[0.5,0.5,0.5],"rationales":["New audit sections fit standalone tools; common project scope is repeated as concrete app lists.","New scan sections fit, but many classifications depend on project-specific lists.","Individual scans extend, but a new app requires updating hard-coded inventories in multiple tools."],"evidence":["scripts/build_route_policy_manifest.py:36","scripts/find_dead_code.py:1","scripts/find_dead_code.py:91","scripts/inventory_chargen_views.py:47","scripts/template_similarity.py:27","scripts/template_similarity.py:29"]},{"key":"world_mapping","label":"World-mapping","question":"Can each part be mapped to an aspect of the problem, and each aspect located in the code \u2014 including where the model stops?","weight":25.0,"step":1,"step_label":"holds","rung":3,"spread":1,"disputed":false,"steps":[1,1,0.5],"rationales":["Route inventory, own-method similarity and candidate terminology closely match developer tasks.","Route reachability and method similarity correspond to concrete maintenance questions.","Most tools map repository evidence clearly, but screenshot and policy-generation utilities share only the broad developer-support boundary."],"evidence":["scripts/build_route_policy_manifest.py:1","scripts/find_dead_code.py:1","scripts/inventory_chargen_views.py:1","scripts/template_similarity.py:1"]},{"key":"abstraction","label":"Abstraction","question":"Do the abstractions carry domain names, make unwritten cases expressible, and reduce what must be held in mind?","weight":20.0,"step":0.5,"step_label":"partial","rung":2,"spread":0,"disputed":false,"steps":[0.5,0.5,0.5],"rationales":["Pure heuristics extraction is sound, but each CLI retains a separate inventory/bootstrap approach.","Pure heuristics are separated well, but hard-coded offered types and class suffixes constrain generality.","Standard difflib/hashlib are reused, but app scope is represented separately in scan scripts."],"evidence":["scripts/build_route_policy_manifest.py:36","scripts/dead_code_heuristics.py:1","scripts/find_dead_code.py:95","scripts/inventory_authorization_routes.py:8","scripts/inventory_chargen_views.py:47","scripts/template_similarity.py:18","scripts/template_similarity.py:27"]},{"key":"justification","label":"Justification","question":"Is it recoverable why each part is what it is, and what was rejected?","weight":15.0,"step":1,"step_label":"holds","rung":3,"spread":0,"disputed":false,"steps":[1,1,1],"rationales":["Docstrings explain normalization, import side effects and why policy generation is review-only.","AST normalization choices and isolated database reasoning are explained.","Manifest generation is explicitly a review starting point, and template similarity names its algorithm and scope."],"evidence":["scripts/build_route_policy_manifest.py:1","scripts/find_dead_code.py:39","scripts/inventory_chargen_views.py:1","scripts/inventory_chargen_views.py:4","scripts/template_similarity.py:1"]},{"key":"honest_limits","label":"Honest limits","question":"Are assumptions no test pins down named? Is duplication honest rather than papered over? Is there reinvention where something existing served?","weight":10.0,"step":1,"step_label":"holds","rung":3,"spread":0,"disputed":false,"steps":[1,1,1],"rationales":["Candidate status, literal normalization and dynamic imports are honestly scoped.","False positives, import effects and literal-erasure limits are explicit.","Dead-code scanning documents its no-real-database boundary and fails on unsupported database settings."],"evidence":["scripts/find_dead_code.py:1","scripts/find_dead_code.py:12","scripts/find_dead_code.py:39","scripts/find_dead_code.py:5","scripts/inventory_chargen_views.py:1","scripts/inventory_chargen_views.py:94"]}],"disputed":[],"verdicts":[{"schema":"theory-verdict/1","unit":"scripts","theory":"Developer audits combine static approximations and targeted Django introspection to produce reviewable evidence about routes, dead code and template similarity. Reports are clues for human decisions; capture tools provide reproducible before/after artifacts.","instead_of":"A compiler-grade whole-program proof system would resolve every dynamic reference; these tools intentionally report heuristics and candidates.","trivial":false,"trivial_reason":"Substantial shared subsystem with persistent or operational responsibilities.","dimensions":{"absorption":{"step":0.5,"rationale":"New audit sections fit standalone tools; common project scope is repeated as concrete app lists.","evidence":["scripts/template_similarity.py:29","scripts/find_dead_code.py:1"]},"world_mapping":{"step":1,"rationale":"Route inventory, own-method similarity and candidate terminology closely match developer tasks.","evidence":["scripts/inventory_chargen_views.py:1","scripts/find_dead_code.py:1"]},"abstraction":{"step":0.5,"rationale":"Pure heuristics extraction is sound, but each CLI retains a separate inventory/bootstrap approach.","evidence":["scripts/dead_code_heuristics.py:1","scripts/inventory_authorization_routes.py:8"]},"justification":{"step":1,"rationale":"Docstrings explain normalization, import side effects and why policy generation is review-only.","evidence":["scripts/inventory_chargen_views.py:1","scripts/build_route_policy_manifest.py:1"]},"honest_limits":{"step":1,"rationale":"Candidate status, literal normalization and dynamic imports are honestly scoped.","evidence":["scripts/find_dead_code.py:1","scripts/inventory_chargen_views.py:1"]}},"rehearsals":[{"requirement":"Recognize another statically expressible URL string construction","verdict":"extension","why":"Extend pure str_parts/computed-reference heuristics.","evidence":["scripts/dead_code_heuristics.py:82"]},{"requirement":"Audit templates in a newly added application","verdict":"patch","why":"Template collector uses hardcoded app inventory that must be updated.","evidence":["scripts/template_similarity.py:29"]},{"requirement":"Compare rendered templates after a refactor","verdict":"extension","why":"Existing capture/compare commands express this directly.","evidence":["scripts/template_screenshots.py:1"]}]},{"schema":"theory-verdict/1","unit":"scripts","theory":"Developer scripts produce review evidence about routes, templates and code shapes rather than treating static matches as semantic proof. They combine source heuristics and selected runtime introspection for this repository.","instead_of":"A sound automatic dead-code eliminator is a plausible expectation; these tools explicitly produce candidates requiring review.","trivial":false,"trivial_reason":"Substantial shared subsystem with independent design choices.","dimensions":{"absorption":{"step":0.5,"rationale":"New scan sections fit, but many classifications depend on project-specific lists.","evidence":["scripts/find_dead_code.py:91","scripts/inventory_chargen_views.py:47"]},"world_mapping":{"step":1,"rationale":"Route reachability and method similarity correspond to concrete maintenance questions.","evidence":["scripts/find_dead_code.py:1","scripts/inventory_chargen_views.py:1"]},"abstraction":{"step":0.5,"rationale":"Pure heuristics are separated well, but hard-coded offered types and class suffixes constrain generality.","evidence":["scripts/find_dead_code.py:95","scripts/inventory_chargen_views.py:47"]},"justification":{"step":1,"rationale":"AST normalization choices and isolated database reasoning are explained.","evidence":["scripts/inventory_chargen_views.py:4","scripts/find_dead_code.py:39"]},"honest_limits":{"step":1,"rationale":"False positives, import effects and literal-erasure limits are explicit.","evidence":["scripts/find_dead_code.py:5","scripts/find_dead_code.py:12","scripts/inventory_chargen_views.py:94"]}},"rehearsals":[{"requirement":"Add a dead-code evidence section","verdict":"extension","why":"The section-based reporting and pure heuristic module provide a seam.","evidence":["scripts/find_dead_code.py:3","scripts/find_dead_code.py:60"]},{"requirement":"Scan newly named chargen view families","verdict":"patch","why":"The inventory uses an explicit suffix tuple that must be changed.","evidence":["scripts/inventory_chargen_views.py:47"]},{"requirement":"Add a literal-insensitive duplicate comparison","verdict":"extension","why":"Fingerprint normalization already supports this comparison.","evidence":["scripts/inventory_chargen_views.py:38"]}]},{"schema":"theory-verdict/1","unit":"scripts","theory":"Developer scripts derive reviewable inventories and heuristic evidence from Django routing, templates and source. They aid explicit human classification rather than silently replacing runtime policy.","instead_of":"An authoritative static verifier would prove reachability and permissions; these tools provide inventories, heuristic candidates and review starting points.","trivial":false,"trivial_reason":"Substantial shared subsystem with persistent or cross-component contracts.","dimensions":{"absorption":{"step":0.5,"rationale":"Individual scans extend, but a new app requires updating hard-coded inventories in multiple tools.","evidence":["scripts/template_similarity.py:27","scripts/build_route_policy_manifest.py:36"]},"world_mapping":{"step":0.5,"rationale":"Most tools map repository evidence clearly, but screenshot and policy-generation utilities share only the broad developer-support boundary.","evidence":["scripts/template_similarity.py:1","scripts/build_route_policy_manifest.py:1"]},"abstraction":{"step":0.5,"rationale":"Standard difflib/hashlib are reused, but app scope is represented separately in scan scripts.","evidence":["scripts/template_similarity.py:18","scripts/template_similarity.py:27","scripts/build_route_policy_manifest.py:36"]},"justification":{"step":1,"rationale":"Manifest generation is explicitly a review starting point, and template similarity names its algorithm and scope.","evidence":["scripts/build_route_policy_manifest.py:1","scripts/template_similarity.py:1"]},"honest_limits":{"step":1,"rationale":"Dead-code scanning documents its no-real-database boundary and fails on unsupported database settings.","evidence":["scripts/find_dead_code.py:39"]}},"rehearsals":[{"requirement":"Adjust template similarity threshold","verdict":"extension","why":"The scanner already exposes a threshold parameter.","evidence":["scripts/template_similarity.py:1"]},{"requirement":"Review a newly routed view","verdict":"extension","why":"Generate a starting manifest and classify deliberately rather than using generated runtime policy.","evidence":["scripts/build_route_policy_manifest.py:1"]},{"requirement":"Add a new Django app to every audit automatically","verdict":"patch","why":"App scopes are hard-coded independently.","evidence":["scripts/template_similarity.py:27","scripts/build_route_policy_manifest.py:36"]}]}]}</script></main>
+<footer class="doc">Generated by code-overview. This grade is a judgment, not a measurement — read the Dimensions tab's evidence rather than the letter, and do not compare letters across models.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

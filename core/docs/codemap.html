@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>core — codebase atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">core — codebase atlas</h1>
+  <p class="doc-sub"></p>
+  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">core</span></div><div class="co-row"><span class="co-lbl">core</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../tg_schema/docs/codemap.html">tg_schema</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a><a href="../../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<h2>core — orientation</h2><div class="card hero"><p>Owned chronicle objects share lifecycle, visibility and role-based capabilities. Common request policies and CRUD infrastructure translate those concepts into consistent web behavior.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>core/middleware/authorization.py:33</code></td><td>Predispatch authorization of project callbacks.</td></tr><tr><td><code>core/model_registry.py:79</code></td><td>Registry dispatch for declared CRUD views.</td></tr><tr><td><code>core/urls.py:1</code></td><td>Root page and shared reference routes.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>core/models.py:29</code> — Shared polymorphic queryset and lifecycle foundation.</li><li><code>core/permissions.py:22</code> — Roles, visibility and capabilities.</li><li><code>core/access_policy.py:46</code> — Route-policy evaluation.</li><li><code>core/middleware/authorization.py:33</code> — Predispatch adaptation and exceptions.</li><li><code>core/model_registry.py:26</code> — Declarative CRUD specification and wrappers.</li><li><code>core/tests/test_action_guard.py:1</code> — Guard against action dispatch hidden in detail POSTs.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
+  n0["Middleware"]
+  n1["Policy evaluator"]
+  n2["Permission matrix"]
+  n3["Registry wrapper"]
+  n4["Registry declarations"]
+  n5["CRUD views"]
+  n6["Shared models"]
+  n0 --> n1 --> n2
+  n3 --> n1
+  n4 --> n5 --> n6</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 225 recognized files and 31321 lines, including tests and recognized assets. Test-source share is not execution coverage. Highest churn × branch review priorities: <code>core/models.py</code> (score 6232), <code>core/mixins.py</code> (score 3471), <code>core/permissions.py</code> (score 2975). These are attention signals, not defects.</p><h3>Decisions and interpretation limits</h3><p>A generic framework independent of game semantics is a plausible reading; this deliberately embeds chronicle roles and object lifecycle in shared infrastructure. <code>core/registries.py:1</code>, <code>core/permissions.py:17</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">225</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">31,321</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">2</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">57%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>26,367</td><td class='num'>172</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>84.2%</td></tr>
+<tr><td>HTML</td><td class='num'>1,829</td><td class='num'>48</td><td><div class="bar "><i style="width:6.9%"></i></div></td><td class='num'>5.8%</td></tr>
+<tr><td>CSS</td><td class='num'>1,472</td><td class='num'>1</td><td><div class="bar "><i style="width:5.6%"></i></div></td><td class='num'>4.7%</td></tr>
+<tr><td>JSON</td><td class='num'>1,342</td><td class='num'>1</td><td><div class="bar "><i style="width:5.1%"></i></div></td><td class='num'>4.3%</td></tr>
+<tr><td>JavaScript</td><td class='num'>220</td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.7%</td></tr>
+<tr><td>Markdown</td><td class='num'>91</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.3%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>16,447</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>5,006</td><td><div class="bar "><i style="width:30.4%"></i></div></td></tr>
+<tr><td><code>management/</code></td><td class='num'>3,930</td><td><div class="bar "><i style="width:23.9%"></i></div></td></tr>
+<tr><td><code>templates/</code></td><td class='num'>1,829</td><td><div class="bar "><i style="width:11.1%"></i></div></td></tr>
+<tr><td><code>static/</code></td><td class='num'>1,692</td><td><div class="bar "><i style="width:10.3%"></i></div></td></tr>
+<tr><td><code>views/</code></td><td class='num'>923</td><td><div class="bar "><i style="width:5.6%"></i></div></td></tr>
+<tr><td><code>templatetags/</code></td><td class='num'>761</td><td><div class="bar "><i style="width:4.6%"></i></div></td></tr>
+<tr><td><code>services/</code></td><td class='num'>355</td><td><div class="bar "><i style="width:2.2%"></i></div></td></tr>
+<tr><td><code>forms/</code></td><td class='num'>231</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>middleware/</code></td><td class='num'>115</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>widgets/</code></td><td class='num'>32</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>tests/mixins/test_mixins.py</code> <span class="badge neutral">test</span></td><td class='num'>1,001</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>14</td></tr>
+<tr><td><code>route_policy_manifest.py</code></td><td class='num'>813</td><td><div class="bar "><i style="width:81.2%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>794</td><td><div class="bar "><i style="width:79.3%"></i></div></td><td class='num'>81</td></tr>
+<tr><td><code>permissions.py</code></td><td class='num'>691</td><td><div class="bar "><i style="width:69.0%"></i></div></td><td class='num'>118</td></tr>
+<tr><td><code>tests/test_management_commands.py</code> <span class="badge neutral">test</span></td><td class='num'>643</td><td><div class="bar "><i style="width:64.2%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>tests/test_dead_code_removed.py</code> <span class="badge neutral">test</span></td><td class='num'>602</td><td><div class="bar "><i style="width:60.1%"></i></div></td><td class='num'>48</td></tr>
+<tr><td><code>tests/permissions/test_permission_manager.py</code> <span class="badge neutral">test</span></td><td class='num'>589</td><td><div class="bar "><i style="width:58.8%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/views/test_character_template.py</code> <span class="badge neutral">test</span></td><td class='num'>547</td><td><div class="bar "><i style="width:54.6%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/views/test_home.py</code> <span class="badge neutral">test</span></td><td class='num'>484</td><td><div class="bar "><i style="width:48.4%"></i></div></td><td class='num'>12</td></tr>
+<tr><td><code>tests/views/test_generic.py</code> <span class="badge neutral">test</span></td><td class='num'>469</td><td><div class="bar "><i style="width:46.9%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>tests/templatetags/test_permissions.py</code> <span class="badge neutral">test</span></td><td class='num'>462</td><td><div class="bar "><i style="width:46.2%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>mixins.py</code></td><td class='num'>460</td><td><div class="bar "><i style="width:46.0%"></i></div></td><td class='num'>88</td></tr>
+<tr><td><code>linked_stat.py</code></td><td class='num'>414</td><td><div class="bar "><i style="width:41.4%"></i></div></td><td class='num'>39</td></tr>
+<tr><td><code>tests/templatetags/test_sanitize_text.py</code> <span class="badge neutral">test</span></td><td class='num'>391</td><td><div class="bar "><i style="width:39.1%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/permissions/test_permission_context.py</code> <span class="badge neutral">test</span></td><td class='num'>384</td><td><div class="bar "><i style="width:38.4%"></i></div></td><td class='num'>25</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>383</td><td><div class="bar "><i style="width:38.3%"></i></div></td><td class='num'>19</td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>369</td><td><div class="bar "><i style="width:36.9%"></i></div></td><td class='num'>56</td></tr>
+<tr><td><code>tests/test_model_registry.py</code> <span class="badge neutral">test</span></td><td class='num'>354</td><td><div class="bar "><i style="width:35.4%"></i></div></td><td class='num'>39</td></tr>
+<tr><td><code>tests/test_linked_stat.py</code> <span class="badge neutral">test</span></td><td class='num'>351</td><td><div class="bar "><i style="width:35.1%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>tests/permissions/test_permissions_deployment.py</code> <span class="badge neutral">test</span></td><td class='num'>337</td><td><div class="bar "><i style="width:33.7%"></i></div></td><td class='num'>9</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>permissions.py</code></td><td class='num'>118</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>691</td><td class='num'>6</td></tr>
+<tr><td><code>mixins.py</code></td><td class='num'>88</td><td><div class="bar warn"><i style="width:74.6%"></i></div></td><td class='num'>460</td><td class='num'>4</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>81</td><td><div class="bar warn"><i style="width:68.6%"></i></div></td><td class='num'>794</td><td class='num'>6</td></tr>
+<tr><td><code>tests/template_fixtures.py</code> <span class="badge neutral">test</span></td><td class='num'>57</td><td><div class="bar warn"><i style="width:48.3%"></i></div></td><td class='num'>223</td><td class='num'>6</td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>56</td><td><div class="bar warn"><i style="width:47.5%"></i></div></td><td class='num'>369</td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_import_graph.py</code> <span class="badge neutral">test</span></td><td class='num'>55</td><td><div class="bar warn"><i style="width:46.6%"></i></div></td><td class='num'>191</td><td class='num'>8</td></tr>
+<tr><td><code>model_registry.py</code></td><td class='num'>54</td><td><div class="bar warn"><i style="width:45.8%"></i></div></td><td class='num'>292</td><td class='num'>6</td></tr>
+<tr><td><code>management/commands/sync_character_status.py</code></td><td class='num'>52</td><td><div class="bar warn"><i style="width:44.1%"></i></div></td><td class='num'>219</td><td class='num'>6</td></tr>
+<tr><td><code>static/core/tl/tl.js</code></td><td class='num'>50</td><td><div class="bar warn"><i style="width:42.4%"></i></div></td><td class='num'>177</td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_dead_code_removed.py</code> <span class="badge neutral">test</span></td><td class='num'>48</td><td><div class="bar warn"><i style="width:40.7%"></i></div></td><td class='num'>602</td><td class='num'>5</td></tr>
+<tr><td><code>tests/security/test_public_object_visibility.py</code> <span class="badge neutral">test</span></td><td class='num'>46</td><td><div class="bar warn"><i style="width:39.0%"></i></div></td><td class='num'>276</td><td class='num'>9</td></tr>
+<tr><td><code>management/commands/approve_pending_items.py</code></td><td class='num'>45</td><td><div class="bar warn"><i style="width:38.1%"></i></div></td><td class='num'>240</td><td class='num'>5</td></tr>
+<tr><td><code>views/generic.py</code></td><td class='num'>44</td><td><div class="bar warn"><i style="width:37.3%"></i></div></td><td class='num'>218</td><td class='num'>5</td></tr>
+<tr><td><code>templatetags/tl.py</code></td><td class='num'>41</td><td><div class="bar warn"><i style="width:34.7%"></i></div></td><td class='num'>232</td><td class='num'>4</td></tr>
+<tr><td><code>access_policy.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:33.9%"></i></div></td><td class='num'>164</td><td class='num'>6</td></tr>
+<tr><td><code>services/chronicle_data.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:33.9%"></i></div></td><td class='num'>212</td><td class='num'>5</td></tr>
+<tr><td><code>linked_stat.py</code></td><td class='num'>39</td><td><div class="bar warn"><i style="width:33.1%"></i></div></td><td class='num'>414</td><td class='num'>5</td></tr>
+<tr><td><code>management/commands/find_duplicate_objects.py</code></td><td class='num'>39</td><td><div class="bar warn"><i style="width:33.1%"></i></div></td><td class='num'>280</td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_model_registry.py</code> <span class="badge neutral">test</span></td><td class='num'>39</td><td><div class="bar warn"><i style="width:33.1%"></i></div></td><td class='num'>354</td><td class='num'>5</td></tr>
+<tr><td><code>management/commands/audit_xp_spending.py</code></td><td class='num'>36</td><td><div class="bar warn"><i style="width:30.5%"></i></div></td><td class='num'>232</td><td class='num'>6</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">14</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">10</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">129</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">12</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":4915,"fanIn":1,"fanOut":1,"meta":"(repo root) \u00b7 26 files"},{"id":"forms","label":"forms","group":"forms","size":231,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 3 files"},{"id":"management","label":"management","group":"management","size":1,"fanIn":0,"fanOut":0,"meta":"management \u00b7 1 files"},{"id":"management/commands","label":"commands","group":"management","size":3929,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 21 files"},{"id":"middleware","label":"middleware","group":"middleware","size":115,"fanIn":0,"fanOut":1,"meta":"middleware \u00b7 3 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"services","label":"services","group":"services","size":355,"fanIn":0,"fanOut":0,"meta":"services \u00b7 3 files"},{"id":"static/core/js","label":"js","group":"static","size":43,"fanIn":0,"fanOut":0,"meta":"static/core/js \u00b7 1 files"},{"id":"static/core/tl","label":"tl","group":"static","size":1649,"fanIn":1,"fanOut":0,"meta":"static/core/tl \u00b7 2 files"},{"id":"templates/core","label":"templates","group":"templates","size":1664,"fanIn":5,"fanOut":0,"meta":"templates/core \u00b7 45 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":761,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 11 files"},{"id":"tests","label":"tests","group":"tests","size":16447,"fanIn":0,"fanOut":4,"meta":"tests \u00b7 108 files"},{"id":"views","label":"views","group":"views","size":923,"fanIn":0,"fanOut":1,"meta":"views \u00b7 12 files"},{"id":"widgets","label":"widgets","group":"widgets","size":32,"fanIn":1,"fanOut":0,"meta":"widgets \u00b7 2 files"}],"links":[{"source":"","target":"templates/core","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"middleware","target":"templates/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templatetags","target":"templates/core","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"static/core/tl","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/core","weight":18,"imports":0,"loads":18,"kind":"resource","cycle":false},{"source":"tests","target":"widgets","weight":1,"imports":1,"loads":0,"kind":"import","cycle":false},{"source":"views","target":"templates/core","weight":23,"imports":0,"loads":23,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>templates/core/tl_base.html</code></td><td class='num'>23</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/core/tl/nav.html</code></td><td class='num'>11</td><td><div class="bar "><i style="width:47.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/tl/empty.html</code></td><td class='num'>10</td><td><div class="bar "><i style="width:43.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/tl/field.html</code></td><td class='num'>9</td><td><div class="bar "><i style="width:39.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/misc/form.html</code></td><td class='num'>7</td><td><div class="bar "><i style="width:30.4%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/core/misc/check.html</code></td><td class='num'>5</td><td><div class="bar "><i style="width:21.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/public_object_detail.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:17.4%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/core/errors/error.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:17.4%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/character_template/list.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:13.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/core/public_object_list.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:13.0%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>templates/core/errors/401.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/errors/403.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/tl/object_actions.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/object.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>templates/core/language/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:8.7%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>views/__init__.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/views/test_home.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:71.4%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/character_template.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:71.4%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>model_registry.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:57.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/public_object_list.html</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:57.1%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>templates/core/registry/form.html</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:57.1%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>tests/views/test_character_template.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/book.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/errors.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/houserules.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/language.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/newsitem.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/book/form.html</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/character_template/form.html</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/character_template/import.html</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:42.9%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path.</p>
+<div class="callout warn"><b>3 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>templates/core/form.html</code> <code>templates/core/misc/field_sections.html</code> <code>templates/core/tl/section.html</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>templates/core/tl_base.html</code></td><td class='num'>23</td><td><code>templates/core/book/detail.html:1</code> <code>templates/core/book/list.html:1</code> <code>templates/core/character_template/delete.html:1</code> <code>templates/core/character_template/detail.html:1</code> <code>templates/core/character_template/list.html:1</code> <code>templates/core/errors/error.html:1</code> <span class='dim'>… 17 more</span></td></tr>
+<tr><td><code>templates/core/tl/nav.html</code></td><td class='num'>11</td><td><code>templates/core/form.html:32</code> <code>templates/core/houserules/detail.html:34</code> <code>templates/core/houserules/form.html:12</code> <code>templates/core/houserules/index.html:23</code> <code>templates/core/object.html:56</code> <code>templates/core/public_object_list.html:21</code> <span class='dim'>… 5 more</span></td></tr>
+<tr><td><code>templates/core/tl/empty.html</code></td><td class='num'>10</td><td><code>templates/core/book/list.html:41</code> <code>templates/core/character_template/list.html:106</code> <code>templates/core/houserules/index.html:47</code> <code>templates/core/index.html:62</code> <code>templates/core/language/list.html:25</code> <code>templates/core/newsitem/list.html:29</code> <span class='dim'>… 4 more</span></td></tr>
+<tr><td><code>templates/core/tl/field.html</code></td><td class='num'>9</td><td><code>templates/core/book/form.html:5</code> <code>templates/core/character_template/form.html:30</code> <code>templates/core/character_template/import.html:24</code> <code>templates/core/houserules/form.html:15</code> <code>templates/core/language/form.html:6</code> <code>templates/core/misc/field_sections.html:43</code> <span class='dim'>… 3 more</span></td></tr>
+<tr><td><code>templates/core/misc/form.html</code></td><td class='num'>7</td><td><code>templates/core/book/form.html:1</code> <code>templates/core/character_template/form.html:1</code> <code>templates/core/character_template/import.html:1</code> <code>templates/core/houserules/form.html:1</code> <code>templates/core/language/form.html:1</code> <code>templates/core/newsitem/form.html:1</code> <span class='dim'>… 1 more</span></td></tr>
+<tr><td><code>templates/core/misc/check.html</code></td><td class='num'>5</td><td><code>templates/core/book/form.html:11</code> <code>templates/core/character_template/form.html:67</code> <code>templates/core/character_template/import.html:25</code> <code>templates/core/misc/field_sections.html:41</code> <code>templates/core/registry/form.html:11</code></td></tr>
+<tr><td><code>templates/core/errors/error.html</code></td><td class='num'>4</td><td><code>templates/core/errors/401.html:1</code> <code>templates/core/errors/403.html:1</code> <code>templates/core/errors/404.html:1</code> <code>tests/views/test_spread_pages.py:178</code></td></tr>
+<tr><td><code>templates/core/public_object_detail.html</code></td><td class='num'>4</td><td><code>tests/security/test_public_object_visibility.py:104</code> <code>tests/test_model_registry.py:369</code> <code>tests/views/test_character_template.py:160</code> <code>views/public_object.py:65</code></td></tr>
+<tr><td><code>templates/core/character_template/list.html</code></td><td class='num'>3</td><td><code>tests/permissions/test_permission_context.py:396</code> <code>tests/views/test_character_template.py:70</code> <code>views/character_template.py:41</code></td></tr>
+<tr><td><code>templates/core/public_object_list.html</code></td><td class='num'>3</td><td><code>tests/security/test_object_list_discovery.py:48</code> <code>tests/views/test_character_template.py:56</code> <code>views/public_object.py:125</code></td></tr>
+<tr><td><code>templates/core/errors/401.html</code></td><td class='num'>2</td><td><code>middleware/auth_error_handler.py:40</code> <code>tests/test_dead_code_removed.py:669</code></td></tr>
+<tr><td><code>templates/core/errors/403.html</code></td><td class='num'>2</td><td><code>middleware/auth_error_handler.py:49</code> <code>views/errors.py:15</code></td></tr>
+<tr><td><code>templates/core/language/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:501</code> <code>views/language.py:15</code></td></tr>
+<tr><td><code>templates/core/newsitem/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:393</code> <code>views/newsitem.py:9</code></td></tr>
+<tr><td><code>templates/core/newsitem/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:417</code> <code>views/newsitem.py:21</code></td></tr>
+<tr><td><code>templates/core/object.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:478</code> <code>views/language.py:9</code></td></tr>
+<tr><td><code>templates/core/tl/object_actions.html</code></td><td class='num'>2</td><td><code>templatetags/object_actions.py:21</code> <code>templatetags/tl.py:269</code></td></tr>
+<tr><td><code>actions.py</code></td><td class='num'>1</td><td><code>tests/test_action_guard.py:23</code></td></tr>
+<tr><td><code>management/commands/__init__.py</code></td><td class='num'>1</td><td><code>management/commands/reset_db.py:85</code></td></tr>
+<tr><td><code>static/core/tl/tl.css</code></td><td class='num'>1</td><td><code>tests/views/test_errors.py:67</code></td></tr>
+<tr><td><code>templates/core/book/detail.html</code></td><td class='num'>1</td><td><code>views/book.py:12</code></td></tr>
+<tr><td><code>templates/core/book/form.html</code></td><td class='num'>1</td><td><code>views/book.py:25</code></td></tr>
+<tr><td><code>templates/core/book/list.html</code></td><td class='num'>1</td><td><code>views/book.py:19</code></td></tr>
+<tr><td><code>templates/core/character_template/data_section.html</code></td><td class='num'>1</td><td><code>templates/core/character_template/detail.html:80</code></td></tr>
+<tr><td><code>templates/core/character_template/delete.html</code></td><td class='num'>1</td><td><code>views/character_template.py:131</code></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">420</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">173</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"models.py","value":794,"metric":76,"meta":"81 branches \u00b7 2 authors"},{"name":"mixins.py","value":460,"metric":39,"meta":"88 branches \u00b7 2 authors"},{"name":"permissions.py","value":691,"metric":25,"meta":"118 branches \u00b7 2 authors"},{"name":"views/generic.py","value":218,"metric":15,"meta":"44 branches \u00b7 2 authors"},{"name":"management/commands/populate_gamedata.py","value":182,"metric":12,"meta":"35 branches \u00b7 3 authors"},{"name":"management/commands/validate_data_integrity.py","value":369,"metric":7,"meta":"56 branches \u00b7 2 authors"},{"name":"utils.py","value":111,"metric":13,"meta":"29 branches \u00b7 2 authors"},{"name":"templatetags/sanitize_text.py","value":129,"metric":11,"meta":"34 branches \u00b7 2 authors"},{"name":"management/commands/sync_character_status.py","value":219,"metric":7,"meta":"52 branches \u00b7 2 authors"},{"name":"access_policy.py","value":164,"metric":9,"meta":"40 branches \u00b7 2 authors"},{"name":"static/core/tl/tl.js","value":177,"metric":7,"meta":"50 branches \u00b7 2 authors"},{"name":"cache.py","value":213,"metric":11,"meta":"29 branches \u00b7 2 authors"},{"name":"model_registry.py","value":292,"metric":6,"meta":"54 branches \u00b7 2 authors"},{"name":"services/chronicle_data.py","value":212,"metric":8,"meta":"40 branches \u00b7 2 authors"},{"name":"management/commands/approve_pending_items.py","value":240,"metric":7,"meta":"45 branches \u00b7 2 authors"},{"name":"management/commands/audit_xp_spending.py","value":232,"metric":8,"meta":"36 branches \u00b7 2 authors"},{"name":"templatetags/tl.py","value":232,"metric":7,"meta":"41 branches \u00b7 1 authors"},{"name":"management/commands/find_duplicate_objects.py","value":280,"metric":7,"meta":"39 branches \u00b7 2 authors"},{"name":"views/character_template.py","value":260,"metric":13,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/monitor_validation.py","value":302,"metric":8,"meta":"25 branches \u00b7 2 authors"},{"name":"templatetags/dots.py","value":97,"metric":10,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_orphaned_data.py","value":203,"metric":6,"meta":"32 branches \u00b7 2 authors"},{"name":"management/commands/process_weekly_xp.py","value":139,"metric":9,"meta":"19 branches \u00b7 2 authors"},{"name":"templatetags/permissions.py","value":146,"metric":6,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/validate_character_data.py","value":211,"metric":5,"meta":"34 branches \u00b7 2 authors"},{"name":"management/commands/import_chronicle.py","value":167,"metric":9,"meta":"17 branches \u00b7 2 authors"},{"name":"linked_stat.py","value":414,"metric":4,"meta":"39 branches \u00b7 1 authors"},{"name":"management/commands/generate_chronicle_summary.py","value":310,"metric":7,"meta":"20 branches \u00b7 2 authors"},{"name":"services/approval.py","value":139,"metric":6,"meta":"22 branches \u00b7 2 authors"},{"name":"management/commands/archive_inactive_chronicles.py","value":162,"metric":6,"meta":"20 branches \u00b7 2 authors"},{"name":"views/public_object.py","value":111,"metric":7,"meta":"17 branches \u00b7 2 authors"},{"name":"management/commands/generate_st_report.py","value":129,"metric":6,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/audit_user_permissions.py","value":161,"metric":6,"meta":"17 branches \u00b7 2 authors"},{"name":"management/commands/populate_test_chronicle.py","value":185,"metric":8,"meta":"12 branches \u00b7 2 authors"},{"name":"management/commands/export_chronicle.py","value":178,"metric":8,"meta":"10 branches \u00b7 2 authors"},{"name":"management/commands/reset_db.py","value":89,"metric":5,"meta":"15 branches \u00b7 2 authors"},{"name":"middleware/authorization.py","value":76,"metric":5,"meta":"15 branches \u00b7 2 authors"},{"name":"forms/character_template.py","value":211,"metric":6,"meta":"12 branches \u00b7 2 authors"},{"name":"views/houserules.py","value":67,"metric":11,"meta":"6 branches \u00b7 2 authors"},{"name":"management/commands/reset_demo_data.py","value":107,"metric":7,"meta":"9 branches \u00b7 2 authors"},{"name":"create_redirects.py","value":51,"metric":4,"meta":"12 branches \u00b7 2 authors"},{"name":"permission_context.py","value":114,"metric":3,"meta":"16 branches \u00b7 2 authors"},{"name":"templatetags/field.py","value":38,"metric":7,"meta":"6 branches \u00b7 1 authors"},{"name":"xp_utils.py","value":67,"metric":4,"meta":"11 branches \u00b7 2 authors"},{"name":"route_policy_manifest.py","value":813,"metric":15,"meta":"2 branches \u00b7 2 authors"},{"name":"validators.py","value":47,"metric":4,"meta":"9 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_old_weeks.py","value":63,"metric":5,"meta":"7 branches \u00b7 2 authors"},{"name":"templatetags/object_actions.py","value":50,"metric":4,"meta":"9 branches \u00b7 2 authors"},{"name":"ajax.py","value":50,"metric":3,"meta":"12 branches \u00b7 2 authors"},{"name":"constants.py","value":142,"metric":10,"meta":"2 branches \u00b7 2 authors"},{"name":"context_processors.py","value":19,"metric":7,"meta":"3 branches \u00b7 2 authors"},{"name":"views/book.py","value":36,"metric":8,"meta":"2 branches \u00b7 2 authors"},{"name":"actions.py","value":142,"metric":1,"meta":"21 branches \u00b7 1 authors"},{"name":"middleware/auth_error_handler.py","value":39,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"forms/language.py","value":18,"metric":6,"meta":"2 branches \u00b7 2 authors"},{"name":"views/home.py","value":33,"metric":5,"meta":"2 branches \u00b7 2 authors"},{"name":"templatetags/tl_forms.py","value":35,"metric":1,"meta":"13 branches \u00b7 1 authors"},{"name":"views/errors.py","value":26,"metric":3,"meta":"3 branches \u00b7 1 authors"},{"name":"views/object_type_redirect.py","value":34,"metric":3,"meta":"3 branches \u00b7 2 authors"},{"name":"admin.py","value":114,"metric":10,"meta":"0 branches \u00b7 2 authors"},{"name":"static/core/js/validation.js","value":43,"metric":1,"meta":"9 branches \u00b7 1 authors"},{"name":"templatetags/get_specialty.py","value":15,"metric":2,"meta":"4 branches \u00b7 2 authors"},{"name":"views/registry.py","value":28,"metric":2,"meta":"4 branches \u00b7 2 authors"},{"name":"templatetags/json_filters.py","value":13,"metric":3,"meta":"2 branches \u00b7 2 authors"},{"name":"views/__init__.py","value":66,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"widgets/autocomplete.py","value":28,"metric":4,"meta":"1 branches \u00b7 2 authors"},{"name":"htmx.py","value":42,"metric":2,"meta":"2 branches \u00b7 1 authors"},{"name":"template_resolution.py","value":18,"metric":2,"meta":"2 branches \u00b7 1 authors"},{"name":"views/language.py","value":22,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"views/newsitem.py","value":22,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"registries.py","value":13,"metric":1,"meta":"4 branches \u00b7 1 authors"},{"name":"urls.py","value":108,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"base.py","value":19,"metric":1,"meta":"3 branches \u00b7 1 authors"},{"name":"widgets/__init__.py","value":4,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"registry_urls.py","value":13,"metric":2,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/__init__.py","value":2,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/commands/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"services/__init__.py","value":4,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"templatetags/model_meta.py","value":6,"metric":1,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":76}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 51 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: static/core/tl/tl.css (30), templates/core/form.html (23), templates/core/object.html (14).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>76</td><td class='num'>81</td><td class='num'>794</td><td class='num'>2</td><td class='num' data-sort='6232'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>mixins.py</code></td><td class='num'>39</td><td class='num'>88</td><td class='num'>460</td><td class='num'>2</td><td class='num' data-sort='3471'><div class="bar bad"><i style="width:55.7%"></i></div></td></tr>
+<tr><td><code>permissions.py</code></td><td class='num'>25</td><td class='num'>118</td><td class='num'>691</td><td class='num'>2</td><td class='num' data-sort='2975'><div class="bar bad"><i style="width:47.7%"></i></div></td></tr>
+<tr><td><code>views/generic.py</code></td><td class='num'>15</td><td class='num'>44</td><td class='num'>218</td><td class='num'>2</td><td class='num' data-sort='675'><div class="bar bad"><i style="width:10.8%"></i></div></td></tr>
+<tr><td><code>management/commands/populate_gamedata.py</code></td><td class='num'>12</td><td class='num'>35</td><td class='num'>182</td><td class='num'>3</td><td class='num' data-sort='432'><div class="bar bad"><i style="width:6.9%"></i></div></td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>7</td><td class='num'>56</td><td class='num'>369</td><td class='num'>2</td><td class='num' data-sort='399'><div class="bar bad"><i style="width:6.4%"></i></div></td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>13</td><td class='num'>29</td><td class='num'>111</td><td class='num'>2</td><td class='num' data-sort='390'><div class="bar bad"><i style="width:6.3%"></i></div></td></tr>
+<tr><td><code>templatetags/sanitize_text.py</code></td><td class='num'>11</td><td class='num'>34</td><td class='num'>129</td><td class='num'>2</td><td class='num' data-sort='385'><div class="bar bad"><i style="width:6.2%"></i></div></td></tr>
+<tr><td><code>management/commands/sync_character_status.py</code></td><td class='num'>7</td><td class='num'>52</td><td class='num'>219</td><td class='num'>2</td><td class='num' data-sort='371'><div class="bar bad"><i style="width:6.0%"></i></div></td></tr>
+<tr><td><code>access_policy.py</code></td><td class='num'>9</td><td class='num'>40</td><td class='num'>164</td><td class='num'>2</td><td class='num' data-sort='369'><div class="bar bad"><i style="width:5.9%"></i></div></td></tr>
+<tr><td><code>static/core/tl/tl.js</code></td><td class='num'>7</td><td class='num'>50</td><td class='num'>177</td><td class='num'>2</td><td class='num' data-sort='357'><div class="bar bad"><i style="width:5.7%"></i></div></td></tr>
+<tr><td><code>cache.py</code></td><td class='num'>11</td><td class='num'>29</td><td class='num'>213</td><td class='num'>2</td><td class='num' data-sort='330'><div class="bar bad"><i style="width:5.3%"></i></div></td></tr>
+<tr><td><code>model_registry.py</code></td><td class='num'>6</td><td class='num'>54</td><td class='num'>292</td><td class='num'>2</td><td class='num' data-sort='330'><div class="bar bad"><i style="width:5.3%"></i></div></td></tr>
+<tr><td><code>services/chronicle_data.py</code></td><td class='num'>8</td><td class='num'>40</td><td class='num'>212</td><td class='num'>2</td><td class='num' data-sort='328'><div class="bar bad"><i style="width:5.3%"></i></div></td></tr>
+<tr><td><code>management/commands/approve_pending_items.py</code></td><td class='num'>7</td><td class='num'>45</td><td class='num'>240</td><td class='num'>2</td><td class='num' data-sort='322'><div class="bar bad"><i style="width:5.2%"></i></div></td></tr>
+<tr><td><code>management/commands/audit_xp_spending.py</code></td><td class='num'>8</td><td class='num'>36</td><td class='num'>232</td><td class='num'>2</td><td class='num' data-sort='296'><div class="bar bad"><i style="width:4.7%"></i></div></td></tr>
+<tr><td><code>templatetags/tl.py</code></td><td class='num'>7</td><td class='num'>41</td><td class='num'>232</td><td class='num'>1</td><td class='num' data-sort='294'><div class="bar bad"><i style="width:4.7%"></i></div></td></tr>
+<tr><td><code>management/commands/find_duplicate_objects.py</code></td><td class='num'>7</td><td class='num'>39</td><td class='num'>280</td><td class='num'>2</td><td class='num' data-sort='280'><div class="bar bad"><i style="width:4.5%"></i></div></td></tr>
+<tr><td><code>views/character_template.py</code></td><td class='num'>13</td><td class='num'>19</td><td class='num'>260</td><td class='num'>2</td><td class='num' data-sort='260'><div class="bar bad"><i style="width:4.2%"></i></div></td></tr>
+<tr><td><code>management/commands/monitor_validation.py</code></td><td class='num'>8</td><td class='num'>25</td><td class='num'>302</td><td class='num'>2</td><td class='num' data-sort='208'><div class="bar bad"><i style="width:3.3%"></i></div></td></tr>
+<tr><td><code>templatetags/dots.py</code></td><td class='num'>10</td><td class='num'>19</td><td class='num'>97</td><td class='num'>2</td><td class='num' data-sort='200'><div class="bar bad"><i style="width:3.2%"></i></div></td></tr>
+<tr><td><code>management/commands/cleanup_orphaned_data.py</code></td><td class='num'>6</td><td class='num'>32</td><td class='num'>203</td><td class='num'>2</td><td class='num' data-sort='198'><div class="bar bad"><i style="width:3.2%"></i></div></td></tr>
+<tr><td><code>management/commands/process_weekly_xp.py</code></td><td class='num'>9</td><td class='num'>19</td><td class='num'>139</td><td class='num'>2</td><td class='num' data-sort='180'><div class="bar bad"><i style="width:2.9%"></i></div></td></tr>
+<tr><td><code>templatetags/permissions.py</code></td><td class='num'>6</td><td class='num'>29</td><td class='num'>146</td><td class='num'>2</td><td class='num' data-sort='180'><div class="bar bad"><i style="width:2.9%"></i></div></td></tr>
+<tr><td><code>management/commands/validate_character_data.py</code></td><td class='num'>5</td><td class='num'>34</td><td class='num'>211</td><td class='num'>2</td><td class='num' data-sort='175'><div class="bar bad"><i style="width:2.8%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<h2>Authorization has an adapter layer and one policy evaluator</h2><h3>Ordinary project HTTP callback</h3><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+  participant D as Django resolver
+  participant M as AuthorizationMiddleware
+  participant P as authorize_route
+  participant V as Target view
+  D->>M: process_view with callback and arguments
+  M->>M: Validate object ID and private game audience
+  alt hidden or malformed ID
+    M-->>D: Fixed 404
+  else project callback
+    M->>P: Evaluate declared route policy
+    alt no declaration or denied
+      P-->>D: Denial or PermissionDenied
+    else permitted
+      P-->>M: None
+      M->>V: Continue dispatch
+    end
+  end</pre></div></div><ul><li>Unknown declarations fail closed: <code>core/access_policy.py:53</code>. ACTION policy itself only checks method/login; action classes must authorize their subject: <code>core/access_policy.py:59</code>.</li><li>Private game record lookup is intentionally adapted before policy checks to avoid ID disclosure: <code>core/middleware/authorization.py:70</code>.</li></ul><h3>Registry-built object page</h3><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+  participant M as Middleware
+  participant R as RegistryViewMixin
+  participant DB as Polymorphic ORM
+  participant P as authorize_route
+  participant V as Custom or generic view
+  M->>R: Delegate registry authorization
+  R->>DB: Resolve detail or update subject once
+  alt object absent
+    R-->>M: Http404
+  else object present
+    R->>P: Evaluate policy with resolved subject
+    alt denied
+      P-->>R: Safe response or exception
+    else permitted
+      R->>V: Dispatch and reuse subject
+    end
+  end</pre></div></div><ul><li>The wrapper must run before custom view logic: <code>core/model_registry.py:72</code>.</li><li>Nested reality-zone fields require an extra permission-filtered queryset; this domain exception sits in generic form construction: <code>core/model_registry.py:123</code>.</li></ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Concern ownership and seams</h2><div class="tbl-wrap"><table><thead><tr><th>Concern</th><th>Owner</th><th>Judgment</th><th>Interpretation</th></tr></thead><tbody><tr><td>Roles and capabilities</td><td><code>core/permissions.py:59</code></td><td><span class="badge good">single concept</span></td><td>Central permission service</td></tr><tr><td>Route access adaptation</td><td><code>core/middleware/authorization.py:33</code></td><td><span class="badge warn">crosses layers</span></td><td>Middleware plus registry wrapper</td></tr><tr><td>Policy evaluation</td><td><code>core/access_policy.py:46</code></td><td><span class="badge good">single concept</span></td><td>Shared evaluator</td></tr><tr><td>Nested zone form audience</td><td><code>core/model_registry.py:123</code></td><td><span class="badge warn">crosses layers</span></td><td>Location semantics inside generic CRUD</td></tr></tbody></table></div><h3>Data and boundary ownership</h3><div class="callout warn">Shared querysets select chronicle audiences (<code>core/models.py:53</code>), while game-specific private audiences are adapted in middleware (<code>core/middleware/authorization.py:53</code>). Registry form construction also filters reality-zone querysets (<code>core/model_registry.py:123</code>). These are concrete domain dependencies in infrastructure, not an acyclic generic framework.</div><p>Validated model saves centralize one write guard, but skip_validation is an escape hatch (<code>core/base.py:22</code>). Services in other apps remain responsible for multirow transactional invariants. No isolated module cycle was detected; absolute host-app imports are outside this graph, so consult the root SCC for actual cross-app coupling.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>core — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>Role capabilities have one declared matrix</td><td><code>core/permissions.py:62</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Invalid route object IDs are rejected before dispatch</td><td><code>core/middleware/authorization.py:39</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>All model writes validate automatically, including bypass paths</td><td><code>core/base.py:22</code></td><td><span class="badge warn">partial or outside model</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>Hidden game record IDs deliberately produce the same 404 as missing records. <code>core/middleware/authorization.py:70</code></p><h3>Concurrency and shared state</h3><p>Validation on save is not universal database-level enforcement: skip_validation explicitly bypasses it, and bulk/queryset writes need separate review. <code>core/base.py:22</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> Shared CRUD contains reality-zone special cases: another nested private resource can miss one read surface. <code>core/model_registry.py:123</code></div><div class="callout warn"><strong>2.</strong> New route adapters must preserve predispatch checks and explicit registry delegation. <code>core/middleware/authorization.py:41</code></div><div class="callout warn"><strong>3.</strong> Application validation alone cannot protect every write path. <code>core/base.py:22</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<h2>Domain words and code contracts</h2><div class="tbl-wrap"><table><thead><tr><th>Domain</th><th>Code language</th><th>Evidence</th><th>Maintainer note</th></tr></thead><tbody><tr><td>Storyteller</td><td>CHRONICLE_HEAD_ST / CHRONICLE_ST / GAME_ST</td><td><code>core/permissions.py:22</code></td><td>Several roles are intentionally distinct; storyteller is not one boolean power.</td></tr><tr><td>Audience detail</td><td>VisibilityTier</td><td><code>core/permissions.py:37</code></td><td>Full, partial and none are separate from action capabilities.</td></tr><tr><td>Web capability</td><td>Permission</td><td><code>core/permissions.py:45</code></td><td>Approve, spend and edit are separate permissions.</td></tr><tr><td>Routable type</td><td>ModelSpec / ActionSpec</td><td><code>core/model_registry.py:26</code></td><td>Configuration for standard CRUD, not a replacement for domain workflows.</td></tr></tbody></table></div><div class="callout warn">Names encode operational contracts: do not collapse the distinctions above into one generic action or status flag. The highlighted ambiguities are review prompts, not evidence of a runtime defect.</div>
+
+</section><!--DOC_BODY--></main>
+<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

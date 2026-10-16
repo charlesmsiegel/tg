@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>game — codebase atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">game — codebase atlas</h1>
+  <p class="doc-sub"></p>
+  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">game</span></div><div class="co-row"><span class="co-lbl">game</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../tg_schema/docs/codemap.html">tg_schema</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a><a href="../../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<h2>game — orientation</h2><div class="card hero"><p>Chronicles organize collaborative play into scenes, stories and weeks, with XP requests connecting play to character advancement. HTTP and WebSocket chat are transports over one posting operation and committed scene events.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>game/urls.py:1</code></td><td>Play, XP and scene HTTP routes.</td></tr><tr><td><code>game/consumers.py:48</code></td><td>Live scene WebSocket consumer.</td></tr><tr><td><code>game/spending_approval.py:42</code></td><td>Shared approval/denial service API.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>game/models.py:1</code> — Play records and the highest change/branch hotspot.</li><li><code>game/security.py:1</code> — Read audiences shared by HTTP and chat.</li><li><code>game/scene_chat.py:1</code> — One posting path and post-commit event delivery.</li><li><code>game/xp_spend.py:1</code> — Spending preview by rollback rather than duplicate arithmetic.</li><li><code>game/spending_approval.py:42</code> — Exactly-once decision checks under row locks.</li><li><code>game/tests/test_rules_out_of_views.py:1</code> — Tests that pin rule reuse across transports.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
+  n0["HTTP views"]
+  n1["Posting service"]
+  n2["Play records"]
+  n3["WebSocket consumer"]
+  n4["Committed events"]
+  n5["Viewer rendering"]
+  n0 --> n1 --> n2
+  n3 --> n1
+  n2 --> n4 --> n5</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 106 recognized files and 14890 lines, including tests and recognized assets. Test-source share is not execution coverage. Highest churn × branch review priorities: <code>game/models.py</code> (score 18518), <code>game/views.py</code> (score 8700), <code>game/forms.py</code> (score 2784). These are attention signals, not defects.</p><h3>Decisions and interpretation limits</h3><p>An event-sourced game simulation could make every action replayable; this is a relational collaboration and approval application with best-effort live notifications. <code>game/xp_spend.py:3</code>, <code>game/scene_chat.py:95</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">106</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">14,890</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">2</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">62%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>12,005</td><td class='num'>45</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>80.6%</td></tr>
+<tr><td>HTML</td><td class='num'>2,524</td><td class='num'>57</td><td><div class="bar "><i style="width:21.0%"></i></div></td><td class='num'>17.0%</td></tr>
+<tr><td>JavaScript</td><td class='num'>259</td><td class='num'>3</td><td><div class="bar "><i style="width:2.2%"></i></div></td><td class='num'>1.7%</td></tr>
+<tr><td>Markdown</td><td class='num'>102</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.7%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>7,575</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>4,532</td><td><div class="bar "><i style="width:59.8%"></i></div></td></tr>
+<tr><td><code>templates/</code></td><td class='num'>2,524</td><td><div class="bar "><i style="width:33.3%"></i></div></td></tr>
+<tr><td><code>static/</code></td><td class='num'>259</td><td><div class="bar "><i style="width:3.4%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>1,567</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>16</td></tr>
+<tr><td><code>tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>1,527</td><td><div class="bar "><i style="width:97.4%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>1,223</td><td><div class="bar "><i style="width:78.0%"></i></div></td><td class='num'>196</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>1,044</td><td><div class="bar "><i style="width:66.6%"></i></div></td><td class='num'>99</td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>734</td><td><div class="bar "><i style="width:46.8%"></i></div></td><td class='num'>86</td></tr>
+<tr><td><code>tests/forms/test_forms.py</code> <span class="badge neutral">test</span></td><td class='num'>470</td><td><div class="bar "><i style="width:30.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_scene_chat.py</code> <span class="badge neutral">test</span></td><td class='num'>386</td><td><div class="bar "><i style="width:24.6%"></i></div></td><td class='num'>29</td></tr>
+<tr><td><code>tests/consumers/test_scene_chat_socket.py</code> <span class="badge neutral">test</span></td><td class='num'>379</td><td><div class="bar "><i style="width:24.2%"></i></div></td><td class='num'>17</td></tr>
+<tr><td><code>tests/browser/test_scene_chat.py</code> <span class="badge neutral">test</span></td><td class='num'>362</td><td><div class="bar "><i style="width:23.1%"></i></div></td><td class='num'>24</td></tr>
+<tr><td><code>tests/views/test_game_actions.py</code> <span class="badge neutral">test</span></td><td class='num'>326</td><td><div class="bar "><i style="width:20.8%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>324</td><td><div class="bar "><i style="width:20.7%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>tests/test_scene_unread.py</code> <span class="badge neutral">test</span></td><td class='num'>293</td><td><div class="bar "><i style="width:18.7%"></i></div></td><td class='num'>20</td></tr>
+<tr><td><code>tests/views/test_xp_spend.py</code> <span class="badge neutral">test</span></td><td class='num'>280</td><td><div class="bar "><i style="width:17.9%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_scene_rolls.py</code> <span class="badge neutral">test</span></td><td class='num'>259</td><td><div class="bar "><i style="width:16.5%"></i></div></td><td class='num'>9</td></tr>
+<tr><td><code>consumers.py</code></td><td class='num'>256</td><td><div class="bar "><i style="width:16.3%"></i></div></td><td class='num'>43</td></tr>
+<tr><td><code>static/game/js/scene-chat.js</code></td><td class='num'>213</td><td><div class="bar "><i style="width:13.6%"></i></div></td><td class='num'>42</td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>209</td><td><div class="bar "><i style="width:13.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>selectors.py</code></td><td class='num'>184</td><td><div class="bar "><i style="width:11.7%"></i></div></td><td class='num'>30</td></tr>
+<tr><td><code>tests/views/test_story_chronicle.py</code> <span class="badge neutral">test</span></td><td class='num'>156</td><td><div class="bar "><i style="width:10.0%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>actions.py</code></td><td class='num'>154</td><td><div class="bar "><i style="width:9.8%"></i></div></td><td class='num'>4</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>196</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>1,223</td><td class='num'>7</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>99</td><td><div class="bar warn"><i style="width:50.5%"></i></div></td><td class='num'>1,044</td><td class='num'>4</td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>86</td><td><div class="bar warn"><i style="width:43.9%"></i></div></td><td class='num'>734</td><td class='num'>5</td></tr>
+<tr><td><code>consumers.py</code></td><td class='num'>43</td><td><div class="bar warn"><i style="width:21.9%"></i></div></td><td class='num'>256</td><td class='num'>6</td></tr>
+<tr><td><code>static/game/js/scene-chat.js</code></td><td class='num'>42</td><td><div class="bar warn"><i style="width:21.4%"></i></div></td><td class='num'>213</td><td class='num'>4</td></tr>
+<tr><td><code>selectors.py</code></td><td class='num'>30</td><td><div class="bar warn"><i style="width:15.3%"></i></div></td><td class='num'>184</td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_scene_chat.py</code> <span class="badge neutral">test</span></td><td class='num'>29</td><td><div class="bar warn"><i style="width:14.8%"></i></div></td><td class='num'>386</td><td class='num'>5</td></tr>
+<tr><td><code>tests/browser/test_scene_chat.py</code> <span class="badge neutral">test</span></td><td class='num'>24</td><td><div class="bar warn"><i style="width:12.2%"></i></div></td><td class='num'>362</td><td class='num'>5</td></tr>
+<tr><td><code>rolls.py</code></td><td class='num'>21</td><td><div class="bar warn"><i style="width:10.7%"></i></div></td><td class='num'>94</td><td class='num'>4</td></tr>
+<tr><td><code>tests/test_scene_unread.py</code> <span class="badge neutral">test</span></td><td class='num'>20</td><td><div class="bar warn"><i style="width:10.2%"></i></div></td><td class='num'>293</td><td class='num'>6</td></tr>
+<tr><td><code>tests/consumers/test_scene_chat_socket.py</code> <span class="badge neutral">test</span></td><td class='num'>17</td><td><div class="bar warn"><i style="width:8.7%"></i></div></td><td class='num'>379</td><td class='num'>5</td></tr>
+<tr><td><code>scene_chat.py</code></td><td class='num'>16</td><td><div class="bar warn"><i style="width:8.2%"></i></div></td><td class='num'>88</td><td class='num'>4</td></tr>
+<tr><td><code>tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>16</td><td><div class="bar warn"><i style="width:8.2%"></i></div></td><td class='num'>1,567</td><td class='num'>5</td></tr>
+<tr><td><code>spending_approval.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:6.1%"></i></div></td><td class='num'>69</td><td class='num'>4</td></tr>
+<tr><td><code>xp_spend.py</code></td><td class='num'>11</td><td><div class="bar warn"><i style="width:5.6%"></i></div></td><td class='num'>85</td><td class='num'>3</td></tr>
+<tr><td><code>tests/test_scene_rolls.py</code> <span class="badge neutral">test</span></td><td class='num'>9</td><td><div class="bar warn"><i style="width:4.6%"></i></div></td><td class='num'>259</td><td class='num'>5</td></tr>
+<tr><td><code>tests/templates/test_tg_card_classes.py</code> <span class="badge neutral">test</span></td><td class='num'>9</td><td><div class="bar warn"><i style="width:4.6%"></i></div></td><td class='num'>60</td><td class='num'>7</td></tr>
+<tr><td><code>security.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:3.6%"></i></div></td><td class='num'>49</td><td class='num'>3</td></tr>
+<tr><td><code>static/game/js/xp-spend.js</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:3.6%"></i></div></td><td class='num'>21</td><td class='num'>2</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>7</td><td><div class="bar warn"><i style="width:3.6%"></i></div></td><td class='num'>324</td><td class='num'>3</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">15</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">138</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">5</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":4430,"fanIn":0,"fanOut":11,"meta":"(repo root) \u00b7 19 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"static/game/js","label":"js","group":"static","size":259,"fanIn":2,"fanOut":0,"meta":"static/game/js \u00b7 3 files"},{"id":"templates/game/chronicle","label":"chronicle","group":"templates","size":683,"fanIn":2,"fanOut":1,"meta":"templates/game/chronicle \u00b7 12 files"},{"id":"templates/game/freebie_spending_record","label":"freebie_spending_record","group":"templates","size":120,"fanIn":2,"fanOut":1,"meta":"templates/game/freebie_spending_record \u00b7 3 files"},{"id":"templates/game/journal","label":"journal","group":"templates","size":179,"fanIn":2,"fanOut":1,"meta":"templates/game/journal \u00b7 2 files"},{"id":"templates/game/scene","label":"scene","group":"templates","size":395,"fanIn":2,"fanOut":1,"meta":"templates/game/scene \u00b7 14 files"},{"id":"templates/game/setting_element","label":"setting_element","group":"templates","size":91,"fanIn":2,"fanOut":1,"meta":"templates/game/setting_element \u00b7 3 files"},{"id":"templates/game/story","label":"story","group":"templates","size":92,"fanIn":2,"fanOut":1,"meta":"templates/game/story \u00b7 3 files"},{"id":"templates/game/story_xp_request","label":"story_xp_request","group":"templates","size":129,"fanIn":2,"fanOut":1,"meta":"templates/game/story_xp_request \u00b7 3 files"},{"id":"templates/game/tl","label":"tl","group":"templates","size":93,"fanIn":10,"fanOut":0,"meta":"templates/game/tl \u00b7 5 files"},{"id":"templates/game/week","label":"week","group":"templates","size":298,"fanIn":2,"fanOut":1,"meta":"templates/game/week \u00b7 4 files"},{"id":"templates/game/weekly_xp_request","label":"weekly_xp_request","group":"templates","size":179,"fanIn":1,"fanOut":1,"meta":"templates/game/weekly_xp_request \u00b7 3 files"},{"id":"templates/game/xp_spending_request","label":"xp_spending_request","group":"templates","size":265,"fanIn":2,"fanOut":1,"meta":"templates/game/xp_spending_request \u00b7 5 files"},{"id":"tests","label":"tests","group":"tests","size":7575,"fanIn":0,"fanOut":10,"meta":"tests \u00b7 35 files"}],"links":[{"source":"","target":"static/game/js","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/journal","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"","target":"templates/game/scene","weight":12,"imports":0,"loads":12,"kind":"resource","cycle":false},{"source":"","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/week","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/weekly_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/xp_spending_request","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/game/chronicle","target":"templates/game/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/game/freebie_spending_record","target":"templates/game/tl","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"templates/game/journal","target":"templates/game/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/game/scene","target":"templates/game/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/game/setting_element","target":"templates/game/tl","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/game/story","target":"templates/game/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/game/story_xp_request","target":"templates/game/tl","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/game/week","target":"templates/game/tl","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/game/weekly_xp_request","target":"templates/game/tl","weight":6,"imports":0,"loads":6,"kind":"resource","cycle":false},{"source":"templates/game/xp_spending_request","target":"templates/game/tl","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"tests","target":"static/game/js","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/journal","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/scene","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/week","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/xp_spending_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>templates/game/tl/base.html</code></td><td class='num'>21</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/tl/form.html</code></td><td class='num'>9</td><td><div class="bar "><i style="width:42.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/tl/pager.html</code></td><td class='num'>7</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/tl/fields.html</code></td><td class='num'>5</td><td><div class="bar "><i style="width:23.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/game/scene/ws/_posts.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:19.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/game/scene/detail.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:19.0%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>templates/game/scene/_post.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:19.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/game/scene/_post_window.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:14.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/game/xp_spending_request/_status.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:14.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/_add_character_field.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/_cast.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/_post_message_fields.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/_post_character_field.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/story_xp_request/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/game/story_xp_request/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:9.5%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>views.py</code></td><td class='num'>34</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/views/test_views.py</code></td><td class='num'>23</td><td><div class="bar warn"><i style="width:67.6%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/chronicle/detail.html</code></td><td class='num'>8</td><td><div class="bar warn"><i style="width:23.5%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>consumers.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:20.6%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/detail.html</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:14.7%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>templates/game/xp_spending_request/form.html</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:11.8%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_scene_chat.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:8.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/xp_spending_request/list.html</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:8.8%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/freebie_spending_record/form.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/freebie_spending_record/list.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/journal/list.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/setting_element/list.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/story_xp_request/list.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/game/tl/form.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>9</td></tr>
+<tr><td><code>templates/game/week/detail.html</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:5.9%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path.</p>
+
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>templates/game/tl/base.html</code></td><td class='num'>21</td><td><code>templates/game/chronicle/detail.html:1</code> <code>templates/game/chronicle/list.html:1</code> <code>templates/game/freebie_spending_record/detail.html:1</code> <code>templates/game/freebie_spending_record/list.html:1</code> <code>templates/game/journal/detail.html:1</code> <code>templates/game/journal/list.html:1</code> <span class='dim'>… 15 more</span></td></tr>
+<tr><td><code>templates/game/tl/form.html</code></td><td class='num'>9</td><td><code>templates/game/chronicle/form.html:1</code> <code>templates/game/freebie_spending_record/form.html:1</code> <code>templates/game/scene/form.html:1</code> <code>templates/game/setting_element/form.html:1</code> <code>templates/game/story/form.html:1</code> <code>templates/game/story_xp_request/form.html:1</code> <span class='dim'>… 3 more</span></td></tr>
+<tr><td><code>templates/game/tl/pager.html</code></td><td class='num'>7</td><td><code>templates/game/freebie_spending_record/list.html:43</code> <code>templates/game/journal/list.html:40</code> <code>templates/game/setting_element/list.html:29</code> <code>templates/game/story_xp_request/list.html:45</code> <code>templates/game/week/list.html:32</code> <code>templates/game/weekly_xp_request/list.html:55</code> <span class='dim'>… 1 more</span></td></tr>
+<tr><td><code>templates/game/tl/fields.html</code></td><td class='num'>5</td><td><code>templates/game/freebie_spending_record/form.html:15</code> <code>templates/game/tl/form.html:28</code> <code>templates/game/weekly_xp_request/detail.html:92</code> <code>templates/game/weekly_xp_request/form.html:15</code> <code>templates/game/xp_spending_request/form.html:39</code></td></tr>
+<tr><td><code>templates/game/scene/_post.html</code></td><td class='num'>4</td><td><code>templates/game/scene/_post_window.html:13</code> <code>templates/game/scene/ws/_posts.html:1</code> <code>tests/test_scene_chat.py:147</code> <code>tests/test_scene_rolls.py:223</code></td></tr>
+<tr><td><code>templates/game/scene/detail.html</code></td><td class='num'>4</td><td><code>tests/templates/test_tg_card_classes.py:13</code> <code>tests/test_scene_chat.py:428</code> <code>tests/views/test_views.py:217</code> <code>views.py:256</code></td></tr>
+<tr><td><code>templates/game/scene/ws/_posts.html</code></td><td class='num'>4</td><td><code>consumers.py:285</code> <code>tests/browser/test_scene_chat.py:315</code> <code>tests/consumers/test_scene_chat_socket.py:86</code> <code>tests/test_scene_unread.py:294</code></td></tr>
+<tr><td><code>templates/game/scene/_post_window.html</code></td><td class='num'>3</td><td><code>templates/game/scene/detail.html:86</code> <code>tests/test_scene_chat.py:427</code> <code>views.py:257</code></td></tr>
+<tr><td><code>templates/game/xp_spending_request/_status.html</code></td><td class='num'>3</td><td><code>templates/game/xp_spending_request/detail.html:45</code> <code>templates/game/xp_spending_request/form.html:63</code> <code>templates/game/xp_spending_request/list.html:45</code></td></tr>
+<tr><td><code>static/game/js/xp-spend.js</code></td><td class='num'>2</td><td><code>tests/views/test_xp_spend.py:63</code> <code>views.py:999</code></td></tr>
+<tr><td><code>templates/game/chronicle/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:143</code> <code>views.py:158</code></td></tr>
+<tr><td><code>templates/game/chronicle/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1012</code> <code>views.py:1193</code></td></tr>
+<tr><td><code>templates/game/chronicle/list.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1797</code> <code>views.py:376</code></td></tr>
+<tr><td><code>templates/game/freebie_spending_record/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:872</code> <code>views.py:1074</code></td></tr>
+<tr><td><code>templates/game/freebie_spending_record/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:881</code> <code>views.py:1089</code></td></tr>
+<tr><td><code>templates/game/freebie_spending_record/list.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:863</code> <code>views.py:1057</code></td></tr>
+<tr><td><code>templates/game/journal/list.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1176</code> <code>views.py:399</code></td></tr>
+<tr><td><code>templates/game/scene/_add_character_field.html</code></td><td class='num'>2</td><td><code>consumers.py:210</code> <code>templates/game/scene/detail.html:52</code></td></tr>
+<tr><td><code>templates/game/scene/_cast.html</code></td><td class='num'>2</td><td><code>consumers.py:197</code> <code>templates/game/scene/detail.html:41</code></td></tr>
+<tr><td><code>templates/game/scene/_post_character_field.html</code></td><td class='num'>2</td><td><code>consumers.py:204</code> <code>templates/game/scene/detail.html:106</code></td></tr>
+<tr><td><code>templates/game/scene/_post_message_fields.html</code></td><td class='num'>2</td><td><code>consumers.py:136</code> <code>templates/game/scene/detail.html:108</code></td></tr>
+<tr><td><code>templates/game/scene/commands.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1139</code> <code>views.py:357</code></td></tr>
+<tr><td><code>templates/game/scene/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1085</code> <code>views.py:1216</code></td></tr>
+<tr><td><code>templates/game/setting_element/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1347</code> <code>views.py:832</code></td></tr>
+<tr><td><code>templates/game/setting_element/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:1361</code> <code>views.py:847</code></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">261</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">48</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"models.py","value":1223,"metric":94,"meta":"196 branches \u00b7 2 authors"},{"name":"views.py","value":1044,"metric":87,"meta":"99 branches \u00b7 2 authors"},{"name":"forms.py","value":734,"metric":32,"meta":"86 branches \u00b7 2 authors"},{"name":"consumers.py","value":256,"metric":14,"meta":"43 branches \u00b7 2 authors"},{"name":"static/game/js/scene-chat.js","value":213,"metric":3,"meta":"42 branches \u00b7 1 authors"},{"name":"selectors.py","value":184,"metric":4,"meta":"30 branches \u00b7 1 authors"},{"name":"scene_chat.py","value":88,"metric":4,"meta":"16 branches \u00b7 1 authors"},{"name":"spending_approval.py","value":69,"metric":5,"meta":"12 branches \u00b7 2 authors"},{"name":"actions.py","value":154,"metric":5,"meta":"4 branches \u00b7 1 authors"},{"name":"security.py","value":49,"metric":3,"meta":"7 branches \u00b7 2 authors"},{"name":"rolls.py","value":94,"metric":1,"meta":"21 branches \u00b7 1 authors"},{"name":"admin.py","value":209,"metric":20,"meta":"0 branches \u00b7 2 authors"},{"name":"urls.py","value":140,"metric":14,"meta":"0 branches \u00b7 2 authors"},{"name":"xp_spend.py","value":85,"metric":1,"meta":"11 branches \u00b7 1 authors"},{"name":"signals.py","value":20,"metric":3,"meta":"2 branches \u00b7 1 authors"},{"name":"static/game/js/xp-spend.js","value":21,"metric":1,"meta":"7 branches \u00b7 1 authors"},{"name":"freebie_records.py","value":31,"metric":1,"meta":"6 branches \u00b7 1 authors"},{"name":"routing.py","value":8,"metric":3,"meta":"1 branches \u00b7 2 authors"},{"name":"apps.py","value":7,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"static/game/js/week-detail.js","value":25,"metric":1,"meta":"3 branches \u00b7 1 authors"},{"name":"text.py","value":35,"metric":1,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":94}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 58 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/game/scene/detail.html (32), templates/game/chronicle/detail.html (23), templates/game/scene/commands.html (14).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>94</td><td class='num'>196</td><td class='num'>1,223</td><td class='num'>2</td><td class='num' data-sort='18518'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>views.py</code></td><td class='num'>87</td><td class='num'>99</td><td class='num'>1,044</td><td class='num'>2</td><td class='num' data-sort='8700'><div class="bar bad"><i style="width:47.0%"></i></div></td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>32</td><td class='num'>86</td><td class='num'>734</td><td class='num'>2</td><td class='num' data-sort='2784'><div class="bar bad"><i style="width:15.0%"></i></div></td></tr>
+<tr><td><code>consumers.py</code></td><td class='num'>14</td><td class='num'>43</td><td class='num'>256</td><td class='num'>2</td><td class='num' data-sort='616'><div class="bar bad"><i style="width:3.3%"></i></div></td></tr>
+<tr><td><code>static/game/js/scene-chat.js</code></td><td class='num'>3</td><td class='num'>42</td><td class='num'>213</td><td class='num'>1</td><td class='num' data-sort='129'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>selectors.py</code></td><td class='num'>4</td><td class='num'>30</td><td class='num'>184</td><td class='num'>1</td><td class='num' data-sort='124'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>scene_chat.py</code></td><td class='num'>4</td><td class='num'>16</td><td class='num'>88</td><td class='num'>1</td><td class='num' data-sort='68'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>spending_approval.py</code></td><td class='num'>5</td><td class='num'>12</td><td class='num'>69</td><td class='num'>2</td><td class='num' data-sort='65'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>actions.py</code></td><td class='num'>5</td><td class='num'>4</td><td class='num'>154</td><td class='num'>1</td><td class='num' data-sort='25'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>security.py</code></td><td class='num'>3</td><td class='num'>7</td><td class='num'>49</td><td class='num'>2</td><td class='num' data-sort='24'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>rolls.py</code></td><td class='num'>1</td><td class='num'>21</td><td class='num'>94</td><td class='num'>1</td><td class='num' data-sort='22'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>20</td><td class='num'>0</td><td class='num'>209</td><td class='num'>2</td><td class='num' data-sort='20'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>14</td><td class='num'>0</td><td class='num'>140</td><td class='num'>2</td><td class='num' data-sort='14'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>xp_spend.py</code></td><td class='num'>1</td><td class='num'>11</td><td class='num'>85</td><td class='num'>1</td><td class='num' data-sort='12'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>signals.py</code></td><td class='num'>3</td><td class='num'>2</td><td class='num'>20</td><td class='num'>1</td><td class='num' data-sort='9'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>static/game/js/xp-spend.js</code></td><td class='num'>1</td><td class='num'>7</td><td class='num'>21</td><td class='num'>1</td><td class='num' data-sort='8'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>freebie_records.py</code></td><td class='num'>1</td><td class='num'>6</td><td class='num'>31</td><td class='num'>1</td><td class='num' data-sort='7'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>routing.py</code></td><td class='num'>3</td><td class='num'>1</td><td class='num'>8</td><td class='num'>2</td><td class='num' data-sort='6'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>4</td><td class='num'>0</td><td class='num'>7</td><td class='num'>2</td><td class='num' data-sort='4'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>static/game/js/week-detail.js</code></td><td class='num'>1</td><td class='num'>3</td><td class='num'>25</td><td class='num'>1</td><td class='num' data-sort='4'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>text.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>35</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<h2>Persistence and delivery have different guarantees</h2><h3>Post once, render per viewer</h3><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+  participant C as HTTP or WebSocket adapter
+  participant S as scene_chat
+  participant DB as Database
+  participant L as Channel layer
+  participant W as Viewer consumer
+  C->>S: can_post then valid PostForm
+  S->>DB: scene.add_post
+  alt malformed command
+    S-->>C: ActionFailed
+  else persisted post
+    S->>DB: Register on_commit callback
+    DB->>L: group_send after commit
+    alt layer fails
+      S->>S: Log and preserve committed post
+    else delivered
+      L->>W: Event containing IDs
+      W->>W: Recheck access and render for this viewer
+    end
+  end</pre></div></div><ul><li>Shared posting and caller transaction expectations: <code>game/scene_chat.py:1</code>, <code>game/scene_chat.py:62</code>.</li><li>Per-viewer HTML is never broadcast to another connection: <code>game/consumers.py:9</code>.</li><li>Delivery failure is logged, not retried durably here: <code>game/scene_chat.py:94</code>.</li></ul><h3>Approve or deny spending</h3><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
+  participant V as Approval endpoint
+  participant A as decide_spending_request
+  participant DB as Database
+  participant S as Character service
+  V->>A: record, character, approver, decision
+  A->>DB: Lock request and resolve concrete character
+  A->>A: Check read audience and approver scope
+  alt already decided
+    A-->>V: SpendingAlreadyDecided
+  else pending and authorized
+    A->>DB: Lock and refresh character
+    A->>S: apply or deny
+    alt service fails
+      S-->>A: Failed result
+      A-->>V: SpendingDecisionError and rollback
+    else success
+      A-->>V: Result and commit
+    end
+  end</pre></div></div><ul><li>Request identity includes the character ID; outsiders see a missing record response: <code>game/spending_approval.py:49</code>.</li><li>PC self-approval is rejected, with a scoped NPC exception: <code>game/spending_approval.py:21</code>.</li><li>Refreshing the locked character avoids overwriting another spend deduction: <code>game/spending_approval.py:69</code>.</li></ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Concern ownership and seams</h2><div class="tbl-wrap"><table><thead><tr><th>Concern</th><th>Owner</th><th>Judgment</th><th>Interpretation</th></tr></thead><tbody><tr><td>Posting</td><td><code>game/scene_chat.py:62</code></td><td><span class="badge good">single concept</span></td><td>Shared HTTP and WebSocket path</td></tr><tr><td>Live delivery</td><td><code>game/scene_chat.py:94</code></td><td><span class="badge good">single concept</span></td><td>Post-commit broadcaster</td></tr><tr><td>Spending decisions</td><td><code>game/spending_approval.py:42</code></td><td><span class="badge good">single concept</span></td><td>Guarded transaction</td></tr><tr><td>XP pricing/application</td><td><code>game/xp_spend.py:3</code></td><td><span class="badge warn">crosses layers</span></td><td>Owned by character services, consumed here</td></tr></tbody></table></div><h3>Data writers</h3><div class="callout warn">Scene posting persists through scene_chat and scene.add_post (<code>game/scene_chat.py:79</code>); spending decisions mutate game request rows and character state through character services (<code>game/spending_approval.py:73</code>). XP preview temporarily invokes that same spending path and rolls back (<code>game/xp_spend.py:57</code>). Keep external side effects out of that rollback-based preview contract.</div><p>Async consumers use Django sync adapters (<code>game/consumers.py:21</code>); authorization and rendering are viewer-specific. The isolated dependency analyzer reports no internal cycles but categorizes absolute game and sibling-app imports outside the package graph; root analysis is authoritative.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>game — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>A spending request is decided only while pending under its row lock</td><td><code>game/spending_approval.py:49</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Broadcasts describe committed changes</td><td><code>game/scene_chat.py:112</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Every committed change reaches every connected viewer</td><td><code>game/scene_chat.py:104</code></td><td><span class="badge warn">partial or outside model</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>Channel-layer exceptions are logged and do not roll back a committed post. <code>game/scene_chat.py:94</code></p><h3>Concurrency and shared state</h3><p>Approval locks the request then re-reads the concrete character under a second row lock; review new writers for compatible lock order and backend semantics. <code>game/spending_approval.py:49</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> Successful persistence does not guarantee live event delivery. <code>game/scene_chat.py:94</code></div><div class="callout warn"><strong>2.</strong> Concurrent approval/spending depends on fresh rows, lock ordering and backend support. <code>game/spending_approval.py:49</code></div><div class="callout warn"><strong>3.</strong> Preview executes the real spend then rolls back database work; future external side effects would need separate isolation. <code>game/xp_spend.py:57</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<h2>Domain words and code contracts</h2><div class="tbl-wrap"><table><thead><tr><th>Domain</th><th>Code language</th><th>Evidence</th><th>Maintainer note</th></tr></thead><tbody><tr><td>Scene message</td><td>Post</td><td><code>game/scene_chat.py:62</code></td><td>Posting can return no Post for a storyteller command; absence is not always failure.</td></tr><tr><td>Live change</td><td>group event</td><td><code>game/consumers.py:9</code></td><td>Carries IDs, not pre-rendered shared markup.</td></tr><tr><td>XP preview</td><td>SpendPreview / SpendRefusal</td><td><code>game/xp_spend.py:20</code></td><td>Runs the actual spending service inside a rolled-back transaction.</td></tr><tr><td>Decide advancement</td><td>apply / deny</td><td><code>game/spending_approval.py:78</code></td><td>One guarded decision, not an ordinary unscoped model update.</td></tr></tbody></table></div><div class="callout warn">Names encode operational contracts: do not collapse the distinctions above into one generic action or status flag. The highlighted ambiguities are review prompts, not evidence of a runtime defect.</div>
+
+</section><!--DOC_BODY--></main>
+<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>
