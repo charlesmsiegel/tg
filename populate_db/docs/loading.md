@@ -89,13 +89,14 @@ point (see [conventions](conventions.md#imports-are-load-order)).
 
 ## Execution, transactions and failures
 
-For each file the command reads the source and runs:
+For each file the command uses Python's standard script runner:
 
 ```python
 with transaction.atomic():
-    exec(code, {"__name__": "__main__"})
+    runpy.run_path(str(file), run_name="__main__")
 ```
 
+- Each file receives its source filename in `__file__` and in tracebacks.
 - Each file runs with a fresh global namespace. Names defined in one file are not
   visible in the next unless the next one imports them.
 - Each file runs in its own transaction. If it raises, everything it wrote is rolled
@@ -108,7 +109,7 @@ with transaction.atomic():
 Imported scripts are cached in `sys.modules` for the rest of the process. If a script
 fails after importing another one, that import's rows are rolled back but the module
 stays cached, so later imports in the same run do not recreate them. The imported
-file's own turn in the sort order runs it again with `exec`, which restores its rows
+file's own turn in the sort order runs it again with `runpy.run_path`, which restores its rows
 only if that turn comes later. After fixing a failure, run the command again: every
 script is written to be safe to rerun.
 

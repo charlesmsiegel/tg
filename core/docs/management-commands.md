@@ -41,8 +41,9 @@ the database owner.
 
 ### `populate_gamedata`
 
-Runs the Python scripts under `populate_db/` (recursively) with `exec`, each in its own
-transaction. Order: files directly in `populate_db/`, then `core/`, then other folders
+Runs the Python scripts under `populate_db/` (recursively) with `runpy.run_path`, each
+as `__main__` in its own transaction. Scripts receive their `__file__` path, and tracebacks
+identify the source script. Order: files directly in `populate_db/`, then `core/`, then other folders
 alphabetically, then `chronicles/` last. A failing file is reported, the rest still
 run, and the command then raises `CommandError`.
 

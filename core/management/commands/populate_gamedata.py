@@ -7,6 +7,7 @@ and provides more control over data loading.
 
 import logging
 import re
+import runpy
 import traceback
 from pathlib import Path
 
@@ -212,13 +213,9 @@ class Command(BaseCommand):
         if verbose:
             self.stdout.write(f"Loading {relative_path}...", ending="")
 
-        # Read and execute the file
-        with open(file) as f:
-            code = f.read()
-
         # Execute in a transaction for safety
         with transaction.atomic():
-            exec(code, {"__name__": "__main__"})
+            runpy.run_path(str(file), run_name="__main__")
 
         if verbose:
             self.stdout.write(self.style.SUCCESS(" ✓"))
