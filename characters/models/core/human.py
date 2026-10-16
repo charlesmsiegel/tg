@@ -691,43 +691,37 @@ class Human(
             )
         # Check if trait is an attribute
         if hasattr(Attribute.objects, "filter"):
-            try:
-                attribute = Attribute.objects.filter(property_name=trait).first()
-                if attribute and hasattr(self, trait):
-                    current_value = getattr(self, trait)
-                    cost = get_xp_cost("attribute") * (current_value + 1)
+            attribute = Attribute.objects.filter(property_name=trait).first()
+            if attribute and hasattr(self, trait):
+                current_value = getattr(self, trait)
+                cost = get_xp_cost("attribute") * (current_value + 1)
 
-                    if cost <= self.xp:
-                        if self.add_attribute(trait):
-                            self.xp -= cost
-                            self.add_to_spend(trait, getattr(self, trait), cost)
-                            return True
-                        return False
+                if cost <= self.xp:
+                    if self.add_attribute(trait):
+                        self.xp -= cost
+                        self.add_to_spend(trait, getattr(self, trait), cost)
+                        return True
                     return False
-            except Exception:
-                pass
+                return False
 
         # Check if trait is an ability
         if hasattr(Ability.objects, "filter"):
-            try:
-                ability = Ability.objects.filter(property_name=trait).first()
-                if ability and hasattr(self, trait):
-                    current_value = getattr(self, trait)
+            ability = Ability.objects.filter(property_name=trait).first()
+            if ability and hasattr(self, trait):
+                current_value = getattr(self, trait)
 
-                    if current_value == 0:
-                        cost = get_xp_cost("new_ability")
-                    else:
-                        cost = get_xp_cost("ability") * (current_value + 1)
+                if current_value == 0:
+                    cost = get_xp_cost("new_ability")
+                else:
+                    cost = get_xp_cost("ability") * (current_value + 1)
 
-                    if cost <= self.xp:
-                        if self.add_ability(trait):
-                            self.xp -= cost
-                            self.add_to_spend(trait, getattr(self, trait), cost)
-                            return True
-                        return False
+                if cost <= self.xp:
+                    if self.add_ability(trait):
+                        self.xp -= cost
+                        self.add_to_spend(trait, getattr(self, trait), cost)
+                        return True
                     return False
-            except Exception:
-                pass
+                return False
 
         # Check if trait is a background
         if trait in self.allowed_backgrounds:
@@ -774,33 +768,27 @@ class Human(
         """
         # Check if trait is an attribute
         if hasattr(Attribute.objects, "filter"):
-            try:
-                attribute = Attribute.objects.filter(property_name=trait).first()
-                if attribute and hasattr(self, trait):
-                    cost = get_freebie_cost("attribute")
-                    if cost <= self.freebies:
-                        if self.add_attribute(trait):
-                            self.freebies -= cost
-                            return True
-                        return False
+            attribute = Attribute.objects.filter(property_name=trait).first()
+            if attribute and hasattr(self, trait):
+                cost = get_freebie_cost("attribute")
+                if cost <= self.freebies:
+                    if self.add_attribute(trait):
+                        self.freebies -= cost
+                        return True
                     return False
-            except Exception:
-                pass
+                return False
 
         # Check if trait is an ability
         if hasattr(Ability.objects, "filter"):
-            try:
-                ability = Ability.objects.filter(property_name=trait).first()
-                if ability and hasattr(self, trait):
-                    cost = get_freebie_cost("ability")
-                    if cost <= self.freebies:
-                        if self.add_ability(trait):
-                            self.freebies -= cost
-                            return True
-                        return False
+            ability = Ability.objects.filter(property_name=trait).first()
+            if ability and hasattr(self, trait):
+                cost = get_freebie_cost("ability")
+                if cost <= self.freebies:
+                    if self.add_ability(trait):
+                        self.freebies -= cost
+                        return True
                     return False
-            except Exception:
-                pass
+                return False
 
         # Check if trait is a background
         if trait in self.allowed_backgrounds:
