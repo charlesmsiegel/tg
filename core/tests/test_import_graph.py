@@ -12,6 +12,8 @@ is outside the packages checked.
 
 import ast
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.apps import apps
 from django.test import SimpleTestCase
@@ -61,13 +63,20 @@ def resolve(name, modules):
     return None
 
 
+def is_local_app_path(path):
+    """Project apps exclude dependencies installed in repository environments."""
+    resolved = Path(path).resolve()
+    if not resolved.is_relative_to(ROOT):
+        return False
+    dependency_dirs = {".venv", "venv", "site-packages", "dist-packages"}
+    return dependency_dirs.isdisjoint(resolved.relative_to(ROOT).parts)
+
+
 class ImportPlacementTests(SimpleTestCase):
     def test_every_local_app_is_checked(self):
         """A new app cannot slip out of the guard by not being listed."""
         local_apps = {
-            config.name
-            for config in apps.get_app_configs()
-            if Path(config.path).resolve().is_relative_to(ROOT)
+            config.name for config in apps.get_app_configs() if is_local_app_path(config.path)
         }
         self.assertEqual(sorted(local_apps - set(PACKAGES)), [])
 
@@ -99,6 +108,32 @@ class ImportPlacementTests(SimpleTestCase):
         self.assertEqual(
             offenders, [], "Imports inside functions or classes:\n" + "\n".join(offenders)
         )
+
+
+class LocalAppClassificationTests(SimpleTestCase):
+    def check_coverage(self, path):
+        config = SimpleNamespace(name="new_app", path=str(path))
+        with patch("core.tests.test_import_graph.apps.get_app_configs", return_value=[config]):
+            ImportPlacementTests().test_every_local_app_is_checked()
+
+    def test_new_local_app_still_requires_guard_coverage(self):
+        with self.assertRaises(AssertionError):
+            self.check_coverage(ROOT / "new_app")
+
+    def test_external_dependencies_do_not_require_guard_coverage(self):
+        self.check_coverage(ROOT.parent / "external_dependencies" / "new_app")
+
+    def test_repository_environments_do_not_require_guard_coverage(self):
+        for relative in (
+            ".venv/lib/python3.10/site-packages/new_app",
+            "venv/lib/python3.12/site-packages/new_app",
+            ".venv/Lib/new_app",
+            "venv/Lib/new_app",
+            "vendor/site-packages/new_app",
+            "vendor/dist-packages/new_app",
+        ):
+            with self.subTest(path=relative):
+                self.check_coverage(ROOT / relative)
 
 
 def import_edges(modules):
