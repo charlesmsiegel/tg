@@ -4,9 +4,11 @@ The population command adopts unkeyed rows explicitly after migration. Reversing
 keeps the column and unique index. Removed models, fields and tables are skipped.
 """
 
-from django.db import migrations, models
+from django.db import migrations
 
 from tg_schema.schema import live_field, live_model, table_columns, table_names
+
+INDEX = "unique_mummy_title_seed_key"
 
 
 def add_mummy_title_seed_key(apps, schema_editor):
@@ -26,15 +28,10 @@ def add_mummy_title_seed_key(apps, schema_editor):
             spec["unique"] and spec["columns"] == [field.column] for spec in constraints.values()
         ):
             return
-    # Use the declared constraint's name on fresh and patched databases alike.
-    constraint = next(
-        spec
-        for spec in model._meta.constraints
-        if isinstance(spec, models.UniqueConstraint) and spec.fields == ("seed_key",)
-    )
+    # A historical index name must not depend on later live-model constraints.
     quote = connection.ops.quote_name
     schema_editor.execute(
-        f"CREATE UNIQUE INDEX {quote(constraint.name)} ON {quote(table)} ({quote(field.column)})"
+        f"CREATE UNIQUE INDEX {quote(INDEX)} ON {quote(table)} ({quote(field.column)})"
     )
 
 

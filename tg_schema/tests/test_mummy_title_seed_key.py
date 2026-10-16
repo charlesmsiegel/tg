@@ -92,3 +92,9 @@ class MummyTitleSeedMigrationTests(TransactionTestCase):
                 cursor, self.model._meta.db_table
             )
         self.assertNotIn("seed_key", [column.name for column in columns])
+
+    def test_later_model_constraint_removal_does_not_break_historical_patch(self):
+        self.legacy_table(with_column=True)
+        with mock.patch.object(self.model._meta, "constraints", []):
+            self.run_patch()
+        self.assert_identity_contract()

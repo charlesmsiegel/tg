@@ -1,10 +1,14 @@
 """The structured pilot preserves the existing twelve titles and script entry point."""
 
 import importlib
+import importlib.util
+import json
 import runpy
+import shutil
 import sys
 from io import StringIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import mock
 
 from django.conf import settings
@@ -129,3 +133,21 @@ class PopulateMummyTitleTests(TestCase):
         self.assertNotIn("seed_data.py", output.getvalue())
         self.assertEqual(MummyTitle.objects.count(), 12)
         self.assertEqual(MummyTitle.objects.exclude(seed_key=None).count(), 12)
+
+    def test_failed_direct_import_rolls_back_updates_and_adoption(self):
+        original = MummyTitle.objects.create(name="Pharaoh", description="Keep original")
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "titles.py"
+            shutil.copyfile(SCRIPT, script)
+            records = json.loads(SCRIPT.with_suffix(".json").read_text(encoding="utf-8"))
+            records[0]["export"] = "pharoah"
+            records[0]["fields"]["description"] = "Should roll back"
+            script.with_suffix(".json").write_text(json.dumps(records), encoding="utf-8")
+            spec = importlib.util.spec_from_file_location("isolated_mummy_titles", script)
+            module = importlib.util.module_from_spec(spec)
+            with self.assertRaises(KeyError):
+                spec.loader.exec_module(module)
+        original.refresh_from_db()
+        self.assertEqual(original.description, "Keep original")
+        self.assertIsNone(original.seed_key)
+        self.assertEqual(MummyTitle.objects.count(), 1)
