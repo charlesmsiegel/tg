@@ -20,6 +20,18 @@ reference model first, see
 
   [gamelines](gamelines.md) lists every script and the models it loads.
 
+## Edit structured Mummy titles
+
+Edit `mummy/titles.json`: each entry has `key`, `export`, `legacy_lookup` and `fields`.
+Keep existing keys and legacy selectors fixed when changing a title name or description.
+New entries need a unique dotted lowercase key, a Python export identifier, an original-name
+legacy selector and all three content fields (name, rank_level, description). Add an explicit
+export binding to `mummy/titles.py` when adding an entry, and extend its integration tests.
+Reloads overwrite staff edits; errors roll back the whole catalogue. See
+[loading](loading.md#structured-mummy-title-catalogue) for rollout and adoption rules.
+
+The following Python recipes cover the other, unconverted catalogues.
+
 ## Add a record to an existing script
 
 1. Open the script and follow the pattern it already uses. Put the fields that

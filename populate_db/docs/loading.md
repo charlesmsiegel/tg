@@ -113,6 +113,31 @@ file's own turn in the sort order runs it again with `runpy.run_path`, which res
 only if that turn comes later. After fixing a failure, run the command again: every
 script is written to be safe to rerun.
 
+## Structured Mummy title catalogue
+
+Mummy titles are the first structured catalogue. `mummy/titles.py` loads its adjacent
+`titles.json` through `core.seed_data`; every other catalogue retains its existing Python
+loading behavior. JSON is not discovered or executed by the management command, so the
+existing ordering, `--gameline mummy --only titles` filter and script exports still work.
+
+Run `python manage.py migrate` before loading the converted script on an existing database:
+`tg_schema` migration 0013 adds the nullable identity column and its unique constraint.
+The first load adopts existing rows by their original unique names, preserving primary
+keys and character links. Later loads use permanent keys such as `mummy.title.pharaoh`.
+
+The JSON fields `name`, `rank_level` and `description` are authoritative: reloading replaces
+staff edits to those fields. Change catalogue content in JSON to make edits persistent.
+Never rename a seed key or change its frozen `legacy_lookup` to match a new display name;
+key changes require a reviewed data migration. Unseeded staff-created titles have NULL keys.
+Removing an entry from JSON does not delete its database row.
+
+The loader validates the complete record contract before writes, then loads each catalogue
+inside a transaction even when the wrapper is imported directly. Ambiguous legacy matches,
+a legacy row already assigned another key, model validation failures or database errors
+roll back the whole catalogue. It never merges, deletes or silently chooses conflicting
+rows. Concurrent conflicting loads can fail and require rerunning the catalogue; they are
+not automatically retried. The command retains its existing per-script error reporting.
+
 ## `setup_db.sh`
 
 [`setup_db.sh`](../../setup_db.sh) rebuilds a local development database from

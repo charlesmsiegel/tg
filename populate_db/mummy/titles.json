@@ -1,0 +1,146 @@
+[
+  {
+    "key": "mummy.title.pharaoh",
+    "export": "pharaoh",
+    "legacy_lookup": {
+      "name": "Pharaoh"
+    },
+    "fields": {
+      "name": "Pharaoh",
+      "rank_level": 10,
+      "description": "Supreme leader of an Amenti community. Rare and powerful."
+    }
+  },
+  {
+    "key": "mummy.title.high_priest",
+    "export": "high_priest",
+    "legacy_lookup": {
+      "name": "High Priest/Priestess"
+    },
+    "fields": {
+      "name": "High Priest/Priestess",
+      "rank_level": 8,
+      "description": "Religious leader and keeper of ancient rites."
+    }
+  },
+  {
+    "key": "mummy.title.vizier",
+    "export": "vizier",
+    "legacy_lookup": {
+      "name": "Vizier"
+    },
+    "fields": {
+      "name": "Vizier",
+      "rank_level": 7,
+      "description": "Chief administrator and advisor to higher-ranking Amenti."
+    }
+  },
+  {
+    "key": "mummy.title.keeper_of_balance",
+    "export": "keeper_of_balance",
+    "legacy_lookup": {
+      "name": "Keeper of Balance"
+    },
+    "fields": {
+      "name": "Keeper of Balance",
+      "rank_level": 6,
+      "description": "Guardian of Ma'at and cosmic order. Associated with the Web of Ma'at."
+    }
+  },
+  {
+    "key": "mummy.title.judge_of_souls",
+    "export": "judge_of_souls",
+    "legacy_lookup": {
+      "name": "Judge of Souls"
+    },
+    "fields": {
+      "name": "Judge of Souls",
+      "rank_level": 6,
+      "description": "Weighs hearts and pronounces judgment. Associated with the Web of Osiris."
+    }
+  },
+  {
+    "key": "mummy.title.guardian",
+    "export": "guardian",
+    "legacy_lookup": {
+      "name": "Guardian"
+    },
+    "fields": {
+      "name": "Guardian",
+      "rank_level": 5,
+      "description": "Protector of sacred places and fellow Amenti. Associated with the Web of Horus."
+    }
+  },
+  {
+    "key": "mummy.title.preserver",
+    "export": "preserver",
+    "legacy_lookup": {
+      "name": "Preserver"
+    },
+    "fields": {
+      "name": "Preserver",
+      "rank_level": 5,
+      "description": "Keeper of knowledge and sacred objects. Associated with the Web of Isis."
+    }
+  },
+  {
+    "key": "mummy.title.lorekeeper",
+    "export": "lorekeeper",
+    "legacy_lookup": {
+      "name": "Lorekeeper"
+    },
+    "fields": {
+      "name": "Lorekeeper",
+      "rank_level": 5,
+      "description": "Scholar and keeper of wisdom. Associated with the Web of Thoth."
+    }
+  },
+  {
+    "key": "mummy.title.elder",
+    "export": "elder",
+    "legacy_lookup": {
+      "name": "Elder"
+    },
+    "fields": {
+      "name": "Elder",
+      "rank_level": 4,
+      "description": "Respected Amenti with many incarnations and much experience."
+    }
+  },
+  {
+    "key": "mummy.title.mentor",
+    "export": "mentor",
+    "legacy_lookup": {
+      "name": "Mentor"
+    },
+    "fields": {
+      "name": "Mentor",
+      "rank_level": 3,
+      "description": "Teacher of newly awakened Amenti."
+    }
+  },
+  {
+    "key": "mummy.title.seeker",
+    "export": "seeker",
+    "legacy_lookup": {
+      "name": "Seeker"
+    },
+    "fields": {
+      "name": "Seeker",
+      "rank_level": 2,
+      "description": "Amenti on a quest for knowledge or redemption."
+    }
+  },
+  {
+    "key": "mummy.title.neophyte",
+    "export": "neophyte",
+    "legacy_lookup": {
+      "name": "Neophyte"
+    },
+    "fields": {
+      "name": "Neophyte",
+      "rank_level": 1,
+      "description": "Newly awakened Amenti, still learning their purpose."
+    }
+  }
+]

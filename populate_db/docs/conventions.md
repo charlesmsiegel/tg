@@ -120,6 +120,13 @@ run any number of times:
 - Remember that `defaults` apply only on creation; `get_or_create` never updates an
   existing row. Use `update_or_create` when a reload should change stored values.
 
+## Structured seed identities
+
+The Mummy title pilot uses JSON records and immutable, database-unique seed keys.
+It adopts existing names on first load and updates declared fields on subsequent loads.
+Read [the catalogue contract and rollout](loading.md#structured-mummy-title-catalogue)
+before editing it; the get-or-create conventions above apply to the other scripts.
+
 ## Sharing objects between scripts
 
 Bind any object that another script might need to a module-level name, taking the
