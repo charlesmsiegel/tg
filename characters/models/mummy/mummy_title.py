@@ -9,6 +9,8 @@ class MummyTitle(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
+    # Legacy databases receive this column and its constraint through tg_schema 0013.
+    seed_key = models.CharField(max_length=150, null=True, blank=True, editable=False)
     rank_level = models.IntegerField(
         default=0, help_text="Numerical rank (higher = more prestigious)"
     )
@@ -17,6 +19,9 @@ class MummyTitle(models.Model):
     class Meta:
         verbose_name = "Mummy Title"
         verbose_name_plural = "Mummy Titles"
+        constraints = [
+            models.UniqueConstraint(fields=["seed_key"], name="unique_mummy_title_seed_key")
+        ]
 
     def __str__(self):
         return self.name
