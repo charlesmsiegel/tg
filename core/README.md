@@ -106,3 +106,7 @@ of the rules those follow are enforced here.
 
 `core/api/` owns `/api/v1/` session-authenticated native projections and safe descriptive
 updates, plus read-only native scene transcripts and journal entries. See [API contract and limitations](../docs/reference/toolkit-api-v1.md).
+
+The [native API contract](../docs/reference/toolkit-api-v1.md) includes a session-auth
+facade with anonymous CSRF discovery, form login and POST-only logout, preserving native
+Django authentication protections and the site's shared login throttle.

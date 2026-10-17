@@ -552,6 +552,9 @@ core.views.object_type_redirect.ObjectTypeRedirectView
 accounts.views.CustomLoginView
 accounts.views.CustomPasswordResetView
 accounts.views.SignUp
+core.api.auth.CSRFView
+core.api.auth.LoginView
+core.api.auth.SessionLogoutView
 characters.views.changeling.cantrip.CantripDetailView
 characters.views.changeling.cantrip.CantripListView
 characters.views.changeling.house.HouseDetailView

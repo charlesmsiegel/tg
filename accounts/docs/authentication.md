@@ -152,3 +152,12 @@ they use the admin's look rather than the site's.
 - [accounts forms](forms.md)
 - [Settings reference](../../docs/reference/settings.md)
 - [Security operations](../../docs/operations/security.md)
+
+## Native client JSON facade
+
+The versioned API has CSRF/session discovery and form-encoded login/logout routes,
+implemented in `core/api/auth.py` over CustomLoginView and Django LogoutView. They keep
+native session/CSRF rotation and share the same `login` throttle counters with this
+HTML flow. The HTML views and redirects above are unchanged. See the
+[API contract](../../docs/reference/toolkit-api-v1.md#authentication-and-csrf) for media
+types, projected own-profile metadata, lifecycle and client storage requirements.

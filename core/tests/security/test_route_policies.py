@@ -56,6 +56,9 @@ class RoutePolicyTests(SimpleTestCase):
             "accounts.views.SignUp",
             "accounts.views.CustomLoginView",
             "accounts.views.CustomPasswordResetView",
+            # Native auth facade deliberately allows anonymous CSRF-protected POSTs.
+            "core.api.auth.LoginView",
+            "core.api.auth.SessionLogoutView",
         }
         registered_reads = {
             action.view_path

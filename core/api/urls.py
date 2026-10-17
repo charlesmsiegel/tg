@@ -2,10 +2,13 @@
 
 from django.urls import path
 
-from core.api import scene_journal, views
+from core.api import auth, scene_journal, views
 
 app_name = "api_v1"
 urlpatterns = [
+    path("auth/csrf/", auth.CSRFView.as_view(), name="auth_csrf"),
+    path("auth/login/", auth.LoginView.as_view(), name="auth_login"),
+    path("auth/logout/", auth.SessionLogoutView.as_view(), name="auth_logout"),
     path("scenes/", scene_journal.SceneListView.as_view(), name="scenes"),
     path("scenes/<int:pk>/", scene_journal.SceneDetailView.as_view(), name="scene"),
     path("scenes/<int:pk>/posts/", scene_journal.ScenePostsView.as_view(), name="scene_posts"),

@@ -2,7 +2,6 @@
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404, JsonResponse
-from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views import View
 from rest_framework.authentication import SessionAuthentication
@@ -17,6 +16,7 @@ from characters.models.core import Character
 from core.actions import ObjectActionView
 from core.api.projections import character_detail, character_summary, chronicle_detail
 from core.api.services import create_chronicle, update_description
+from core.api.session import session_state
 from core.permissions import Permission, PermissionManager
 from game.security import readable_chronicles
 
@@ -50,12 +50,7 @@ class JSONReadView(APIView):
 
 class SessionView(JSONReadView):
     def get(self, request):
-        return Response(
-            {
-                "user": {"id": request.user.pk, "username": request.user.username},
-                "csrf_token": get_token(request),
-            }
-        )
+        return Response(session_state(request))
 
 
 class ChronicleListView(JSONReadView):

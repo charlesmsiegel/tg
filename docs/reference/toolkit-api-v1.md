@@ -7,22 +7,61 @@ schema, token table, migration or CORS setting is added.
 
 ## Authentication and CSRF
 
-Use the existing Django session login flow at `/accounts/login/`: GET the form to obtain
-the CSRF cookie, then POST credentials and its CSRF token with a cookie-aware client.
-Keep the resulting `sessionid` cookie private. This increment adds no JSON login/logout,
-JWT, bearer token, password handling or cross-origin access. Existing site logout applies.
+The native HTML flow at `/accounts/login/` remains available. The initial backend
+increment for toolkit #198 also provides a JSON response facade over that same native
+login form, session rotation and shared throttle. It adds no JWT, refresh token,
+credential table, cross-origin exemption or browser authorization bridge.
 
-`GET /api/v1/session/` requires an authenticated session and returns
-`{"user":{"id":123,"username":"name"},"csrf_token":"..."}`. Retain its cookies and send
-`X-CSRFToken: <csrf_token>` on every JSON POST. Both mutation routes run normal Django
-CSRF middleware (not `csrf_exempt`). Use HTTPS in production; session cookie security
-continues to come from the existing production settings. Do not put cookies in URLs.
+1. GET `/api/v1/auth/csrf/` using a cookie-aware HTTPS client. Anonymous response:
+   `{"authenticated":false,"csrf_token":"..."}` plus the CSRF cookie.
+2. POST `/api/v1/auth/login/` with **application/x-www-form-urlencoded** body containing
+   `username` and `password`, retaining cookies and supplying `X-CSRFToken` (or one
+   `csrfmiddlewaretoken` form field). Native HTTPS Origin/Referer checks apply. JSON,
+   multipart and other content types return 415; duplicate/unknown form fields return
+   400. Do not send `next` or arbitrary user/profile fields.
+3. Successful login returns 200 session discovery JSON and a rotated session/CSRF
+   cookie. Retain both cookies and use the returned fresh token on subsequent writes.
+   Invalid, missing or inactive credentials return identical 400
+   `{"error":"invalid_credentials"}`. Shared native login account/IP throttling returns
+   429 `{"error":"too_many_attempts"}` even for correct credentials after the limit.
+4. POST `/api/v1/auth/logout/` with valid CSRF to flush the server session, returning
+   204. GET never logs out. Anonymous repeated logout also requires CSRF. An offline
+   local disconnect cannot promise server-side revocation.
+
+Authenticated discovery (`auth/csrf/`, login success and existing `GET /api/v1/session/`)
+returns `authenticated`, fresh `csrf_token`, `user: {id, username}`, `profile: {theme,
+preferred_heading, is_st}` (null if missing), and `session: {browser_close,
+cookie_age_seconds}`. Profile projection excludes email, Discord, lines/veils and all
+other private fields. `is_st` is the native advisory chronicle ST summary, not a grant:
+game storytellers are read-only; staff status alone does not set it. Every object route
+still checks live native permissions.
+
+`cookie_age_seconds` is configured session cookie lifetime policy, **not remaining TTL**.
+Redis eviction, logout, password changes or account deactivation may revoke earlier;
+GET does not promise sliding refresh. `browser_close` tells native clients not to
+persist that credential across app restarts. No exact expiry or refresh endpoint is
+claimed. Expired sessions yield anonymous discovery and 401 on `/api/v1/session/`.
+
+All facade responses use private/no-store caching. CSRF and some middleware errors
+remain native text/HTML, so inspect status and Content-Type before parsing JSON. The
+HTML and API login share the same fixed-window account/IP quota and cache-outage
+behavior; this facade adds no second password-check route outside those controls.
+Native sign-up/reset remain on the site. No CAPTCHA/MFA provider is configured in
+repository source; an operator's external challenge may require a future browser flow.
+
+Keep passwords/session cookies out of URLs, logs, React state stores, SQLite and
+ordinary config files. A native Rust transport should hold cookies and CSRF in its own
+origin-bound client and persist session secrets only in an OS keyring; unavailable
+keyring means memory-only or explicit failure, never plaintext fallback. Use HTTPS,
+certificate validation and fixed-origin redirects. Rust client/keyring/login UI,
+connection profiles, scoped capability display and offline queueing are separate
+increments; #198 and #196 are not complete with this backend facade.
 
 ## Routes
 
 | Method and path | Result / authority |
 |---|---|
-| GET `/api/v1/session/` | Current user ID/name and CSRF token; login required |
+| GET `/api/v1/session/` | Projected own session/profile and CSRF token; login required |
 | GET `/api/v1/chronicles/` | Readable chronicles, IDs and names |
 | GET `/api/v1/chronicles/{id}/` | Native settings, head ST, game ST IDs and assigned ST/gameline IDs |
 | GET `/api/v1/chronicles/{id}/allowed-objects/` | Native object-type rows (`id`, `name`, `type`, `gameline`) |
@@ -37,7 +76,7 @@ Status/gameline/owner filters are deferred; only pagination parameters are suppo
 
 Every route has a manifest policy. Reads use `LOGIN` plus `readable_chronicles` or
 `PermissionManager` full-view filtering; writes use `ACTION`/`OBJECT_CREATE` plus existing
-object/scope checks. Anonymous calls are 401. Hidden and missing read objects return the
+object/scope checks. Anonymous calls to authenticated data routes are 401. Hidden and missing read objects return the
 same 404. Partial viewers and observers receive no private sheets from these routes,
 even if a public card is available through the ordinary site. A visible object that
 cannot be edited returns 403. Validation errors are 400; unsupported methods are 405.
@@ -45,7 +84,7 @@ Some middleware denials/CSRF errors remain standard TG text/HTML, so clients mus
 HTTP status and Content-Type before parsing JSON. Successful reads/writes use
 `Cache-Control: private, no-store`; no public API cache is introduced.
 
-Mutation bodies require `Content-Type: application/json` and a JSON object. Unknown fields
+The character/chronicle mutation bodies below require `Content-Type: application/json` and a JSON object. Unknown fields
 fail the whole request. Descriptive update keys are `notes`, `description`, `public_info`,
 `history`, `goals`, all optional strings (empty string allowed; null/numbers/objects are
 rejected). `history` and `goals` require a Human subclass. Non-submitted draft owners and
