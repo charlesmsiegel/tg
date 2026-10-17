@@ -71,7 +71,21 @@ class BackgroundManager:
         Returns:
             dict: {bg_name: total_rating} for all allowed backgrounds
         """
-        return {bg: self.total_background_rating(bg) for bg in self.character.allowed_backgrounds}
+        backgrounds = dict.fromkeys(self.character.allowed_backgrounds, 0)
+        if not backgrounds:
+            return backgrounds
+        background_rating_model = _model("BackgroundRating")
+        totals = (
+            background_rating_model.objects.filter(
+                char=self.character, bg__property_name__in=backgrounds
+            )
+            .order_by()
+            .values("bg__property_name")
+            .annotate(total=Sum("rating"))
+        )
+        for row in totals:
+            backgrounds[row["bg__property_name"]] = row["total"] or 0
+        return backgrounds
 
     def add_background(self, background, maximum=5):
         """

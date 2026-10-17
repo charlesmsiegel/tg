@@ -273,7 +273,7 @@ Flaws are negative ratings. `has_max_flaws()` is true when the flaw total is `-7
 
 | Class | Owns |
 |-------|------|
-| `BackgroundManager` | Rating sums (`total_background_rating`), `get_backgrounds()` (`{name: total_background_rating(name)}` over `allowed_backgrounds`, so it always reads `BackgroundRating` rows), `add_background(background, maximum=5)` (takes a property name or a `Background`; adds a dot to the character's first row for that background rated under 5, creating a row when there is none; the cap is a fixed 5), `has_backgrounds()`, the legacy freebie hooks, and the dynamic-property getter/setter |
+| `BackgroundManager` | Rating sums (`total_background_rating`), `get_backgrounds()` (one grouped `BackgroundRating` query over `allowed_backgrounds`, preserving name order and returning zero for missing ratings; no query for an empty list), `add_background(background, maximum=5)` (takes a property name or a `Background`; adds a dot to the character's first row for that background rated under 5, creating a row when there is none; the cap is a fixed 5), `has_backgrounds()`, the legacy freebie hooks, and the dynamic-property getter/setter |
 | `MeritFlawManager` | `add_mf()` (rating must be one of the merit's `ratings`), `filter_mfs()`, `mf_rating()`, totals, `num_languages()` (the "Language" merit's rating, doubled with "Natural Linguist") |
 
 ## Groups
