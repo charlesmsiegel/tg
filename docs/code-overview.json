@@ -114,14 +114,15 @@
     }
   ],
   "analysis": {
-    "source_commit": "67d7990bc5ac00dc371a7a382e4c637acdb8e629",
+    "source_commit": "69d96519ee43d39aa5f7471367cf97ced1b28cd2",
     "django_target": "5.2",
     "scope": "clean Git snapshot; ignored generated migrations and local databases omitted",
     "plain_javascript": "ungraded",
     "coverage_artifact": null,
-    "goal": "B+ in every manageable metric; not yet achieved",
-    "coding_skills_revision": "eaef08c735c77861931581a170a9b4d430076a9b",
+    "goal": "B+ in manageable code-health metrics; not yet achieved. Theory work paused at user request.",
+    "coding_skills_revision": "7ce994fffb3d1f6c61b7745e101618f0f018712a",
     "coding_skills_repository": "https://github.com/charlesmsiegel/coding-skills",
-    "refresh": "All 60 pages rebuilt: automated atlas tabs rerun; authored atlas tabs retained with citation checks; all12 theory panels independently rerun; metrics discovery rerun and inventory reviewed."
+    "refresh": "Health and summary pages refreshed only. Theory, measurement and codemap snapshots retained at the previous source; theory work paused at user request.",
+    "retained_reports_source_commit": "67d7990bc5ac00dc371a7a382e4c637acdb8e629"
   }
 }
