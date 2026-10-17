@@ -68,12 +68,12 @@ class Treasure(ItemModel):
         verbose_name_plural = "Treasures"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=1, rating__lte=5),
+                condition=Q(rating__gte=1, rating__lte=5),
                 name="items_treasure_rating_range",
                 violation_error_message="Treasure rating must be between 1 and 5",
             ),
             CheckConstraint(
-                check=Q(glamour_storage__gte=0, glamour_storage__lte=50),
+                condition=Q(glamour_storage__gte=0, glamour_storage__lte=50),
                 name="items_treasure_glamour_storage_range",
                 violation_error_message="Glamour storage must be between 0 and 50",
             ),

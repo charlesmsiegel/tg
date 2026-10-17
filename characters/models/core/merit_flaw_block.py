@@ -94,7 +94,7 @@ class MeritFlawRating(BaseMeritFlawRating):
         ]
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="characters_meritflawrating_rating_range",
                 violation_error_message="Merit/Flaw rating must be between -10 and 10",
             ),

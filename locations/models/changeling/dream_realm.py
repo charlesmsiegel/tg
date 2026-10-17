@@ -179,22 +179,22 @@ class DreamRealm(LocationModel):
         verbose_name_plural = "Dream Realms"
         constraints = [
             CheckConstraint(
-                check=Q(stability__gte=0, stability__lte=5),
+                condition=Q(stability__gte=0, stability__lte=5),
                 name="locations_dream_realm_stability_range",
                 violation_error_message="Stability must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(accessibility__gte=0, accessibility__lte=5),
+                condition=Q(accessibility__gte=0, accessibility__lte=5),
                 name="locations_dream_realm_accessibility_range",
                 violation_error_message="Accessibility must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(exit_difficulty__gte=0, exit_difficulty__lte=10),
+                condition=Q(exit_difficulty__gte=0, exit_difficulty__lte=10),
                 name="locations_dream_realm_exit_difficulty_range",
                 violation_error_message="Exit difficulty must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(glamour_level__gte=0, glamour_level__lte=10),
+                condition=Q(glamour_level__gte=0, glamour_level__lte=10),
                 name="locations_dream_realm_glamour_level_range",
                 violation_error_message="Glamour level must be between 0 and 10",
             ),

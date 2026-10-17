@@ -171,38 +171,38 @@ class Vampire(VtMHuman):
         constraints = [
             # Virtue pairs can be 0 when using alternative (Conviction vs Conscience, Instinct vs Self-Control)
             CheckConstraint(
-                check=Q(conscience__gte=0, conscience__lte=5),
+                condition=Q(conscience__gte=0, conscience__lte=5),
                 name="characters_vampire_conscience_range",
                 violation_error_message="Conscience must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(self_control__gte=0, self_control__lte=5),
+                condition=Q(self_control__gte=0, self_control__lte=5),
                 name="characters_vampire_self_control_range",
                 violation_error_message="Self-Control must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(courage__gte=1, courage__lte=5),
+                condition=Q(courage__gte=1, courage__lte=5),
                 name="characters_vampire_courage_range",
                 violation_error_message="Courage must be between 1 and 5",
             ),
             CheckConstraint(
-                check=Q(conviction__gte=0, conviction__lte=5),
+                condition=Q(conviction__gte=0, conviction__lte=5),
                 name="characters_vampire_conviction_range",
                 violation_error_message="Conviction must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(instinct__gte=0, instinct__lte=5),
+                condition=Q(instinct__gte=0, instinct__lte=5),
                 name="characters_vampire_instinct_range",
                 violation_error_message="Instinct must be between 0 and 5",
             ),
             # Humanity/Path can be 0-10 (degeneration allows going below 4)
             CheckConstraint(
-                check=Q(humanity__gte=0, humanity__lte=10),
+                condition=Q(humanity__gte=0, humanity__lte=10),
                 name="characters_vampire_humanity_range",
                 violation_error_message="Humanity must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(path_rating__gte=0, path_rating__lte=10),
+                condition=Q(path_rating__gte=0, path_rating__lte=10),
                 name="characters_vampire_path_rating_range",
                 violation_error_message="Path rating must be between 0 and 10",
             ),

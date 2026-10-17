@@ -206,7 +206,7 @@ class AdvantageRating(models.Model):
         verbose_name_plural = "Advantage Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_mage_advantagerating_rating_range",
                 violation_error_message="Advantage rating must be between 0 and 10",
             ),

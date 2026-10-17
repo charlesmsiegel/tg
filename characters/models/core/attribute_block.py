@@ -42,47 +42,47 @@ class AttributeBlock(models.Model):
         constraints = [
             # All attributes must be between 0 and 10
             CheckConstraint(
-                check=Q(strength__gte=0, strength__lte=10),
+                condition=Q(strength__gte=0, strength__lte=10),
                 name="%(app_label)s_%(class)s_strength_range",
                 violation_error_message="Strength must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(dexterity__gte=0, dexterity__lte=10),
+                condition=Q(dexterity__gte=0, dexterity__lte=10),
                 name="%(app_label)s_%(class)s_dexterity_range",
                 violation_error_message="Dexterity must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(stamina__gte=0, stamina__lte=10),
+                condition=Q(stamina__gte=0, stamina__lte=10),
                 name="%(app_label)s_%(class)s_stamina_range",
                 violation_error_message="Stamina must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(perception__gte=0, perception__lte=10),
+                condition=Q(perception__gte=0, perception__lte=10),
                 name="%(app_label)s_%(class)s_perception_range",
                 violation_error_message="Perception must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(intelligence__gte=0, intelligence__lte=10),
+                condition=Q(intelligence__gte=0, intelligence__lte=10),
                 name="%(app_label)s_%(class)s_intelligence_range",
                 violation_error_message="Intelligence must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(wits__gte=0, wits__lte=10),
+                condition=Q(wits__gte=0, wits__lte=10),
                 name="%(app_label)s_%(class)s_wits_range",
                 violation_error_message="Wits must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(charisma__gte=0, charisma__lte=10),
+                condition=Q(charisma__gte=0, charisma__lte=10),
                 name="%(app_label)s_%(class)s_charisma_range",
                 violation_error_message="Charisma must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(manipulation__gte=0, manipulation__lte=10),
+                condition=Q(manipulation__gte=0, manipulation__lte=10),
                 name="%(app_label)s_%(class)s_manipulation_range",
                 violation_error_message="Manipulation must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(appearance__gte=0, appearance__lte=10),
+                condition=Q(appearance__gte=0, appearance__lte=10),
                 name="%(app_label)s_%(class)s_appearance_range",
                 violation_error_message="Appearance must be between 0 and 10",
             ),

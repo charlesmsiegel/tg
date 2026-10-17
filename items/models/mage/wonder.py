@@ -16,7 +16,7 @@ class WonderResonanceRating(BaseResonanceRating):
         verbose_name_plural = "Wonder Resonance Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="items_wonderresonancerating_rating_range",
                 violation_error_message="Wonder resonance rating must be between 0 and 10",
             ),
@@ -44,17 +44,17 @@ class Wonder(ItemModel):
         verbose_name_plural = "Wonders"
         constraints = [
             CheckConstraint(
-                check=Q(rank__gte=0, rank__lte=10),
+                condition=Q(rank__gte=0, rank__lte=10),
                 name="items_wonder_rank_range",
                 violation_error_message="Wonder rank must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(background_cost__gte=0, background_cost__lte=10),
+                condition=Q(background_cost__gte=0, background_cost__lte=10),
                 name="items_wonder_background_cost_range",
                 violation_error_message="Wonder background cost must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(quintessence_max__gte=0, quintessence_max__lte=100),
+                condition=Q(quintessence_max__gte=0, quintessence_max__lte=100),
                 name="items_wonder_quintessence_max_range",
                 violation_error_message="Wonder quintessence max must be between 0 and 100",
             ),

@@ -440,7 +440,7 @@ class ChantryBackgroundRating(BaseBackgroundRating):
         ordering = ["bg__name"]
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="locations_chantrybackgroundrating_rating_range",
                 violation_error_message="Chantry background rating must be between 0 and 10",
             ),

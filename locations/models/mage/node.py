@@ -59,22 +59,22 @@ class Node(MeritFlawBlock, LocationModel):
         verbose_name_plural = "Nodes"
         constraints = [
             CheckConstraint(
-                check=Q(rank__gte=0, rank__lte=10),
+                condition=Q(rank__gte=0, rank__lte=10),
                 name="locations_node_rank_range",
                 violation_error_message="Node rank must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(points__gte=0, points__lte=100),
+                condition=Q(points__gte=0, points__lte=100),
                 name="locations_node_points_range",
                 violation_error_message="Node points must be between 0 and 100",
             ),
             CheckConstraint(
-                check=Q(quintessence_per_week__gte=0, quintessence_per_week__lte=100),
+                condition=Q(quintessence_per_week__gte=0, quintessence_per_week__lte=100),
                 name="locations_node_quintessence_range",
                 violation_error_message="Quintessence per week must be between 0 and 100",
             ),
             CheckConstraint(
-                check=Q(tass_per_week__gte=0, tass_per_week__lte=100),
+                condition=Q(tass_per_week__gte=0, tass_per_week__lte=100),
                 name="locations_node_tass_range",
                 violation_error_message="Tass per week must be between 0 and 100",
             ),
@@ -220,7 +220,7 @@ class NodeMeritFlawRating(BaseMeritFlawRating):
         verbose_name_plural = "Node Merits and Flaws Rating"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="locations_nodemeritflawrating_rating_range",
                 violation_error_message="Node merit/flaw rating must be between -10 and 10",
             ),
@@ -236,7 +236,7 @@ class NodeResonanceRating(BaseResonanceRating):
         verbose_name_plural = "Node Resonance Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="locations_noderesonancerating_rating_range",
                 violation_error_message="Node resonance rating must be between 0 and 10",
             ),

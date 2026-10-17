@@ -138,17 +138,17 @@ class Trod(LocationModel):
         verbose_name_plural = "Trods"
         constraints = [
             CheckConstraint(
-                check=Q(strength__gte=0, strength__lte=5),
+                condition=Q(strength__gte=0, strength__lte=5),
                 name="locations_trod_strength_range",
                 violation_error_message="Trod strength must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(difficulty__gte=0, difficulty__lte=10),
+                condition=Q(difficulty__gte=0, difficulty__lte=10),
                 name="locations_trod_difficulty_range",
                 violation_error_message="Difficulty must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(glamour_cost__gte=0, glamour_cost__lte=10),
+                condition=Q(glamour_cost__gte=0, glamour_cost__lte=10),
                 name="locations_trod_glamour_cost_range",
                 violation_error_message="Glamour cost must be between 0 and 10",
             ),

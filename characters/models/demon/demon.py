@@ -457,7 +457,7 @@ class LoreRating(models.Model):
         verbose_name_plural = "Demon Lore Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_demon_lorerating_rating_range",
                 violation_error_message="Lore rating must be between 0 and 10",
             ),

@@ -144,12 +144,12 @@ class Werewolf(WtAHuman):
         verbose_name_plural = "Werewolves"
         constraints = [
             CheckConstraint(
-                check=Q(gnosis__gte=1, gnosis__lte=10),
+                condition=Q(gnosis__gte=1, gnosis__lte=10),
                 name="characters_werewolf_gnosis_range",
                 violation_error_message="Gnosis must be between 1 and 10",
             ),
             CheckConstraint(
-                check=Q(rage__gte=1, rage__lte=10),
+                condition=Q(rage__gte=1, rage__lte=10),
                 name="characters_werewolf_rage_range",
                 violation_error_message="Rage must be between 1 and 10",
             ),

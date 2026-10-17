@@ -81,7 +81,7 @@ class HavenMeritFlawRating(BaseMeritFlawRating):
         unique_together = ("haven", "mf")
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="locations_havenmeritflawrating_rating_range",
                 violation_error_message="Haven merit/flaw rating must be between -10 and 10",
             ),

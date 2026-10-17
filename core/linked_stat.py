@@ -470,7 +470,7 @@ def linked_stat_constraints(
     # Permanent value range constraint
     constraints.append(
         CheckConstraint(
-            check=Q(**{f"{permanent_field}__gte": min_permanent})
+            condition=Q(**{f"{permanent_field}__gte": min_permanent})
             & Q(**{f"{permanent_field}__lte": max_permanent}),
             name=f"{constraint_prefix}{permanent_field}_range",
             violation_error_message=f"{permanent_field.replace('_', ' ').title()} must be between {min_permanent} and {max_permanent}",
@@ -480,7 +480,7 @@ def linked_stat_constraints(
     # Temporary value range constraint
     constraints.append(
         CheckConstraint(
-            check=Q(**{f"{temporary_field}__gte": min_temporary})
+            condition=Q(**{f"{temporary_field}__gte": min_temporary})
             & Q(**{f"{temporary_field}__lte": max_temporary}),
             name=f"{constraint_prefix}{temporary_field}_range",
             violation_error_message=f"{temporary_field.replace('_', ' ').title()} must be between {min_temporary} and {max_temporary}",
@@ -491,7 +491,7 @@ def linked_stat_constraints(
     if cap_temporary:
         constraints.append(
             CheckConstraint(
-                check=Q(**{f"{temporary_field}__lte": F(permanent_field)}),
+                condition=Q(**{f"{temporary_field}__lte": F(permanent_field)}),
                 name=f"{constraint_prefix}{temporary_field}_not_exceeds_perm",
                 violation_error_message=f"{temporary_field.replace('_', ' ').title()} cannot exceed {permanent_field.replace('_', ' ')}",
             )

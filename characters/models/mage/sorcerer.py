@@ -183,7 +183,7 @@ class PathRating(models.Model):
         verbose_name_plural = "Path Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_mage_pathrating_rating_range",
                 violation_error_message="Path rating must be between 0 and 10",
             ),

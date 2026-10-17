@@ -193,7 +193,7 @@ class TombMeritFlawRating(BaseMeritFlawRating):
         unique_together = ["tomb", "mf"]
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="locations_tombmeritflawrating_rating_range",
                 violation_error_message="Tomb merit/flaw rating must be between -10 and 10",
             ),

@@ -20,7 +20,7 @@ class ZoneRating(BasePracticeRating):
         verbose_name_plural = "Reality Zone Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="locations_zonerating_rating_range",
                 violation_error_message="Reality zone rating must be between -10 and 10",
             ),

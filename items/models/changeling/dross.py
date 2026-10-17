@@ -146,7 +146,7 @@ class Dross(ItemModel):
         verbose_name_plural = "Dross"
         constraints = [
             CheckConstraint(
-                check=Q(glamour_value__gte=1, glamour_value__lte=10),
+                condition=Q(glamour_value__gte=1, glamour_value__lte=10),
                 name="items_dross_glamour_value_range",
                 violation_error_message="Glamour value must be between 1 and 10",
             ),

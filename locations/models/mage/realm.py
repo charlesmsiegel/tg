@@ -138,52 +138,52 @@ class HorizonRealm(MeritFlawBlock, LocationModel):
         verbose_name_plural = "Horizon Realms"
         constraints = [
             CheckConstraint(
-                check=Q(rank__gte=1, rank__lte=10),
+                condition=Q(rank__gte=1, rank__lte=10),
                 name="locations_horizonrealm_rank_range",
                 violation_error_message="Horizon Realm rank must be between 1 and 10",
             ),
             CheckConstraint(
-                check=Q(build_points__gte=0, build_points__lte=200),
+                condition=Q(build_points__gte=0, build_points__lte=200),
                 name="locations_horizonrealm_build_points_range",
                 violation_error_message="Build points must be between 0 and 200",
             ),
             CheckConstraint(
-                check=Q(base_maintenance__gte=0, base_maintenance__lte=100),
+                condition=Q(base_maintenance__gte=0, base_maintenance__lte=100),
                 name="locations_horizonrealm_base_maintenance_range",
                 violation_error_message="Base maintenance must be between 0 and 100",
             ),
             CheckConstraint(
-                check=Q(quintessence_maintenance__gte=0, quintessence_maintenance__lte=100),
+                condition=Q(quintessence_maintenance__gte=0, quintessence_maintenance__lte=100),
                 name="locations_horizonrealm_quint_maintenance_range",
                 violation_error_message="Quintessence maintenance must be between 0 and 100",
             ),
             CheckConstraint(
-                check=Q(plants__gte=0, plants__lte=5),
+                condition=Q(plants__gte=0, plants__lte=5),
                 name="locations_horizonrealm_plants_range",
                 violation_error_message="Plants must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(animals__gte=0, animals__lte=5),
+                condition=Q(animals__gte=0, animals__lte=5),
                 name="locations_horizonrealm_animals_range",
                 violation_error_message="Animals must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(people__gte=0, people__lte=5),
+                condition=Q(people__gte=0, people__lte=5),
                 name="locations_horizonrealm_people_range",
                 violation_error_message="People must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(ephemera__gte=0, ephemera__lte=5),
+                condition=Q(ephemera__gte=0, ephemera__lte=5),
                 name="locations_horizonrealm_ephemera_range",
                 violation_error_message="Ephemera must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(guardians__gte=0, guardians__lte=10),
+                condition=Q(guardians__gte=0, guardians__lte=10),
                 name="locations_horizonrealm_guardians_range",
                 violation_error_message="Guardians must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(arcane__gte=0, arcane__lte=5),
+                condition=Q(arcane__gte=0, arcane__lte=5),
                 name="locations_horizonrealm_arcane_range",
                 violation_error_message="Arcane must be between 0 and 5",
             ),
@@ -296,7 +296,7 @@ class HorizonRealmMeritFlawRating(BaseMeritFlawRating):
         verbose_name_plural = "Horizon Realm Merits and Flaws Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=-10, rating__lte=10),
+                condition=Q(rating__gte=-10, rating__lte=10),
                 name="locations_horizonrealmmeritflawrating_rating_range",
                 violation_error_message="Horizon Realm merit/flaw rating must be between -10 and 10",
             ),
@@ -317,7 +317,7 @@ class HorizonRealmResonanceRating(models.Model):
         verbose_name_plural = "Horizon Realm Resonance Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="locations_horizonrealmresonancerating_rating_range",
                 violation_error_message="Horizon Realm resonance rating must be between 0 and 10",
             ),

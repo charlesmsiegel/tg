@@ -30,17 +30,17 @@ class Periapt(Wonder):
         verbose_name_plural = "Periapts"
         constraints = [
             CheckConstraint(
-                check=Q(arete__gte=0, arete__lte=10),
+                condition=Q(arete__gte=0, arete__lte=10),
                 name="items_periapt_arete_range",
                 violation_error_message="Periapt arete must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(max_charges__gte=1, max_charges__lte=100),
+                condition=Q(max_charges__gte=1, max_charges__lte=100),
                 name="items_periapt_max_charges_range",
                 violation_error_message="Periapt max charges must be between 1 and 100",
             ),
             CheckConstraint(
-                check=Q(current_charges__gte=0, current_charges__lte=100),
+                condition=Q(current_charges__gte=0, current_charges__lte=100),
                 name="items_periapt_current_charges_range",
                 violation_error_message="Periapt current charges must be between 0 and 100",
             ),

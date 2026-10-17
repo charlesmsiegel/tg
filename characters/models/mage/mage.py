@@ -206,7 +206,7 @@ class Mage(MtAHuman):
         ordering = ["name"]
         constraints = [
             CheckConstraint(
-                check=Q(arete__gte=1, arete__lte=10),
+                condition=Q(arete__gte=1, arete__lte=10),
                 name="characters_mage_arete_range",
                 violation_error_message="Arete must be between 1 and 10",
             ),
@@ -816,7 +816,7 @@ class ResRating(BaseResonanceRating):
         verbose_name_plural = "Mage Resonance Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_mage_resrating_rating_range",
                 violation_error_message="Resonance rating must be between 0 and 10",
             ),
@@ -834,7 +834,7 @@ class PracticeRating(BasePracticeRating):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_mage_practicerating_rating_range",
                 violation_error_message="Practice rating must be between 0 and 10",
             ),

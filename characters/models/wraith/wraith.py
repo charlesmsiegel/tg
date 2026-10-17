@@ -726,7 +726,7 @@ class ThornRating(models.Model):
         verbose_name_plural = "Thorn Ratings"
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_wraith_thornrating_rating_range",
                 violation_error_message="Thorn rating must be between 0 and 10",
             ),

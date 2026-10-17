@@ -156,27 +156,27 @@ class Freehold(LocationModel):
         verbose_name_plural = "Freeholds"
         constraints = [
             CheckConstraint(
-                check=Q(balefire__gte=0, balefire__lte=5),
+                condition=Q(balefire__gte=0, balefire__lte=5),
                 name="locations_freehold_balefire_range",
                 violation_error_message="Balefire rating must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(size__gte=0, size__lte=5),
+                condition=Q(size__gte=0, size__lte=5),
                 name="locations_freehold_size_range",
                 violation_error_message="Size rating must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(sanctuary__gte=0, sanctuary__lte=5),
+                condition=Q(sanctuary__gte=0, sanctuary__lte=5),
                 name="locations_freehold_sanctuary_range",
                 violation_error_message="Sanctuary rating must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(resources__gte=0, resources__lte=5),
+                condition=Q(resources__gte=0, resources__lte=5),
                 name="locations_freehold_resources_range",
                 violation_error_message="Resources rating must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(passages__gte=0, passages__lte=20),
+                condition=Q(passages__gte=0, passages__lte=20),
                 name="locations_freehold_passages_range",
                 violation_error_message="Passages must be between 0 and 20",
             ),

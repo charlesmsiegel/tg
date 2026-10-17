@@ -167,22 +167,22 @@ class Holding(LocationModel):
         verbose_name_plural = "Holdings"
         constraints = [
             CheckConstraint(
-                check=Q(military_strength__gte=0, military_strength__lte=5),
+                condition=Q(military_strength__gte=0, military_strength__lte=5),
                 name="locations_holding_military_range",
                 violation_error_message="Military strength must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(wealth__gte=0, wealth__lte=5),
+                condition=Q(wealth__gte=0, wealth__lte=5),
                 name="locations_holding_wealth_range",
                 violation_error_message="Wealth must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(stability__gte=0, stability__lte=5),
+                condition=Q(stability__gte=0, stability__lte=5),
                 name="locations_holding_stability_range",
                 violation_error_message="Stability must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(freehold_count__gte=0, freehold_count__lte=50),
+                condition=Q(freehold_count__gte=0, freehold_count__lte=50),
                 name="locations_holding_freehold_count_range",
                 violation_error_message="Freehold count must be between 0 and 50",
             ),

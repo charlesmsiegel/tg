@@ -138,7 +138,7 @@ class Character(CharacterModel):
         constraints = [
             # XP cannot go negative
             CheckConstraint(
-                check=Q(xp__gte=0),
+                condition=Q(xp__gte=0),
                 name="characters_character_xp_non_negative",
                 violation_error_message="XP cannot be negative",
             ),

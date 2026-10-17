@@ -36,7 +36,7 @@ class BackgroundRating(BaseBackgroundRating):
         ]
         constraints = [
             CheckConstraint(
-                check=Q(rating__gte=0, rating__lte=10),
+                condition=Q(rating__gte=0, rating__lte=10),
                 name="characters_backgroundrating_rating_range",
                 violation_error_message="Background rating must be between 0 and 10",
             ),
