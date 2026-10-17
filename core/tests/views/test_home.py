@@ -182,20 +182,14 @@ class TestHomepage(FunctionalTest):
 
     def test_homepage_structure(self):
         self.browser.get(self.live_server_url)
-
         self.assertIn("Tellurium Games", self.browser.title)
 
-        # Click the Account dropdown to expand it
-        account_dropdown = self.browser.find_element("id", "userDropdown")
-        account_dropdown.click()
-        # Wait briefly for dropdown to expand
-        time.sleep(0.2)
-        # Now get links
-        links = self.browser.find_elements("tag name", "a")
+        navigation = self.browser.find_element(By.CSS_SELECTOR, 'nav[aria-label="Main"]')
+        links = navigation.find_elements(By.TAG_NAME, "a")
         links = [(self.clean_url(link.get_attribute("href")), link.text.strip()) for link in links]
 
-        self.assertIn(("accounts/login/", "Log In"), links)
-        self.assertIn(("accounts/signup/", "Sign Up"), links)
+        self.assertIn(("accounts/login/", "Log in"), links)
+        self.assertIn(("accounts/signup/", "Sign up"), links)
 
 
 class TestModel(TestCase):
