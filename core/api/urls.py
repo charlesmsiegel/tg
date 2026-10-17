@@ -2,10 +2,25 @@
 
 from django.urls import path
 
-from core.api import views
+from core.api import scene_journal, views
 
 app_name = "api_v1"
 urlpatterns = [
+    path("scenes/", scene_journal.SceneListView.as_view(), name="scenes"),
+    path("scenes/<int:pk>/", scene_journal.SceneDetailView.as_view(), name="scene"),
+    path("scenes/<int:pk>/posts/", scene_journal.ScenePostsView.as_view(), name="scene_posts"),
+    path("journals/", scene_journal.JournalListView.as_view(), name="journals"),
+    path("journals/<int:pk>/", scene_journal.JournalDetailView.as_view(), name="journal"),
+    path(
+        "journals/<int:pk>/entries/",
+        scene_journal.JournalEntriesView.as_view(),
+        name="journal_entries",
+    ),
+    path(
+        "characters/<int:pk>/journal/",
+        scene_journal.CharacterJournalView.as_view(),
+        name="character_journal",
+    ),
     path("session/", views.SessionView.as_view(), name="session"),
     path("chronicles/", views.ChronicleListView.as_view(), name="chronicles"),
     path("chronicles/create/", views.ChronicleCreateView.as_view(), name="chronicle_create"),

@@ -105,4 +105,4 @@ of the rules those follow are enforced here.
 ## Native JSON API
 
 `core/api/` owns `/api/v1/` session-authenticated native projections and safe descriptive
-updates. See [API contract and limitations](../docs/reference/toolkit-api-v1.md).
+updates, plus read-only native scene transcripts and journal entries. See [API contract and limitations](../docs/reference/toolkit-api-v1.md).

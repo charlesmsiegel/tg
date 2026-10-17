@@ -353,6 +353,13 @@ characters.views.werewolf.wtahuman.WtAHumanTemplateSelectView
 characters.views.wraith.wraith_chargen.WraithBasicsView
 characters.views.wraith.wtohuman.WtOHumanBasicsView
 characters.views.wraith.wtohuman.WtOHumanTemplateSelectView
+core.api.scene_journal.CharacterJournalView
+core.api.scene_journal.JournalDetailView
+core.api.scene_journal.JournalEntriesView
+core.api.scene_journal.JournalListView
+core.api.scene_journal.SceneDetailView
+core.api.scene_journal.SceneListView
+core.api.scene_journal.ScenePostsView
 core.api.views.AllowedObjectsView
 core.api.views.CharacterDetailView
 core.api.views.ChronicleCharactersView

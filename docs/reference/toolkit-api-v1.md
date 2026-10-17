@@ -96,10 +96,72 @@ Archetype references, Focus/tenets, health and approvals, and refuse unmapped da
 JSON login/logout and JWT/token lifecycle; complete per-gameline serializers; stable toolkit
 ID/trait/module adapter; chronicle settings writes; character creation via proper chargen
 services, deletion and approval actions; templates and trait definitions; items/locations;
-XP/freebie requests and approvals; list filters; scenes and WebSocket integration remain
-future increments. Dedicated POST action paths deliberately follow TG's current route
-standards instead of adding PATCH/DELETE to detail views. Any later REST method expansion
+XP/freebie requests and approvals; general list filters; scene mutations and WebSocket
+integration remain future increments. Read-only scenes/journals are covered below.
+Dedicated POST action paths deliberately follow TG's current route standards instead of adding PATCH/DELETE to detail views. Any later REST method expansion
 needs an explicit policy design and denial tests; it is not implied by this version.
 
 Tests: `python manage.py test core.tests.api`, followed by route-policy/action/import guards
 and `python manage.py test` for the complete suite.
+
+## Read-only scenes and journals — initial #204 increment
+
+These additional session-authenticated routes expose native TG reads, not a Rust transport
+or WebSocket client. They require a session even when the ordinary site permits anonymous
+public-scene reading. They accept GET/HEAD only (plus authenticated OPTIONS metadata).
+
+| Path under `/api/v1/` | Response |
+|---|---|
+| `scenes/` | Visible scene metadata, paginated |
+| `scenes/{id}/` | One visible scene's metadata |
+| `scenes/{id}/posts/` | Paginated stored transcript, stable ascending post ID |
+| `journals/` | Full-readable journal identifiers, paginated |
+| `journals/{id}/` | Journal ID and underlying character ID |
+| `journals/{id}/entries/` | Paginated entry text and timestamps |
+| `characters/{id}/journal/` | Existing full-readable journal for the character; never creates one |
+
+Scene metadata includes only ID, name, chronicle ID, gameline, visibility, played/in-game
+dates and finished state. A public scene remains accessible outside a readable chronicle;
+its chronicle ID is a reference, not permission to read that chronicle's other data.
+Transcript rows expose only ID, scene ID, stored display name, message and creation time.
+They do not expand private character names/sheets, owner IDs, location records, author
+character IDs or arbitrary stored roll JSON. Stored text already includes native rendered
+roll messages; structured dice integration is deferred. Scene/journal detail projections
+are marked `complete:false` and are not archives.
+
+Journal metadata exposes only journal ID and character ID. Entries expose ID, journal ID,
+message, in-game date and creation time. They are ordered by descending entry date, then
+creation time and ID for stable ties. Actual native private-record and full-character
+permissions apply: owners and chronicle storytellers (including game/read-only and
+other-gameline storytellers) can read; ordinary chronicle players and partial-only
+observers cannot. Retirement/death does not remove the owner's native full-read access.
+Staff/superusers retain their existing read rights. No new edit or approval power is granted.
+
+Scene visibility follows `filter_scenes`/`can_view_scene`: PUBLIC, CHRONICLE and PARTICIPANTS
+keep their native audiences. Same-chronicle membership does not grant a nonparticipant
+access to a participants-only scene. Detail and nested reads recheck current visibility,
+cast membership, journal-to-character links and character permissions after lookup; the
+API does not cache role grants or treat an earlier read as a permission lease. Lists filter
+before counting/pagination. Hidden and missing valid IDs have the same JSON 404 response.
+
+New collection routes support `page` and `page_size` (50 default, capped at100); scene and
+journal lists additionally support `chronicle_id`. Values must be single positive native
+integer strings (maximum signed64-bit), and duplicate or unsupported query keys fail400.
+Unknown/hidden chronicle filters yield an empty authorized list rather than disclosing
+chronicle existence. Out-of-range pages return404. Native path IDs outside the valid range
+return404. No `include` flag can request additional private columns.
+
+Both `Scene.st_message` and `JournalEntry.st_message` are omitted server-side, including
+for staff. TG's journal `st_message` is actually an owner-visible ST response, not a
+private ST-only note, and the scene field is an `@storyteller` request. This schema does
+not provide a separate ST-private note model. The omission is intentional; this API does
+not invent a private-note feature or rely on client filtering. A future explicitly named
+owner-visible response or private-note API needs its own documented field policy.
+
+GETs never invoke `message_processing`, execute stored commands, add journal entries or
+posts, award XP, spend points, close scenes or update `UserSceneReadStatus`. The HTML scene
+view's read-marker behavior is not reused. Journal writes are deferred because native
+`Journal.add_post` processes commands and can change character state; any future write
+must have explicit services, allowlists, CSRF, locks and fresh permission checks. Scene
+participation, journal editing, true ST-private notes, WebSockets, XP/dice workflows and
+Rust UI/transport integration remain separate work. Keep #204 open for those phases.
