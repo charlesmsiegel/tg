@@ -60,7 +60,9 @@ class Group(Model):
         return [leader] + [m for m in members if m.pk != self.leader_id]
 
     def update_pooled_backgrounds(self):
-        bgs = BackgroundRating.objects.filter(char__in=self.members.all(), pooled=True)
+        bgs = BackgroundRating.objects.filter(
+            char__in=self.members.all(), pooled=True
+        ).select_related("bg")
         d = defaultdict(lambda: defaultdict(int))
         for bgr in bgs:
             d[bgr.bg][bgr.note] += bgr.rating
