@@ -2,14 +2,30 @@
 
 import importlib
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.db import connection
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 
 from characters.models.core.human import Human
 from game.models import Chronicle, Story, StoryXPRequest
 
 migration = importlib.import_module("tg_schema.migrations.0007_assign_story_chronicles")
+
+
+class AssignStoryChroniclesGuardTests(SimpleTestCase):
+    def test_removed_character_chronicle_skips_before_using_the_connection(self):
+        original_live_field = migration.live_field
+        character_model = original_live_field(StoryXPRequest, "character").related_model
+
+        def without_character_chronicle(model, name):
+            if model is character_model and name == "chronicle":
+                return None
+            return original_live_field(model, name)
+
+        with patch.object(migration, "live_field", side_effect=without_character_chronicle):
+            # No connection is needed when a later release has removed this field.
+            migration.assign_story_chronicles(None, SimpleNamespace())
 
 
 class AssignStoryChroniclesTests(TestCase):

@@ -17,9 +17,12 @@ def assign_story_chronicles(apps, schema_editor):
     # ``game`` has no migration state on legacy installations: the live models are
     # looked up when this runs, and a later rename skips it (see tg_schema.schema).
     Story, StoryXPRequest = live_model("game.Story"), live_model("game.StoryXPRequest")
-    if live_field(Story, "chronicle") is None or None in (
-        live_field(StoryXPRequest, "story"),
-        live_field(StoryXPRequest, "character"),
+    character = live_field(StoryXPRequest, "character")
+    if (
+        live_field(Story, "chronicle") is None
+        or live_field(StoryXPRequest, "story") is None
+        or character is None
+        or live_field(character.related_model, "chronicle") is None
     ):
         return
     using = schema_editor.connection.alias
@@ -31,9 +34,9 @@ def assign_story_chronicles(apps, schema_editor):
     )
     for span in spans:
         if span["low"] == span["high"]:
-            Story.objects.using(using).filter(
-                pk=span["story_id"], chronicle__isnull=True
-            ).update(chronicle_id=span["low"])
+            Story.objects.using(using).filter(pk=span["story_id"], chronicle__isnull=True).update(
+                chronicle_id=span["low"]
+            )
 
 
 class Migration(migrations.Migration):
