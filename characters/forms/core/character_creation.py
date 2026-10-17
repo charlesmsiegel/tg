@@ -142,65 +142,40 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
         self.fields["gameline"].widget.attrs["class"] = "tg-form-control tg-form-select"
         self.fields["char_type"].widget.attrs["id"] = "id_char_type"
 
-        if user and user.is_authenticated:
-            if user.profile.is_st():
-                # For STs, show all gamelines and character types
-                gamelines_with_chars = set()
-                all_char_types = creatable_character_types(
-                    ObjectType.objects.filter(type="char").exclude(name__in=self.EXCLUDED_TYPES)
-                )
+        if not user or not user.is_authenticated:
+            return
 
-                for obj in all_char_types:
-                    gamelines_with_chars.add(obj.gameline)
+        self._configure_creation_choices(user)
+        # Re-run chain setup after choices are configured.
+        self._setup_chains()
 
-                # Create gameline choices from GameLine.CHOICES
-                gameline_choices = [
-                    (code, name) for code, name in GameLine.CHOICES if code in gamelines_with_chars
-                ]
-                self.fields["gameline"].choices = gameline_choices
+    def _configure_creation_choices(self, user):
+        object_types = ObjectType.objects.filter(type="char").exclude(name__in=self.EXCLUDED_TYPES)
+        if user.profile.is_st():
+            gamelines = GameLine.CHOICES
+            choices_map = {}
+        else:
+            object_types = object_types.filter(gameline="mta")
+            gamelines = [("mta", "Mage: the Ascension")]
+            # Players keep the Mage picker even when its catalogue is empty.
+            choices_map = {"mta": []}
 
-                # Build choices_map for ChainedChoiceField
-                choices_map = {}
-                for obj in all_char_types:
-                    if obj.gameline not in choices_map:
-                        choices_map[obj.gameline] = []
-                    choices_map[obj.gameline].append((obj.name, self._format_label(obj.name)))
+        choices_map.update(self._group_character_types(object_types))
+        gameline_choices = [(code, label) for code, label in gamelines if code in choices_map]
+        self.fields["gameline"].choices = gameline_choices
+        self.fields["char_type"].choices_map = choices_map
 
-                # Sort each gameline's types by label
-                for gameline in choices_map:
-                    choices_map[gameline].sort(key=lambda x: x[1])
+        if gameline_choices:
+            first_gameline = gameline_choices[0][0]
+            self.fields["char_type"].choices = [("", "---------")] + choices_map[first_gameline]
 
-                # Assign choices_map to the char_type field
-                self.fields["char_type"].choices_map = choices_map
-
-                # Pre-populate initial char_type choices from first gameline
-                if gameline_choices:
-                    first_gameline = gameline_choices[0][0]
-                    if first_gameline in choices_map:
-                        initial_choices = [("", "---------")] + choices_map[first_gameline]
-                        self.fields["char_type"].choices = initial_choices
-            else:
-                # For regular users, only show mage gameline
-                self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
-
-                mage_types = creatable_character_types(
-                    ObjectType.objects.filter(type="char", gameline="mta").exclude(
-                        name__in=self.EXCLUDED_TYPES
-                    )
-                )
-
-                choices_map = {
-                    "mta": sorted(
-                        [(obj.name, self._format_label(obj.name)) for obj in mage_types],
-                        key=lambda x: x[1],
-                    )
-                }
-                self.fields["char_type"].choices_map = choices_map
-
-                # Pre-populate initial char_type choices from mta gameline
-                if "mta" in choices_map:
-                    initial_choices = [("", "---------")] + choices_map["mta"]
-                    self.fields["char_type"].choices = initial_choices
-
-            # Re-run chain setup after choices are configured
-            self._setup_chains()
+    def _group_character_types(self, object_types):
+        """Group routed character types by gameline, with labels in display order."""
+        choices_map = {}
+        for obj in creatable_character_types(object_types):
+            choices_map.setdefault(obj.gameline, []).append(
+                (obj.name, self._format_label(obj.name))
+            )
+        for choices in choices_map.values():
+            choices.sort(key=lambda choice: choice[1])
+        return choices_map

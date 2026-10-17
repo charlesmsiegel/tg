@@ -13,7 +13,7 @@ Tests cover:
 import json
 import re
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase
 from django.urls import reverse
 
@@ -456,3 +456,113 @@ class TestFormValidation(CharacterCreationFormTestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("char_type", form.errors)
+
+
+class TestCreationPickerChoiceContract(CharacterCreationFormTestCase):
+    """Pin the picker output shared by server validation and the browser chain."""
+
+    mage_choices = [
+        ("mta_human", "Human (Mage)"),
+        ("mage", "Mage"),
+        ("sorcerer", "Sorcerer"),
+    ]
+    vampire_choices = [
+        ("ghoul", "Ghoul"),
+        ("vtm_human", "Human (Vampire)"),
+        ("vampire", "Vampire"),
+    ]
+
+    def test_storyteller_choices_follow_gameline_order_and_label_order(self):
+        form = CharacterCreationForm(user=self.st_user)
+        self.assertEqual(
+            list(form.fields["gameline"].choices),
+            [
+                ("vtm", "Vampire: the Masquerade"),
+                ("wta", "Werewolf: the Apocalypse"),
+                ("mta", "Mage: the Ascension"),
+            ],
+        )
+        self.assertEqual(
+            form.fields["char_type"].choices_map,
+            {
+                "mta": self.mage_choices,
+                "vtm": self.vampire_choices,
+                "wta": [
+                    ("wta_human", "Human (Werewolf)"),
+                    ("kinfolk", "Kinfolk"),
+                    ("werewolf", "Werewolf"),
+                ],
+            },
+        )
+        self.assertEqual(
+            list(form.fields["char_type"].choices), [("", "---------")] + self.vampire_choices
+        )
+
+    def test_player_choices_exclude_other_gamelines_and_uncreatable_rows(self):
+        ObjectType.objects.create(name="unroutable_character", type="char", gameline="mta")
+        ObjectType.objects.create(name="companion", type="obj", gameline="mta")
+        form = CharacterCreationForm(user=self.regular_user)
+        self.assertEqual(form.fields["char_type"].choices_map, {"mta": self.mage_choices})
+        self.assertEqual(
+            list(form.fields["char_type"].choices), [("", "---------")] + self.mage_choices
+        )
+
+    def test_empty_player_catalogue_keeps_mage_gameline_and_empty_map_entry(self):
+        ObjectType.objects.filter(gameline="mta").delete()
+        form = CharacterCreationForm(user=self.regular_user)
+        self.assertEqual(list(form.fields["gameline"].choices), [("mta", "Mage: the Ascension")])
+        self.assertEqual(form.fields["char_type"].choices_map, {"mta": []})
+        self.assertEqual(list(form.fields["char_type"].choices), [("", "---------")])
+        self.assertEqual(form.fields["gameline"].widget.choices_tree["gameline:mta"], [])
+
+    def test_empty_storyteller_catalogue_has_no_gameline_choices(self):
+        ObjectType.objects.all().delete()
+        form = CharacterCreationForm(user=self.st_user)
+        self.assertEqual(list(form.fields["gameline"].choices), [])
+        self.assertEqual(form.fields["char_type"].choices_map, {})
+        self.assertEqual(list(form.fields["char_type"].choices), [("", "---------")])
+
+    def test_unknown_gameline_is_not_offered(self):
+        ObjectType.objects.all().delete()
+        ObjectType.objects.bulk_create([ObjectType(name="mage", type="char", gameline="xyz")])
+        form = CharacterCreationForm(user=self.st_user)
+        self.assertEqual(list(form.fields["gameline"].choices), [])
+        self.assertEqual(form.fields["char_type"].choices_map, {})
+
+    def test_anonymous_users_keep_empty_chain_configuration(self):
+        for user in (None, AnonymousUser()):
+            with self.subTest(user=user):
+                form = CharacterCreationForm(user=user)
+                self.assertEqual(list(form.fields["gameline"].choices), [("", "---------")])
+                self.assertEqual(list(form.fields["char_type"].choices), [("", "---------")])
+                self.assertEqual(form.fields["char_type"].choices_map, {})
+                self.assertEqual(
+                    form.fields["gameline"].widget.choices_tree,
+                    {"_root": [], "_root_field": "gameline"},
+                )
+
+    def test_initial_gameline_replaces_first_gameline_character_choices(self):
+        form = CharacterCreationForm(user=self.st_user, initial={"gameline": "mta"})
+        self.assertEqual(
+            list(form.fields["char_type"].choices), [("", "---------")] + self.mage_choices
+        )
+
+    def test_bound_prefixed_form_uses_submitted_gameline_over_initial(self):
+        form = CharacterCreationForm(
+            data={"picker-gameline": "mta", "picker-char_type": "mage"},
+            initial={"gameline": "vtm"},
+            prefix="picker",
+            user=self.st_user,
+        )
+        self.assertEqual(
+            list(form.fields["char_type"].choices), [("", "---------")] + self.mage_choices
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data, {"gameline": "mta", "char_type": "mage"})
+
+    def test_bound_cross_gameline_character_is_rejected(self):
+        form = CharacterCreationForm(
+            data={"gameline": "vtm", "char_type": "mage"}, user=self.st_user
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(set(form.errors), {"char_type"})
