@@ -20,13 +20,17 @@ reference model first, see
 
   [gamelines](gamelines.md) lists every script and the models it loads.
 
-## Edit structured Mummy titles
+## Edit structured Mummy titles and dynasties
 
 Edit `mummy/titles.json`: each entry has `key`, `export`, `legacy_lookup` and `fields`.
 Keep existing keys and legacy selectors fixed when changing a title name or description.
 New entries need a unique dotted lowercase key, a Python export identifier, an original-name
 legacy selector and all three content fields (name, rank_level, description). Add an explicit
 export binding to `mummy/titles.py` when adding an entry, and extend its integration tests.
+Dynasties follow the same contract in `mummy/dynasties.json`, with permanent keys such as
+`mummy.dynasty.old_kingdom_1` and content fields `name`, `era`, `description`, `favored_hekau`.
+Keep the eight existing exports in `mummy/dynasties.py` compatible. Apply migration 0014
+before loading dynasties on an existing database.
 Reloads overwrite staff edits; errors roll back the whole catalogue. See
 [loading](loading.md#structured-mummy-title-catalogue) for rollout and adoption rules.
 

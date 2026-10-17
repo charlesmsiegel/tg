@@ -146,7 +146,7 @@ Source: [`characters/models/mummy/`](../models/mummy/). Namespace `characters:mu
 
 | Model | Kind | Fields | Route name |
 |-------|------|--------|------------|
-| `Dynasty` | Plain | `name` (unique), `description`, `era`, `favored_hekau` | `dynasty` |
+| `Dynasty` | Plain | `name` (unique), `description`, `era`, `favored_hekau`, nullable unique non-editable `seed_key` | `dynasty` |
 | `MummyTitle` | Plain | `name` (unique), `rank_level`, `description`, nullable unique non-editable `seed_key` | `title` |
 
 ## See also
@@ -157,6 +157,6 @@ Source: [`characters/models/mummy/`](../models/mummy/). Namespace `characters:mu
 - [Authorization](../../docs/architecture/authorization.md)
 - [Views and URLs](views-and-urls.md)
 
-Mummy title seed keys preserve identity across catalogue reloads and display-name changes.
+Mummy title and dynasty seed keys preserve identity across catalogue reloads and display-name changes.
 See [structured catalogue loading](../../populate_db/docs/loading.md#structured-mummy-title-catalogue)
 for adoption, authoritative content updates and the migrate-before-populate requirement.

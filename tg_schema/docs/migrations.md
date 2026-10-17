@@ -178,6 +178,16 @@ and `test_every_migration_runs_when_its_models_are_gone` runs each forward funct
   field ownership, unrelated visibility columns, the supplied non-default connection
   and the no-op reverse.
 
+## 0014_dynasty_seed_key
+
+[`0014_dynasty_seed_key.py`](../migrations/0014_dynasty_seed_key.py) adds the nullable,
+non-editable `Dynasty.seed_key` column and the frozen `unique_dynasty_seed_key` unique index
+when missing. Existing primary keys and content remain unchanged; the population command
+adopts legacy rows by original name. Missing models, fields and tables are skipped;
+reruns and reversal leave the schema intact. Tests in
+[`test_dynasty_seed_key.py`](../tests/test_dynasty_seed_key.py) cover legacy schema,
+existing columns, uniqueness, multiple NULL keys and later removal of model constraints.
+
 ## See also
 
 - [Writing a migration](writing-a-migration.md)

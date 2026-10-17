@@ -115,20 +115,26 @@ script is written to be safe to rerun.
 
 ## Structured Mummy title catalogue
 
-Mummy titles are the first structured catalogue. `mummy/titles.py` loads its adjacent
-`titles.json` through `core.seed_data`; every other catalogue retains its existing Python
+Mummy titles and dynasties are structured catalogues. `mummy/titles.py` and
+`mummy/dynasties.py` load adjacent JSON through `core.seed_data`; other catalogues retain Python
 loading behavior. JSON is not discovered or executed by the management command, so the
-existing ordering, `--gameline mummy --only titles` filter and script exports still work.
+existing ordering, `--gameline mummy --only titles` / `--only dynasties` filters and script
+exports still work.
 
 Run `python manage.py migrate` before loading the converted script on an existing database:
-`tg_schema` migration 0013 adds the nullable identity column and its unique constraint.
+`tg_schema` migrations 0013 (titles) and 0014 (dynasties) add nullable identity columns
+and unique constraints.
 The first load adopts existing rows by their original unique names, preserving primary
-keys and character links. Later loads use permanent keys such as `mummy.title.pharaoh`.
+keys and character links. Later loads use permanent keys such as `mummy.title.pharaoh` or
+`mummy.dynasty.old_kingdom_1`.
 
 The JSON fields `name`, `rank_level` and `description` are authoritative: reloading replaces
-staff edits to those fields. Change catalogue content in JSON to make edits persistent.
+staff edits to those fields. Dynasty fields `name`, `era`, `description` and `favored_hekau`
+are likewise authoritative.
+Change catalogue content in JSON to make edits persistent.
 Never rename a seed key or change its frozen `legacy_lookup` to match a new display name;
-key changes require a reviewed data migration. Unseeded staff-created titles have NULL keys.
+key changes require a reviewed data migration. Unseeded staff-created titles and dynasties
+have NULL keys.
 Removing an entry from JSON does not delete its database row.
 
 The loader validates the complete record contract before writes, then loads each catalogue

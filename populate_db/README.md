@@ -13,7 +13,7 @@ scripts create rows in other apps' models.
 ## Main concepts
 
 - **Scripts and a structured pilot.** Most `.py` files call the ORM directly.
-  `mummy/titles.py` instead loads `mummy/titles.json` through `core.seed_data`,
+  `mummy/titles.py` and `mummy/dynasties.py` load adjacent JSON through `core.seed_data`,
   preserving its script entry point and object exports.
 - **One command loads everything.** `python manage.py populate_gamedata`
   ([`core/management/commands/populate_gamedata.py`](../core/management/commands/populate_gamedata.py))
@@ -25,7 +25,7 @@ scripts create rows in other apps' models.
   which runs it on the spot. See [conventions](docs/conventions.md).
 - **Scripts must be safe to run again.** The command runs every file on every load,
   and imported files run more than once; `get_or_create` keeps that from creating
-  duplicates. The Mummy title pilot updates declared content by permanent seed key.
+  duplicates. The converted Mummy title and dynasty catalogues update declared content by permanent seed key.
 - **Citations.** Reference objects record their source book and page with
   `obj.add_source(book_title, page)`, which looks the book up by its exact title.
 

@@ -10,6 +10,8 @@ class Dynasty(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
+    # Legacy databases receive this column and its constraint through tg_schema 0014.
+    seed_key = models.CharField(max_length=150, null=True, blank=True, editable=False)
     description = models.TextField(blank=True)
     era = models.CharField(
         max_length=100,
@@ -23,6 +25,7 @@ class Dynasty(models.Model):
     class Meta:
         verbose_name = "Dynasty"
         verbose_name_plural = "Dynasties"
+        constraints = [models.UniqueConstraint(fields=["seed_key"], name="unique_dynasty_seed_key")]
 
     def __str__(self):
         return self.name

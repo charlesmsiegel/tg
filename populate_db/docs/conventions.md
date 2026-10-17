@@ -122,10 +122,10 @@ run any number of times:
 
 ## Structured seed identities
 
-The Mummy title pilot uses JSON records and immutable, database-unique seed keys.
+Mummy titles and dynasties use JSON records and immutable, database-unique seed keys.
 It adopts existing names on first load and updates declared fields on subsequent loads.
 Read [the catalogue contract and rollout](loading.md#structured-mummy-title-catalogue)
-before editing it; the get-or-create conventions above apply to the other scripts.
+before editing either catalogue; the get-or-create conventions above apply to the other scripts.
 
 ## Sharing objects between scripts
 
