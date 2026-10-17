@@ -260,3 +260,58 @@ permission caches invalidated and native policy checked again before writes. Ent
 responses also lock/check their exact journal parent. Entry detail repeats native
 journal/private-entry visibility after lookup. Responses use private/no-store; native
 middleware denials may remain text/HTML. No native HTML actions or auth behavior changed.
+
+## Exact concrete Human read profile and public catalogs
+
+These additive authenticated GET/HEAD endpoints preserve all earlier v1 contracts:
+
+| Path under `/api/v1/` | Contract |
+|---|---|
+| `character-profiles/human-v1/` | Static `tg-human-v1` exposed-field manifest, native bounds, redactions and read-only capabilities |
+| `catalogs/human-v1/{kind}/` | Public reference facts, paginated with `page`/`page_size` (default50, maximum100) |
+| `characters/{id}/human-profile/` | Exact concrete `Human`, native full-view audience, bounded exposed profile and fingerprint |
+
+Kinds are `archetypes`, `backgrounds`, `merits-flaws`, `specialties`, `languages`,
+`derangements`, and `books`. Definition IDs are opaque decimal strings; names are not
+identities. Each catalog has a fixed field allowlist. Native public-list route policies
+and querysets remain authoritative; changing a route to a nonpublic policy or a different
+model fails closed. Background is a public `Statistic` definition without ownership or
+visibility fields. Inherited private reference metadata, descriptions, ST notes and reverse
+known-by/owner relationships are never expanded. Merit/flaw ratings preserve signed native
+values, with bounded `allowed_types` (`id`, `name`, `type`, `gameline`). The manifest lists
+both scalar and nested catalog fields.
+
+The character profile preserves native nullable scalars, nine attributes, nineteen
+abilities, willpower/temporary willpower, damage string and native wound penalty, workflow
+flags, age/date, XP/freebies totals, and six independent relation collections. Background
+and merit/flaw rating rows retain their own IDs, nullable definition IDs, ratings and
+explicit row metadata; repeated backgrounds remain separate even with identical names or
+notes. Specialty/language/derangement IDs and book-reference row IDs, nullable book IDs
+and page numbers remain distinct. All native primary/foreign keys are decimal strings,
+including values beyond JavaScript's exact integer range. Keep identity scoped to the
+configured server origin, resource kind and native ID; these are not toolkit UUIDs.
+
+Full native character authorization occurs before subtype diagnostics. Authorized Mage,
+gameline-specific Human or other concrete subclasses receive422 `unsupported_type`;
+unauthorized or missing targets receive identical404 JSON. Fixed redactions apply even to
+staff: `st_notes`, image storage/moderation fields, legacy `spent_freebies`, separate
+freebie/XP ledgers and reverse/group data. `complete:false` and all write/CAS capabilities
+false are intentional: this is an exact **exposed read profile**, not every Human field,
+a portable archive, a Rust `Character`, or a `Store` implementation. Native bounds (for
+example attributes/abilities0..10 and signed merit/flaw ratings) are preserved without
+clamping to local WodBase rules. Totals do not reconstruct their audit histories.
+
+Each relation and nested catalog expansion is capped at500 rows. An oversized profile
+fails422 `profile_limit` instead of silently truncating. Unknown/duplicate query keys and
+invalid pagination fail400; native IDs must be positive signed64-bit decimal values.
+Other methods fail405; no writes, imports, relation changes or rule execution are offered.
+
+A read transaction compares two canonical exposed projections, including relation rows,
+with an active actor reload, fresh target and invalidated permission caches. Observed
+scalar/relation changes fail409 `snapshot_changed`; revoked access remains404, including
+before type/size diagnostics. `snapshot_token` is a keyed fingerprint of only the exposed
+payload, actor, request origin and deployment prefix. It is stable for unchanged exposed
+data; hidden-field changes do not affect it. It is not a database revision, catalog-wide
+snapshot, CAS token, authentication credential or permission lease. Separate catalog/page
+requests are independent reads. Clients must refresh after409 and reauthorize every read.
+Responses are private/no-store. Native HTML views and existing authentication are unchanged.

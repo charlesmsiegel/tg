@@ -2,10 +2,25 @@
 
 from django.urls import path
 
-from core.api import auth, journal_write, scene_journal, views
+from core.api import auth, human_read, journal_write, scene_journal, views
 
 app_name = "api_v1"
 urlpatterns = [
+    path(
+        "character-profiles/human-v1/",
+        human_read.HumanProfileManifestView.as_view(),
+        name="human_profile_manifest",
+    ),
+    path(
+        "catalogs/human-v1/<slug:kind>/",
+        human_read.HumanCatalogView.as_view(),
+        name="human_catalog",
+    ),
+    path(
+        "characters/<int:pk>/human-profile/",
+        human_read.HumanProfileView.as_view(),
+        name="human_profile",
+    ),
     path(
         "journals/<int:pk>/entries/append/",
         journal_write.JournalAppendView.as_view(),
