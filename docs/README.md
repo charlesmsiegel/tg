@@ -18,6 +18,9 @@ will work in.
 | [Configuration](getting-started/configuration.md) | Settings modules, environment variables, `.env` |
 | [Seed data](getting-started/seed-data.md) | Loading game reference data with `populate_gamedata` |
 
+API integration: [Native TG API v1](reference/toolkit-api-v1.md) documents the first,
+scoped toolkit web-integration increment and its compatibility gaps.
+
 ## Architecture
 
 | Page | Covers |

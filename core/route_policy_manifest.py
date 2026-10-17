@@ -24,6 +24,7 @@ characters.views.core.actions.CharacterSpecialtiesView
 characters.views.core.actions.XPRequestApproveView
 characters.views.core.actions.XPRequestRejectView
 characters.views.mage.actions.MageXPSpendView
+core.api.views.CharacterUpdateView
 game.actions.ChronicleSceneCreateView
 game.actions.ChronicleStoryCreateView
 game.actions.JournalEntryCreateView
@@ -352,6 +353,12 @@ characters.views.werewolf.wtahuman.WtAHumanTemplateSelectView
 characters.views.wraith.wraith_chargen.WraithBasicsView
 characters.views.wraith.wtohuman.WtOHumanBasicsView
 characters.views.wraith.wtohuman.WtOHumanTemplateSelectView
+core.api.views.AllowedObjectsView
+core.api.views.CharacterDetailView
+core.api.views.ChronicleCharactersView
+core.api.views.ChronicleDetailView
+core.api.views.ChronicleListView
+core.api.views.SessionView
 core.views.character_template.CharacterTemplateImportView
 core.views.character_template.CharacterTemplateQuickNPCView
 locations.views.mage.chantry.LoadExamplesView
@@ -377,9 +384,9 @@ characters.views.demon.earthbound.EarthboundCreateView
 characters.views.hunter.htrhuman.HtRHumanCreateView
 characters.views.hunter.hunter.HunterCreateView
 characters.views.mage.cabal.CabalCreateView
-characters.views.mage.effect.EffectCreateView
 characters.views.mage.companion.CompanionBasicsView
 characters.views.mage.companion.CompanionCreateView
+characters.views.mage.effect.EffectCreateView
 characters.views.mage.mage.MageCreateView
 characters.views.mage.rote.RoteCreateView
 characters.views.mage.sorcerer.SorcererBasicsView
@@ -390,6 +397,7 @@ characters.views.vampire.revenant.RevenantCreateView
 characters.views.werewolf.pack.PackCreateView
 characters.views.werewolf.spirit.SpiritCreateView
 characters.views.wraith.circle.CircleCreateView
+core.api.views.ChronicleCreateView
 core.views.character_template.CharacterTemplateCreateView
 locations.views.changeling.creation.FreeholdBasicsView
 locations.views.mage.chantry.ChantryBasicsView

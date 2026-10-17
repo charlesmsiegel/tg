@@ -101,3 +101,8 @@ of the rules those follow are enforced here.
 - [Frontend](../docs/architecture/frontend.md)
 - [Adding a view](../docs/guides/adding-a-view.md)
 - [Template tag reference](../docs/reference/template-tags.md)
+
+## Native JSON API
+
+`core/api/` owns `/api/v1/` session-authenticated native projections and safe descriptive
+updates. See [API contract and limitations](../docs/reference/toolkit-api-v1.md).

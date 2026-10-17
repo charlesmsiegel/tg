@@ -43,3 +43,6 @@ tornado>=6.5
 black>=25.1.0
 ruff==0.3.4
 pre-commit==3.7.0
+
+# Native JSON API projections; existing Django sessions and CSRF remain authoritative.
+djangorestframework>=3.16,<3.18

@@ -728,6 +728,18 @@ class PermissionManager:
         return queryset.filter(Q(is_player_zone=False) | linked)
 
     @staticmethod
+    def filter_full_view_characters_for_user(user: User, queryset):
+        """Full-sheet API audience: owner and chronicle STs, excluding partial roles."""
+        if not user.is_authenticated:
+            return queryset.none()
+        if user.is_staff or user.is_superuser:
+            return queryset
+        return queryset.filter(
+            PermissionManager._build_owner_filter(user, queryset.model)
+            | PermissionManager._build_chronicle_st_filters(user, Chronicle)
+        ).distinct()
+
+    @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """Filter private VIEW_FULL/VIEW_PARTIAL audiences, not public cards.
 
