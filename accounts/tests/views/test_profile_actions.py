@@ -46,7 +46,7 @@ class TestSceneXPAwardView(TestCase):
         self.scene.characters.add(self.char)
 
     def test_st_can_award_xp(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
         response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": "on"})
         self.assertEqual(response.status_code, 302)
@@ -56,7 +56,7 @@ class TestSceneXPAwardView(TestCase):
         self.assertTrue(self.scene.xp_given)
 
     def test_award_returns_to_experience_tab(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
         response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": "on"})
         profile_url = reverse("accounts:profile", kwargs={"pk": self.st_user.profile.pk})
@@ -65,7 +65,7 @@ class TestSceneXPAwardView(TestCase):
         )
 
     def test_non_st_cannot_award_xp(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
         response = self.client.post(url, {})
         self.assertEqual(response.status_code, 403)
@@ -79,14 +79,14 @@ class TestSceneXPAwardView(TestCase):
             self.assertIn("login", response.url)
 
     def test_nonexistent_scene_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": 99999})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
     def test_double_award_redirects_without_extra_xp(self):
         """Awarding twice (stale tab) redirects gracefully, no extra XP."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
         data = {f"scene_{self.scene.pk}-{self.char.name}": "on"}
         self.client.post(url, data)
@@ -118,7 +118,7 @@ class TestObjectApprovalView(TestCase):
         )
 
     def test_st_can_approve_character(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:object_approval",
             kwargs={"object_type": "character", "pk": self.char.pk},
@@ -129,7 +129,7 @@ class TestObjectApprovalView(TestCase):
         self.assertEqual(self.char.status, "App")
 
     def test_st_can_approve_location(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:object_approval",
             kwargs={"object_type": "location", "pk": self.location.pk},
@@ -140,7 +140,7 @@ class TestObjectApprovalView(TestCase):
         self.assertEqual(self.location.status, "App")
 
     def test_st_can_approve_item(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:object_approval",
             kwargs={"object_type": "item", "pk": self.item.pk},
@@ -168,7 +168,7 @@ class TestObjectApprovalView(TestCase):
             attribute=attribute,
             ability=ability,
         )
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:object_approval", kwargs={"object_type": "rote", "pk": rote.pk})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
@@ -176,7 +176,7 @@ class TestObjectApprovalView(TestCase):
         self.assertEqual(rote.status, "App")
 
     def test_non_st_cannot_approve(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:object_approval",
             kwargs={"object_type": "character", "pk": self.char.pk},
@@ -185,7 +185,7 @@ class TestObjectApprovalView(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_invalid_object_type_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:object_approval", kwargs={"object_type": "bogus", "pk": 1})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
@@ -222,7 +222,7 @@ class TestImageApprovalView(TestCase):
         )
 
     def test_st_can_approve_image(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:image_approval",
             kwargs={"object_type": "character", "pk": self.char.pk},
@@ -233,7 +233,7 @@ class TestImageApprovalView(TestCase):
         self.assertEqual(self.char.image_status, "app")
 
     def test_non_st_cannot_approve_image(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:image_approval",
             kwargs={"object_type": "character", "pk": self.char.pk},
@@ -253,7 +253,7 @@ class TestImageApprovalView(TestCase):
             self.assertIn("login", response.url)
 
     def test_nonexistent_object_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:image_approval",
             kwargs={"object_type": "character", "pk": 99999},
@@ -262,7 +262,7 @@ class TestImageApprovalView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_type_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:image_approval", kwargs={"object_type": "bogus", "pk": 1})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
@@ -285,7 +285,7 @@ class TestFreebieAwardView(TestCase):
 
     def test_st_can_award_freebies(self):
         initial_freebies = self.char.freebies
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
         response = self.client.post(url, {"backstory_freebies": 5})
         self.assertEqual(response.status_code, 302)
@@ -294,7 +294,7 @@ class TestFreebieAwardView(TestCase):
         self.assertTrue(self.char.freebies_approved)
 
     def test_non_st_cannot_award_freebies(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
         response = self.client.post(url, {"backstory_freebies": 5})
         self.assertEqual(response.status_code, 403)
@@ -308,7 +308,7 @@ class TestFreebieAwardView(TestCase):
             self.assertIn("login", response.url)
 
     def test_nonexistent_character_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:freebie_award", kwargs={"character_pk": 99999})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
@@ -316,7 +316,7 @@ class TestFreebieAwardView(TestCase):
     def test_invalid_form_redirects_without_awarding(self):
         """Invalid data (over the 0-15 range) redirects and mutates nothing."""
         initial_freebies = self.char.freebies
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
         response = self.client.post(url, {"backstory_freebies": 99})
         self.assertEqual(response.status_code, 302)
@@ -327,7 +327,7 @@ class TestFreebieAwardView(TestCase):
     def test_repeated_award_is_reported_not_a_server_error(self):
         """A second award (stale tab, double submit) flashes the reason and awards nothing."""
         initial_freebies = self.char.freebies
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
         self.client.post(url, {"backstory_freebies": 5})
         response = self.client.post(url, {"backstory_freebies": 5}, follow=True)
@@ -359,7 +359,7 @@ class TestWeeklyXPRequestView(TestCase):
         Post.objects.create(scene=self.scene, character=self.char, message="hi")
 
     def test_owner_can_submit_request(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -381,7 +381,7 @@ class TestWeeklyXPRequestView(TestCase):
 
     def test_repeated_submit_files_one_request(self):
         """A double submit is refused with a message instead of filing a duplicate."""
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -405,7 +405,7 @@ class TestWeeklyXPRequestView(TestCase):
             WeeklyXPRequest.objects.create(character=self.char, week=self.week)
             return original(form, commit=commit)
 
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -418,7 +418,7 @@ class TestWeeklyXPRequestView(TestCase):
         )
 
     def test_non_owner_cannot_submit(self):
-        self.client.login(username="other", password="password")
+        self.client.force_login(self.other_user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -438,7 +438,7 @@ class TestWeeklyXPRequestView(TestCase):
             self.assertIn("login", response.url)
 
     def test_nonexistent_week_404(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": 99999, "character_pk": self.char.pk},
@@ -447,7 +447,7 @@ class TestWeeklyXPRequestView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_nonexistent_character_404(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_request",
             kwargs={"week_pk": self.week.pk, "character_pk": 99999},
@@ -474,7 +474,7 @@ class TestWeeklyXPApprovalView(TestCase):
         self.xp_request = WeeklyXPRequest.objects.create(character=self.char, week=self.week)
 
     def test_st_can_approve(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -487,7 +487,7 @@ class TestWeeklyXPApprovalView(TestCase):
         self.assertEqual(self.char.xp, 1)  # 1 XP for the finishing category
 
     def test_non_st_cannot_approve(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -496,7 +496,7 @@ class TestWeeklyXPApprovalView(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_nonexistent_week_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": 99999, "character_pk": self.char.pk},
@@ -505,7 +505,7 @@ class TestWeeklyXPApprovalView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_nonexistent_character_404(self):
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": self.week.pk, "character_pk": 99999},
@@ -526,7 +526,7 @@ class TestWeeklyXPApprovalView(TestCase):
 
     def test_double_approval_redirects_gracefully(self):
         """Approving twice redirects with an error instead of crashing."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
@@ -540,7 +540,7 @@ class TestWeeklyXPApprovalView(TestCase):
     def test_no_pending_request_404(self):
         """Approving a week/character pair with no submitted request is a 404."""
         other_week = Week.objects.create(end_date=date.today())
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         url = reverse(
             "accounts:weekly_xp_approval",
             kwargs={"week_pk": other_week.pk, "character_pk": self.char.pk},
@@ -561,7 +561,7 @@ class TestMarkSceneReadView(TestCase):
         )
 
     def test_logged_in_user_can_mark_read(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse("accounts:mark_scene_read", kwargs={"scene_pk": self.scene.pk})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
@@ -578,13 +578,13 @@ class TestMarkSceneReadView(TestCase):
             self.assertIn("login", response.url)
 
     def test_nonexistent_scene_404(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse("accounts:mark_scene_read", kwargs={"scene_pk": 99999})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
     def test_marking_already_read_scene_is_idempotent(self):
-        self.client.login(username="player", password="password")
+        self.client.force_login(self.user)
         url = reverse("accounts:mark_scene_read", kwargs={"scene_pk": self.scene.pk})
         self.client.post(url)
         response = self.client.post(url)
