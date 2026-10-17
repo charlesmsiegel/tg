@@ -20,6 +20,7 @@ The tag handles:
 """
 
 from django import forms, template
+from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 
 from .widget_media import register_media
@@ -86,10 +87,14 @@ class FormsetNode(template.Node):
         parts.append(str(formset.management_form))
 
         # Container opening
-        animate_attr = ' data-formset-animate="true"' if animate else ""
+        animate_attr = mark_safe(' data-formset-animate="true"') if animate else ""
         parts.append(
-            f'<div id="{prefix}_formset" data-formset-container="" '
-            f'data-formset-prefix="{prefix}"{animate_attr}>'
+            format_html(
+                '<div id="{}_formset" data-formset-container="" data-formset-prefix="{}"{}>',
+                prefix,
+                prefix,
+                animate_attr,
+            )
         )
 
         # Render existing forms
@@ -111,7 +116,7 @@ class FormsetNode(template.Node):
         parts.append("</div>")
 
         # Empty form template (hidden)
-        parts.append(f'<div id="empty_{prefix}_form" class="d-none">')
+        parts.append(format_html('<div id="empty_{}_form" class="d-none">', prefix))
         parts.append(
             self._render_form_row(
                 context,
@@ -128,8 +133,12 @@ class FormsetNode(template.Node):
 
         # Add button
         parts.append(
-            f'<button type="button" data-formset-add="{prefix}" '
-            f'class="{add_class}">{add_label}</button>'
+            format_html(
+                '<button type="button" data-formset-add="{}" class="{}">{}</button>',
+                prefix,
+                add_class,
+                add_label,
+            )
         )
 
         register_media(
@@ -164,13 +173,20 @@ class FormsetNode(template.Node):
         # Build remove button if enabled
         remove_btn = ""
         if show_remove:
-            remove_btn = (
-                f'<button type="button" data-formset-remove="{prefix}" '
-                f'class="{remove_class}">{remove_label}</button>'
+            remove_btn = format_html(
+                '<button type="button" data-formset-remove="{}" class="{}">{}</button>',
+                prefix,
+                remove_class,
+                remove_label,
             )
 
         # Wrap in form row div
-        return f'<div class="{wrapper_class}" data-formset-form="">' f"{content}{remove_btn}</div>"
+        return format_html(
+            '<div class="{}" data-formset-form="">{}{}</div>',
+            wrapper_class,
+            content,
+            remove_btn,
+        )
 
 
 @register.tag("formset")
@@ -261,24 +277,20 @@ def formset_script(context):
 @register.simple_tag
 def formset_container(prefix, empty_form_id=None, animate=False):
     """Return data attributes for a formset container (advanced use)."""
-    attrs = [
-        'data-formset-container=""',
-        f'data-formset-prefix="{prefix}"',
-    ]
+    attrs = [("data-formset-container", ""), ("data-formset-prefix", prefix)]
     if empty_form_id:
-        attrs.append(f'data-formset-empty-form="{empty_form_id}"')
+        attrs.append(("data-formset-empty-form", empty_form_id))
     if animate:
-        attrs.append('data-formset-animate="true"')
-    return mark_safe(" ".join(attrs))
+        attrs.append(("data-formset-animate", "true"))
+    return format_html_join(" ", '{}="{}"', attrs)
 
 
 @register.simple_tag
 def formset_add_btn(prefix, label="Add", **kwargs):
     """Render an add button (advanced use)."""
-    attrs = [f'data-formset-add="{prefix}"', 'type="button"']
-    for key, value in kwargs.items():
-        attrs.append(f'{key.replace("_", "-")}="{value}"')
-    return mark_safe(f'<button {" ".join(attrs)}>{label}</button>')
+    attrs = [("data-formset-add", prefix), ("type", "button")]
+    attrs.extend((key.replace("_", "-"), value) for key, value in kwargs.items())
+    return format_html("<button {}>{}</button>", format_html_join(" ", '{}="{}"', attrs), label)
 
 
 @register.simple_tag

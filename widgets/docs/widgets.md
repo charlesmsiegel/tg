@@ -110,6 +110,9 @@ source that is not a field of the form fails its check.
 | `visibility`, `visibility_json()` | `field_visibility(current_values())`, as a dict or JSON |
 | `wrap_field(name, label_prefix="")` | `<div id="<name>_wrap" class="col-sm[ d-none]">` around the field |
 
+`wrap_field()` escapes ordinary label prefixes and preserves explicitly trusted HTML
+labels and the rendered field markup.
+
 The browser manager shows and hides the wrapper by toggling the `d-none` class, which
 `tl.css` keeps as `display: none` (`.tl .d-none`). Give each conditional field a wrapper with the right
 id, starting with `d-none` when it should start hidden.
@@ -231,8 +234,8 @@ formset's media, the empty form's media and `formset_manager.js` for `{% page_me
 | `animate` | `False` (adds `data-formset-animate`) |
 
 Arguments must be `key=value`; quoted values are strings, `True`/`False` are booleans,
-anything else is a template variable. Label and class values are inserted into the HTML
-without escaping, so pass only literals from templates.
+anything else is a template variable. Dynamic labels, prefixes and CSS classes are
+HTML-escaped. Labels explicitly marked safe retain their trusted HTML markup.
 
 For hand-built markup, the library also has `{% formset_script %}` (register the
 manager's media), `{% formset_container prefix empty_form_id=None animate=False %}`

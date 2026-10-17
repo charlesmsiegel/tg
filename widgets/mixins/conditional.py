@@ -53,7 +53,6 @@ import json
 
 from django import forms
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 
 from widgets.utils import config_script
 
@@ -239,10 +238,10 @@ class ConditionalFieldsMixin:
         wrapper_id = f"{field_name}_wrap"
 
         if label_prefix:
-            content = f"{label_prefix} {field}"
+            content = format_html("{} {}", label_prefix, field)
         else:
-            content = str(field)
+            content = field
 
         return format_html(
-            '<div id="{}" class="col-sm{}">{}</div>', wrapper_id, hidden_class, mark_safe(content)
+            '<div id="{}" class="col-sm{}">{}</div>', wrapper_id, hidden_class, content
         )
