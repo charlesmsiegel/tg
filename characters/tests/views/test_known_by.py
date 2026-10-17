@@ -6,6 +6,7 @@ by chronicle, with bounded queries, and never through a URL-only page cache.
 """
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db import connection
 from django.test import TestCase, override_settings
@@ -167,6 +168,8 @@ class KnownByQueryTests(KnownByTestCase):
     def count_queries(self, user):
         cache.clear()
         self.client.force_login(user)
+        # ContentType also keeps a process-local cache outside the cache backend.
+        ContentType.objects.clear_cache()
         with CaptureQueriesContext(connection) as queries:
             response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -188,6 +191,7 @@ class KnownByQueryTests(KnownByTestCase):
         MeritFlawRating.objects.create(character=self.aurelio, mf=merit, rating=3)
         cache.clear()
         self.client.force_login(self.st)
+        ContentType.objects.clear_cache()
         with CaptureQueriesContext(connection) as few:
             self.client.get(url)
         for index in range(5):
@@ -196,6 +200,7 @@ class KnownByQueryTests(KnownByTestCase):
             )
             MeritFlawRating.objects.create(character=human, mf=merit, rating=1)
         cache.clear()
+        ContentType.objects.clear_cache()
         with CaptureQueriesContext(connection) as many:
             response = self.client.get(url)
         self.assertEqual(len(many), len(few))
