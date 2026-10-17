@@ -200,3 +200,11 @@ See [adding a view](../../docs/guides/adding-a-view.md) for the project-wide ste
 - [game forms](forms.md)
 - [Authorization](../../docs/architecture/authorization.md)
 - [URL reference](../../docs/reference/urls.md)
+
+## Bounded journal API actions
+
+The [native API contract](../../docs/reference/toolkit-api-v1.md#bounded-journal-actions--next-204-increment)
+adds prose-only append, explicit owner-visible response detail, and first-response-only
+POST actions. These subclass the native owner/APPROVE policies above and recheck canonical
+locked relations before writes. Native HTML command processing and response behavior are
+unchanged. The API never calls the journal command parser and cannot overwrite an answer.

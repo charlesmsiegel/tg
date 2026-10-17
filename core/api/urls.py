@@ -2,10 +2,25 @@
 
 from django.urls import path
 
-from core.api import auth, scene_journal, views
+from core.api import auth, journal_write, scene_journal, views
 
 app_name = "api_v1"
 urlpatterns = [
+    path(
+        "journals/<int:pk>/entries/append/",
+        journal_write.JournalAppendView.as_view(),
+        name="journal_append",
+    ),
+    path(
+        "journals/<int:pk>/entries/<int:entry_pk>/",
+        journal_write.JournalEntryDetailView.as_view(),
+        name="journal_entry",
+    ),
+    path(
+        "journals/<int:pk>/entries/<int:entry_pk>/response/",
+        journal_write.JournalFirstResponseView.as_view(),
+        name="journal_first_response",
+    ),
     path("auth/csrf/", auth.CSRFView.as_view(), name="auth_csrf"),
     path("auth/login/", auth.LoginView.as_view(), name="auth_login"),
     path("auth/logout/", auth.SessionLogoutView.as_view(), name="auth_logout"),

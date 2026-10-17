@@ -122,3 +122,7 @@ Tests live in [`tests/`](tests/) and run with `python manage.py test game`. See
 `core/api/scene_journal.py` exposes session-authenticated scene/journal reads through the
 existing audiences, with ambiguous ST-message fields omitted. It does not invoke journal
 commands or scene read-marker writes. See the [API contract](../docs/reference/toolkit-api-v1.md#read-only-scenes-and-journals--initial-204-increment).
+
+The API also offers bounded journal prose append and first ST response actions, preserving
+native owner/approver policies with fresh locked checks. Responses are owner-visible, not
+ST-only notes; general editing and command execution remain outside this API increment.

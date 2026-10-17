@@ -24,6 +24,8 @@ characters.views.core.actions.CharacterSpecialtiesView
 characters.views.core.actions.XPRequestApproveView
 characters.views.core.actions.XPRequestRejectView
 characters.views.mage.actions.MageXPSpendView
+core.api.journal_write.JournalAppendView
+core.api.journal_write.JournalFirstResponseView
 core.api.views.CharacterUpdateView
 game.actions.ChronicleSceneCreateView
 game.actions.ChronicleStoryCreateView
@@ -353,6 +355,7 @@ characters.views.werewolf.wtahuman.WtAHumanTemplateSelectView
 characters.views.wraith.wraith_chargen.WraithBasicsView
 characters.views.wraith.wtohuman.WtOHumanBasicsView
 characters.views.wraith.wtohuman.WtOHumanTemplateSelectView
+core.api.journal_write.JournalEntryDetailView
 core.api.scene_journal.CharacterJournalView
 core.api.scene_journal.JournalDetailView
 core.api.scene_journal.JournalEntriesView

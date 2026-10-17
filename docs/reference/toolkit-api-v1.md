@@ -132,7 +132,7 @@ Archetype references, Focus/tenets, health and approvals, and refuse unmapped da
 
 ## Remaining #195 work
 
-JSON login/logout and JWT/token lifecycle; complete per-gameline serializers; stable toolkit
+Native client credential lifecycle and optional future token mechanisms; complete per-gameline serializers; stable toolkit
 ID/trait/module adapter; chronicle settings writes; character creation via proper chargen
 services, deletion and approval actions; templates and trait definitions; items/locations;
 XP/freebie requests and approvals; general list filters; scene mutations and WebSocket
@@ -190,17 +190,73 @@ Unknown/hidden chronicle filters yield an empty authorized list rather than disc
 chronicle existence. Out-of-range pages return404. Native path IDs outside the valid range
 return404. No `include` flag can request additional private columns.
 
-Both `Scene.st_message` and `JournalEntry.st_message` are omitted server-side, including
-for staff. TG's journal `st_message` is actually an owner-visible ST response, not a
-private ST-only note, and the scene field is an `@storyteller` request. This schema does
-not provide a separate ST-private note model. The omission is intentional; this API does
-not invent a private-note feature or rely on client filtering. A future explicitly named
-owner-visible response or private-note API needs its own documented field policy.
+The original minimal scene and entry collection projections omit both `Scene.st_message`
+and `JournalEntry.st_message`, including for staff. TG's journal field is an owner-visible
+ST response, not an ST-private note; the scene field is an `@storyteller` request. The
+explicit entry-detail route below now exposes the owner-visible response under native
+journal permissions. No separate ST-private note model is invented.
 
-GETs never invoke `message_processing`, execute stored commands, add journal entries or
-posts, award XP, spend points, close scenes or update `UserSceneReadStatus`. The HTML scene
-view's read-marker behavior is not reused. Journal writes are deferred because native
-`Journal.add_post` processes commands and can change character state; any future write
-must have explicit services, allowlists, CSRF, locks and fresh permission checks. Scene
-participation, journal editing, true ST-private notes, WebSockets, XP/dice workflows and
-Rust UI/transport integration remain separate work. Keep #204 open for those phases.
+GETs never invoke `message_processing`, execute stored commands, add entries/posts,
+award XP, spend points, close scenes or update `UserSceneReadStatus`. The HTML scene
+view's read-marker behavior is not reused. Scene participation, general journal editing,
+true ST-private notes, WebSockets, XP/dice workflows and Rust UI/transport integration
+remain separate work. Keep #204 open for those phases.
+
+## Bounded journal actions — next #204 increment
+
+These routes preserve native `JournalEntryCreateView` owner-only and
+`JournalResponseView` full-read + `Permission.APPROVE` authority. They do not grant staff
+or STs an owner override for adding prose. Native journal append permits its owner in
+all character statuses, including submitted, deceased and retired; it does not use the
+character descriptive-edit permission. Native status/role rules remain authoritative.
+Ordinary/partial viewers cannot read or write a journal even for a public character.
+
+| Method and path under `/api/v1/` | Contract |
+|---|---|
+| POST `journals/{id}/entries/append/` | Owner-only JSON `{date:"YYYY-MM-DD",message:"..."}`; 201 new entry |
+| GET `journals/{id}/entries/{entry_id}/` | Native full-readable entry, including owner-visible `st_message` |
+| POST `journals/{id}/entries/{entry_id}/response/` | Scoped native approver JSON `{st_message:"..."}`; 200 first response only |
+
+All three return the explicit entry fields `id`, `journal_id`, `message`, `date`,
+`datetime_created`, `st_message`. New entries have an empty response. The response is
+visible to the native journal audience (owner, permitted STs, staff), not an ST-only
+secret. Response text `Read` retains TG's existing acknowledgement convention. No author
+identity is accepted or invented: the character/journal is bound by the authorized URL.
+Existing collection and authentication projections remain unchanged.
+
+Only the listed fields and string scalars are accepted. Unknown or duplicate JSON keys,
+malformed objects, invalid Unicode, invalid/ambiguous dates and empty text fail400 with
+`{"errors":{"field":[{"message":"...","code":"..."}]}}`. Native form whitespace
+stripping applies, and dates become aware midnight using TG's current timezone. Each
+text/date value is limited to10,000 characters and the request to65,536 bytes. Non-JSON
+media types fail415. Neither timestamps, parent links, author/owner fields nor player
+prose can be supplied through the response action.
+
+Prose append deliberately bypasses `Journal.add_post`/`message_processing`: **no dice or
+resource command executes**. Native reserved substrings `/roll`, `/rolls`, `/extended`,
+`/stat`, `#WP`, `#Q`/`#P` with signed digit amounts, and signed damage tags ending in
+`B`, `L`, `A` are rejected with `unsupported_command`, even embedded in prose or after
+whitespace; case variants are rejected too. Other prose/URLs/markup are stored as text.
+Use the native site for journal commands. ST responses follow their native literal-text
+semantics; command-looking response text is stored without processing.
+
+Responses are first-answer-only. An existing response, including `Read`, returns409
+`already_answered`; the service performs a conditional empty-response update and never
+replaces player prose or an existing answer. On supported SQLite deployments, simultaneous read-to-write upgrades can conflict even
+with row-lock requests. Known SQLite busy/locked failures roll back and return409
+`write_conflict`; refresh before another explicit request. Either request may lose, and
+both may conflict without a partial write. Unrelated database errors are not disguised
+as edit conflicts. No general entry editing, response
+replacement, clearing or deletion is implemented. There is no new revision field/schema.
+Append creates independent records; it is non-idempotent. After a timeout clients must
+check/reconcile the journal instead of automatically replaying a write; this API does
+not promise an offline queue or deduplication.
+
+Writes require a session and ordinary CSRF/Origin checks. Dedicated POST action policies
+reject other methods. Hidden/missing/cross-journal targets receive identical404 before
+payload validation; an authorized reader lacking the action gets403. Canonical journal,
+character, actor, chronicle and current relevant ST relation rows are locked/reloaded,
+permission caches invalidated and native policy checked again before writes. Entry
+responses also lock/check their exact journal parent. Entry detail repeats native
+journal/private-entry visibility after lookup. Responses use private/no-store; native
+middleware denials may remain text/HTML. No native HTML actions or auth behavior changed.
