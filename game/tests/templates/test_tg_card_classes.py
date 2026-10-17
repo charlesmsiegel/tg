@@ -11,7 +11,7 @@ class TestSceneDetailTemplateSpread(SimpleTestCase):
 
     def test_scene_detail_template_uses_the_spread_shell(self):
         template_path = Path(__file__).parent.parent.parent / "templates/game/scene/detail.html"
-        content = template_path.read_text()
+        content = template_path.read_text(encoding="utf-8")
         self.assertIn('{% extends "core/tl_base.html" %}', content)
 
         content_without_scripts = re.sub(
@@ -42,7 +42,7 @@ class TestWonderFormTemplateTgCardClasses(SimpleTestCase):
             Path(__file__).parent.parent.parent.parent
             / "items/templates/items/mage/wonder/form_include.html"
         )
-        content = template_path.read_text()
+        content = template_path.read_text(encoding="utf-8")
 
         # This template uses row/col-sm for layout, which is acceptable
         # within a tg-card container. The test verifies the template exists

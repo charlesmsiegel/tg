@@ -67,6 +67,12 @@ worker number before the extension). The copies are deleted when the run ends, u
 you pass `--keepdb`; an interrupted run leaves them behind, and the next run overwrites
 them. `.gitignore` ignores all of them (`db_test*.sqlite3` and their `-journal` files).
 
+On Windows, use the serial command with the default file-backed SQLite test database.
+Django's spawn-based SQLite workers expect different clone names and can fail with
+"unable to open database file". Vendored assets are checked out byte-for-byte through
+`.gitattributes`: their SRI hashes include line endings. Source-scanning guards read UTF-8
+and normalize template and module names to forward slashes on every platform.
+
 Tests that need exclusive resources are written to work in parallel workers: the scene
 chat browser test starts its Daphne server with `subprocess` rather than
 `multiprocessing` because parallel workers are daemonic processes.

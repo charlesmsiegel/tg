@@ -27,7 +27,7 @@ def scan():
     """Return (Book names, Counter of cited titles) found in populate_db."""
     books, cited = set(), Counter()
     for path in sorted(POPULATE_DB.rglob("*.py")):
-        for node in ast.walk(ast.parse(path.read_text())):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
             if not isinstance(node, ast.Call):
                 continue
             func = node.func

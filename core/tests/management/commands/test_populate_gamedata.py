@@ -20,7 +20,7 @@ class GamelineFilterTests(TestCase):
     """--gameline matches the folder and whole name words, by code or by name."""
 
     def test_code_selects_the_gameline_folder(self):
-        output = dry_run("--gameline", "vtm")
+        output = dry_run("--gameline", "vtm").replace(os.sep, "/")
         self.assertIn("vampire/vampire_clans.py", output)
         self.assertIn("vampire/linear_magic_path.py", output)
         self.assertIn("character_templates/vampire_templates.py", output)
@@ -32,7 +32,7 @@ class GamelineFilterTests(TestCase):
         self.assertEqual(dry_run("--gameline", "vampire"), dry_run("--gameline", "vtm"))
 
     def test_mummy_is_a_gameline(self):
-        output = dry_run("--gameline", "mtr")
+        output = dry_run("--gameline", "mtr").replace(os.sep, "/")
         self.assertIn("mummy/dynasties.py", output)
         self.assertNotIn("vampire/vampire_clans.py", output)
 

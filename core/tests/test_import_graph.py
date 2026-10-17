@@ -104,7 +104,7 @@ class ImportPlacementTests(SimpleTestCase):
 
         for path in sorted(project_modules().values()):
             tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
-            visit(tree, None, str(path.relative_to(ROOT)))
+            visit(tree, None, path.relative_to(ROOT).as_posix())
         self.assertEqual(
             offenders, [], "Imports inside functions or classes:\n" + "\n".join(offenders)
         )

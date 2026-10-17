@@ -32,7 +32,7 @@ def project_templates():
         root = Path(settings.BASE_DIR) / app / "templates"
         for path in root.rglob("*.html"):
             if "docs" not in path.parts:
-                templates[str(path.relative_to(root))] = path.read_text(encoding="utf-8")
+                templates[path.relative_to(root).as_posix()] = path.read_text(encoding="utf-8")
     return templates
 
 

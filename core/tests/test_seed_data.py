@@ -2,6 +2,7 @@
 
 import copy
 import json
+import re
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import mock
@@ -72,7 +73,7 @@ class SeedInputTests(SimpleTestCase):
         for records in cases:
             with self.subTest(records=records):
                 self.write(records)
-                with self.assertRaisesRegex(seed_data.SeedDataError, str(self.path)):
+                with self.assertRaisesRegex(seed_data.SeedDataError, re.escape(str(self.path))):
                     self.read()
 
     def test_rejects_unsafe_configuration(self):
@@ -84,7 +85,7 @@ class SeedInputTests(SimpleTestCase):
             (set(), LEGACY),
         ]:
             with self.subTest(fields=fields, legacy=legacy):
-                with self.assertRaisesRegex(seed_data.SeedDataError, str(self.path)):
+                with self.assertRaisesRegex(seed_data.SeedDataError, re.escape(str(self.path))):
                     self.read(fields=fields, legacy=legacy)
         with self.assertRaises(seed_data.SeedDataError):
             self.read(model=Mummy, fields=frozenset({"titles"}))
@@ -96,11 +97,11 @@ class SeedInputTests(SimpleTestCase):
             self.read()
 
     def test_missing_and_malformed_files_report_the_path(self):
-        with self.assertRaisesRegex(seed_data.SeedDataError, str(self.path)):
+        with self.assertRaisesRegex(seed_data.SeedDataError, re.escape(str(self.path))):
             self.read()
         for text in ["[broken", "\ud800"]:
             self.path.write_bytes(text.encode("utf-8", errors="surrogatepass"))
-            with self.assertRaisesRegex(seed_data.SeedDataError, str(self.path)):
+            with self.assertRaisesRegex(seed_data.SeedDataError, re.escape(str(self.path))):
                 self.read()
 
 

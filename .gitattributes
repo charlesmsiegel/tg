@@ -1,0 +1,2 @@
+# Preserve vendored bytes: SRI hashes include line endings.
+source_static/vendor/** -text
