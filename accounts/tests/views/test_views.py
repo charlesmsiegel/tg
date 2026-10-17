@@ -68,7 +68,7 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_template_logged_in(self):
-        self.client.login(username="Test User 1", password="testpass")
+        self.client.force_login(self.user1)
         response = self.client.get(self.user1.profile.get_absolute_url())
         self.assertTemplateUsed(response, "accounts/detail.html")
 
@@ -80,7 +80,7 @@ class TestProfileView(TestCase):
         self.assertTemplateUsed(response, "core/index.html")
 
     def test_character_list(self):
-        self.client.login(username="Test User 1", password="testpass")
+        self.client.force_login(self.user1)
         response = self.client.get(self.user1.profile.get_absolute_url())
         self.assertTemplateUsed(response, "accounts/detail.html")
 
@@ -97,14 +97,14 @@ class TestProfileView(TestCase):
         self.assertContains(response, f"/characters/{self.char5.id}/")
 
     def test_approval_list(self):
-        self.client.login(username="Test Storyteller", password="testpass")
+        self.client.force_login(self.storyteller)
         response = self.client.get(self.storyteller.profile.get_absolute_url())
         self.assertContains(response, "Test Character 2")
         self.assertContains(response, "Characters to approve")
 
     def test_staff_viewing_a_storytellers_profile_sees_no_st_queues(self):
-        User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
-        self.client.login(username="Staff", password="testpass")
+        staff = User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
+        self.client.force_login(staff)
         response = self.client.get(self.storyteller.profile.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["st_queues"])
@@ -114,7 +114,7 @@ class TestProfileView(TestCase):
 
     def test_storyteller_queues_cost_the_same_with_more_rows(self):
         """The NEEDS YOU queues load per queue, not per row."""
-        self.client.login(username="Test Storyteller", password="testpass")
+        self.client.force_login(self.storyteller)
         url = self.storyteller.profile.get_absolute_url()
         chronicle = self.char2.chronicle
 
@@ -133,7 +133,7 @@ class TestProfileView(TestCase):
         self.assertEqual(count(), before)
 
     def test_default_tab_is_needs_when_something_waits(self):
-        self.client.login(username="Test Storyteller", password="testpass")
+        self.client.force_login(self.storyteller)
         response = self.client.get(self.storyteller.profile.get_absolute_url())
         self.assertEqual(response.context["tab"], "needs")
         self.assertEqual(response.context["needs_count"], 1)
@@ -146,13 +146,13 @@ class TestProfileView(TestCase):
         )
 
     def test_default_tab_is_characters_when_nothing_waits(self):
-        self.client.login(username="Test User 1", password="testpass")
+        self.client.force_login(self.user1)
         response = self.client.get(self.user1.profile.get_absolute_url())
         self.assertEqual(response.context["needs_count"], 0)
         self.assertEqual(response.context["tab"], "characters")
 
     def test_tab_query_parameter_picks_the_page(self):
-        self.client.login(username="Test Storyteller", password="testpass")
+        self.client.force_login(self.storyteller)
         url = self.storyteller.profile.get_absolute_url()
         response = self.client.get(url, {"tab": "chronicles"})
         self.assertEqual(response.context["tab"], "chronicles")
@@ -168,7 +168,7 @@ class TestProfileView(TestCase):
         )
         self.assertFalse(STRelationship.objects.filter(user=head).exists())
 
-        self.client.login(username="Head ST", password="testpass")
+        self.client.force_login(head)
         response = self.client.get(head.profile.get_absolute_url())
 
         self.assertEqual(response.status_code, 200)
@@ -190,7 +190,7 @@ class TestProfileView(TestCase):
         """Headed chronicles load in one query; the tab renders them without more."""
         head = User.objects.create_user("Head ST", "head@st.com", "testpass")
         Chronicle.objects.create(name="Headed 0", head_st=head)
-        self.client.login(username="Head ST", password="testpass")
+        self.client.force_login(head)
         url = head.profile.get_absolute_url()
 
         def count():
@@ -215,9 +215,9 @@ class TestProfileView(TestCase):
         Human.objects.create(
             name="Waiting On Head", owner=self.user2, chronicle=chronicle, status="Sub"
         )
-        User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
+        staff = User.objects.create_user("Staff", "staff@x.com", "testpass", is_staff=True)
 
-        self.client.login(username="Staff", password="testpass")
+        self.client.force_login(staff)
         response = self.client.get(head.profile.get_absolute_url())
 
         self.assertEqual(response.status_code, 200)
@@ -239,7 +239,7 @@ class TestProfileView(TestCase):
         The two fragments matched (an EXISTS projection and the head_st column) are what
         Profile.is_st() must emit under any rewrite that still asks the database once.
         """
-        self.client.login(username="Test Storyteller", password="testpass")
+        self.client.force_login(self.storyteller)
         url = self.storyteller.profile.get_absolute_url()
         self.client.get(url)  # warm per-process caches and the notification badge
         with (
@@ -256,7 +256,7 @@ class TestProfileView(TestCase):
         self.assertEqual(len(predicate), 1, predicate)
 
     def test_storyteller_tabs_fall_back_for_players(self):
-        self.client.login(username="Test User 1", password="testpass")
+        self.client.force_login(self.user1)
         url = self.user1.profile.get_absolute_url()
         for tab in ("chronicles", "journals", "bogus"):
             with self.subTest(tab=tab):
@@ -292,7 +292,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_character(self):
         """Test that non-storytellers cannot approve characters."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -305,7 +305,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_st_can_approve_character(self):
         """Test that storytellers can approve characters."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -318,7 +318,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_st_can_approve_location(self):
         """Test that storytellers can approve locations."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -331,7 +331,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_st_can_approve_item(self):
         """Test that storytellers can approve items."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -344,7 +344,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_location(self):
         """Test that non-storytellers cannot approve locations."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -355,7 +355,7 @@ class TestProfileApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_item(self):
         """Test that non-storytellers cannot approve items."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -412,7 +412,7 @@ class TestProfileUpdateView(TestCase):
 
     def test_can_update_profile(self):
         """Test that user can update their profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk}),
             {
@@ -462,7 +462,7 @@ class TestProfileSceneXPWorkflow(TestCase):
 
     def test_st_can_award_scene_xp(self):
         """Test that storytellers can award scene XP."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk}),
             {f"scene_{self.scene.pk}-{self.char.name}": "on"},
@@ -475,7 +475,7 @@ class TestProfileSceneXPWorkflow(TestCase):
 
     def test_non_st_cannot_award_scene_xp(self):
         """Test that non-storytellers cannot award scene XP."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk}),
             {f"scene_{self.scene.pk}-{self.char.name}": "on"},
@@ -516,7 +516,7 @@ class TestProfileRoteApprovalWorkflow(TestCase):
             chronicle=self.chronicle,
             gameline=Gameline.objects.create(name="Mage: the Ascension"),
         )
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -529,7 +529,7 @@ class TestProfileRoteApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_rote(self):
         """Test that non-storytellers cannot approve rotes."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -572,7 +572,7 @@ class TestProfileImageApprovalWorkflow(TestCase):
 
     def test_st_can_approve_character_image(self):
         """Test that storytellers can approve character images."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:image_approval",
@@ -585,7 +585,7 @@ class TestProfileImageApprovalWorkflow(TestCase):
 
     def test_st_can_approve_location_image(self):
         """Test that storytellers can approve location images."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:image_approval",
@@ -598,7 +598,7 @@ class TestProfileImageApprovalWorkflow(TestCase):
 
     def test_st_can_approve_item_image(self):
         """Test that storytellers can approve item images."""
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse(
                 "accounts:image_approval",
@@ -611,7 +611,7 @@ class TestProfileImageApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_character_image(self):
         """Test that non-storytellers cannot approve character images."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:image_approval",
@@ -646,7 +646,7 @@ class TestProfileFreebieWorkflow(TestCase):
     def test_st_can_award_freebies(self):
         """Test that storytellers can award freebies."""
         initial_freebies = self.char.freebies
-        self.client.login(username="stuser", password="password")
+        self.client.force_login(self.st_user)
         response = self.client.post(
             reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk}),
             {"backstory_freebies": 5},
@@ -658,7 +658,7 @@ class TestProfileFreebieWorkflow(TestCase):
 
     def test_non_st_cannot_award_freebies(self):
         """Test that non-storytellers cannot award freebies."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         initial_freebies = self.char.freebies
         response = self.client.post(
             reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk}),
@@ -721,7 +721,7 @@ class TestProfileWeeklyXPWorkflow(TestCase):
 
     def test_player_cannot_submit_for_other_players_character(self):
         """Test that players cannot submit requests for others' characters."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:weekly_xp_request",
@@ -771,7 +771,7 @@ class TestProfileWeeklyXPApprovalWorkflow(TestCase):
 
     def test_non_st_cannot_approve_weekly_xp(self):
         """Test that non-storytellers cannot approve weekly XP requests."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse(
                 "accounts:weekly_xp_approval",
@@ -799,7 +799,7 @@ class TestProfileSceneReadWorkflow(TestCase):
 
     def test_user_can_mark_scene_as_read(self):
         """Test that users can mark scenes as read."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse("accounts:mark_scene_read", kwargs={"scene_pk": self.scene.pk}),
         )
@@ -816,7 +816,7 @@ class TestProfileEditPreferencesLink(TestCase):
 
     def test_edit_preferences_links_to_update_view(self):
         """Test that the profile page links to the profile update view."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.get(self.user.profile.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(
@@ -841,13 +841,13 @@ class TestProfileViewIDORProtection(TestCase):
 
     def test_user_can_view_own_profile(self):
         """Test that users can view their own profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.get(reverse("accounts:profile", kwargs={"pk": self.user.profile.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_user_cannot_view_other_profile(self):
         """Test that users cannot view another user's profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.get(
             reverse("accounts:profile", kwargs={"pk": self.other_user.profile.pk})
         )
@@ -855,7 +855,7 @@ class TestProfileViewIDORProtection(TestCase):
 
     def test_staff_can_view_any_profile(self):
         """Test that staff users can view any profile."""
-        self.client.login(username="staffuser", password="password")
+        self.client.force_login(self.staff_user)
         response = self.client.get(
             reverse("accounts:profile", kwargs={"pk": self.other_user.profile.pk})
         )
@@ -884,7 +884,7 @@ class TestProfileUpdateViewIDORProtection(TestCase):
 
     def test_user_can_access_own_profile_update(self):
         """Test that users can access the update view for their own profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.get(
             reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk})
         )
@@ -892,7 +892,7 @@ class TestProfileUpdateViewIDORProtection(TestCase):
 
     def test_user_cannot_access_other_profile_update(self):
         """Test that users cannot access the update view for another user's profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         response = self.client.get(
             reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk})
         )
@@ -900,7 +900,7 @@ class TestProfileUpdateViewIDORProtection(TestCase):
 
     def test_user_cannot_post_to_other_profile_update(self):
         """Test that users cannot POST updates to another user's profile."""
-        self.client.login(username="testuser", password="password")
+        self.client.force_login(self.user)
         original_theme = self.other_user.profile.theme
         response = self.client.post(
             reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk}),
@@ -924,7 +924,7 @@ class TestProfileUpdateViewIDORProtection(TestCase):
 
     def test_staff_can_update_any_profile(self):
         """Test that staff users can update any profile."""
-        self.client.login(username="staffuser", password="password")
+        self.client.force_login(self.staff_user)
         response = self.client.post(
             reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk}),
             {
@@ -1026,7 +1026,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_approve_character_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot approve characters in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -1039,7 +1039,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_approve_location_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot approve locations in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -1052,7 +1052,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_approve_item_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot approve items in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -1065,7 +1065,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_award_scene_xp_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot award scene XP in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene_b.pk}),
             {f"scene_{self.scene_b.pk}-{self.char_b.name}": "on"},
@@ -1076,7 +1076,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_award_freebies_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot award freebies in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         initial_freebies = self.char_freebies_b.freebies
         response = self.client.post(
             reverse(
@@ -1092,7 +1092,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_cannot_approve_weekly_xp_in_other_chronicle(self):
         """Test that ST for Chronicle A cannot approve weekly XP in Chronicle B."""
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse(
                 "accounts:weekly_xp_approval",
@@ -1110,7 +1110,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         self.char_b.status = "App"  # Must be approved to have image approval
         self.char_b.save()
 
-        self.client.login(username="st_a", password="password")
+        self.client.force_login(self.st_user_a)
         response = self.client.post(
             reverse(
                 "accounts:image_approval",
@@ -1123,7 +1123,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
     def test_st_can_approve_character_in_own_chronicle(self):
         """Test that ST for Chronicle B can approve characters in Chronicle B."""
-        self.client.login(username="st_b", password="password")
+        self.client.force_login(self.st_user_b)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
@@ -1144,7 +1144,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         self.char_b.status = "Sub"
         self.char_b.save()
 
-        self.client.login(username="st_b", password="password")
+        self.client.force_login(self.st_user_b)
         response = self.client.post(
             reverse(
                 "accounts:object_approval",
