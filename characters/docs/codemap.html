@@ -6,6 +6,9 @@
 <title>characters — Codebase Atlas</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
 :root{
   --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
   --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
@@ -45,45 +48,43 @@ header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
 h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
 .doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
 .doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
 nav.tabs{
-  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
-  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
-  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
 }
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
 nav.tabs button{
-  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
-  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
-  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
 }
 nav.tabs button:hover{color:var(--text)}
 nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
-.panel{display:none;animation:fadeUp .25s ease both}
-.panel.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+section.panel{display:none}
+section.panel.active{display:block}
 
-/* ---------- content primitives ---------- */
-.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
-.panel h2:first-child{margin-top:0}
-.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
-.panel p{margin:8px 0;max-width:940px;color:var(--text)}
-.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
-.panel li{margin:4px 0}
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
 .dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
 code,.mono{font-family:var(--mono);font-size:.92em}
 p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
-pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
-.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
 .grid{display:grid;gap:14px;margin:12px 0}
-/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
-   minimum widths — below that the pair stacks instead of silently clipping columns.
-   min(100%,...) lets the single remaining track shrink with a phone viewport
-   instead of forcing page-level horizontal overflow */
-.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
 .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .grid>*{min-width:0}
 .kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
@@ -105,49 +106,55 @@ details{border:1px solid var(--border);border-radius:8px;margin:10px 0;backgroun
 details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
 details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
 details .body{padding:12px 16px}
-
-/* tables */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
-thead th{
-  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
-  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
-  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
-}
-/* anywhere (not break-word): lets a long file path shrink the column under
-   pressure, so numeric columns keep their width instead of being pushed out of
-   the clip box — the paths give way, the numbers never do */
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
 tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
-tbody tr:hover{background:var(--accent-dim)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
-table.sortable thead th{cursor:pointer;user-select:none}
-table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
-table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
-table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
-
-/* CSS bars inside tables */
 .bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
 .bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
 .bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
 
-/* ---------- viz containers ---------- */
-.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
-.viz svg{display:block;width:100%;height:100%}
-.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
-.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
-.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
-.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
-.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
-.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
-.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
-.mermaid-wrap .mviewport.dragging{cursor:grabbing}
-.mermaid{font-family:var(--sans)}
-.mermaid[data-processed="true"]{display:flex;justify-content:center}
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
 footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
-@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
 </style>
 </head>
 <body>
@@ -155,7 +162,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
   <div class="doc-label">CODEBASE ATLAS</div>
   <h1 class="doc-title">characters — Codebase Atlas</h1>
   <p class="doc-sub"></p>
-  <div class="doc-meta">updated 2026-10-16 · 6e29f3bc → 5d20f9aa</div>
+  <div class="doc-meta">updated 2026-10-17 · 67d7990b</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -175,6 +182,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 .co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
 @media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
 </style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">characters</span></div><div class="co-row"><span class="co-lbl">characters</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../tg_schema/docs/codemap.html">tg_schema</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a><a href="../../scripts/docs/codemap.html">scripts</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
 <nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
 <button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
 <button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
@@ -186,6 +194,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <main><section class="panel active" id="overview" role="tabpanel">
 
 
+
 <h2>characters — orientation</h2><div class="card hero"><p>Characters are typed World of Darkness sheets with inherited traits, ordered creation tasks and gameline-specific spending rules. Creation and advancement alter the same persistent character through registered workflows and services.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>characters/urls/__init__.py:1</code></td><td>Gameline route composition and character entry router.</td></tr><tr><td><code>characters/chargen/transitions.py:19</code></td><td>Authorized advancement called by creation views.</td></tr><tr><td><code>characters/services/xp_spending/base.py:339</code></td><td>Locked service API for spending callers.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>characters/models/core/character.py:15</code> — Lifecycle and common query semantics.</li><li><code>characters/models/core/human.py:41</code> — Inherited sheet blocks and common human behavior.</li><li><code>characters/chargen/workflow.py:13</code> — Immutable Step and Workflow vocabulary.</li><li><code>characters/chargen/transitions.py:19</code> — Authorized task navigation and skip effects.</li><li><code>characters/services/xp_spending/base.py:167</code> — Spending dispatch and domain failures.</li><li><code>characters/models/mage/mage.py:29</code> — Highest-ranked handwritten hotspot and gameline specialization.</li><li><code>characters/tests/test_chargen_registry.py:1</code> — The golden routing contract.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
   n0["Character router"]
   n1["Workflow metadata"]
@@ -195,17 +204,18 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
   n5["Spending services"]
   n0 --> n1 --> n2 --> n3
   n3 --> n4
-  n2 --> n5 --> n4</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 1138 recognized files and 103582 lines, including tests and recognized assets. Test-source share is not execution coverage. Current churn × branch review priorities are listed in the regenerated Hotspots tab; they are attention signals, not defects.</p><div class="callout warn">The isolated graph reports a grouped-module cycle: [[&#x27;templates/characters/core&#x27;, &#x27;templates/characters/tl&#x27;]]. In characters this is mutual template-family reuse, not proof of recursively including the same file; no file cycle was detected in that package run.</div><h3>Decisions and interpretation limits</h3><p>A data-driven universal rules engine could define arbitrary games; this models known gamelines with concrete Django types and specialized services. <code>characters/README.md:13</code>, <code>characters/chargen/workflow.py:1</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+  n2 --> n5 --> n4</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 1140 recognized files and 103737 lines, including tests and recognized assets. Test-source share is not execution coverage. Current churn × branch review priorities are listed in the regenerated Hotspots tab; they are attention signals, not defects.</p><div class="callout warn">The isolated graph reports a grouped-module cycle: [[&#x27;templates/characters/core&#x27;, &#x27;templates/characters/tl&#x27;]]. In characters this is mutual template-family reuse, not proof of recursively including the same file; no file cycle was detected in that package run.</div><h3>Decisions and interpretation limits</h3><p>A data-driven universal rules engine could define arbitrary games; this models known gamelines with concrete Django types and specialized services. <code>characters/README.md:13</code>, <code>characters/chargen/workflow.py:1</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
 
-<h3>Stable title identity pilot</h3><p>Twelve Mummy titles now separate JSON content from script execution. Permanent keys adopt existing rows and update content without replacing primary keys. Both the loader and wrapper export bindings are transactional, including direct imports. Other catalogues retain their existing script semantics. <code>core/seed_data.py:81</code>, <code>populate_db/mummy/titles.py:11</code>, <code>characters/models/mummy/mummy_title.py:13</code>, <code>tg_schema/migrations/0013_mummy_title_seed_key.py:14</code></p>
+<h3>Stable title identity pilot</h3><p>Twelve Mummy titles now separate JSON content from script execution. Permanent keys adopt existing rows and update content without replacing primary keys. Both the loader and wrapper export bindings are transactional, including direct imports. Unconverted catalogues retain their existing script semantics. <code>core/seed_data.py:81</code>, <code>populate_db/mummy/titles.py:11</code>, <code>characters/models/mummy/mummy_title.py:13</code>, <code>tg_schema/migrations/0013_mummy_title_seed_key.py:14</code></p>
 
+<h3>Shared creation choices and background totals</h3><p>Creation role policy selects a catalogue scope, then shares grouping and choice setup. Background totals aggregate allowed property names in one query while preserving order and zero values. <code>characters/forms/core/character_creation.py:150</code>, <code>characters/managers/background_manager.py:74</code></p>
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">1,138</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">103,582</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">1,140</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">103,737</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">2</div><div class="l">languages</div></div>
   <div class="kpi good"><div class="n">57%</div><div class="l">test code share</div></div>
 </div>
@@ -213,8 +223,8 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>90,303</td><td class='num'>630</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>87.2%</td></tr>
-<tr><td>HTML</td><td class='num'>11,157</td><td class='num'>487</td><td><div class="bar "><i style="width:12.4%"></i></div></td><td class='num'>10.8%</td></tr>
+<tbody><tr><td>Python</td><td class='num'>90,458</td><td class='num'>632</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>87.2%</td></tr>
+<tr><td>HTML</td><td class='num'>11,157</td><td class='num'>487</td><td><div class="bar "><i style="width:12.3%"></i></div></td><td class='num'>10.8%</td></tr>
 <tr><td>JavaScript</td><td class='num'>1,397</td><td class='num'>18</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>1.3%</td></tr>
 <tr><td>JSON</td><td class='num'>638</td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.6%</td></tr>
 <tr><td>Markdown</td><td class='num'>87</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.1%</td></tr></tbody></table></div>
@@ -223,18 +233,18 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <h2>Top-level directories</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
-<tbody><tr><td><code>tests/</code></td><td class='num'>52,798</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
-<tr><td><code>models/</code></td><td class='num'>11,748</td><td><div class="bar "><i style="width:22.3%"></i></div></td></tr>
+<tbody><tr><td><code>tests/</code></td><td class='num'>52,956</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>models/</code></td><td class='num'>11,751</td><td><div class="bar "><i style="width:22.2%"></i></div></td></tr>
 <tr><td><code>templates/</code></td><td class='num'>11,157</td><td><div class="bar "><i style="width:21.1%"></i></div></td></tr>
 <tr><td><code>views/</code></td><td class='num'>10,096</td><td><div class="bar "><i style="width:19.1%"></i></div></td></tr>
 <tr><td><code>services/</code></td><td class='num'>6,119</td><td><div class="bar "><i style="width:11.6%"></i></div></td></tr>
-<tr><td><code>forms/</code></td><td class='num'>5,829</td><td><div class="bar "><i style="width:11.0%"></i></div></td></tr>
+<tr><td><code>forms/</code></td><td class='num'>5,809</td><td><div class="bar "><i style="width:11.0%"></i></div></td></tr>
 <tr><td><code>urls/</code></td><td class='num'>1,991</td><td><div class="bar "><i style="width:3.8%"></i></div></td></tr>
 <tr><td><code>static/</code></td><td class='num'>1,173</td><td><div class="bar "><i style="width:2.2%"></i></div></td></tr>
 <tr><td><code>(root)/</code></td><td class='num'>865</td><td><div class="bar "><i style="width:1.6%"></i></div></td></tr>
 <tr><td><code>chargen/</code></td><td class='num'>800</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>rules/</code></td><td class='num'>526</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>managers/</code></td><td class='num'>392</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>managers/</code></td><td class='num'>406</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>templatetags/</code></td><td class='num'>88</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
@@ -308,7 +318,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":778,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 5 files"},{"id":"chargen","label":"chargen","group":"chargen","size":800,"fanIn":0,"fanOut":6,"meta":"chargen \u00b7 6 files"},{"id":"forms","label":"forms","group":"forms","size":5829,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 65 files"},{"id":"managers","label":"managers","group":"managers","size":392,"fanIn":0,"fanOut":0,"meta":"managers \u00b7 3 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"models","label":"models","group":"models","size":11748,"fanIn":0,"fanOut":0,"meta":"models \u00b7 118 files"},{"id":"rules","label":"rules","group":"rules","size":526,"fanIn":0,"fanOut":0,"meta":"rules \u00b7 2 files"},{"id":"services","label":"services","group":"services","size":6119,"fanIn":0,"fanOut":0,"meta":"services \u00b7 31 files"},{"id":"static/characters/js","label":"js","group":"static","size":1173,"fanIn":2,"fanOut":0,"meta":"static/characters/js \u00b7 15 files"},{"id":"templates/characters","label":"templates","group":"templates","size":170,"fanIn":1,"fanOut":1,"meta":"templates/characters \u00b7 2 files"},{"id":"templates/characters/changeling","label":"changeling","group":"templates","size":1117,"fanIn":3,"fanOut":3,"meta":"templates/characters/changeling \u00b7 46 files"},{"id":"templates/characters/core","label":"core","group":"cycle","size":1564,"fanIn":12,"fanOut":2,"meta":"templates/characters/core \u00b7 56 files \u00b7 in dependency cycle #1"},{"id":"templates/characters/demon","label":"demon","group":"templates","size":1107,"fanIn":2,"fanOut":2,"meta":"templates/characters/demon \u00b7 48 files"},{"id":"templates/characters/hunter","label":"hunter","group":"templates","size":358,"fanIn":2,"fanOut":2,"meta":"templates/characters/hunter \u00b7 18 files"},{"id":"templates/characters/mage","label":"mage","group":"templates","size":2378,"fanIn":3,"fanOut":2,"meta":"templates/characters/mage \u00b7 102 files"},{"id":"templates/characters/mummy","label":"mummy","group":"templates","size":283,"fanIn":2,"fanOut":3,"meta":"templates/characters/mummy \u00b7 17 files"},{"id":"templates/characters/shared","label":"shared","group":"templates","size":237,"fanIn":8,"fanOut":0,"meta":"templates/characters/shared \u00b7 8 files"},{"id":"templates/characters/tl","label":"tl","group":"cycle","size":862,"fanIn":11,"fanOut":1,"meta":"templates/characters/tl \u00b7 29 files \u00b7 in dependency cycle #1"},{"id":"templates/characters/vampire","label":"vampire","group":"templates","size":803,"fanIn":3,"fanOut":3,"meta":"templates/characters/vampire \u00b7 44 files"},{"id":"templates/characters/werewolf","label":"werewolf","group":"templates","size":1518,"fanIn":3,"fanOut":3,"meta":"templates/characters/werewolf \u00b7 80 files"},{"id":"templates/characters/wraith","label":"wraith","group":"templates","size":723,"fanIn":3,"fanOut":3,"meta":"templates/characters/wraith \u00b7 35 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":88,"fanIn":0,"fanOut":0,"meta":"templatetags \u00b7 2 files"},{"id":"tests","label":"tests","group":"tests","size":52798,"fanIn":0,"fanOut":12,"meta":"tests \u00b7 275 files"},{"id":"urls","label":"urls","group":"urls","size":1991,"fanIn":0,"fanOut":0,"meta":"urls \u00b7 45 files"},{"id":"views","label":"views","group":"views","size":10096,"fanIn":0,"fanOut":12,"meta":"views \u00b7 122 files"}],"links":[{"source":"chargen","target":"templates/characters/changeling","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/core","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/mage","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/vampire","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/werewolf","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/wraith","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"templates/characters","target":"templates/characters/tl","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/core","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/tl","weight":32,"imports":0,"loads":32,"kind":"resource","cycle":false},{"source":"templates/characters/core","target":"templates/characters/shared","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templates/characters/core","target":"templates/characters/tl","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"templates/characters/demon","target":"templates/characters/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"templates/characters/demon","target":"templates/characters/tl","weight":36,"imports":0,"loads":36,"kind":"resource","cycle":false},{"source":"templates/characters/hunter","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/hunter","target":"templates/characters/tl","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"templates/characters/mage","target":"templates/characters/core","weight":13,"imports":0,"loads":13,"kind":"resource","cycle":false},{"source":"templates/characters/mage","target":"templates/characters/tl","weight":69,"imports":0,"loads":69,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/tl","weight":15,"imports":0,"loads":15,"kind":"resource","cycle":false},{"source":"templates/characters/tl","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"templates/characters/vampire","target":"templates/characters/core","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"templates/characters/vampire","target":"templates/characters/shared","weight":7,"imports":0,"loads":7,"kind":"resource","cycle":false},{"source":"templates/characters/vampire","target":"templates/characters/tl","weight":29,"imports":0,"loads":29,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/core","weight":17,"imports":0,"loads":17,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/shared","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/tl","weight":50,"imports":0,"loads":50,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/core","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/tl","weight":20,"imports":0,"loads":20,"kind":"resource","cycle":false},{"source":"tests","target":"static/characters/js","weight":8,"imports":0,"loads":8,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/changeling","weight":24,"imports":0,"loads":24,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/core","weight":21,"imports":0,"loads":21,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/demon","weight":13,"imports":0,"loads":13,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/hunter","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/mage","weight":52,"imports":0,"loads":52,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/mummy","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/shared","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/vampire","weight":28,"imports":0,"loads":28,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/werewolf","weight":56,"imports":0,"loads":56,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/wraith","weight":19,"imports":0,"loads":19,"kind":"resource","cycle":false},{"source":"views","target":"static/characters/js","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/changeling","weight":34,"imports":0,"loads":34,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/core","weight":31,"imports":0,"loads":31,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/demon","weight":40,"imports":0,"loads":40,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/hunter","weight":15,"imports":0,"loads":15,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/mage","weight":60,"imports":0,"loads":60,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/mummy","weight":12,"imports":0,"loads":12,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/shared","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/vampire","weight":34,"imports":0,"loads":34,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/werewolf","weight":57,"imports":0,"loads":57,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/wraith","weight":24,"imports":0,"loads":24,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":778,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 5 files"},{"id":"chargen","label":"chargen","group":"chargen","size":800,"fanIn":0,"fanOut":6,"meta":"chargen \u00b7 6 files"},{"id":"forms","label":"forms","group":"forms","size":5809,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 65 files"},{"id":"managers","label":"managers","group":"managers","size":406,"fanIn":0,"fanOut":0,"meta":"managers \u00b7 3 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"models","label":"models","group":"models","size":11751,"fanIn":0,"fanOut":0,"meta":"models \u00b7 118 files"},{"id":"rules","label":"rules","group":"rules","size":526,"fanIn":0,"fanOut":0,"meta":"rules \u00b7 2 files"},{"id":"services","label":"services","group":"services","size":6119,"fanIn":0,"fanOut":0,"meta":"services \u00b7 31 files"},{"id":"static/characters/js","label":"js","group":"static","size":1173,"fanIn":2,"fanOut":0,"meta":"static/characters/js \u00b7 15 files"},{"id":"templates/characters","label":"templates","group":"templates","size":170,"fanIn":1,"fanOut":1,"meta":"templates/characters \u00b7 2 files"},{"id":"templates/characters/changeling","label":"changeling","group":"templates","size":1117,"fanIn":3,"fanOut":3,"meta":"templates/characters/changeling \u00b7 46 files"},{"id":"templates/characters/core","label":"core","group":"cycle","size":1564,"fanIn":12,"fanOut":2,"meta":"templates/characters/core \u00b7 56 files \u00b7 in dependency cycle #1"},{"id":"templates/characters/demon","label":"demon","group":"templates","size":1107,"fanIn":2,"fanOut":2,"meta":"templates/characters/demon \u00b7 48 files"},{"id":"templates/characters/hunter","label":"hunter","group":"templates","size":358,"fanIn":2,"fanOut":2,"meta":"templates/characters/hunter \u00b7 18 files"},{"id":"templates/characters/mage","label":"mage","group":"templates","size":2378,"fanIn":3,"fanOut":2,"meta":"templates/characters/mage \u00b7 102 files"},{"id":"templates/characters/mummy","label":"mummy","group":"templates","size":283,"fanIn":2,"fanOut":3,"meta":"templates/characters/mummy \u00b7 17 files"},{"id":"templates/characters/shared","label":"shared","group":"templates","size":237,"fanIn":8,"fanOut":0,"meta":"templates/characters/shared \u00b7 8 files"},{"id":"templates/characters/tl","label":"tl","group":"cycle","size":862,"fanIn":11,"fanOut":1,"meta":"templates/characters/tl \u00b7 29 files \u00b7 in dependency cycle #1"},{"id":"templates/characters/vampire","label":"vampire","group":"templates","size":803,"fanIn":3,"fanOut":3,"meta":"templates/characters/vampire \u00b7 44 files"},{"id":"templates/characters/werewolf","label":"werewolf","group":"templates","size":1518,"fanIn":3,"fanOut":3,"meta":"templates/characters/werewolf \u00b7 80 files"},{"id":"templates/characters/wraith","label":"wraith","group":"templates","size":723,"fanIn":3,"fanOut":3,"meta":"templates/characters/wraith \u00b7 35 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":88,"fanIn":0,"fanOut":0,"meta":"templatetags \u00b7 2 files"},{"id":"tests","label":"tests","group":"tests","size":52956,"fanIn":0,"fanOut":12,"meta":"tests \u00b7 277 files"},{"id":"urls","label":"urls","group":"urls","size":1991,"fanIn":0,"fanOut":0,"meta":"urls \u00b7 45 files"},{"id":"views","label":"views","group":"views","size":10096,"fanIn":0,"fanOut":12,"meta":"views \u00b7 122 files"}],"links":[{"source":"chargen","target":"templates/characters/changeling","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/core","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/mage","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/vampire","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/werewolf","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"chargen","target":"templates/characters/wraith","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"templates/characters","target":"templates/characters/tl","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/core","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/changeling","target":"templates/characters/tl","weight":32,"imports":0,"loads":32,"kind":"resource","cycle":false},{"source":"templates/characters/core","target":"templates/characters/shared","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templates/characters/core","target":"templates/characters/tl","weight":25,"imports":0,"loads":25,"kind":"resource","cycle":true},{"source":"templates/characters/demon","target":"templates/characters/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"templates/characters/demon","target":"templates/characters/tl","weight":36,"imports":0,"loads":36,"kind":"resource","cycle":false},{"source":"templates/characters/hunter","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/hunter","target":"templates/characters/tl","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"templates/characters/mage","target":"templates/characters/core","weight":13,"imports":0,"loads":13,"kind":"resource","cycle":false},{"source":"templates/characters/mage","target":"templates/characters/tl","weight":69,"imports":0,"loads":69,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/mummy","target":"templates/characters/tl","weight":15,"imports":0,"loads":15,"kind":"resource","cycle":false},{"source":"templates/characters/tl","target":"templates/characters/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":true},{"source":"templates/characters/vampire","target":"templates/characters/core","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"templates/characters/vampire","target":"templates/characters/shared","weight":7,"imports":0,"loads":7,"kind":"resource","cycle":false},{"source":"templates/characters/vampire","target":"templates/characters/tl","weight":29,"imports":0,"loads":29,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/core","weight":17,"imports":0,"loads":17,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/shared","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/characters/werewolf","target":"templates/characters/tl","weight":50,"imports":0,"loads":50,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/core","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/shared","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"templates/characters/wraith","target":"templates/characters/tl","weight":20,"imports":0,"loads":20,"kind":"resource","cycle":false},{"source":"tests","target":"static/characters/js","weight":8,"imports":0,"loads":8,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/changeling","weight":24,"imports":0,"loads":24,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/core","weight":21,"imports":0,"loads":21,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/demon","weight":13,"imports":0,"loads":13,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/hunter","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/mage","weight":52,"imports":0,"loads":52,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/mummy","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/shared","weight":11,"imports":0,"loads":11,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/tl","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/vampire","weight":28,"imports":0,"loads":28,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/werewolf","weight":56,"imports":0,"loads":56,"kind":"resource","cycle":false},{"source":"tests","target":"templates/characters/wraith","weight":19,"imports":0,"loads":19,"kind":"resource","cycle":false},{"source":"views","target":"static/characters/js","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/changeling","weight":34,"imports":0,"loads":34,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/core","weight":31,"imports":0,"loads":31,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/demon","weight":40,"imports":0,"loads":40,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/hunter","weight":15,"imports":0,"loads":15,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/mage","weight":60,"imports":0,"loads":60,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/mummy","weight":12,"imports":0,"loads":12,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/shared","weight":10,"imports":0,"loads":10,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/vampire","weight":34,"imports":0,"loads":34,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/werewolf","weight":57,"imports":0,"loads":57,"kind":"resource","cycle":false},{"source":"views","target":"templates/characters/wraith","weight":24,"imports":0,"loads":24,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -318,8 +328,8 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
 <tbody><tr><td><code>templates/characters/tl/reference_detail.html</code></td><td class='num'>35</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/characters/tl/reference_list.html</code></td><td class='num'>34</td><td><div class="bar "><i style="width:97.1%"></i></div></td><td class='num'>2</td></tr>
-<tr><td><code>templates/characters/tl/reference_cover_title.html</code></td><td class='num'>34</td><td><div class="bar "><i style="width:97.1%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/characters/tl/reference_no_results.html</code></td><td class='num'>34</td><td><div class="bar "><i style="width:97.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/characters/tl/reference_cover_title.html</code></td><td class='num'>34</td><td><div class="bar "><i style="width:97.1%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/characters/core/chargen.html</code></td><td class='num'>27</td><td><div class="bar "><i style="width:77.1%"></i></div></td><td class='num'>3</td></tr>
 <tr><td><code>templates/characters/mage/form/field.html</code></td><td class='num'>26</td><td><div class="bar "><i style="width:74.3%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/characters/tl/ref2_prose.html</code></td><td class='num'>23</td><td><div class="bar "><i style="width:65.7%"></i></div></td><td class='num'>0</td></tr>
@@ -394,8 +404,8 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">725</div><div class="l">commits (24 months ago)</div></div>
-  <div class="kpi"><div class="n">645</div><div class="l">files touched</div></div>
+  <div class="kpi accent"><div class="n">726</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">647</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">mage.py</div><div class="l">top hotspot</div></div>
 </div>
 <div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
@@ -404,42 +414,43 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <h2>Churn × size map</h2>
 <p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
 <div class="viz" data-render="treemap" style="height:540px"></div>
-<script type="application/json">{"items":[{"name":"models/mage/mage.py","value":773,"metric":41,"meta":"124 branches \u00b7 2 authors"},{"name":"models/core/human.py","value":675,"metric":51,"meta":"95 branches \u00b7 3 authors"},{"name":"views/mage/mage.py","value":421,"metric":123,"meta":"24 branches \u00b7 2 authors"},{"name":"forms/core/xp.py","value":216,"metric":25,"meta":"67 branches \u00b7 2 authors"},{"name":"views/mage/sorcerer.py","value":381,"metric":65,"meta":"25 branches \u00b7 2 authors"},{"name":"models/core/character.py","value":406,"metric":51,"meta":"30 branches \u00b7 2 authors"},{"name":"models/wraith/wraith.py","value":619,"metric":31,"meta":"45 branches \u00b7 2 authors"},{"name":"forms/mage/xp.py","value":180,"metric":18,"meta":"77 branches \u00b7 2 authors"},{"name":"models/vampire/vampire.py","value":550,"metric":23,"meta":"60 branches \u00b7 2 authors"},{"name":"models/werewolf/garou.py","value":459,"metric":24,"meta":"55 branches \u00b7 2 authors"},{"name":"models/demon/demon.py","value":391,"metric":31,"meta":"39 branches \u00b7 2 authors"},{"name":"forms/mage/freebies.py","value":209,"metric":14,"meta":"86 branches \u00b7 2 authors"},{"name":"views/core/__init__.py","value":481,"metric":42,"meta":"24 branches \u00b7 2 authors"},{"name":"services/freebie_spending/base.py","value":840,"metric":12,"meta":"82 branches \u00b7 2 authors"},{"name":"views/core/chargen_mixins.py","value":343,"metric":11,"meta":"74 branches \u00b7 2 authors"},{"name":"forms/core/chained_freebies.py","value":248,"metric":18,"meta":"44 branches \u00b7 2 authors"},{"name":"models/changeling/changeling.py","value":362,"metric":20,"meta":"35 branches \u00b7 2 authors"},{"name":"views/mage/companion.py","value":277,"metric":59,"meta":"9 branches \u00b7 2 authors"},{"name":"forms/core/npc_profile.py","value":557,"metric":11,"meta":"46 branches \u00b7 2 authors"},{"name":"views/core/human.py","value":249,"metric":46,"meta":"10 branches \u00b7 2 authors"},{"name":"services/freebie_spending/mage.py","value":671,"metric":9,"meta":"55 branches \u00b7 2 authors"},{"name":"forms/mage/rote.py","value":153,"metric":18,"meta":"25 branches \u00b7 2 authors"},{"name":"models/werewolf/kinfolk.py","value":160,"metric":16,"meta":"26 branches \u00b7 2 authors"},{"name":"models/core/merit_flaw_block.py","value":210,"metric":17,"meta":"24 branches \u00b7 2 authors"},{"name":"forms/mage/mage.py","value":220,"metric":13,"meta":"31 branches \u00b7 2 authors"},{"name":"services/xp_spending/base.py","value":560,"metric":8,"meta":"48 branches \u00b7 2 authors"},{"name":"forms/core/freebies.py","value":80,"metric":17,"meta":"22 branches \u00b7 2 authors"},{"name":"views/vampire/vampire_chargen.py","value":206,"metric":34,"meta":"10 branches \u00b7 2 authors"},{"name":"views/wraith/wraith_chargen.py","value":227,"metric":27,"meta":"12 branches \u00b7 2 authors"},{"name":"forms/mage/enhancements.py","value":272,"metric":8,"meta":"42 branches \u00b7 2 authors"},{"name":"views/core/character.py","value":117,"metric":31,"meta":"10 branches \u00b7 2 authors"},{"name":"models/demon/earthbound.py","value":242,"metric":19,"meta":"16 branches \u00b7 2 authors"},{"name":"models/core/ability_block.py","value":280,"metric":10,"meta":"28 branches \u00b7 2 authors"},{"name":"rules/allocation.py","value":308,"metric":5,"meta":"56 branches \u00b7 1 authors"},{"name":"models/mage/companion.py","value":184,"metric":20,"meta":"13 branches \u00b7 2 authors"},{"name":"managers/background_manager.py","value":225,"metric":9,"meta":"28 branches \u00b7 2 authors"},{"name":"forms/core/character_creation.py","value":185,"metric":17,"meta":"14 branches \u00b7 2 authors"},{"name":"models/core/background_block.py","value":161,"metric":14,"meta":"17 branches \u00b7 2 authors"},{"name":"views/mage/background_views.py","value":114,"metric":35,"meta":"6 branches \u00b7 2 authors"},{"name":"views/demon/demon_chargen.py","value":219,"metric":30,"meta":"7 branches \u00b7 2 authors"},{"name":"models/demon/apocalyptic_form.py","value":150,"metric":14,"meta":"16 branches \u00b7 2 authors"},{"name":"models/core/attribute_block.py","value":203,"metric":10,"meta":"22 branches \u00b7 2 authors"},{"name":"models/demon/thrall.py","value":135,"metric":18,"meta":"11 branches \u00b7 2 authors"},{"name":"models/werewolf/fera.py","value":170,"metric":9,"meta":"22 branches \u00b7 2 authors"},{"name":"forms/core/linked_npc.py","value":335,"metric":7,"meta":"27 branches \u00b7 2 authors"},{"name":"forms/mage/numina.py","value":165,"metric":9,"meta":"20 branches \u00b7 2 authors"},{"name":"services/freebie_spending/werewolf.py","value":408,"metric":6,"meta":"30 branches \u00b7 2 authors"},{"name":"views/vampire/ghoul_chargen.py","value":157,"metric":24,"meta":"6 branches \u00b7 2 authors"},{"name":"models/core/group.py","value":69,"metric":11,"meta":"13 branches \u00b7 2 authors"},{"name":"static/characters/js/attribute-validation.js","value":231,"metric":3,"meta":"44 branches \u00b7 2 authors"},{"name":"views/wraith/wtohuman.py","value":148,"metric":45,"meta":"2 branches \u00b7 2 authors"},{"name":"services/freebie_spending/vampire.py","value":273,"metric":6,"meta":"21 branches \u00b7 2 authors"},{"name":"services/xp_spending/mage.py","value":510,"metric":6,"meta":"21 branches \u00b7 2 authors"},{"name":"views/core/generic_background.py","value":80,"metric":16,"meta":"7 branches \u00b7 2 authors"},{"name":"managers/merit_flaw_manager.py","value":159,"metric":6,"meta":"20 branches \u00b7 2 authors"},{"name":"models/hunter/hunter.py","value":145,"metric":15,"meta":"7 branches \u00b7 2 authors"},{"name":"views/changeling/changeling.py","value":165,"metric":39,"meta":"2 branches \u00b7 2 authors"},{"name":"forms/core/allocation.py","value":107,"metric":5,"meta":"22 branches \u00b7 2 authors"},{"name":"services/freebie_spending/demon.py","value":308,"metric":5,"meta":"22 branches \u00b7 2 authors"},{"name":"forms/core/backgroundform.py","value":104,"metric":6,"meta":"18 branches \u00b7 2 authors"},{"name":"static/characters/js/ability-validation.js","value":106,"metric":4,"meta":"27 branches \u00b7 2 authors"},{"name":"models/mage/focus.py","value":182,"metric":12,"meta":"8 branches \u00b7 2 authors"},{"name":"models/vampire/path.py","value":70,"metric":7,"meta":"14 branches \u00b7 2 authors"},{"name":"static/characters/js/chargen.js","value":78,"metric":4,"meta":"25 branches \u00b7 1 authors"},{"name":"views/werewolf/fera.py","value":180,"metric":26,"meta":"3 branches \u00b7 2 authors"},{"name":"services/freebie_spending/changeling.py","value":260,"metric":5,"meta":"19 branches \u00b7 2 authors"},{"name":"forms/werewolf/garou.py","value":95,"metric":5,"meta":"17 branches \u00b7 2 authors"},{"name":"forms/mage/sorcerer.py","value":258,"metric":8,"meta":"10 branches \u00b7 2 authors"},{"name":"services/freebie_spending/wraith.py","value":193,"metric":5,"meta":"16 branches \u00b7 2 authors"},{"name":"views/core/backgrounds.py","value":65,"metric":17,"meta":"4 branches \u00b7 2 authors"},{"name":"forms/mage/chained_freebies.py","value":100,"metric":4,"meta":"20 branches \u00b7 2 authors"},{"name":"views/core/spending.py","value":130,"metric":4,"meta":"20 branches \u00b7 2 authors"},{"name":"static/characters/js/chargen-components.js","value":134,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"static/characters/js/linked-npc-fields.js","value":72,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"views/core/known_by.py","value":236,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"views/core/meritflaw.py","value":48,"metric":9,"meta":"8 branches \u00b7 2 authors"},{"name":"views/core/specialty.py","value":74,"metric":9,"meta":"8 branches \u00b7 2 authors"},{"name":"models/vampire/revenant.py","value":119,"metric":13,"meta":"5 branches \u00b7 2 authors"},{"name":"services/xp_spending/vampire.py","value":180,"metric":6,"meta":"12 branches \u00b7 2 authors"},{"name":"models/mummy/mummy.py","value":287,"metric":11,"meta":"6 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":123}</script>
+<script type="application/json">{"items":[{"name":"models/mage/mage.py","value":773,"metric":42,"meta":"124 branches \u00b7 3 authors"},{"name":"models/core/human.py","value":675,"metric":52,"meta":"95 branches \u00b7 3 authors"},{"name":"views/mage/mage.py","value":421,"metric":122,"meta":"24 branches \u00b7 2 authors"},{"name":"forms/core/xp.py","value":216,"metric":25,"meta":"67 branches \u00b7 2 authors"},{"name":"views/mage/sorcerer.py","value":381,"metric":64,"meta":"25 branches \u00b7 2 authors"},{"name":"models/core/character.py","value":406,"metric":52,"meta":"30 branches \u00b7 3 authors"},{"name":"models/wraith/wraith.py","value":619,"metric":32,"meta":"45 branches \u00b7 3 authors"},{"name":"models/vampire/vampire.py","value":550,"metric":24,"meta":"60 branches \u00b7 3 authors"},{"name":"forms/mage/xp.py","value":180,"metric":18,"meta":"77 branches \u00b7 2 authors"},{"name":"models/werewolf/garou.py","value":459,"metric":25,"meta":"55 branches \u00b7 3 authors"},{"name":"models/demon/demon.py","value":391,"metric":32,"meta":"39 branches \u00b7 3 authors"},{"name":"forms/mage/freebies.py","value":209,"metric":14,"meta":"86 branches \u00b7 2 authors"},{"name":"views/core/__init__.py","value":481,"metric":40,"meta":"24 branches \u00b7 2 authors"},{"name":"services/freebie_spending/base.py","value":840,"metric":12,"meta":"82 branches \u00b7 2 authors"},{"name":"views/core/chargen_mixins.py","value":343,"metric":11,"meta":"74 branches \u00b7 2 authors"},{"name":"forms/core/chained_freebies.py","value":248,"metric":18,"meta":"44 branches \u00b7 2 authors"},{"name":"models/changeling/changeling.py","value":362,"metric":20,"meta":"35 branches \u00b7 2 authors"},{"name":"views/mage/companion.py","value":277,"metric":58,"meta":"9 branches \u00b7 2 authors"},{"name":"forms/core/npc_profile.py","value":557,"metric":11,"meta":"46 branches \u00b7 2 authors"},{"name":"services/freebie_spending/mage.py","value":671,"metric":9,"meta":"55 branches \u00b7 2 authors"},{"name":"views/core/human.py","value":249,"metric":45,"meta":"10 branches \u00b7 2 authors"},{"name":"forms/mage/rote.py","value":153,"metric":17,"meta":"25 branches \u00b7 2 authors"},{"name":"models/core/merit_flaw_block.py","value":210,"metric":17,"meta":"24 branches \u00b7 3 authors"},{"name":"forms/mage/mage.py","value":220,"metric":13,"meta":"31 branches \u00b7 2 authors"},{"name":"models/werewolf/kinfolk.py","value":160,"metric":15,"meta":"26 branches \u00b7 2 authors"},{"name":"services/xp_spending/base.py","value":560,"metric":8,"meta":"48 branches \u00b7 2 authors"},{"name":"forms/core/freebies.py","value":80,"metric":17,"meta":"22 branches \u00b7 2 authors"},{"name":"views/vampire/vampire_chargen.py","value":206,"metric":34,"meta":"10 branches \u00b7 2 authors"},{"name":"views/wraith/wraith_chargen.py","value":227,"metric":27,"meta":"12 branches \u00b7 2 authors"},{"name":"views/core/character.py","value":117,"metric":31,"meta":"10 branches \u00b7 2 authors"},{"name":"models/demon/earthbound.py","value":242,"metric":19,"meta":"16 branches \u00b7 2 authors"},{"name":"models/core/ability_block.py","value":280,"metric":11,"meta":"28 branches \u00b7 3 authors"},{"name":"forms/mage/enhancements.py","value":272,"metric":7,"meta":"42 branches \u00b7 2 authors"},{"name":"managers/background_manager.py","value":239,"metric":10,"meta":"29 branches \u00b7 3 authors"},{"name":"models/mage/companion.py","value":184,"metric":21,"meta":"13 branches \u00b7 3 authors"},{"name":"rules/allocation.py","value":308,"metric":5,"meta":"56 branches \u00b7 1 authors"},{"name":"models/core/background_block.py","value":161,"metric":14,"meta":"17 branches \u00b7 3 authors"},{"name":"views/mage/background_views.py","value":114,"metric":35,"meta":"6 branches \u00b7 2 authors"},{"name":"views/demon/demon_chargen.py","value":219,"metric":30,"meta":"7 branches \u00b7 2 authors"},{"name":"models/demon/apocalyptic_form.py","value":150,"metric":14,"meta":"16 branches \u00b7 2 authors"},{"name":"models/core/attribute_block.py","value":203,"metric":10,"meta":"22 branches \u00b7 3 authors"},{"name":"models/demon/thrall.py","value":135,"metric":18,"meta":"11 branches \u00b7 2 authors"},{"name":"models/werewolf/fera.py","value":170,"metric":9,"meta":"22 branches \u00b7 2 authors"},{"name":"forms/core/linked_npc.py","value":335,"metric":7,"meta":"27 branches \u00b7 2 authors"},{"name":"forms/mage/numina.py","value":165,"metric":9,"meta":"20 branches \u00b7 2 authors"},{"name":"services/freebie_spending/werewolf.py","value":408,"metric":6,"meta":"30 branches \u00b7 2 authors"},{"name":"forms/core/character_creation.py","value":165,"metric":18,"meta":"9 branches \u00b7 3 authors"},{"name":"views/vampire/ghoul_chargen.py","value":157,"metric":24,"meta":"6 branches \u00b7 2 authors"},{"name":"models/core/group.py","value":69,"metric":11,"meta":"13 branches \u00b7 2 authors"},{"name":"static/characters/js/attribute-validation.js","value":231,"metric":3,"meta":"44 branches \u00b7 2 authors"},{"name":"views/wraith/wtohuman.py","value":148,"metric":45,"meta":"2 branches \u00b7 2 authors"},{"name":"services/freebie_spending/vampire.py","value":273,"metric":6,"meta":"21 branches \u00b7 2 authors"},{"name":"services/xp_spending/mage.py","value":510,"metric":6,"meta":"21 branches \u00b7 2 authors"},{"name":"views/core/generic_background.py","value":80,"metric":16,"meta":"7 branches \u00b7 2 authors"},{"name":"managers/merit_flaw_manager.py","value":159,"metric":6,"meta":"20 branches \u00b7 2 authors"},{"name":"models/hunter/hunter.py","value":145,"metric":15,"meta":"7 branches \u00b7 2 authors"},{"name":"forms/core/allocation.py","value":107,"metric":5,"meta":"22 branches \u00b7 2 authors"},{"name":"services/freebie_spending/demon.py","value":308,"metric":5,"meta":"22 branches \u00b7 2 authors"},{"name":"views/changeling/changeling.py","value":165,"metric":38,"meta":"2 branches \u00b7 2 authors"},{"name":"static/characters/js/ability-validation.js","value":106,"metric":4,"meta":"27 branches \u00b7 2 authors"},{"name":"models/mage/focus.py","value":182,"metric":12,"meta":"8 branches \u00b7 2 authors"},{"name":"models/vampire/path.py","value":70,"metric":7,"meta":"14 branches \u00b7 2 authors"},{"name":"static/characters/js/chargen.js","value":78,"metric":4,"meta":"25 branches \u00b7 1 authors"},{"name":"views/werewolf/fera.py","value":180,"metric":26,"meta":"3 branches \u00b7 2 authors"},{"name":"services/freebie_spending/changeling.py","value":260,"metric":5,"meta":"19 branches \u00b7 2 authors"},{"name":"forms/core/backgroundform.py","value":104,"metric":5,"meta":"18 branches \u00b7 2 authors"},{"name":"forms/werewolf/garou.py","value":95,"metric":5,"meta":"17 branches \u00b7 2 authors"},{"name":"forms/mage/sorcerer.py","value":258,"metric":8,"meta":"10 branches \u00b7 2 authors"},{"name":"services/freebie_spending/wraith.py","value":193,"metric":5,"meta":"16 branches \u00b7 2 authors"},{"name":"views/core/backgrounds.py","value":65,"metric":17,"meta":"4 branches \u00b7 2 authors"},{"name":"forms/mage/chained_freebies.py","value":100,"metric":4,"meta":"20 branches \u00b7 2 authors"},{"name":"views/core/spending.py","value":130,"metric":4,"meta":"20 branches \u00b7 2 authors"},{"name":"static/characters/js/chargen-components.js","value":134,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"static/characters/js/linked-npc-fields.js","value":72,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"views/core/known_by.py","value":236,"metric":3,"meta":"26 branches \u00b7 1 authors"},{"name":"views/core/meritflaw.py","value":48,"metric":9,"meta":"8 branches \u00b7 2 authors"},{"name":"views/core/specialty.py","value":74,"metric":9,"meta":"8 branches \u00b7 2 authors"},{"name":"models/vampire/revenant.py","value":119,"metric":13,"meta":"5 branches \u00b7 2 authors"},{"name":"services/xp_spending/vampire.py","value":180,"metric":6,"meta":"12 branches \u00b7 2 authors"},{"name":"models/mummy/mummy.py","value":287,"metric":11,"meta":"6 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":122}</script>
 
 <h2>Hotspot ranking</h2>
-<p class="dim">Score = commits × (branch points + 1). Tests excluded. 490 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/characters/core/background_block/form.html (32), templates/characters/mage/mage/mage_xp_form.html (23), templates/characters/mage/sorcerer/chargen.html (21).</p>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 490 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/characters/core/background_block/form.html (31), templates/characters/mage/mage/mage_xp_form.html (23), templates/characters/index.html (20).</p>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
-<tbody><tr><td><code>models/mage/mage.py</code></td><td class='num'>41</td><td class='num'>124</td><td class='num'>773</td><td class='num'>2</td><td class='num' data-sort='5125'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
-<tr><td><code>models/core/human.py</code></td><td class='num'>51</td><td class='num'>95</td><td class='num'>675</td><td class='num'>3</td><td class='num' data-sort='4896'><div class="bar bad"><i style="width:95.5%"></i></div></td></tr>
-<tr><td><code>views/mage/mage.py</code></td><td class='num'>123</td><td class='num'>24</td><td class='num'>421</td><td class='num'>2</td><td class='num' data-sort='3075'><div class="bar bad"><i style="width:60.0%"></i></div></td></tr>
-<tr><td><code>forms/core/xp.py</code></td><td class='num'>25</td><td class='num'>67</td><td class='num'>216</td><td class='num'>2</td><td class='num' data-sort='1700'><div class="bar bad"><i style="width:33.2%"></i></div></td></tr>
-<tr><td><code>views/mage/sorcerer.py</code></td><td class='num'>65</td><td class='num'>25</td><td class='num'>381</td><td class='num'>2</td><td class='num' data-sort='1690'><div class="bar bad"><i style="width:33.0%"></i></div></td></tr>
-<tr><td><code>models/core/character.py</code></td><td class='num'>51</td><td class='num'>30</td><td class='num'>406</td><td class='num'>2</td><td class='num' data-sort='1581'><div class="bar bad"><i style="width:30.8%"></i></div></td></tr>
-<tr><td><code>models/wraith/wraith.py</code></td><td class='num'>31</td><td class='num'>45</td><td class='num'>619</td><td class='num'>2</td><td class='num' data-sort='1426'><div class="bar bad"><i style="width:27.8%"></i></div></td></tr>
-<tr><td><code>forms/mage/xp.py</code></td><td class='num'>18</td><td class='num'>77</td><td class='num'>180</td><td class='num'>2</td><td class='num' data-sort='1404'><div class="bar bad"><i style="width:27.4%"></i></div></td></tr>
-<tr><td><code>models/vampire/vampire.py</code></td><td class='num'>23</td><td class='num'>60</td><td class='num'>550</td><td class='num'>2</td><td class='num' data-sort='1403'><div class="bar bad"><i style="width:27.4%"></i></div></td></tr>
-<tr><td><code>models/werewolf/garou.py</code></td><td class='num'>24</td><td class='num'>55</td><td class='num'>459</td><td class='num'>2</td><td class='num' data-sort='1344'><div class="bar bad"><i style="width:26.2%"></i></div></td></tr>
-<tr><td><code>models/demon/demon.py</code></td><td class='num'>31</td><td class='num'>39</td><td class='num'>391</td><td class='num'>2</td><td class='num' data-sort='1240'><div class="bar bad"><i style="width:24.2%"></i></div></td></tr>
-<tr><td><code>forms/mage/freebies.py</code></td><td class='num'>14</td><td class='num'>86</td><td class='num'>209</td><td class='num'>2</td><td class='num' data-sort='1218'><div class="bar bad"><i style="width:23.8%"></i></div></td></tr>
-<tr><td><code>views/core/__init__.py</code></td><td class='num'>42</td><td class='num'>24</td><td class='num'>481</td><td class='num'>2</td><td class='num' data-sort='1050'><div class="bar bad"><i style="width:20.5%"></i></div></td></tr>
-<tr><td><code>services/freebie_spending/base.py</code></td><td class='num'>12</td><td class='num'>82</td><td class='num'>840</td><td class='num'>2</td><td class='num' data-sort='996'><div class="bar bad"><i style="width:19.4%"></i></div></td></tr>
-<tr><td><code>views/core/chargen_mixins.py</code></td><td class='num'>11</td><td class='num'>74</td><td class='num'>343</td><td class='num'>2</td><td class='num' data-sort='825'><div class="bar bad"><i style="width:16.1%"></i></div></td></tr>
-<tr><td><code>forms/core/chained_freebies.py</code></td><td class='num'>18</td><td class='num'>44</td><td class='num'>248</td><td class='num'>2</td><td class='num' data-sort='810'><div class="bar bad"><i style="width:15.8%"></i></div></td></tr>
-<tr><td><code>models/changeling/changeling.py</code></td><td class='num'>20</td><td class='num'>35</td><td class='num'>362</td><td class='num'>2</td><td class='num' data-sort='720'><div class="bar bad"><i style="width:14.0%"></i></div></td></tr>
-<tr><td><code>views/mage/companion.py</code></td><td class='num'>59</td><td class='num'>9</td><td class='num'>277</td><td class='num'>2</td><td class='num' data-sort='590'><div class="bar bad"><i style="width:11.5%"></i></div></td></tr>
-<tr><td><code>forms/core/npc_profile.py</code></td><td class='num'>11</td><td class='num'>46</td><td class='num'>557</td><td class='num'>2</td><td class='num' data-sort='517'><div class="bar bad"><i style="width:10.1%"></i></div></td></tr>
-<tr><td><code>views/core/human.py</code></td><td class='num'>46</td><td class='num'>10</td><td class='num'>249</td><td class='num'>2</td><td class='num' data-sort='506'><div class="bar bad"><i style="width:9.9%"></i></div></td></tr>
-<tr><td><code>services/freebie_spending/mage.py</code></td><td class='num'>9</td><td class='num'>55</td><td class='num'>671</td><td class='num'>2</td><td class='num' data-sort='504'><div class="bar bad"><i style="width:9.8%"></i></div></td></tr>
-<tr><td><code>forms/mage/rote.py</code></td><td class='num'>18</td><td class='num'>25</td><td class='num'>153</td><td class='num'>2</td><td class='num' data-sort='468'><div class="bar bad"><i style="width:9.1%"></i></div></td></tr>
-<tr><td><code>models/werewolf/kinfolk.py</code></td><td class='num'>16</td><td class='num'>26</td><td class='num'>160</td><td class='num'>2</td><td class='num' data-sort='432'><div class="bar bad"><i style="width:8.4%"></i></div></td></tr>
-<tr><td><code>models/core/merit_flaw_block.py</code></td><td class='num'>17</td><td class='num'>24</td><td class='num'>210</td><td class='num'>2</td><td class='num' data-sort='425'><div class="bar bad"><i style="width:8.3%"></i></div></td></tr>
-<tr><td><code>forms/mage/mage.py</code></td><td class='num'>13</td><td class='num'>31</td><td class='num'>220</td><td class='num'>2</td><td class='num' data-sort='416'><div class="bar bad"><i style="width:8.1%"></i></div></td></tr></tbody></table></div>
+<tbody><tr><td><code>models/mage/mage.py</code></td><td class='num'>42</td><td class='num'>124</td><td class='num'>773</td><td class='num'>3</td><td class='num' data-sort='5250'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>models/core/human.py</code></td><td class='num'>52</td><td class='num'>95</td><td class='num'>675</td><td class='num'>3</td><td class='num' data-sort='4992'><div class="bar bad"><i style="width:95.1%"></i></div></td></tr>
+<tr><td><code>views/mage/mage.py</code></td><td class='num'>122</td><td class='num'>24</td><td class='num'>421</td><td class='num'>2</td><td class='num' data-sort='3050'><div class="bar bad"><i style="width:58.1%"></i></div></td></tr>
+<tr><td><code>forms/core/xp.py</code></td><td class='num'>25</td><td class='num'>67</td><td class='num'>216</td><td class='num'>2</td><td class='num' data-sort='1700'><div class="bar bad"><i style="width:32.4%"></i></div></td></tr>
+<tr><td><code>views/mage/sorcerer.py</code></td><td class='num'>64</td><td class='num'>25</td><td class='num'>381</td><td class='num'>2</td><td class='num' data-sort='1664'><div class="bar bad"><i style="width:31.7%"></i></div></td></tr>
+<tr><td><code>models/core/character.py</code></td><td class='num'>52</td><td class='num'>30</td><td class='num'>406</td><td class='num'>3</td><td class='num' data-sort='1612'><div class="bar bad"><i style="width:30.7%"></i></div></td></tr>
+<tr><td><code>models/wraith/wraith.py</code></td><td class='num'>32</td><td class='num'>45</td><td class='num'>619</td><td class='num'>3</td><td class='num' data-sort='1472'><div class="bar bad"><i style="width:28.0%"></i></div></td></tr>
+<tr><td><code>models/vampire/vampire.py</code></td><td class='num'>24</td><td class='num'>60</td><td class='num'>550</td><td class='num'>3</td><td class='num' data-sort='1464'><div class="bar bad"><i style="width:27.9%"></i></div></td></tr>
+<tr><td><code>forms/mage/xp.py</code></td><td class='num'>18</td><td class='num'>77</td><td class='num'>180</td><td class='num'>2</td><td class='num' data-sort='1404'><div class="bar bad"><i style="width:26.7%"></i></div></td></tr>
+<tr><td><code>models/werewolf/garou.py</code></td><td class='num'>25</td><td class='num'>55</td><td class='num'>459</td><td class='num'>3</td><td class='num' data-sort='1400'><div class="bar bad"><i style="width:26.7%"></i></div></td></tr>
+<tr><td><code>models/demon/demon.py</code></td><td class='num'>32</td><td class='num'>39</td><td class='num'>391</td><td class='num'>3</td><td class='num' data-sort='1280'><div class="bar bad"><i style="width:24.4%"></i></div></td></tr>
+<tr><td><code>forms/mage/freebies.py</code></td><td class='num'>14</td><td class='num'>86</td><td class='num'>209</td><td class='num'>2</td><td class='num' data-sort='1218'><div class="bar bad"><i style="width:23.2%"></i></div></td></tr>
+<tr><td><code>views/core/__init__.py</code></td><td class='num'>40</td><td class='num'>24</td><td class='num'>481</td><td class='num'>2</td><td class='num' data-sort='1000'><div class="bar bad"><i style="width:19.0%"></i></div></td></tr>
+<tr><td><code>services/freebie_spending/base.py</code></td><td class='num'>12</td><td class='num'>82</td><td class='num'>840</td><td class='num'>2</td><td class='num' data-sort='996'><div class="bar bad"><i style="width:19.0%"></i></div></td></tr>
+<tr><td><code>views/core/chargen_mixins.py</code></td><td class='num'>11</td><td class='num'>74</td><td class='num'>343</td><td class='num'>2</td><td class='num' data-sort='825'><div class="bar bad"><i style="width:15.7%"></i></div></td></tr>
+<tr><td><code>forms/core/chained_freebies.py</code></td><td class='num'>18</td><td class='num'>44</td><td class='num'>248</td><td class='num'>2</td><td class='num' data-sort='810'><div class="bar bad"><i style="width:15.4%"></i></div></td></tr>
+<tr><td><code>models/changeling/changeling.py</code></td><td class='num'>20</td><td class='num'>35</td><td class='num'>362</td><td class='num'>2</td><td class='num' data-sort='720'><div class="bar bad"><i style="width:13.7%"></i></div></td></tr>
+<tr><td><code>views/mage/companion.py</code></td><td class='num'>58</td><td class='num'>9</td><td class='num'>277</td><td class='num'>2</td><td class='num' data-sort='580'><div class="bar bad"><i style="width:11.0%"></i></div></td></tr>
+<tr><td><code>forms/core/npc_profile.py</code></td><td class='num'>11</td><td class='num'>46</td><td class='num'>557</td><td class='num'>2</td><td class='num' data-sort='517'><div class="bar bad"><i style="width:9.8%"></i></div></td></tr>
+<tr><td><code>services/freebie_spending/mage.py</code></td><td class='num'>9</td><td class='num'>55</td><td class='num'>671</td><td class='num'>2</td><td class='num' data-sort='504'><div class="bar bad"><i style="width:9.6%"></i></div></td></tr>
+<tr><td><code>views/core/human.py</code></td><td class='num'>45</td><td class='num'>10</td><td class='num'>249</td><td class='num'>2</td><td class='num' data-sort='495'><div class="bar bad"><i style="width:9.4%"></i></div></td></tr>
+<tr><td><code>forms/mage/rote.py</code></td><td class='num'>17</td><td class='num'>25</td><td class='num'>153</td><td class='num'>2</td><td class='num' data-sort='442'><div class="bar bad"><i style="width:8.4%"></i></div></td></tr>
+<tr><td><code>models/core/merit_flaw_block.py</code></td><td class='num'>17</td><td class='num'>24</td><td class='num'>210</td><td class='num'>3</td><td class='num' data-sort='425'><div class="bar bad"><i style="width:8.1%"></i></div></td></tr>
+<tr><td><code>forms/mage/mage.py</code></td><td class='num'>13</td><td class='num'>31</td><td class='num'>220</td><td class='num'>2</td><td class='num' data-sort='416'><div class="bar bad"><i style="width:7.9%"></i></div></td></tr>
+<tr><td><code>models/werewolf/kinfolk.py</code></td><td class='num'>15</td><td class='num'>26</td><td class='num'>160</td><td class='num'>2</td><td class='num' data-sort='405'><div class="bar bad"><i style="width:7.7%"></i></div></td></tr></tbody></table></div>
 
 
 
 </section>
 <section class="panel" id="flows" role="tabpanel">
+
 
 
 <h2>Character changes cross two separate state machines</h2><h3>Advance a creation task</h3><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">sequenceDiagram
@@ -472,345 +483,45 @@ code that names them. Resource edges are found textually: a quoted path is an ed
   end</pre></div></div><ul><li>The factory defaults unknown character types to HumanXPSpendingService; a missing registration can therefore look supported: <code>characters/services/xp_spending/base.py:333</code>.</li><li>Category names and applier trait types are distinct string contracts: <code>characters/services/xp_spending/base.py:70</code>.</li><li>Direct get_service callers do not acquire the factory lock: <code>characters/services/xp_spending/base.py:339</code>.</li></ul>
 
 
+
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
 
 
+
 <h2>Concern ownership and seams</h2><div class="tbl-wrap"><table><thead><tr><th>Concern</th><th>Owner</th><th>Judgment</th><th>Interpretation</th></tr></thead><tbody><tr><td>Creation order</td><td><code>characters/chargen/workflow.py:33</code></td><td><span class="badge good">single concept</span></td><td>Workflow metadata</td></tr><tr><td>Navigation writes</td><td><code>characters/chargen/transitions.py:19</code></td><td><span class="badge good">single concept</span></td><td>Authorized transitions</td></tr><tr><td>Spend dispatch</td><td><code>characters/services/xp_spending/base.py:167</code></td><td><span class="badge good">single concept</span></td><td>Category services</td></tr><tr><td>Common and gameline sheet rules</td><td><code>characters/models/core/human.py:41</code></td><td><span class="badge warn">crosses layers</span></td><td>Model inheritance plus specialized services</td></tr></tbody></table></div><h3>Data writers</h3><div class="callout warn">Character rows have several legitimate writers: creation transitions save positions (<code>characters/chargen/transitions.py:44</code>); spending services mutate traits and XP (<code>characters/services/xp_spending/base.py:167</code>); approval orchestration in the game app chooses the concrete apply/deny service (<code>game/spending_approval.py:73</code>). New writers need the same locking and authorization contracts.</div><h3>Graph interpretation</h3><p>The isolated module SCC joins the core and tl template families. Group-level mutual references are shared presentation reuse, not evidence of a recursive template file: the isolated analyzer found no file SCC. Model, form and service imports to host apps are underrepresented; root graph results govern cross-app cycles. The core character model directly imports game records (<code>characters/models/core/character.py:13</code>), so this is not a framework-independent rules library.</p>
+
 
 
 </section>
 <section class="panel" id="invariants" role="tabpanel">
 
 
+
 <h2>characters — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>Each workflow has unique keys and exactly one freebies step</td><td><code>characters/chargen/workflow.py:40</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Only editable unfinished characters advance</td><td><code>characters/chargen/transitions.py:25</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>A saved position retains its meaning after metadata edits</td><td><code>characters/chargen/workflow.py:3</code></td><td><span class="badge warn">partial or outside model</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>Unknown categories and ValidationError become XPSpendResult failures; unexpected failures still escape. <code>characters/services/xp_spending/base.py:191</code></p><h3>Concurrency and shared state</h3><p>Use the factory locked context for concurrent spending; atomic navigation alone does not provide a fresh locked character. <code>characters/services/xp_spending/base.py:339</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> Workflow reorder changes the meaning of stored positions unless unfinished characters migrate. <code>characters/chargen/workflow.py:3</code></div><div class="callout warn"><strong>2.</strong> New spending callers must use locked fresh characters rather than a stale instance. <code>characters/services/xp_spending/base.py:339</code></div><div class="callout warn"><strong>3.</strong> Category/applier names are string contracts and must agree with stored request types. <code>characters/services/xp_spending/base.py:77</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
+
 
 
 </section>
 <section class="panel" id="glossary" role="tabpanel">
 
 
+
 <h2>Domain words and code contracts</h2><div class="tbl-wrap"><table><thead><tr><th>Domain</th><th>Code language</th><th>Evidence</th><th>Maintainer note</th></tr></thead><tbody><tr><td>Chargen task</td><td>Step / Workflow</td><td><code>characters/chargen/workflow.py:13</code></td><td>A stable key labels a task, but persistence is still ordinal.</td></tr><tr><td>Freebies</td><td>freebies workflow key</td><td><code>characters/chargen/workflow.py:42</code></td><td>Exactly one per workflow, unlike arbitrary optional steps.</td></tr><tr><td>Advancement purchase</td><td>handler / applier</td><td><code>characters/services/xp_spending/base.py:49</code></td><td>Spend category names and stored trait_type strings differ; keep both contracts aligned.</td></tr><tr><td>Character kind</td><td>character.type</td><td><code>characters/services/xp_spending/base.py:333</code></td><td>Dispatch key, not the Python class itself; unknown kinds fall back to Human service.</td></tr></tbody></table></div><div class="callout warn">Names encode operational contracts: do not collapse the distinctions above into one generic action or status flag. The highlighted ambiguities are review prompts, not evidence of a runtime defect.</div>
 
 
-</section></main>
-<footer class="doc">Automated tabs regenerated from the source snapshot; authored tabs reviewed for the seed identity pilot. Coverage and JavaScript specialist grades remain unavailable.</footer>
-<div class="viz-tip" id="viz-tip"></div>
+
+</section><!--DOC_BODY--></main>
+<footer class="doc">Automated tabs regenerated from source67d7990b; authored architecture tabs retained and checked against current citations. Execution coverage and JavaScript specialist grades remain unavailable.</footer>
 <script>
-/* ============ tabs ============ */
 (function(){
   const btns=[...document.querySelectorAll('nav.tabs button')];
-  const panels=[...document.querySelectorAll('.panel')];
-  function activate(id,push){
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
     btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
-    panels.forEach(p=>p.classList.toggle('active',p.id===id));
-    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
     window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
   }
-  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
-  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
-  if(initial)activate(initial,false);
-  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
-})();
-
-/* ============ helpers ============ */
-const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const tip=document.getElementById('viz-tip');
-function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
-  const r=tip.getBoundingClientRect();
-  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
-  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
-function hideTip(){tip.style.display='none'}
-function lerpColor(a,b,t){
-  const pa=hex(a),pb=hex(b);
-  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
-  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
-    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
-}
-function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-
-/* sortable tables */
-document.querySelectorAll('table.sortable').forEach(tb=>{
-  tb.querySelectorAll('thead th').forEach((th,ci)=>{
-    th.addEventListener('click',()=>{
-      const dir=th.classList.contains('asc')?'desc':'asc';
-      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
-      th.classList.add(dir);
-      const rows=[...tb.querySelectorAll('tbody tr')];
-      const val=r=>{const td=r.children[ci];if(!td)return '';
-        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
-        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
-      rows.sort((a,b)=>{const va=val(a),vb=val(b);
-        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
-        return dir==='asc'?c:-c;});
-      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
-    });
-  });
-});
-
-/* pan/zoom for a container holding an inner element (svg group or div) */
-function panZoom(viewport,apply,getState){
-  let drag=null;
-  viewport.addEventListener('wheel',e=>{
-    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
-    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
-    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
-  },{passive:false});
-  viewport.addEventListener('mousedown',e=>{
-    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
-    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
-    viewport.classList.add('dragging');
-  });
-  window.addEventListener('mousemove',e=>{if(!drag)return;
-    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
-  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
-}
-function addZoombar(container,zoomIn,zoomOut,reset){
-  const bar=document.createElement('div');bar.className='zoombar';
-  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
-    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
-    b.addEventListener('click',fn);bar.appendChild(b);});
-  container.appendChild(bar);
-}
-
-/* ============ force-directed graph ============ */
-/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
-function renderForceGraph(container,data){
-  const W=container.clientWidth||900,H=container.clientHeight||560;
-  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
-  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
-  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
-  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
-  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
-  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
-    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
-  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
-  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
-  /* simulate */
-  const iter=nodes.length>60?220:320;
-  for(let k=0;k<iter;k++){
-    const t=1-k/iter, rep=9000*t+900;
-    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
-      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
-      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
-    }
-    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
-      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
-      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
-      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
-    nodes.forEach(n=>{
-      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
-      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
-      n.vx*=0.6;n.vy*=0.6;});
-  }
-  /* fit */
-  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
-  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
-  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
-  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
-  const init={...st};
-  const svgNS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const defs=document.createElementNS(svgNS,'defs');
-  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
-  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
-  svg.appendChild(defs);
-  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
-  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
-  const edgeEls=[],nodeEls=[];
-  links.forEach(l=>{
-    const p=document.createElementNS(svgNS,'path');
-    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
-    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
-    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
-    p.setAttribute('fill','none');
-    /* dashed = loaded at runtime (template, prompt, data), not imported */
-    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
-    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
-    g.appendChild(p);edgeEls.push(p);
-  });
-  nodes.forEach(n=>{
-    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
-    const c=document.createElementNS(svgNS,'circle');
-    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
-    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
-    c.dataset.draggable='1';
-    const t=document.createElementNS(svgNS,'text');
-    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
-    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
-    t.style.pointerEvents='none';
-    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
-    grp.addEventListener('mouseenter',e=>{
-      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
-      hl(n.id);});
-    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
-    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
-    let dragN=null;
-    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
-    window.addEventListener('mousemove',e=>{if(!dragN)return;
-      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
-    window.addEventListener('mouseup',()=>dragN=null);
-  });
-  function hl(id){
-    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
-      nodeEls.forEach(el=>el.style.opacity='1');return;}
-    const near=new Set([id]);
-    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
-    edgeEls.forEach((p,i)=>{const l=links[i];
-      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
-    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
-  }
-  function draw(){
-    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
-      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
-      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
-      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
-      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
-      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
-    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
-  }
-  draw();apply();
-  container.appendChild(svg);
-  panZoom(container,apply,()=>st);
-  addZoombar(container,
-    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
-    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
-    ()=>{Object.assign(st,init);apply()});
-  if(groupNames.length>1||data.legendExtra){
-    const leg=document.createElement('div');leg.className='legend';
-    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
-    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
-    container.appendChild(leg);
-  }
-}
-
-/* ============ squarified treemap ============ */
-/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
-function renderTreemap(container,data){
-  const W=container.clientWidth||900,H=container.clientHeight||520;
-  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
-  const total=items.reduce((s,d)=>s+d.value,0)||1;
-  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
-  const rects=[];
-  (function squarify(list,x,y,w,h){
-    if(!list.length)return;
-    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
-    let row=[],rest=list.slice(),best=Infinity;
-    while(rest.length){
-      const cand=row.concat(rest[0]);
-      const sum=cand.reduce((s,d)=>s+d.value,0);
-      const side=Math.min(w,h);
-      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
-      const len=scale/side;
-      const worst=Math.max(...cand.map(d=>{
-        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
-        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
-      if(worst<=best){best=worst;row=cand;rest.shift();}
-      else break;
-    }
-    const sum=row.reduce((s,d)=>s+d.value,0);
-    const frac=sum/list.reduce((s,d)=>s+d.value,0);
-    if(w>=h){const cw=w*frac;let cy=y;
-      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
-      squarify(rest,x+cw,y,w-cw,h);
-    }else{const ch=h*frac;let cx=x;
-      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
-      squarify(rest,x,y+ch,w,h-ch);
-    }
-  })(items,0,0,W,H);
-  const svgNS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
-  rects.forEach(r=>{
-    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
-    const g=document.createElementNS(svgNS,'g');
-    const rc=document.createElementNS(svgNS,'rect');
-    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
-    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
-    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
-    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
-    g.appendChild(rc);
-    if(r.w>66&&r.h>22){
-      const tx=document.createElementNS(svgNS,'text');
-      const nm=r.d.name.split('/').pop();
-      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
-      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
-      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
-      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
-      g.appendChild(tx);
-    }
-    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
-      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
-    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
-    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
-    svg.appendChild(g);
-  });
-  container.appendChild(svg);
-  const leg=document.createElement('div');leg.className='legend';
-  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
-  container.appendChild(leg);
-}
-
-/* ============ auto-init viz blocks ============ */
-document.querySelectorAll('.viz[data-render]').forEach(el=>{
-  const dataEl=el.nextElementSibling;
-  if(!dataEl||dataEl.type!=='application/json')return;
-  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
-  const render=()=>{
-    if(el.dataset.done)return;el.dataset.done='1';
-    try{
-      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
-      else if(el.dataset.render==='treemap')renderTreemap(el,data);
-    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
-  };
-  const panel=el.closest('.panel');
-  if(panel&&panel.classList.contains('active'))render();
-  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
-});
-
-/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
-(function(){
-  if(!document.querySelector('.mermaid'))return;
-  const s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
-  s.onload=()=>{
-    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
-    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
-      themeVariables:{
-        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
-        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
-        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
-        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
-        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
-        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
-        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
-        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
-        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
-        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
-        edgeLabelBackground:cssVar('--surface')
-      }});
-    async function renderIn(panel){
-      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
-      if(!nodes.length)return;
-      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
-      nodes.forEach(n=>{
-        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
-        const vp=wrap.querySelector('.mviewport')||wrap;
-        const svg=n.querySelector('svg');if(!svg)return;
-        svg.style.maxWidth='none';
-        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
-        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
-        panZoom(vp,apply,()=>st);
-        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
-      });
-    }
-    const active=document.querySelector('.panel.active');if(active)renderIn(active);
-    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
-  };
-  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
-  document.head.appendChild(s);
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
 })();
 </script>
 </body>

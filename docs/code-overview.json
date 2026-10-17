@@ -1,6 +1,6 @@
 {
   "schema": "code-overview/1",
-  "generated": "2026-10-16",
+  "generated": "2026-10-17",
   "packages": [
     {
       "name": "accounts",
@@ -114,14 +114,14 @@
     }
   ],
   "analysis": {
-    "source_commit": "5d20f9aa7f48e211ba96d8bfc7a0cad85b1269e8",
+    "source_commit": "67d7990bc5ac00dc371a7a382e4c637acdb8e629",
     "django_target": "5.2",
     "scope": "clean Git snapshot; ignored generated migrations and local databases omitted",
     "plain_javascript": "ungraded",
     "coverage_artifact": null,
     "goal": "B+ in every manageable metric; not yet achieved",
-    "coding_skills_revision": "497038d1fc32fdf61b1387e9c5f897d50a3daead",
+    "coding_skills_revision": "eaef08c735c77861931581a170a9b4d430076a9b",
     "coding_skills_repository": "https://github.com/charlesmsiegel/coding-skills",
-    "partial_refresh": "All health and summary pages refreshed; characters/core/populate_db/tg_schema plus repository atlas/theory/measurement refreshed; other atlas/theory/measurement snapshots unchanged."
+    "refresh": "All 60 pages rebuilt: automated atlas tabs rerun; authored atlas tabs retained with citation checks; all12 theory panels independently rerun; metrics discovery rerun and inventory reviewed."
   }
 }

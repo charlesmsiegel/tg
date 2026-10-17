@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>tg — codebase atlas</title>
+<title>tg — Codebase Atlas</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Design tokens are code-visualization's, verbatim. The three document types in
@@ -160,9 +160,9 @@ footer.doc a{color:var(--text-dim)}
 <body>
 <header class="doc">
   <div class="doc-label">CODEBASE ATLAS</div>
-  <h1 class="doc-title">tg — codebase atlas</h1>
+  <h1 class="doc-title">tg — Codebase Atlas</h1>
   <p class="doc-sub"></p>
-  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+  <div class="doc-meta">updated 2026-10-17 · 67d7990b</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -190,6 +190,7 @@ footer.doc a{color:var(--text-dim)}
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
 
+
 <h2>tg — orientation</h2><div class="card hero"><p>The project package composes domain apps into one deployment with common settings, explicit development/production variants and shared HTTP/WebSocket entry points. Invalid environment selections fail during initialization.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>tg/asgi.py:25</code></td><td>HTTP and WebSocket application callable.</td></tr><tr><td><code>tg/wsgi.py:1</code></td><td>HTTP-only WSGI application.</td></tr><tr><td><code>tg/settings/__init__.py:23</code></td><td>Settings import and environment selection.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>tg/settings/__init__.py:23</code> — Environment loading and dispatch.</li><li><code>tg/settings/base.py:24</code> — App and middleware composition.</li><li><code>tg/settings/production.py:18</code> — Required deployment inputs.</li><li><code>tg/asgi.py:19</code> — Initialize Django before importing WebSocket routing.</li><li><code>tg/test_runner.py:1</code> — Test database migration policy.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
   n0["Environment"]
   n1["Settings loader"]
@@ -199,7 +200,8 @@ footer.doc a{color:var(--text-dim)}
   n5["ASGI WebSockets"]
   n0 --> n1 --> n2 --> n3
   n3 --> n4
-  n3 --> n5</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 9 recognized files and 880 lines, including tests and recognized assets. Test-source share is not execution coverage. Highest churn × branch review priorities: <code>tg/settings/base.py</code> (score 138), <code>tg/settings/production.py</code> (score 120), <code>tg/settings/development.py</code> (score 80). These are attention signals, not defects.</p><h3>Decisions and interpretation limits</h3><p>Independent service deployment would isolate domain apps; this deliberately assembles one Django runtime and database. <code>tg/README.md:17</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+  n3 --> n5</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 9 recognized files and 880 lines, including tests and recognized assets. Test-source share is not execution coverage. Current attention signals are listed in the regenerated Hotspots tab.</p><h3>Decisions and interpretation limits</h3><p>Independent service deployment would isolate domain apps; this deliberately assembles one Django runtime and database. <code>tg/README.md:17</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+
 
 </section>
 <section class="panel" id="inventory" role="tabpanel">
@@ -282,8 +284,8 @@ footer.doc a{color:var(--text-dim)}
 <thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
 <tbody><tr><td><code>settings/base.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>__init__.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Highest fan-out (most dependencies)</h2>
@@ -317,7 +319,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">54</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">56</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">7</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">base.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -346,10 +348,12 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 </section>
 <section class="panel" id="invariants" role="tabpanel">
 
+
 <h2>tg — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>Unknown environment names fail at initialization</td><td><code>tg/settings/__init__.py:33</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Production cannot start without secret key and allowed hosts</td><td><code>tg/settings/production.py:18</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>WebSocket origins pass the allowed-hosts validator</td><td><code>tg/asgi.py:28</code></td><td><span class="badge good">enforced / explicit</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>Unknown environment names and missing production prerequisites fail startup rather than silently falling back. <code>tg/settings/__init__.py:33</code></p><h3>Concurrency and shared state</h3><p>ASGI composes HTTP and authenticated WebSockets; local versus shared cache/channel configuration affects multiworker semantics. <code>tg/asgi.py:25</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> A missing environment setting selects development; production launch configuration must set it explicitly. <code>tg/settings/__init__.py:27</code></div><div class="callout warn"><strong>2.</strong> Multiworker correctness depends on shared deployment services, beyond ASGI composition alone. <code>tg/asgi.py:25</code></div><div class="callout warn"><strong>3.</strong> Local migration test policy differs from historical database upgrade behavior. <code>tg/test_runner.py:1</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
 
+
 </section><!--DOC_BODY--></main>
-<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<footer class="doc">Automated tabs regenerated from source67d7990b; authored architecture tabs retained and checked against current citations. Execution coverage and JavaScript specialist grades remain unavailable.</footer>
 <script>
 (function(){
   const btns=[...document.querySelectorAll('nav.tabs button')];

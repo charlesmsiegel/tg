@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>scripts — codebase atlas</title>
+<title>scripts — Codebase Atlas</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Design tokens are code-visualization's, verbatim. The three document types in
@@ -160,9 +160,9 @@ footer.doc a{color:var(--text-dim)}
 <body>
 <header class="doc">
   <div class="doc-label">CODEBASE ATLAS</div>
-  <h1 class="doc-title">scripts — codebase atlas</h1>
+  <h1 class="doc-title">scripts — Codebase Atlas</h1>
   <p class="doc-sub"></p>
-  <div class="doc-meta">2026-10-16 · 6e29f3bc · clean Git snapshot</div>
+  <div class="doc-meta">updated 2026-10-17 · 67d7990b</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -190,6 +190,7 @@ footer.doc a{color:var(--text-dim)}
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
 
+
 <h2>scripts — orientation</h2><div class="card hero"><p>Developer scripts produce review evidence about routes, templates and code shapes rather than treating static matches as semantic proof. They combine source heuristics and selected runtime introspection for this repository.</p></div><h3>Entry points and contracts</h3><div class="tbl-wrap"><table><thead><tr><th>Entry</th><th>Kicks off</th></tr></thead><tbody><tr><td><code>scripts/find_dead_code.py:3</code></td><td>Standalone candidate report CLI.</td></tr><tr><td><code>scripts/inventory_chargen_views.py:104</code></td><td>Standalone AST comparison CLI.</td></tr><tr><td><code>scripts/template_screenshots.py:1</code></td><td>Capture/compare screenshot CLI.</td></tr></tbody></table></div><h3>Reading order</h3><ol><li><code>scripts/find_dead_code.py:1</code> — Candidate-only contract and runtime side effects.</li><li><code>scripts/dead_code_heuristics.py:1</code> — Pure source-analysis helpers.</li><li><code>scripts/inventory_chargen_views.py:38</code> — AST similarity without runtime import.</li><li><code>scripts/inventory_authorization_routes.py:1</code> — Route ownership evidence.</li><li><code>scripts/template_screenshots.py:1</code> — Separate browser/fixture workflow and its dependencies.</li></ol><p class="dim">Use tests as examples of intended behavior. Analysis uses a clean Git snapshot; ignored local generated migrations, databases and installed skills are omitted from project source.</p><div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">flowchart TD
   n0["CLI"]
   n1["Source or runtime inventory"]
@@ -198,7 +199,8 @@ footer.doc a{color:var(--text-dim)}
   n4["Screenshot fixtures"]
   n5["Throwaway browser capture"]
   n0 --> n1 --> n2 --> n3
-  n0 --> n4 --> n5</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 10 recognized files and 1676 lines, including tests and recognized assets. Test-source share is not execution coverage. Highest churn × branch review priorities: <code>scripts/find_dead_code.py</code> (score 3016), <code>scripts/inventory_authorization_routes.py</code> (score 480), <code>scripts/build_route_policy_manifest.py</code> (score 224). These are attention signals, not defects.</p><h3>Decisions and interpretation limits</h3><p>A sound automatic dead-code eliminator is a plausible expectation; these tools explicitly produce candidates requiring review. <code>scripts/inventory_chargen_views.py:4</code>, <code>scripts/find_dead_code.py:39</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+  n0 --> n4 --> n5</pre></div></div><h3>What the automated view adds</h3><p>Inventory reports 10 recognized files and 1676 lines, including tests and recognized assets. Test-source share is not execution coverage. Current attention signals are listed in the regenerated Hotspots tab.</p><h3>Decisions and interpretation limits</h3><p>A sound automatic dead-code eliminator is a plausible expectation; these tools explicitly produce candidates requiring review. <code>scripts/inventory_chargen_views.py:4</code>, <code>scripts/find_dead_code.py:39</code></p><div class="callout warn">Package-isolated dependency graphs omit or misclassify absolute Python imports to the host app package and sibling apps; the root repository graph is authoritative for cross-app coupling. Sparse or zero package edges do not establish isolation. Textual runtime-load edges miss paths assembled entirely at runtime.</div><p class="dim">No coverage artifact is available: execution coverage is omitted and ungraded. Plain JavaScript is ungraded by the health doctors. Analysis uses a clean Git snapshot: ignored local generated migrations, databases and installed skills are omitted from project source. Theory grades are subjective judgments; health grades measure reported finding density and are not design approval. No evaluation-result claim is inferred from test counts.</p>
+
 
 </section>
 <section class="panel" id="inventory" role="tabpanel">
@@ -309,7 +311,7 @@ footer.doc a{color:var(--text-dim)}
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">34</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">36</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">10</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">find_dead_code.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -341,10 +343,12 @@ footer.doc a{color:var(--text-dim)}
 </section>
 <section class="panel" id="invariants" role="tabpanel">
 
+
 <h2>scripts — invariants and failure boundaries</h2><p>Green marks a visible enforcement mechanism or explicit contract; amber marks a partial, caller-dependent, intentionally unsupported or deployment-dependent property.</p><div class="tbl-wrap"><table><thead><tr><th>Property to check</th><th>Evidence</th><th>Verdict</th></tr></thead><tbody><tr><td>Dead-code reports are review candidates rather than deletion proof</td><td><code>scripts/find_dead_code.py:12</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Dead-code scan does not use the production database</td><td><code>scripts/find_dead_code.py:39</code></td><td><span class="badge good">enforced / explicit</span></td></tr><tr><td>Every custom view family is included in similarity inventory</td><td><code>scripts/inventory_chargen_views.py:47</code></td><td><span class="badge warn">partial or outside model</span></td></tr></tbody></table></div><h3>Failure handling</h3><p>The dead-code scanner imports modules and calls selected methods; its docstring discloses those side effects and false positives. <code>scripts/find_dead_code.py:5</code></p><h3>Concurrency and shared state</h3><p>These are standalone maintenance runs, not a concurrent request service. Screenshot capture starts a separate test server and uses throwaway fixture state. <code>scripts/template_screenshots.py:5</code></p><h3>Risk ranking</h3><div class="callout warn"><strong>1.</strong> Candidate output is easy to overinterpret as proof of dead code. <code>scripts/find_dead_code.py:12</code></div><div class="callout warn"><strong>2.</strong> Hard-coded offered types and suffix lists can become stale. <code>scripts/find_dead_code.py:95</code></div><div class="callout warn"><strong>3.</strong> Runtime introspection still executes imports/methods despite database isolation. <code>scripts/find_dead_code.py:5</code></div><p class="dim">Ranked by plausible likelihood and impact from source reading, not incident statistics. Existing tests were sampled, not executed for this atlas; no execution coverage artifact supports a coverage claim.</p>
 
+
 </section><!--DOC_BODY--></main>
-<footer class="doc">Generated by code-visualization; judgment tabs verified against source. No execution coverage artifact was supplied.</footer>
+<footer class="doc">Automated tabs regenerated from source67d7990b; authored architecture tabs retained and checked against current citations. Execution coverage and JavaScript specialist grades remain unavailable.</footer>
 <script>
 (function(){
   const btns=[...document.querySelectorAll('nav.tabs button')];
