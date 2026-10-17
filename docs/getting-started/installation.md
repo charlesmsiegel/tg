@@ -28,12 +28,18 @@ pip install -r requirements.txt
 
 `.venv/` and `venv/` are both listed in [`.gitignore`](../../.gitignore).
 
-[`requirements.txt`](../../requirements.txt) installs the runtime (Django `>=5.2.9`, django-polymorphic,
+[`requirements.txt`](../../requirements.txt) installs the runtime (Django `>=5.2.9,<6`, django-polymorphic,
 Channels, Daphne, django-redis, channels-redis, bleach, Pillow, python-dotenv), the
 development toolbar (django-debug-toolbar), and the test and quality tools (pytest,
 pytest-django, coverage, selenium, black, ruff, djlint, pre-commit). There is no separate
 development requirements file. Playwright, used by some browser tests, is not in the file;
 see [Testing](../development/testing.md#browser-tests).
+
+TG targets Django 5.2 and Python 3.10. The upper bound keeps installs on the supported
+framework series while allowing its security and bug-fix releases. The models use the
+current `CheckConstraint(condition=...)` keyword; that compatibility change alone is not
+a framework upgrade. Remove the bound only as part of an explicit upgrade that verifies
+the supported Python versions and the application's dependencies.
 
 ## Optional: create a `.env` file
 
