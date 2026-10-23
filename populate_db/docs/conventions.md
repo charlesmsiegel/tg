@@ -170,3 +170,13 @@ say which edition they cite.
 - [Gamelines](gamelines.md)
 - [Code style](../../docs/development/code-style.md)
 - [populate_db overview](../README.md)
+
+## Demon ritual requirements and sources
+
+`demon/demon_rituals_dpg.py` contains Demon Players Guide rituals. The
+`demon_rituals_hotf_*.py` scripts cover Houses of the Fallen, and
+`demon_earthbound_rituals.py` covers Earthbound. Assign only declared `Ritual`
+fields. Secondary requirements are `{"lore": lore.property_name, "rating": 2}`;
+never store auto-increment Lore IDs. Cite each source page with `add_source()`
+after `get_or_create`, including each page of a range. Reloading the scripts
+repairs the existing records without replacing their primary keys.

@@ -122,7 +122,7 @@ Source: [`characters/models/demon/`](../models/demon/). Namespace `characters:de
 | `Lore` | Catalogue | `property_name` (the `LoreBlock` field without `lore_of_` / `the_`), `houses` (reverse `lores`) | `lore` |
 | `Visage` | Catalogue | `house` (`ForeignKey(DemonHouse, CASCADE)`, reverse `visages`), `default_apocalyptic_form` | `visage` |
 | `ApocalypticFormTrait` | Catalogue | `cost`, `house` (reverse `apocalyptic_traits`), `high_torment_only` | `apocalyptic_trait` |
-| `Ritual` | Catalogue | `house`, `primary_lore`, `primary_lore_rating`, `secondary_lore_requirements` (JSON), `base_cost`, `restrictions`, `minimum_casting_time`, `system`, `torment_effect`, `variations`, `flavor_text`, `source_page`; `total_lore_dots()`, `get_secondary_lores()` | `ritual` |
+| `Ritual` | Catalogue | `house`, `primary_lore`, `primary_lore_rating`, `secondary_lore_requirements` (JSON), `base_cost`, `restrictions`, `minimum_casting_time`, `system`, `torment_effect`, `variations`, `flavor_text`, inherited `sources`; `total_lore_dots()`, `get_secondary_lores()` | `ritual` |
 
 `Pact` (a Demon-Thrall link; see [Demon models](models-demon.md#pact)) is not reference
 data: it is per-character. Its detail and list views under `characters:demon:pact` are
@@ -160,3 +160,17 @@ Source: [`characters/models/mummy/`](../models/mummy/). Namespace `characters:mu
 Mummy title and dynasty seed keys preserve identity across catalogue reloads and display-name changes.
 See [structured catalogue loading](../../populate_db/docs/loading.md#structured-mummy-title-catalogue)
 for adoption, authoritative content updates and the migrate-before-populate requirement.
+
+### Demon ritual requirements
+
+`Ritual.secondary_lore_requirements` is a list of
+`{"lore": "<Lore.property_name>", "rating": 2}` objects. Ratings must be integers
+from 1 to 5, and every key must name an existing Lore. Validation rejects malformed
+or unknown requirements; resolution uses one query and preserves declared order.
+Migration `tg_schema.0015_ritual_lore_keys` converts existing numeric lore IDs.
+Dangling IDs are logged and retained for repair rather than silently dropped.
+
+Seeded ritual citations use the inherited `sources` relation (`BookReference`).
+The detail page renders these via `display_sources()`. The legacy `source_page`
+field remains editable and is displayed only when there are no structured sources,
+preserving existing manual citations without guessing how to parse them.

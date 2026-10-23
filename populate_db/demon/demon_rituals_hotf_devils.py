@@ -25,8 +25,8 @@ dawns_light = Ritual.objects.get_or_create(
 dawns_light.primary_lore = lore_celestials
 dawns_light.primary_lore_rating = 3
 dawns_light.secondary_lore_requirements = [
-    {"lore_id": lore_of_humanity.id, "rating": 2},
-    {"lore_id": lore_of_light.id, "rating": 1},
+    {"lore": lore_of_humanity.property_name, "rating": 2},
+    {"lore": lore_of_light.property_name, "rating": 1},
 ]
 dawns_light.base_cost = 18
 dawns_light.minimum_casting_time = 36
@@ -43,7 +43,7 @@ dawns_light.torment_effect = """The high-Torment version of this ritual creates 
 Any demons in the area of effect can draw strength from the bloody light, but only if they give in to their inner darkness. Make a Torment roll, with a difficulty equal to the demon's permanent Faith. For each success, the character regains a point of temporary Willpower and a point of temporary Torment."""
 dawns_light.variations = "None"
 dawns_light.flavor_text = "The Heralds were light itself in the first days of Creation, as well as being the stars that shone in the sky. Most importantly, the Heralds governed the sun, and brought the divine spark of the Creator to humanity when morning first broke across Creation and stirred Adam and Eve from sleep. With this ritual, the Namaru can re-create that first dawn in the middle of the night."
-dawns_light.source_page = "Houses of the Fallen, p. 29"
+dawns_light.add_source("Houses of the Fallen", 29)
 dawns_light.save()
 
 ghostly_inferno = Ritual.objects.get_or_create(
@@ -53,7 +53,7 @@ ghostly_inferno = Ritual.objects.get_or_create(
 ghostly_inferno.primary_lore = lore_flame
 ghostly_inferno.primary_lore_rating = 3
 ghostly_inferno.secondary_lore_requirements = [
-    {"lore_id": lore_realms.id, "rating": 2},
+    {"lore": lore_realms.property_name, "rating": 2},
 ]
 ghostly_inferno.base_cost = 10
 ghostly_inferno.minimum_casting_time = 25
@@ -72,7 +72,7 @@ ghostly_inferno.torment_effect = """The high-Torment version of this ritual sets
 While the flames remain invisible, ghastly moans and screams emanate from the affected region. Make a Willpower roll (difficulty 7) for each mortal within the area of effect. If the roll fails, the mortal loses a point of Willpower. If the roll botches, the mortal also gains a temporary derangement (see page 260 of the Demon core rules for details)."""
 ghostly_inferno.variations = "Some versions of this ritual allow the creation of flames far from the sigil and performers — the ghostly blaze erupting around a chosen victim anywhere in the world. To perform this variation, add Lore of the Firmament •• to the secondary lore, the sigil must contain a personal item belonging to the target or a piece of her body, and the Ankida cannot control the movements of the flames."
 ghostly_inferno.flavor_text = "This ritual allows a Devil to summon a raging inferno not in the mortal world, but in the spirit realm. While the flames do not exist in this world, the effects of the blaze are still felt here — objects and people in the area of effect are burned by cold, invisible flames."
-ghostly_inferno.source_page = "Houses of the Fallen, p. 29"
+ghostly_inferno.add_source("Houses of the Fallen", 29)
 ghostly_inferno.save()
 
 reshape_soul = Ritual.objects.get_or_create(
@@ -82,8 +82,8 @@ reshape_soul = Ritual.objects.get_or_create(
 reshape_soul.primary_lore = lore_of_radiance
 reshape_soul.primary_lore_rating = 5
 reshape_soul.secondary_lore_requirements = [
-    {"lore_id": lore_of_humanity.id, "rating": 5},
-    {"lore_id": lore_of_longing.id, "rating": 2},
+    {"lore": lore_of_humanity.property_name, "rating": 5},
+    {"lore": lore_of_longing.property_name, "rating": 2},
 ]
 reshape_soul.base_cost = 36
 reshape_soul.minimum_casting_time = 144
@@ -96,5 +96,5 @@ The effects of this ritual are permanent unless they are undone by another demon
 reshape_soul.torment_effect = """The high-Torment version of this ritual reprograms a mortal as normal, but at the cost of his sanity. The psyche and very soul of the human are damaged, and he is doomed to madness. If the ritual succeeds, the mortal gains a permanent derangement. For every success gained on the ritual after the first, he also loses a point of permanent Willpower (down to a minimum of one point). Furthermore, he will lose a point of temporary Willpower each time a post-hypnotic suggestion is activated."""
 reshape_soul.variations = "None"
 reshape_soul.flavor_text = "This powerful, terrible ritual is a product of the dark days of the Time of Atrocities, when both angels and demons made use of mortal worshippers or followers to strike at their enemies. With this ritual, demons would 'reprogram' a mortal's personality, shaping her into a perfect spy — or weapon."
-reshape_soul.source_page = "Houses of the Fallen, p. 30"
+reshape_soul.add_source("Houses of the Fallen", 30)
 reshape_soul.save()

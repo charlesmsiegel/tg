@@ -20,7 +20,9 @@
     {% endif %}
 {% endblock ref_actions %}
 {% block ref_source %}
-    {% if object.source_page %}<span class="ref2-source">{{ object.source_page }}</span>{% endif %}
+    {% with sources=object.display_sources %}
+        {% if sources %}<span class="ref2-source">{{ sources }}</span>{% elif object.source_page %}<span class="ref2-source">{{ object.source_page }}</span>{% endif %}
+    {% endwith %}
 {% endblock ref_source %}
 {% block ref_sections %}
     {% if object.flavor_text or object.description %}

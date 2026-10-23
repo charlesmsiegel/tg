@@ -23,7 +23,7 @@ cloud_chariot = Ritual.objects.get_or_create(
 cloud_chariot.primary_lore = lore_winds
 cloud_chariot.primary_lore_rating = 4
 cloud_chariot.secondary_lore_requirements = [
-    {"lore_id": lore_fundament.id, "rating": 1},
+    {"lore": lore_fundament.property_name, "rating": 1},
 ]
 cloud_chariot.base_cost = 10
 cloud_chariot.minimum_casting_time = 25
@@ -40,7 +40,7 @@ cloud_chariot.variations = """With the addition of the Lore of Storms ••, th
 
 Including the Lore of Awakening •••• allows the vessel to move without the direction of the Ankida. She must still be aboard, but she can merely give the craft orders and then sleep, pass out or become as incoherent as she likes. The vessel will continue with its predefined orders as long as the ritual lasts, or until the Ankida gives new commands."""
 cloud_chariot.flavor_text = "Demons with mastery over the Lore of the Fundament or the Lore of Winds found that their powers added easy strength and speed to their wings, making fast travel trivial. Many other fallen had no such advantage — and neither did any of their beloved mortals — so the Cloud Chariot was developed."
-cloud_chariot.source_page = "Houses of the Fallen, p. 54"
+cloud_chariot.add_source("Houses of the Fallen", 54)
 cloud_chariot.save()
 
 fog_of_war = Ritual.objects.get_or_create(
@@ -50,7 +50,7 @@ fog_of_war = Ritual.objects.get_or_create(
 fog_of_war.primary_lore = lore_winds
 fog_of_war.primary_lore_rating = 3
 fog_of_war.secondary_lore_requirements = [
-    {"lore_id": lore_of_humanity.id, "rating": 3},
+    {"lore": lore_of_humanity.property_name, "rating": 3},
 ]
 fog_of_war.base_cost = 12
 fog_of_war.minimum_casting_time = 36
@@ -69,7 +69,7 @@ Adding the Lore of Light • increases the difficulty for viewers to see through
 
 Including Humanity •• suggests to mortals affected by the concealment that they didn't just see nothing at all, they saw something else entirely — something particularly innocuous and appropriate, like a grazing herd of deer, a flock of gulls, a group of toddling children or anything else that would lull the mortals into inattention. A mortal can resist this effect with a successful Willpower roll (difficulty 8), but if the roll achieves more successes than the Ankida's Willpower, then the entire effect of the cloud, concealment and all, is negated for that mortal only."""
 fog_of_war.flavor_text = "The Fog of War was developed to hide groups of demons and their mortal allies from enemy troops. The ritual summons evanescent swirls of fine cloud and mist that subtly billow around the Ankida and his companions."
-fog_of_war.source_page = "Houses of the Fallen, p. 54"
+fog_of_war.add_source("Houses of the Fallen", 54)
 fog_of_war.save()
 
 inoculate = Ritual.objects.get_or_create(
@@ -79,7 +79,7 @@ inoculate = Ritual.objects.get_or_create(
 inoculate.primary_lore = lore_awakening
 inoculate.primary_lore_rating = 2
 inoculate.secondary_lore_requirements = [
-    {"lore_id": lore_of_patterns.id, "rating": 3},
+    {"lore": lore_of_patterns.property_name, "rating": 3},
 ]
 inoculate.base_cost = 10
 inoculate.minimum_casting_time = 25
@@ -96,5 +96,5 @@ Note that this ritual does not prevent a recipient from simple harm sustained th
 inoculate.torment_effect = """The version of this ritual affected by Torment makes the recipients immune to disease and similar harm themselves but turns them into "plague rats" who infect everyone with whom they come in contact. Roll the Ankida's Willpower (difficulty 7), resisted by the highest of the victims' Willpower ratings. If the ritual takes effect, each net success on the Ankida's roll inflicts a level of bashing damage on everyone who comes into physical contact with the infected character. The high-Torment version of this ritual lasts for one week."""
 inoculate.variations = "Increasing the Awakening level to ••• allows the protection to heal minor wounds the beneficiaries sustain. Each subject can shrug off a number of bashing or lethal health levels of damage equal to the Ankida's Faith score over the duration of the ritual's effects."
 inoculate.flavor_text = "The Inoculate ritual was developed by desperate Asharu who wearied of seeing the human tribes ravaged again and again by the diseases of war — both natural diseases unavoidable in the poor living conditions of a war-torn land and supernatural maladies that spread as fast as breath."
-inoculate.source_page = "Houses of the Fallen, p. 55"
+inoculate.add_source("Houses of the Fallen", 55)
 inoculate.save()

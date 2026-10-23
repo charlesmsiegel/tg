@@ -188,6 +188,20 @@ reruns and reversal leave the schema intact. Tests in
 [`test_dynasty_seed_key.py`](../tests/test_dynasty_seed_key.py) cover legacy schema,
 existing columns, uniqueness, multiple NULL keys and later removal of model constraints.
 
+## 0015_ritual_lore_keys
+
+[`0015_ritual_lore_keys.py`](../migrations/0015_ritual_lore_keys.py) converts
+`Ritual.secondary_lore_requirements` entries from database-local `lore_id` values to
+stable `Lore.property_name` keys. New-format entries are unchanged. Unresolvable
+IDs are retained and logged for repair, never silently removed. Model, field,
+table and column guards make it safe after later renames; reversal retains keys.
+Tests in [`test_ritual_lore_keys.py`](../tests/test_ritual_lore_keys.py) cover mixed
+formats, reruns, dangling IDs and missing schema.
+
+This data conversion cannot recover requirements the old DPG loader never saved.
+Reload the ritual catalogue after migration as described in
+[seed data](../../docs/getting-started/seed-data.md#repairing-existing-demon-ritual-data).
+
 ## See also
 
 - [Writing a migration](writing-a-migration.md)

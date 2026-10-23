@@ -20,7 +20,7 @@ animated_plant = Ritual.objects.get_or_create(
 animated_plant.primary_lore = lore_wild
 animated_plant.primary_lore_rating = 5
 animated_plant.secondary_lore_requirements = [
-    {"lore_id": lore_beast.id, "rating": 4},
+    {"lore": lore_beast.property_name, "rating": 4},
 ]
 animated_plant.base_cost = 18
 animated_plant.minimum_casting_time = 81
@@ -33,7 +33,7 @@ Devourers who wish to command these animated plants must use evocations such as 
 animated_plant.torment_effect = """If the ritual is affected by Torment, controlling these plants — which develop a vicious and bloodthirsty will of their own — requires a demon using Command the Wild to also succeed on a Willpower roll with a difficulty equal to the Ankida's Torment score. In addition, when the plants successfully cause damage to someone, they also inflict an additional lethal health level of damage. Their sap is caustic and toxic, highly dangerous to mortal, animal and demon alike."""
 animated_plant.variations = "Unconfirmed rumors told of plants that could speak with men, created by incorporating the Lore of Humanity • into the ritual."
 animated_plant.flavor_text = "In time, the most senior Rabisu mastered plants and animals alike, and under their watchful gaze the two began to blur. With this ritual and others like it, the Devourers created intelligent and active plants that were far more than mere vegetation."
-animated_plant.source_page = "Houses of the Fallen, p. 161"
+animated_plant.add_source("Houses of the Fallen", 161)
 animated_plant.save()
 
 beast_tongue = Ritual.objects.get_or_create(
@@ -43,7 +43,7 @@ beast_tongue = Ritual.objects.get_or_create(
 beast_tongue.primary_lore = lore_beast
 beast_tongue.primary_lore_rating = 2
 beast_tongue.secondary_lore_requirements = [
-    {"lore_id": lore_of_humanity.id, "rating": 1},
+    {"lore": lore_of_humanity.property_name, "rating": 1},
 ]
 beast_tongue.base_cost = 6
 beast_tongue.minimum_casting_time = 9
@@ -54,7 +54,7 @@ beast_tongue.system = """Roll Manipulation + Empathy. The ritual can affect a nu
 beast_tongue.torment_effect = """The ritual's subjects can still communicate with animals, but their "speech" comes out hostile and aggressive. Animals will react as if threatened to anything the subjects say while affected by the ritual. A mortal or demon must rely on a Manipulation + Animal Ken roll against a difficulty equal to the Ankida's Torment score to overcome this effect and be understood normally."""
 beast_tongue.variations = "Increasing the Humanity rating to •• causes animals who are being spoken to by a ritual subject to be naturally predisposed in her favor, regardless of whether they have been previously commanded by a Devourer to be friendly."
 beast_tongue.flavor_text = "The demons of the Sixth House had easy access to the minds and hearts of the animals with which they worked, but their human allies had no such advantage. The ability to converse with animals in tactical situations was invaluable to the Rabisu, and the Beast Tongue ritual was developed to extend this ability to the mortals who aided them."
-beast_tongue.source_page = "Houses of the Fallen, p. 161"
+beast_tongue.add_source("Houses of the Fallen", 161)
 beast_tongue.save()
 
 wild_path = Ritual.objects.get_or_create(
@@ -64,7 +64,7 @@ wild_path = Ritual.objects.get_or_create(
 wild_path.primary_lore = lore_wild
 wild_path.primary_lore_rating = 4
 wild_path.secondary_lore_requirements = [
-    {"lore_id": lore_paths.id, "rating": 2},
+    {"lore": lore_paths.property_name, "rating": 2},
 ]
 wild_path.base_cost = 12
 wild_path.minimum_casting_time = 36
@@ -77,5 +77,5 @@ Identifying the correct tree to step out of requires a Perception + Survival rol
 wild_path.torment_effect = """If the ritual is affected by Torment, the demons' taint irritates the trees and provokes resistance. Stepping into a tree requires a Willpower roll against the Ankida's Torment score, to push one's way past the Torment-induced barrier."""
 wild_path.variations = "None"
 wild_path.flavor_text = "Speed and mobility on the field of war were essential for victory. Where others used their wings, many Ninurtu used the plants they had nurtured from infancy to burgeoning adulthood. Using the Wild Path ritual, Devourers could step into a stand of trees and step out a mile away, an unpleasant surprise to the enemy with their backs turned."
-wild_path.source_page = "Houses of the Fallen, p. 161"
+wild_path.add_source("Houses of the Fallen", 161)
 wild_path.save()

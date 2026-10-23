@@ -1,5 +1,6 @@
 """Tests for Ritual model."""
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from characters.models.demon.house import DemonHouse
@@ -100,7 +101,7 @@ class RitualWithSecondaryLoreTests(TestCase):
             house=self.house,
             primary_lore=self.primary_lore,
             primary_lore_rating=3,
-            secondary_lore_requirements=[{"lore_id": self.secondary_lore.pk, "rating": 2}],
+            secondary_lore_requirements=[{"lore": self.secondary_lore.property_name, "rating": 2}],
         )
 
     def test_secondary_lore_requirements(self):
@@ -264,7 +265,7 @@ class RitualDisplayMethodsTests(TestCase):
             house=self.house,
             primary_lore=self.primary_lore,
             primary_lore_rating=3,
-            secondary_lore_requirements=[{"lore_id": self.secondary_lore.pk, "rating": 2}],
+            secondary_lore_requirements=[{"lore": self.secondary_lore.property_name, "rating": 2}],
         )
 
     def test_get_primary_lore_display(self):
@@ -285,14 +286,40 @@ class RitualDisplayMethodsTests(TestCase):
         self.assertEqual(len(displays), 1)
         self.assertEqual(displays[0], "Lore of the Fundament ••")
 
-    def test_get_secondary_lores_with_invalid_id(self):
-        """Test get_secondary_lores handles invalid lore IDs."""
+    def test_missing_lore_is_reported_instead_of_hidden(self):
+        self.ritual.secondary_lore_requirements = [{"lore": "missing", "rating": 2}]
+        with self.assertRaises(ValidationError):
+            self.ritual.get_secondary_lores()
+
+    def test_all_secondary_lores_resolve_in_one_query_in_declared_order(self):
         self.ritual.secondary_lore_requirements = [
-            {"lore_id": 99999, "rating": 2}  # Non-existent ID
+            {"lore": self.secondary_lore.property_name, "rating": 2},
+            {"lore": self.primary_lore.property_name, "rating": 1},
         ]
-        self.ritual.save()
-        lores = self.ritual.get_secondary_lores()
-        self.assertEqual(len(lores), 0)
+        with self.assertNumQueries(1):
+            requirements = self.ritual.get_secondary_lores()
+        self.assertEqual(
+            [r["lore"] for r in requirements], [self.secondary_lore, self.primary_lore]
+        )
+
+    def test_invalid_requirements_are_field_errors(self):
+        for invalid in (
+            {},
+            "flame",
+            [None],
+            [{"lore": [], "rating": 2}],
+            [{"lore": "missing", "rating": 2}],
+            [{"lore": "flame", "rating": 0}],
+            [{"lore": "flame", "rating": 6}],
+            [{"lore": "flame", "rating": True}],
+            [{"lore": "flame", "rating": 1.5}],
+            [{"lore_id": self.primary_lore.pk, "rating": 2}],
+        ):
+            with self.subTest(requirements=invalid):
+                self.ritual.secondary_lore_requirements = invalid
+                with self.assertRaises(ValidationError) as error:
+                    self.ritual.full_clean()
+                self.assertIn("secondary_lore_requirements", error.exception.message_dict)
 
 
 class RitualCastingTimeTests(TestCase):
