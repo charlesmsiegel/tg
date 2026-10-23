@@ -3,6 +3,8 @@
 from django.conf import settings
 from django.core import checks
 
+from accounts.throttle import trusted_proxy_networks
+
 PER_PROCESS_CACHES = {
     "django.core.cache.backends.locmem.LocMemCache",
     "django.core.cache.backends.dummy.DummyCache",
@@ -23,3 +25,26 @@ def check_throttle_cache(app_configs, **kwargs):
             id="accounts.W001",
         )
     ]
+
+
+@checks.register(checks.Tags.security, deploy=True)
+def check_throttle_proxies(app_configs, **kwargs):
+    """Require an explicit decision about forwarded client addresses at deployment."""
+    if settings.AUTH_THROTTLE_TRUSTED_PROXIES is None:
+        return [
+            checks.Warning(
+                "The authentication throttle proxy trust is not configured; forwarded headers are ignored.",
+                hint="Set AUTH_THROTTLE_TRUSTED_PROXIES to proxy IPs/CIDRs, or an empty value for direct access.",
+                id="accounts.W002",
+            )
+        ]
+    try:
+        trusted_proxy_networks()
+    except (ValueError, TypeError):
+        return [
+            checks.Error(
+                "AUTH_THROTTLE_TRUSTED_PROXIES must contain valid proxy IP addresses or CIDRs.",
+                id="accounts.E001",
+            )
+        ]
+    return []

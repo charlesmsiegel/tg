@@ -15,7 +15,7 @@ query, or change a template that cached pages render.
 | A character's scenes | `core.cache.cache_function` on `get_character_scenes` in [`characters/views/core/character.py`](../../characters/views/core/character.py) | `tg:function:character_scenes:get_character_scenes:<id>` | 5 minutes | None |
 | Notification count | `accounts.context_processors.notification_count` | `notification_count_<user id>` | 60 seconds | None |
 | Chargen partial throttle | `characters.views.core.chargen_mixins.ChargenStepMixin.partial_throttled` | `chargen-partial:<user>:<character>:<minute>` | 120 seconds | Not needed: a per-minute counter; above `CHARGEN_PARTIAL_LIMIT` (read with `getattr`, default 60, not set in the settings files) partial requests get `204` |
-| Sessions (production only) | `SESSION_ENGINE = "django.contrib.sessions.backends.cache"` | Django's | Session age | Logout |
+| Sessions (production only) | `SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"` | Django's | Session age | Logout |
 
 Permission roles and resolved polymorphic objects are cached on the **request object**, not in
 the cache backend; see [Authorization](authorization.md#request-caching).
@@ -143,9 +143,10 @@ within 60 seconds.
 Production consequences:
 
 - `IGNORE_EXCEPTIONS` makes cache errors behave as misses, so the site keeps working if Redis is
-  down. Sessions use the same cache (`SESSION_ENGINE` is the cache backend), so while Redis is
-  unavailable sessions are not persisted and users are signed out.
-- Clearing the Redis database signs everyone out.
+  down; ignored exceptions are logged by `tg`. Sessions use `cached_db`, retaining a
+  database copy through Redis outages. Authentication POSTs fail closed with 429 when
+  the shared throttle cannot count attempts.
+- Clearing Redis evicts session caches; established sessions reload from the database.
 - The production channel layer reads the same `REDIS_URL` (default database `0` there). When
   `REDIS_URL` is set, cache, sessions and channel layer share one Redis database. See
   [Scenes and real-time chat](scenes-and-realtime.md).
