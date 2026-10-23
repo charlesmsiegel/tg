@@ -106,7 +106,7 @@ models, and a few only look rows up. Two `__init__.py` files hold only a docstri
 | `demon/demon_relics_hotf_devourers.py` | `Relic` | `demon.demon_houses` |
 | `demon/demon_relics_hotf_fiends.py` | `Relic` | `demon.demon_houses` |
 | `demon/demon_relics_hotf_slayers.py` | `Relic` | `demon.demon_houses` |
-| `demon/demon_rituals.py` | `Ritual` | `demon.demon_houses`, `demon.demon_lores` |
+| `demon/demon_rituals_dpg.py` | `Ritual` | `demon.demon_houses`, `demon.demon_lores` |
 | `demon/demon_rituals_hotf_defilers.py` | `Ritual` | `demon.demon_houses`, `demon.demon_lores` |
 | `demon/demon_rituals_hotf_devils.py` | `Ritual` | `demon.demon_houses`, `demon.demon_lores` |
 | `demon/demon_rituals_hotf_devourers.py` | `Ritual` | `demon.demon_houses`, `demon.demon_lores` |

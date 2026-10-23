@@ -47,9 +47,9 @@ hadrisel_libation = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 hadrisel_libation.primary_lore = lore_of_storms
-hadrisel_libation.primary_lore_of_rating = 2
-hadrisel_libation.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 1},
+hadrisel_libation.primary_lore_rating = 2
+hadrisel_libation.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 1},
 ]
 hadrisel_libation.base_cost = 6
 hadrisel_libation.minimum_casting_time = 9
@@ -58,7 +58,8 @@ hadrisel_libation.system = """Roll Intelligence + Medicine. Each drink of the li
 hadrisel_libation.torment_effect = """The high-Torment version of this libation creates a viscous, oily liquid that burns to the touch and spreads disease and infection. The number of successes rolled becomes a damage pool that inflicts bashing damage on any target struck by the water. In addition, if the victim has open wounds on his skin or he swallows any of the substance, he will contract a virulent disease at the Storyteller's discretion."""
 hadrisel_libation.variations = ""
 hadrisel_libation.flavor_text = "This ritual was one of the first cooperative attempts by Defilers and Scourges to create a portable healing draught that could be applied to warriors of the infernal host during battle."
-hadrisel_libation.source_page = "DPG 187-188"
+hadrisel_libation.add_source("Demon Players Guide", 187)
+hadrisel_libation.add_source("Demon Players Guide", 188)
 hadrisel_libation.save()
 
 sirens_song = Ritual.objects.get_or_create(
@@ -66,10 +67,10 @@ sirens_song = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 sirens_song.primary_lore = lore_of_longing
-sirens_song.primary_lore_of_rating = 3
-sirens_song.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_radiance.id, "rating": 2},
-    {"lore_of_id": lore_of_humanity.id, "rating": 1},
+sirens_song.primary_lore_rating = 3
+sirens_song.secondary_lore_requirements = [
+    {"lore": lore_of_radiance.property_name, "rating": 2},
+    {"lore": lore_of_humanity.property_name, "rating": 1},
 ]
 sirens_song.base_cost = 18
 sirens_song.minimum_casting_time = 36
@@ -78,7 +79,7 @@ sirens_song.system = """Roll Manipulation + Performance. The number of successes
 sirens_song.torment_effect = """The high-Torment version of this song fills the mind of a listener with visions of madness and anguish. Make a Willpower roll (difficulty 8) for any mortal or demon caught within the area of effect. If the roll fails, the victim is overcome with visions of the Abyss and falls to the ground, writhing in pain and fear. Affected individuals can take no actions of any kind as long as the song continues. If the Willpower roll botches, a mortal victim gains a temporary derangement as well. A demon gains one point of temporary Torment."""
 sirens_song.variations = "Legend speaks of a version of this ritual that could be centered on distant locations far removed from the casting sigil. Add Firmament •• to the ritual's secondary lore."
 sirens_song.flavor_text = "This ritual was developed as a battlefield tactic by the Crimson Legion as a means of luring enemy mortals away from their place on the battlefield and creating an opening that the fallen might then exploit. The song was so alluring and powerful that it resonates in humanity's collective memory to this day."
-sirens_song.source_page = "DPG 188"
+sirens_song.add_source("Demon Players Guide", 188)
 sirens_song.save()
 
 fiery_vision = Ritual.objects.get_or_create(
@@ -86,11 +87,11 @@ fiery_vision = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 fiery_vision.primary_lore = lore_of_longing
-fiery_vision.primary_lore_of_rating = 3
-fiery_vision.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_light.id, "rating": 2},
-    {"lore_of_id": lore_of_radiance.id, "rating": 2},
-    {"lore_of_id": lore_of_humanity.id, "rating": 1},
+fiery_vision.primary_lore_rating = 3
+fiery_vision.secondary_lore_requirements = [
+    {"lore": lore_of_light.property_name, "rating": 2},
+    {"lore": lore_of_radiance.property_name, "rating": 2},
+    {"lore": lore_of_humanity.property_name, "rating": 1},
 ]
 fiery_vision.base_cost = 32
 fiery_vision.minimum_casting_time = 64
@@ -99,7 +100,8 @@ fiery_vision.system = """Roll Charisma + Performance. Any of the Ankida's allies
 fiery_vision.torment_effect = """The high-Torment effect of this ritual blasts the souls of the Ankida's enemies, filling their hearts and minds with visions of despair. Enemies of the Ankida who witness the vision lose a number of temporary Willpower points equal to the Ankida's successes. A victim whose Willpower is reduced to 0 is overcome with fear and falls into a catatonic state for the remainder of the scene. Mortals whose Willpower is temporarily reduced to 0 suffer a temporary derangement as well. A demon gains one point of temporary Torment."""
 fiery_vision.variations = "A variation on this ritual is said to exist that causes the vision to manifest itself over a geographical location far from the ritual's sigil. Add Firmament •• to the ritual's secondary lore."
 fiery_vision.flavor_text = "This ritual was one of the Defilers' signature battlefield effects, creating a blazing image high above the battlefield that exhorted the warriors of the fallen to greater acts of valor and filled the hearts of their enemies with dread. The ritual creates the image of a fiery figure high above the center of the sigil, speaking in thunderous tones that can be understood by all who witness it regardless of their native language."
-fiery_vision.source_page = "DPG 188-189"
+fiery_vision.add_source("Demon Players Guide", 188)
+fiery_vision.add_source("Demon Players Guide", 189)
 fiery_vision.save()
 
 # ============================================================================
@@ -111,9 +113,9 @@ baptism_of_faith = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 baptism_of_faith.primary_lore = lore_of_the_celestials
-baptism_of_faith.primary_lore_of_rating = 2
-baptism_of_faith.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_longing.id, "rating": 2},
+baptism_of_faith.primary_lore_rating = 2
+baptism_of_faith.secondary_lore_requirements = [
+    {"lore": lore_of_longing.property_name, "rating": 2},
 ]
 baptism_of_faith.base_cost = 8
 baptism_of_faith.minimum_casting_time = 16
@@ -122,7 +124,8 @@ baptism_of_faith.system = """Roll Charisma + Empathy. The effects of the ritual 
 baptism_of_faith.torment_effect = """The high-Torment version of this ritual infuses the human recipient with the demon's Torment as well, creating a deranged individual with violent tendencies. A Willpower roll (difficulty 7) must be made for the baptized individual whenever he suffers a bout of extreme stress. If the roll fails, the individual will attempt to relieve the stress by killing another person."""
 baptism_of_faith.variations = ""
 baptism_of_faith.flavor_text = "While the thrall relationship is one of the closest between demon and human, others can be forged. Nobody is sure who developed the rite of baptism first, but it was used by both sides during the war to engender loyalties among the various mortal factions. A human bestowed with this ritual can call upon a particular demon for aid, and likewise, the demon can use his baptized followers to gain more information in some circumstances."
-baptism_of_faith.source_page = "DPG 190-191"
+baptism_of_faith.add_source("Demon Players Guide", 190)
+baptism_of_faith.add_source("Demon Players Guide", 191)
 baptism_of_faith.save()
 
 firestorm = Ritual.objects.get_or_create(
@@ -130,9 +133,9 @@ firestorm = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 firestorm.primary_lore = lore_of_flame
-firestorm.primary_lore_of_rating = 4
-firestorm.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_winds.id, "rating": 4},
+firestorm.primary_lore_rating = 4
+firestorm.secondary_lore_requirements = [
+    {"lore": lore_of_the_winds.property_name, "rating": 4},
 ]
 firestorm.base_cost = 16
 firestorm.minimum_casting_time = 64
@@ -141,7 +144,8 @@ firestorm.system = """Roll Stamina + Survival. Each success inflicts one level o
 firestorm.torment_effect = """The center of the firestorm can only be the sigil itself. Those on the perimeter and within it are not affected unless there are nearby walls (within half the radius of the effect) which reflect the firestorm back onto the casters."""
 firestorm.variations = "The version known to be performed by Lucifer and his cohorts granted the Ankida sufficient control to exclude targets within the area of effect. As well as determining damage, each success of the Stamina + Survival roll means one demon (or demon-/human-sized object) of the Ankida's choice will not be affected by the blast. Add Patterns ••."
 firestorm.flavor_text = "This short-lived but powerful ritual creates a much-feared conflagration from which there is little hope of escape."
-firestorm.source_page = "DPG 191-192"
+firestorm.add_source("Demon Players Guide", 191)
+firestorm.add_source("Demon Players Guide", 192)
 firestorm.save()
 
 # Remaining Defiler rituals
@@ -151,11 +155,11 @@ create_elemental_defiler = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 create_elemental_defiler.primary_lore = lore_of_storms
-create_elemental_defiler.primary_lore_of_rating = 3
-create_elemental_defiler.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+create_elemental_defiler.primary_lore_rating = 3
+create_elemental_defiler.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_the_celestials.property_name, "rating": 2},
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 create_elemental_defiler.base_cost = 36
 create_elemental_defiler.minimum_casting_time = 81
@@ -164,7 +168,7 @@ create_elemental_defiler.system = """Roll Manipulation + Occult. The ritual crea
 create_elemental_defiler.torment_effect = """The high-Torment version of this ritual creates an amorphous, flesh-eating monster that exists only to hunt and kill the living. Only the creature's Physical Attributes might be increased by the Ankida's successes, and only combat-related Abilities (e.g., Alertness, Brawl and Dodge) may be purchased. The touch of the monster burns like acid, inflicting lethal damage in combat. Finally, the Ankida only nominally controls the creature. A Willpower roll (difficulty 8) must be made on the Ankida's behalf each time she attempts to direct the monster's actions. If the roll fails, the creature acts under the Storyteller's control."""
 create_elemental_defiler.variations = ""
 create_elemental_defiler.flavor_text = "This powerful ritual allowed the Defilers to create living servants from the very sea, serving the Angels of the Deep in a variety of minor roles."
-create_elemental_defiler.source_page = "DPG 189"
+create_elemental_defiler.add_source("Demon Players Guide", 189)
 create_elemental_defiler.save()
 
 storms_fury = Ritual.objects.get_or_create(
@@ -172,11 +176,11 @@ storms_fury = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 storms_fury.primary_lore = lore_of_storms
-storms_fury.primary_lore_of_rating = 4
-storms_fury.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
-    {"lore_of_id": lore_of_the_winds.id, "rating": 2},
-    {"lore_of_id": lore_of_humanity.id, "rating": 2},
+storms_fury.primary_lore_rating = 4
+storms_fury.secondary_lore_requirements = [
+    {"lore": lore_of_the_firmament.property_name, "rating": 3},
+    {"lore": lore_of_the_winds.property_name, "rating": 2},
+    {"lore": lore_of_humanity.property_name, "rating": 2},
 ]
 storms_fury.base_cost = 44
 storms_fury.minimum_casting_time = 121
@@ -185,7 +189,8 @@ storms_fury.system = """Roll Intelligence + Survival. The successes rolled are s
 storms_fury.torment_effect = """The effects of the high-Torment version of this ritual are terrible indeed, creating a raging tempest of hellish lightning and acid rain. The successes rolled when determining the effect of the ritual become a lethal damage pool that is rolled every turn for each mortal or demon caught within the storm — friend and foe alike."""
 storms_fury.variations = "Toward the end of the war, the Silver Legion developed a version of this ritual that could be centered on a specific individual, provided the Ankida knew the individual's name. Increase Winds and Humanity to ••• each."
 storms_fury.flavor_text = "This ritual allowed the Angels of the Deep to pummel their foes with the full fury of a raging storm, directing it as an extension of their will and leaving their allies unscathed."
-storms_fury.source_page = "DPG 189-190"
+storms_fury.add_source("Demon Players Guide", 189)
+storms_fury.add_source("Demon Players Guide", 190)
 storms_fury.save()
 
 part_the_waters = Ritual.objects.get_or_create(
@@ -193,10 +198,10 @@ part_the_waters = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 part_the_waters.primary_lore = lore_of_storms
-part_the_waters.primary_lore_of_rating = 4
-part_the_waters.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 3},
-    {"lore_of_id": lore_of_paths.id, "rating": 2},
+part_the_waters.primary_lore_rating = 4
+part_the_waters.secondary_lore_requirements = [
+    {"lore": lore_of_the_fundament.property_name, "rating": 3},
+    {"lore": lore_of_paths.property_name, "rating": 2},
 ]
 part_the_waters.base_cost = 27
 part_the_waters.minimum_casting_time = 81
@@ -205,7 +210,8 @@ part_the_waters.system = """Roll Stamina + Survival. Each success increases the 
 part_the_waters.torment_effect = """The footing of the path is treacherous, and it might contain areas of quicksand and other hazards (the location of which is determined at the Storyteller's discretion). Also, the Ankida does not have control over the duration of the ritual. She cannot end it prematurely, nor know when it is going to expire. The Storyteller secretly rolls dice equal to the character's Torment score. The duration is equal to the maximum duration (six hours per Faith point) divided by the number of successes rolled. If no successes are rolled, the ritual lasts one day per Faith point."""
 part_the_waters.variations = "There is said to be a version that creates a path that is a mere 200 yards long, but always centered on the Ankida, so when she moves forward, the waves part before her and close behind her. The maximum depth is twice that of the normal ritual. Increase Fundament to ••••."
 part_the_waters.flavor_text = "This ritual allows the demons to create a path through a lake, river or, with enough Faith, a sea. The water rolls back on either side of the designated route, revealing the lake- or riverbed, which is dried sufficiently to support traffic (although it might be uneven and hard to maneuver upon)."
-part_the_waters.source_page = "DPG 189-190"
+part_the_waters.add_source("Demon Players Guide", 189)
+part_the_waters.add_source("Demon Players Guide", 190)
 part_the_waters.save()
 
 river_of_blood = Ritual.objects.get_or_create(
@@ -213,11 +219,11 @@ river_of_blood = Ritual.objects.get_or_create(
     house=defilers,
 )[0]
 river_of_blood.primary_lore = lore_of_storms
-river_of_blood.primary_lore_of_rating = 4
-river_of_blood.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 3},
-    {"lore_of_id": lore_of_portals.id, "rating": 3},
-    {"lore_of_id": lore_of_transfiguration.id, "rating": 2},
+river_of_blood.primary_lore_rating = 4
+river_of_blood.secondary_lore_requirements = [
+    {"lore": lore_of_the_flesh.property_name, "rating": 3},
+    {"lore": lore_of_portals.property_name, "rating": 3},
+    {"lore": lore_of_transfiguration.property_name, "rating": 2},
 ]
 river_of_blood.base_cost = 48
 river_of_blood.minimum_casting_time = 144
@@ -226,7 +232,7 @@ river_of_blood.system = """Roll Charisma + Empathy. Each success adds a mile of 
 river_of_blood.torment_effect = """Such is the power of this ritual that it transforms the pain of the Abyss into material form, creating a powerful and monstrous blood golem that roams the land, killing anyone it can find. The construct is 15 feet tall and its Physical and Mental Attributes, plus its Brawl and Dodge, are each half the Torment score for the ritual (round down). In addition, the profane and liquid form of its body means its touch inflicts lethal damage, and its soak is twice its Stamina (it can soak aggravated damage). It does not receive wound penalties, and whenever it takes 10 levels of damage its body dissolves and re-forms back in the river, as long as the blood still flows there. It can also do so at will. Its first targets are the participants of the ritual."""
 river_of_blood.variations = ""
 river_of_blood.flavor_text = "All the anguish, resentment and frustrated love of the Angels of the Deep is manifest in this unholy catastrophe. It replaces the life-giving flow of water with a turgid, sticky mass of flowing blood that scars the land and sends an inescapable message to those living upon the Earth."
-river_of_blood.source_page = "DPG 190"
+river_of_blood.add_source("Demon Players Guide", 190)
 river_of_blood.save()
 
 # Remaining Devil rituals
@@ -236,9 +242,9 @@ defeat_scry = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 defeat_scry.primary_lore = lore_of_the_celestials
-defeat_scry.primary_lore_of_rating = 3
-defeat_scry.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 1},
+defeat_scry.primary_lore_rating = 3
+defeat_scry.secondary_lore_requirements = [
+    {"lore": lore_of_the_firmament.property_name, "rating": 1},
 ]
 defeat_scry.base_cost = 8
 defeat_scry.minimum_casting_time = 16
@@ -247,7 +253,7 @@ defeat_scry.system = """Roll Perception + Alertness. The number of successes rol
 defeat_scry.torment_effect = """The high-Torment effect of this ritual inflicts one health level of bashing damage each turn against individuals attempting to scry into the affected area (this damage can not be soaked). They can still view what is going on, but it's like getting an eyeful of tear gas when they do."""
 defeat_scry.variations = "Rumors abound that a ritual could be cast that interferes with scrying attempts, making it appear that the area was empty or that a specifically programmed action was happening within it. Add Light ••••."
 defeat_scry.flavor_text = "This ritual creates an area that is protected from scrying attempts."
-defeat_scry.source_page = "DPG 191"
+defeat_scry.add_source("Demon Players Guide", 191)
 defeat_scry.save()
 
 resist_fire = Ritual.objects.get_or_create(
@@ -255,9 +261,9 @@ resist_fire = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 resist_fire.primary_lore = lore_of_flame
-resist_fire.primary_lore_of_rating = 2
-resist_fire.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
+resist_fire.primary_lore_rating = 2
+resist_fire.secondary_lore_requirements = [
+    {"lore": lore_of_the_flesh.property_name, "rating": 2},
 ]
 resist_fire.base_cost = 8
 resist_fire.minimum_casting_time = 16
@@ -266,7 +272,7 @@ resist_fire.system = """Roll Stamina + Dodge. The number of successes rolled det
 resist_fire.torment_effect = """The subject does not take damage from fire, but he feels the pain of being burned nonetheless. Each time a character soaks damage inflicted by fire, a Willpower roll must be made with the difficulty equal to 5 + the number of damage levels soaked. If the roll fails, the character loses her actions for the next turn."""
 resist_fire.variations = "A powerful version of this ritual allows flame to actually heal the recipient. Each point of fire damage successfully soaked heals one level of bashing damage. Add Awakening •••."
 resist_fire.flavor_text = "This ritual gives the subjects the ability to shrug off fire damage. It was designed to help human support troops in battle against loyalist members of the First House."
-resist_fire.source_page = "DPG 191"
+resist_fire.add_source("Demon Players Guide", 191)
 resist_fire.save()
 
 faith_of_steel = Ritual.objects.get_or_create(
@@ -274,10 +280,10 @@ faith_of_steel = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 faith_of_steel.primary_lore = lore_of_radiance
-faith_of_steel.primary_lore_of_rating = 2
-faith_of_steel.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_longing.id, "rating": 2},
+faith_of_steel.primary_lore_rating = 2
+faith_of_steel.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_longing.property_name, "rating": 2},
 ]
 faith_of_steel.base_cost = 18
 faith_of_steel.minimum_casting_time = 36
@@ -286,7 +292,7 @@ faith_of_steel.system = """Roll Manipulation + Leadership. The effect lasts for 
 faith_of_steel.torment_effect = """The high-Torment version of this ritual infuses the recipients with an unquenchable bloodlust, driving them into a murderous frenzy. Unless a successful Willpower roll is made (difficulty 7), they will attack the nearest individual, friend or foe, each turn."""
 faith_of_steel.variations = ""
 faith_of_steel.flavor_text = "This ritual inspires human troops under the Ankida's command, filling them with hope and determination, and allowing them to fight on despite any injuries they receive."
-faith_of_steel.source_page = "DPG 192"
+faith_of_steel.add_source("Demon Players Guide", 192)
 faith_of_steel.save()
 
 create_elemental_devil = Ritual.objects.get_or_create(
@@ -294,11 +300,11 @@ create_elemental_devil = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 create_elemental_devil.primary_lore = lore_of_flame
-create_elemental_devil.primary_lore_of_rating = 3
-create_elemental_devil.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+create_elemental_devil.primary_lore_rating = 3
+create_elemental_devil.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_the_celestials.property_name, "rating": 2},
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 create_elemental_devil.base_cost = 36
 create_elemental_devil.minimum_casting_time = 81
@@ -307,7 +313,7 @@ create_elemental_devil.system = """Roll Manipulation + Occult. The ritual create
 create_elemental_devil.torment_effect = """The high-Torment version creates a serpentine creature charged by the Ankida's hatred and driven to torture and kill the living. Only the creature's Physical Attributes can be increased by the Ankida's successes, and only combat-related Abilities (e.g., Alertness, Brawl and Dodge) can be purchased. The creature's body is sheathed in hard scales that provide five dice of armor protection, and its touch inflicts aggravated damage instead of lethal. Finally, the Ankida only nominally controls the creature; a Willpower roll (difficulty 8) must be made on the Ankida's behalf each time she attempts to direct the monster's actions. If the roll fails, the creature acts under the Storyteller's control."""
 create_elemental_devil.variations = ""
 create_elemental_devil.flavor_text = "This powerful ritual allowed the Devils to create servants of living fire that performed the role of guardians, bodyguards or assassins during the war."
-create_elemental_devil.source_page = "DPG 193"
+create_elemental_devil.add_source("Demon Players Guide", 193)
 create_elemental_devil.save()
 
 hopes_true_flame = Ritual.objects.get_or_create(
@@ -315,11 +321,11 @@ hopes_true_flame = Ritual.objects.get_or_create(
     house=devils,
 )[0]
 hopes_true_flame.primary_lore = lore_of_the_celestials
-hopes_true_flame.primary_lore_of_rating = 2
-hopes_true_flame.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_flame.id, "rating": 2},
-    {"lore_of_id": lore_of_longing.id, "rating": 2},
-    {"lore_of_id": lore_of_radiance.id, "rating": 2},
+hopes_true_flame.primary_lore_rating = 2
+hopes_true_flame.secondary_lore_requirements = [
+    {"lore": lore_of_flame.property_name, "rating": 2},
+    {"lore": lore_of_longing.property_name, "rating": 2},
+    {"lore": lore_of_radiance.property_name, "rating": 2},
 ]
 hopes_true_flame.base_cost = 32
 hopes_true_flame.minimum_casting_time = 64
@@ -328,7 +334,7 @@ hopes_true_flame.system = """Roll Manipulation + Empathy (difficulty 8). The num
 hopes_true_flame.torment_effect = ""
 hopes_true_flame.variations = ""
 hopes_true_flame.flavor_text = "This ritual creates a tongue of brilliant white flame that blazes above a house or other structure and protects those within it from harm."
-hopes_true_flame.source_page = "DPG 193"
+hopes_true_flame.add_source("Demon Players Guide", 193)
 hopes_true_flame.save()
 
 # ============================================================================
@@ -340,9 +346,9 @@ fruit_of_perfection = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 fruit_of_perfection.primary_lore = lore_of_the_wild
-fruit_of_perfection.primary_lore_of_rating = 2
-fruit_of_perfection.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_radiance.id, "rating": 2},
+fruit_of_perfection.primary_lore_rating = 2
+fruit_of_perfection.secondary_lore_requirements = [
+    {"lore": lore_of_radiance.property_name, "rating": 2},
 ]
 fruit_of_perfection.base_cost = 8
 fruit_of_perfection.minimum_casting_time = 16
@@ -351,7 +357,8 @@ fruit_of_perfection.system = """Roll Charisma + Empathy. One success means that 
 fruit_of_perfection.torment_effect = """The high-Torment effect of this ritual subtracts dice from the relevant traits or dice pools."""
 fruit_of_perfection.variations = "There is said to be a version of Fruit of Perfection that was developed during the war. It has the same effect, but it also makes the recipient of the effect more sensitive to the spirit realms as well as the natural one. Add Realms •."
 fruit_of_perfection.flavor_text = "This ritual creates a fruit that can be used to impart courage and insight. It was developed in an attempt to inspire humanity before the rebellion."
-fruit_of_perfection.source_page = "DPG 193-194"
+fruit_of_perfection.add_source("Demon Players Guide", 193)
+fruit_of_perfection.add_source("Demon Players Guide", 194)
 fruit_of_perfection.save()
 
 bountiful_harvest = Ritual.objects.get_or_create(
@@ -359,10 +366,10 @@ bountiful_harvest = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 bountiful_harvest.primary_lore = lore_of_the_wild
-bountiful_harvest.primary_lore_of_rating = 2
-bountiful_harvest.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_earth.id, "rating": 1},
-    {"lore_of_id": lore_of_storms.id, "rating": 1},
+bountiful_harvest.primary_lore_rating = 2
+bountiful_harvest.secondary_lore_requirements = [
+    {"lore": lore_of_the_earth.property_name, "rating": 1},
+    {"lore": lore_of_storms.property_name, "rating": 1},
 ]
 bountiful_harvest.base_cost = 12
 bountiful_harvest.minimum_casting_time = 16
@@ -373,7 +380,7 @@ bountiful_harvest.system = """Roll Stamina + Survival. The ritual affects an are
 bountiful_harvest.torment_effect = """The high-Torment version of this ritual does not create gardens, but lifeless wastelands. All water and vegetation within the affected area dries up and withers away, not to return again until the next blooming season. By spending a temporary Willpower point the effects of this ritual become permanent, creating a blighted area where nothing will ever grow."""
 bountiful_harvest.variations = ""
 bountiful_harvest.flavor_text = "This ritual was designed to create lush gardens in place of barren wastelands, providing sustenance for the host's mortal flocks in times of need."
-bountiful_harvest.source_page = "DPG 194"
+bountiful_harvest.add_source("Demon Players Guide", 194)
 bountiful_harvest.save()
 
 heart_of_stone = Ritual.objects.get_or_create(
@@ -381,9 +388,9 @@ heart_of_stone = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 heart_of_stone.primary_lore = lore_of_the_flesh
-heart_of_stone.primary_lore_of_rating = 3
-heart_of_stone.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_earth.id, "rating": 2},
+heart_of_stone.primary_lore_rating = 3
+heart_of_stone.secondary_lore_requirements = [
+    {"lore": lore_of_the_earth.property_name, "rating": 2},
 ]
 heart_of_stone.base_cost = 10
 heart_of_stone.minimum_casting_time = 25
@@ -392,7 +399,7 @@ heart_of_stone.system = """Roll Stamina + Leadership. The ritual affects as many
 heart_of_stone.torment_effect = """All recipients gain the protective advantages of the ritual but also lose one die from all their combat dice pools as the effect literally hardens muscles and skin."""
 heart_of_stone.variations = "A subsequent version of this ritual was said to specifically affect metal weapons used to strike the recipient, making the weapon harder and harder to wield effectively due to strange fluctuations in inertia. Every health level of damage soaked by the ritual's effect increases the difficulty of wielding the weapon that inflicted the damage to a maximum difficulty of 10. Add Fundament •••."
 heart_of_stone.flavor_text = "This ritual was used to harden the defenses of humans fighting for the rebel cause. The targets gain increased resistance to damage in combat."
-heart_of_stone.source_page = "DPG 194"
+heart_of_stone.add_source("Demon Players Guide", 194)
 heart_of_stone.save()
 
 beast_of_babel = Ritual.objects.get_or_create(
@@ -400,11 +407,11 @@ beast_of_babel = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 beast_of_babel.primary_lore = lore_of_the_beast
-beast_of_babel.primary_lore_of_rating = 3
-beast_of_babel.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
-    {"lore_of_id": lore_of_humanity.id, "rating": 2},
+beast_of_babel.primary_lore_rating = 3
+beast_of_babel.secondary_lore_requirements = [
+    {"lore": lore_of_the_flesh.property_name, "rating": 2},
+    {"lore": lore_of_the_firmament.property_name, "rating": 2},
+    {"lore": lore_of_humanity.property_name, "rating": 2},
 ]
 beast_of_babel.base_cost = 36
 beast_of_babel.minimum_casting_time = 81
@@ -413,7 +420,8 @@ beast_of_babel.system = """Roll Stamina + Survival in a resisted roll against ea
 beast_of_babel.torment_effect = """The high-Torment version of this ritual infuses its victims with an appetite for human flesh and an insatiable bloodlust. The transformed animals attack the nearest mortal, friend or foe, in an attempt to kill and eat them. If Willpower points are spent to make this effect permanent, the mortal reverts back to his normal form at the end of the scene but transforms beneath the light of each succeeding full moon and remains in animal form until it kills and eats human flesh."""
 beast_of_babel.variations = ""
 beast_of_babel.flavor_text = "This powerful ritual was developed originally as a form of cruel sport by Devourers of the Ebon Legion, transforming prisoners into animals that the demons could hunt with their hounds. It wasn't long, however, before the battlefield applications of the ritual became obvious."
-beast_of_babel.source_page = "DPG 195-196"
+beast_of_babel.add_source("Demon Players Guide", 195)
+beast_of_babel.add_source("Demon Players Guide", 196)
 beast_of_babel.save()
 
 defeat_path = Ritual.objects.get_or_create(
@@ -421,9 +429,9 @@ defeat_path = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 defeat_path.primary_lore = lore_of_the_wild
-defeat_path.primary_lore_of_rating = 4
-defeat_path.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 3},
+defeat_path.primary_lore_rating = 4
+defeat_path.secondary_lore_requirements = [
+    {"lore": lore_of_the_celestials.property_name, "rating": 3},
 ]
 defeat_path.base_cost = 14
 defeat_path.minimum_casting_time = 49
@@ -432,7 +440,7 @@ defeat_path.system = """Roll Perception + Survival. Each success is subtracted f
 defeat_path.torment_effect = """The addition of Torment provides a disorientating effect that gives people headaches and potentially gets them lost. Individuals traveling through the region (whether using Paths lore or not) become disoriented and lost unless a successful Willpower roll (difficulty 6) is made each turn. Once lost, a Willpower roll may be made each successive turn to regain one's bearings. If a roll results in a botch, the character cannot regain her bearings until she wanders out of the area."""
 defeat_path.variations = "It is said that there is a version that confuses the senses so that it appears that a path has been created successfully, but after it is traveled, the Malefactor finds herself in the same spot where she began. Add Longing •••."
 defeat_path.flavor_text = "This ritual creates an area where the Lore of Paths is much harder to use, making it much easier to defend against enemy angels — and other fallen."
-defeat_path.source_page = "DPG 194"
+defeat_path.add_source("Demon Players Guide", 194)
 defeat_path.save()
 
 forest_ward = Ritual.objects.get_or_create(
@@ -440,10 +448,10 @@ forest_ward = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 forest_ward.primary_lore = lore_of_the_wild
-forest_ward.primary_lore_of_rating = 3
-forest_ward.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_paths.id, "rating": 2},
+forest_ward.primary_lore_rating = 3
+forest_ward.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_paths.property_name, "rating": 2},
 ]
 forest_ward.base_cost = 21
 forest_ward.minimum_casting_time = 49
@@ -454,7 +462,7 @@ forest_ward.system = """Roll Wits + Survival. The ritual affects an area with a 
 forest_ward.torment_effect = """The high-Torment effect of this ritual infuses the vegetation with malevolent life, causing it to lash out at the Ankida's enemies with branch, thorn and vine. The number of successes rolled becomes a bashing damage pool that is rolled for each of the Ankida's enemies each turn they remain in the affected area."""
 forest_ward.variations = ""
 forest_ward.flavor_text = "This ritual was created as a defensive measure by Devourers of the Iron Legion, infusing a wilderness area with a protective life of its own. Enemies pursuing a retreating group of fallen find that the paths through the forest seem to shift before their very eyes, leading them away from their quarry."
-forest_ward.source_page = "DPG 195"
+forest_ward.add_source("Demon Players Guide", 195)
 forest_ward.save()
 
 wind_of_years = Ritual.objects.get_or_create(
@@ -462,11 +470,11 @@ wind_of_years = Ritual.objects.get_or_create(
     house=devourers,
 )[0]
 wind_of_years.primary_lore = lore_of_the_flesh
-wind_of_years.primary_lore_of_rating = 4
-wind_of_years.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_winds.id, "rating": 3},
-    {"lore_of_id": lore_of_death.id, "rating": 2},
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+wind_of_years.primary_lore_rating = 4
+wind_of_years.secondary_lore_requirements = [
+    {"lore": lore_of_the_winds.property_name, "rating": 3},
+    {"lore": lore_of_death.property_name, "rating": 2},
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 wind_of_years.base_cost = 44
 wind_of_years.minimum_casting_time = 121
@@ -477,7 +485,7 @@ wind_of_years.system = """Roll Stamina + Medicine. The ritual affects an area wi
 wind_of_years.torment_effect = """The high-Torment version of this ritual directly affects a victim's life force instead of her physical body. Instead of reducing traits, each success rolled removes one health level from a victim, beginning with Bruised and working down through the available levels. Note that this isn't inflicting damage per se — it is reducing the amount of health levels the character has available to withstand damage. If the victim already has suffered damage prior to being affected by the ritual, shift the damage downward to the health levels still available."""
 wind_of_years.variations = "Legend has it that a variation of this ritual was designed to affect specific individuals, no matter how far away they are from the ritual sigil. Add Firmament ••• and Humanity •• to the ritual's secondary lore. In addition the Ankida must know the name of the individual to be affected."
 wind_of_years.flavor_text = "This terrible ritual, crafted by Devourers of the Ebon Legion, inflicts the effects of age and infirmity on their foes, weakening them until they were easy prey for the legion's soldiers. Originally the ritual only affected the mortal followers of the Heavenly Host; now the host bodies of the fallen are vulnerable as well."
-wind_of_years.source_page = "DPG 196"
+wind_of_years.add_source("Demon Players Guide", 196)
 wind_of_years.save()
 
 # ============================================================================
@@ -489,9 +497,9 @@ disarm = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 disarm.primary_lore = lore_of_the_forge
-disarm.primary_lore_of_rating = 3
-disarm.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+disarm.primary_lore_rating = 3
+disarm.secondary_lore_requirements = [
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 disarm.base_cost = 10
 disarm.minimum_casting_time = 25
@@ -500,7 +508,8 @@ disarm.system = """Roll Strength + Technology. The number of successes determine
 disarm.torment_effect = """The high-Torment effect of this ritual allows weapons to function within the affected area but increases the chance for catastrophic accidents. Each success rolled increases the range of numbers that cause a botch on a weapon's to-hit roll. Therefore, if the effect roll netted four successes, any weapons used within the area of effect would botch on a roll of 1, 2, 3, 4 or 5. If a to-hit roll botches, the weapon hits its wielder or the wielder's nearest friend or ally instead."""
 disarm.variations = ""
 disarm.flavor_text = "This ritual is of uncertain origin. Some legends say that it was adapted from a chorus performed by heavenly angels to disarm a group of mortals loyal to the fallen. Other sources claim that a Malefactor of the Iron Legion, sick with the slaughter of the Time of Atrocities, developed the ritual as a means of ending conflicts before they could begin."
-disarm.source_page = "DPG 199-200"
+disarm.add_source("Demon Players Guide", 199)
+disarm.add_source("Demon Players Guide", 200)
 disarm.save()
 
 age_landscape = Ritual.objects.get_or_create(
@@ -508,10 +517,10 @@ age_landscape = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 age_landscape.primary_lore = lore_of_the_earth
-age_landscape.primary_lore_of_rating = 3
-age_landscape.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_wild.id, "rating": 3},
-    {"lore_of_id": lore_of_death.id, "rating": 2},
+age_landscape.primary_lore_rating = 3
+age_landscape.secondary_lore_requirements = [
+    {"lore": lore_of_the_wild.property_name, "rating": 3},
+    {"lore": lore_of_death.property_name, "rating": 2},
 ]
 age_landscape.base_cost = 24
 age_landscape.minimum_casting_time = 64
@@ -520,7 +529,7 @@ age_landscape.system = """Roll Stamina + Science. The area of effect covers a di
 age_landscape.torment_effect = """The ground is blighted, by weeds and poisonous plants, by crumbling rock and scree, and, if it's wet enough, fetid swamp and quicksand."""
 age_landscape.variations = "Apparently some rebels developed a variation of this ritual which also undermined structures built on the surface, so as to attack enemy fortifications. Add Fundament •••."
 age_landscape.flavor_text = "The ritual can potentially affect a huge area, changing the geographical characteristics of it in a short period of time. Tens of thousands of years of erosion can be simulated in mere hours. The ritual was used by the fallen to reshape the lands that God had directed to be built and subsequently damaged in His anger."
-age_landscape.source_page = "DPG 201"
+age_landscape.add_source("Demon Players Guide", 201)
 age_landscape.save()
 
 create_elemental_malefactor = Ritual.objects.get_or_create(
@@ -528,11 +537,11 @@ create_elemental_malefactor = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 create_elemental_malefactor.primary_lore = lore_of_the_earth
-create_elemental_malefactor.primary_lore_of_rating = 3
-create_elemental_malefactor.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+create_elemental_malefactor.primary_lore_rating = 3
+create_elemental_malefactor.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_the_celestials.property_name, "rating": 2},
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 create_elemental_malefactor.base_cost = 36
 create_elemental_malefactor.minimum_casting_time = 81
@@ -541,7 +550,8 @@ create_elemental_malefactor.system = """Roll Manipulation + Occult. The ritual c
 create_elemental_malefactor.torment_effect = """The high-Torment version creates a living war machine charged by the Ankida's hatred and driven to torture and kill the living. Only the creature's Physical Attributes can be increased by the Ankida's successes, and only combat-related Abilities (e.g., Alertness, Brawl and Dodge) can be purchased. The creature's body is sheathed in stone-hard skin that provide eight dice of armor protection and its fists inflicts aggravated damage instead of lethal. Finally, the Ankida only nominally controls the creature. A Willpower roll (difficulty 8) must be made on the Ankida's behalf each time she attempts to direct the monster's actions. If the roll fails, the creature acts under the Storyteller's control."""
 create_elemental_malefactor.variations = ""
 create_elemental_malefactor.flavor_text = "This powerful ritual allowed the Malefactors to create servants of living stone that acted as servants and sentient siege engines during the war."
-create_elemental_malefactor.source_page = "DPG 201-202"
+create_elemental_malefactor.add_source("Demon Players Guide", 201)
+create_elemental_malefactor.add_source("Demon Players Guide", 202)
 create_elemental_malefactor.save()
 
 local_interference = Ritual.objects.get_or_create(
@@ -549,10 +559,10 @@ local_interference = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 local_interference.primary_lore = lore_of_the_forge
-local_interference.primary_lore_of_rating = 4
-local_interference.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 3},
-    {"lore_of_id": lore_of_portals.id, "rating": 2},
+local_interference.primary_lore_rating = 4
+local_interference.secondary_lore_requirements = [
+    {"lore": lore_of_the_fundament.property_name, "rating": 3},
+    {"lore": lore_of_portals.property_name, "rating": 2},
 ]
 local_interference.base_cost = 27
 local_interference.minimum_casting_time = 81
@@ -561,7 +571,7 @@ local_interference.system = """Roll Wits + Occult. The ritual affects an area wi
 local_interference.torment_effect = """The high-Torment version of this ritual goes a step further, affecting mechanical equipment as well as electrical. Engines fail to run, guns cannot fire, locks cannot open and so on. The effect is so powerful that even simple tools refuse to work while in the affected area, though the level of failure is up to the Storyteller. At best, a hammer will refuse to hit a nail; at worst, a belt buckle will not close."""
 local_interference.variations = ""
 local_interference.flavor_text = "This ritual was developed late in the war by the Iron Legion as a means of creating zones that could not be scryed upon by their angelic rivals."
-local_interference.source_page = "DPG 200"
+local_interference.add_source("Demon Players Guide", 200)
 local_interference.save()
 
 rain_of_brimstone = Ritual.objects.get_or_create(
@@ -569,10 +579,10 @@ rain_of_brimstone = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 rain_of_brimstone.primary_lore = lore_of_the_earth
-rain_of_brimstone.primary_lore_of_rating = 4
-rain_of_brimstone.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_flame.id, "rating": 3},
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
+rain_of_brimstone.primary_lore_rating = 4
+rain_of_brimstone.secondary_lore_requirements = [
+    {"lore": lore_of_flame.property_name, "rating": 3},
+    {"lore": lore_of_the_firmament.property_name, "rating": 3},
 ]
 rain_of_brimstone.base_cost = 30
 rain_of_brimstone.minimum_casting_time = 100
@@ -581,7 +591,8 @@ rain_of_brimstone.system = """Roll Stamina + Survival. The ritual affects an are
 rain_of_brimstone.torment_effect = """The high-Torment version of this ritual rains down sulfurous rock that seems to target specific individuals, friend or foe. The damage pool for each individual becomes two dice per point of the Ankida's Torment score, and successes rolled on Dexterity + Athletics don't reduce the damage. Instead they must be matched one-for-one with lethal damage dice. If, for example, the Ankida's Torment score is 6, 12 dice are rolled against each individual in the area. A victim makes a Dexterity + Athletics roll and gets four successes. Those four successes cancel four dice, so the remaining eight dice are rolled for damage against the victim."""
 rain_of_brimstone.variations = ""
 rain_of_brimstone.flavor_text = "This terrible ritual manifests a rain of burning rock and molten metal over a wide area, incinerating everything and everyone caught within it. It is an indiscriminate killer, making it perfect for the scorched-earth tactics employed by both sides in the latter days of the war."
-rain_of_brimstone.source_page = "DPG 200-201"
+rain_of_brimstone.add_source("Demon Players Guide", 200)
+rain_of_brimstone.add_source("Demon Players Guide", 201)
 rain_of_brimstone.save()
 
 seal_area = Ritual.objects.get_or_create(
@@ -589,9 +600,9 @@ seal_area = Ritual.objects.get_or_create(
     house=malefactors,
 )[0]
 seal_area.primary_lore = lore_of_the_fundament
-seal_area.primary_lore_of_rating = 4
-seal_area.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_portals.id, "rating": 3},
+seal_area.primary_lore_rating = 4
+seal_area.secondary_lore_requirements = [
+    {"lore": lore_of_portals.property_name, "rating": 3},
 ]
 seal_area.base_cost = 14
 seal_area.minimum_casting_time = 49
@@ -600,7 +611,7 @@ seal_area.system = """Roll Wits + Occult. The number of successes is subtracted 
 seal_area.torment_effect = """The sealed area becomes a focal point for negative energy. Individuals who attempt to use Portals evocations within the affected area lose a number of temporary Willpower points equal to the number of successes rolled. In addition, anyone trying to pass through the sealed area suffers a +2 difficulty to all actions due to headaches and general malaise (this affects Khauiki and Ankida as well). If any creature remains within the area for more than one week, a Stamina roll (difficulty 8) must be made. Failure means that the individual contracts a wasting disease that inflicts one health level of bashing damage each day until death or until the victim leaves the area. If a victim botches the Stamina roll, she will contract a terminal disease such as AIDS or cancer."""
 seal_area.variations = ""
 seal_area.flavor_text = "This ritual makes it very difficult for individuals to use the Lore of Portals to teleport into a specific location."
-seal_area.source_page = "DPG 201"
+seal_area.add_source("Demon Players Guide", 201)
 seal_area.save()
 
 # ============================================================================
@@ -612,9 +623,9 @@ micaraels_sight = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 micaraels_sight.primary_lore = lore_of_the_firmament
-micaraels_sight.primary_lore_of_rating = 2
-micaraels_sight.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
+micaraels_sight.primary_lore_rating = 2
+micaraels_sight.secondary_lore_requirements = [
+    {"lore": lore_of_the_realms.property_name, "rating": 2},
 ]
 micaraels_sight.base_cost = 8
 micaraels_sight.minimum_casting_time = 16
@@ -623,7 +634,7 @@ micaraels_sight.system = """Roll Perception + Crafts. The Ankida can see through
 micaraels_sight.torment_effect = """The high-Torment effect of this ritual causes the Ankida to see hallucinations that feed the character's paranoia. The demon might see a group of Earthbound thralls laying an ambush for her, or she might see one of her thralls meeting secretly with her worst rival. The Storyteller should choose a hallucination appropriate to the character's personality and the situation, and present the vision as though the character were really seeing it."""
 micaraels_sight.variations = "With the addition of Longing ••, this ritual works as a warning, extending to an area 50 feet beyond the perimeter of the sigil. Whenever anyone who wishes the Ankida harm comes into this area, any solid matter between them becomes transparent to her sight, the window moving as required. As many as one enemy can be viewed per success rolled, and the effect lasts half an hour per Faith point."
 micaraels_sight.flavor_text = "This ritual was part of an effort to teach the craft of rituals to humans during the Time of Babel. Although that effort was not successful, the ritual's effect — making solid matter perfectly transparent to the Ankida who performed it — was later studied for its military applications against the Heavenly Host."
-micaraels_sight.source_page = "DPG 202"
+micaraels_sight.add_source("Demon Players Guide", 202)
 micaraels_sight.save()
 
 rain_of_frogs = Ritual.objects.get_or_create(
@@ -631,10 +642,10 @@ rain_of_frogs = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 rain_of_frogs.primary_lore = lore_of_the_winds
-rain_of_frogs.primary_lore_of_rating = 3
-rain_of_frogs.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_beast.id, "rating": 3},
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+rain_of_frogs.primary_lore_rating = 3
+rain_of_frogs.secondary_lore_requirements = [
+    {"lore": lore_of_the_beast.property_name, "rating": 3},
+    {"lore": lore_of_awakening.property_name, "rating": 2},
 ]
 rain_of_frogs.base_cost = 24
 rain_of_frogs.minimum_casting_time = 64
@@ -643,7 +654,8 @@ rain_of_frogs.system = """Roll Stamina + Animal Ken. Each success creates a cubi
 rain_of_frogs.torment_effect = """The frogs secrete a toxin that can harm or even kill people who come into contact with them. The usual symptoms include spreading paralysis and difficult breathing. Victims who handle the frogs suffer one level of bashing damage unless a successful Stamina roll (difficulty 8) is made each hour after exposure. The effects of the toxin last for a number of hours equal to the Ankida's Torment score."""
 rain_of_frogs.variations = "The variety of creatures that this ritual can be adapted for is limited only by size. A frog is pretty much the maximum weight. Rains of worms, spiders and even fish have all been rumored at one time or another."
 rain_of_frogs.flavor_text = "The origins of this ritual are lost, but its persistence in human legend suggests its purpose was to bewilder and distract those who witness it. It is possibly derived from a creation ritual that populated an area with animal life in the manner of a farmer scattering seed."
-rain_of_frogs.source_page = "DPG 203-204"
+rain_of_frogs.add_source("Demon Players Guide", 203)
+rain_of_frogs.add_source("Demon Players Guide", 204)
 rain_of_frogs.save()
 
 create_elemental_scourge = Ritual.objects.get_or_create(
@@ -651,11 +663,11 @@ create_elemental_scourge = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 create_elemental_scourge.primary_lore = lore_of_the_winds
-create_elemental_scourge.primary_lore_of_rating = 3
-create_elemental_scourge.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_awakening.id, "rating": 2},
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
-    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
+create_elemental_scourge.primary_lore_rating = 3
+create_elemental_scourge.secondary_lore_requirements = [
+    {"lore": lore_of_awakening.property_name, "rating": 2},
+    {"lore": lore_of_the_celestials.property_name, "rating": 2},
+    {"lore": lore_of_the_fundament.property_name, "rating": 2},
 ]
 create_elemental_scourge.base_cost = 36
 create_elemental_scourge.minimum_casting_time = 81
@@ -664,7 +676,7 @@ create_elemental_scourge.system = """Roll Manipulation + Occult. The ritual crea
 create_elemental_scourge.torment_effect = """The high-Torment version of this ritual creates a monster that exists only to hunt and kill the living. Only the creature's Physical Attributes can be increased by the Ankida's successes, and only combat-related Abilities (e.g., Alertness, Brawl and Dodge) can be purchased. The touch of the monster cuts like a blade, inflicting lethal damage in combat. Finally, the Ankida only nominally controls the creature. A Willpower roll (difficulty 8) must be made on the Ankida's behalf each time she attempts to direct the monster's actions. If the roll fails, the creature acts under the Storyteller's control."""
 create_elemental_scourge.variations = ""
 create_elemental_scourge.flavor_text = "This powerful ritual allowed the Scourges to create living servants from the very air itself, serving the Angels of the Firmament in a variety of minor roles."
-create_elemental_scourge.source_page = "DPG 204"
+create_elemental_scourge.add_source("Demon Players Guide", 204)
 create_elemental_scourge.save()
 
 dust_swarm = Ritual.objects.get_or_create(
@@ -672,10 +684,10 @@ dust_swarm = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 dust_swarm.primary_lore = lore_of_the_winds
-dust_swarm.primary_lore_of_rating = 4
-dust_swarm.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
-    {"lore_of_id": lore_of_the_earth.id, "rating": 2},
+dust_swarm.primary_lore_rating = 4
+dust_swarm.secondary_lore_requirements = [
+    {"lore": lore_of_the_firmament.property_name, "rating": 3},
+    {"lore": lore_of_the_earth.property_name, "rating": 2},
 ]
 dust_swarm.base_cost = 27
 dust_swarm.minimum_casting_time = 81
@@ -684,7 +696,7 @@ dust_swarm.system = """Roll Stamina + Survival. The ritual affects an area with 
 dust_swarm.torment_effect = """The high-Torment version of this ritual turns the abrasive particles into burning embers or shards of glass that inflict lethal damage each turn. In addition, the successes rolled on the effect roll become a damage pool that is rolled against every individual within the affected area each turn."""
 dust_swarm.variations = ""
 dust_swarm.flavor_text = "This ritual was developed by the Angels of the Firmament as a method of screening their forces during battle and providing cover for troop movements."
-dust_swarm.source_page = "DPG 204"
+dust_swarm.add_source("Demon Players Guide", 204)
 dust_swarm.save()
 
 vacuum = Ritual.objects.get_or_create(
@@ -692,10 +704,10 @@ vacuum = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 vacuum.primary_lore = lore_of_the_winds
-vacuum.primary_lore_of_rating = 4
-vacuum.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_death.id, "rating": 3},
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
+vacuum.primary_lore_rating = 4
+vacuum.secondary_lore_requirements = [
+    {"lore": lore_of_death.property_name, "rating": 3},
+    {"lore": lore_of_the_flesh.property_name, "rating": 2},
 ]
 vacuum.base_cost = 27
 vacuum.minimum_casting_time = 81
@@ -704,7 +716,8 @@ vacuum.system = """Roll Stamina + Survival. The ritual affects an area with a ra
 vacuum.torment_effect = """The high-Torment version of this ritual inflicts lethal damage instead of bashing damage as the vacuum literally tears the life from its victims. In addition, the number of successes rolled on the effect roll becomes a damage pool that is rolled each turn against every individual within the affected area."""
 vacuum.variations = ""
 vacuum.flavor_text = "This terrible ritual was developed late in the war as a means of clearing enemy fortifications. The ritual removes all of the air from the affected area, suffocating anyone within and preventing combustion of any kind."
-vacuum.source_page = "DPG 204-205"
+vacuum.add_source("Demon Players Guide", 204)
+vacuum.add_source("Demon Players Guide", 205)
 vacuum.save()
 
 plague_of_boils = Ritual.objects.get_or_create(
@@ -712,10 +725,10 @@ plague_of_boils = Ritual.objects.get_or_create(
     house=scourges,
 )[0]
 plague_of_boils.primary_lore = lore_of_awakening
-plague_of_boils.primary_lore_of_rating = 4
-plague_of_boils.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 3},
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
+plague_of_boils.primary_lore_rating = 4
+plague_of_boils.secondary_lore_requirements = [
+    {"lore": lore_of_the_flesh.property_name, "rating": 3},
+    {"lore": lore_of_the_firmament.property_name, "rating": 2},
 ]
 plague_of_boils.base_cost = 27
 plague_of_boils.minimum_casting_time = 81
@@ -724,7 +737,7 @@ plague_of_boils.system = """Roll Stamina + Medicine. The ritual affects an area 
 plague_of_boils.torment_effect = """The high-Torment version of this ritual inflicts a far more virulent affliction. The boils burst and bleed, inflicting a level of lethal damage and reducing all dice pools by two. In addition, the boils continue to erupt for the remainder of the scene, inflicting one level of lethal damage each turn. A successful Stamina roll (difficulty 8) each turn reduces the damage to bashing for that turn only."""
 plague_of_boils.variations = ""
 plague_of_boils.flavor_text = "This ritual was one of the plagues inflicted upon the enemies of the fallen during the Time of Atrocities, marking all those who stood against the Morning Star."
-plague_of_boils.source_page = "DPG 205"
+plague_of_boils.add_source("Demon Players Guide", 205)
 plague_of_boils.save()
 
 # ============================================================================
@@ -736,9 +749,9 @@ shadow_dark = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 shadow_dark.primary_lore = lore_of_the_realms
-shadow_dark.primary_lore_of_rating = 2
-shadow_dark.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_light.id, "rating": 2},
+shadow_dark.primary_lore_rating = 2
+shadow_dark.secondary_lore_requirements = [
+    {"lore": lore_of_light.property_name, "rating": 2},
 ]
 shadow_dark.base_cost = 8
 shadow_dark.minimum_casting_time = 16
@@ -749,7 +762,7 @@ shadow_dark.system = """Roll Perception + Awareness. The ritual affects an area 
 shadow_dark.torment_effect = ""
 shadow_dark.variations = "By adding Transfiguration ••, it is said that the ritual can make people within it lose awareness of their own bodily form, which seems to shift and distort with everything else. This adds another +2 to the difficulty of actions (the same Willpower role halves this modifier)."
 shadow_dark.flavor_text = "This ritual creates an area of darkness that is more akin to a shadowy reflection of the spirit realm than a simple lack of light. It is not perfect darkness — light sources remain but lack the strength to illuminate other objects. Strange shapes seem to glide by on the darkness. Distances seem distorted, and there is a faint moaning that somehow seems to overshadow most other sound. Even people who are normally used to working blind are affected."
-shadow_dark.source_page = "DPG 205"
+shadow_dark.add_source("Demon Players Guide", 205)
 shadow_dark.save()
 
 spirit_garden = Ritual.objects.get_or_create(
@@ -757,9 +770,9 @@ spirit_garden = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 spirit_garden.primary_lore = lore_of_the_spirit
-spirit_garden.primary_lore_of_rating = 2
-spirit_garden.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_wild.id, "rating": 2},
+spirit_garden.primary_lore_rating = 2
+spirit_garden.secondary_lore_requirements = [
+    {"lore": lore_of_the_wild.property_name, "rating": 2},
 ]
 spirit_garden.base_cost = 8
 spirit_garden.minimum_casting_time = 16
@@ -770,7 +783,7 @@ spirit_garden.system = """Roll Charisma + Survival. If the number of successes i
 spirit_garden.torment_effect = """The flower is black and poisonous, leaching all sustenance from the soil around it and slowly wilting plant-life within a radius of one yard per Faith point."""
 spirit_garden.variations = "A rather different use of this ritual can be made with the addition of Death •. If the flower is eaten by a demon, then the last hours of the human's life can be viewed (one hour per Faith point), and the spirit is lost. The resistance of the spirit to this process adds one to the difficulty of the Charisma + Survival roll."
 spirit_garden.flavor_text = "This ritual was one of the first ones designed to protect human spirits from the pull of oblivion, designed even before the higher evocations of the Lore of the Spirit had been formulated. It was not particularly successful, as loyalist Angels of Death could easily sense the garden thus created, and the soul was bound to a fragile bloom that was easily crushed."
-spirit_garden.source_page = "DPG 205"
+spirit_garden.add_source("Demon Players Guide", 205)
 spirit_garden.save()
 
 incarnate_spirit = Ritual.objects.get_or_create(
@@ -778,10 +791,10 @@ incarnate_spirit = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 incarnate_spirit.primary_lore = lore_of_the_spirit
-incarnate_spirit.primary_lore_of_rating = 3
-incarnate_spirit.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
-    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
+incarnate_spirit.primary_lore_rating = 3
+incarnate_spirit.secondary_lore_requirements = [
+    {"lore": lore_of_the_flesh.property_name, "rating": 2},
+    {"lore": lore_of_the_realms.property_name, "rating": 2},
 ]
 incarnate_spirit.base_cost = 21
 incarnate_spirit.minimum_casting_time = 49
@@ -790,7 +803,8 @@ incarnate_spirit.system = """Roll Intelligence + Occult. The number of successes
 incarnate_spirit.torment_effect = """The high-Torment version of this ritual infuses the incarnate spirit with some of the Ankida's hate and malevolence, causing it to behave maliciously toward mortals in its presence. If communicated with, it is intentionally hurtful and deceitful, and will try to find ways to injure or kill living beings in its proximity."""
 incarnate_spirit.variations = ""
 incarnate_spirit.flavor_text = "This ritual was devised by the Slayers to permit grieving mortals to briefly visit with the spirits of the departed."
-incarnate_spirit.source_page = "DPG 206-207"
+incarnate_spirit.add_source("Demon Players Guide", 206)
+incarnate_spirit.add_source("Demon Players Guide", 207)
 incarnate_spirit.save()
 
 visit_soul_prison = Ritual.objects.get_or_create(
@@ -798,10 +812,10 @@ visit_soul_prison = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 visit_soul_prison.primary_lore = lore_of_the_spirit
-visit_soul_prison.primary_lore_of_rating = 3
-visit_soul_prison.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
-    {"lore_of_id": lore_of_death.id, "rating": 2},
+visit_soul_prison.primary_lore_rating = 3
+visit_soul_prison.secondary_lore_requirements = [
+    {"lore": lore_of_the_realms.property_name, "rating": 2},
+    {"lore": lore_of_death.property_name, "rating": 2},
 ]
 visit_soul_prison.base_cost = 21
 visit_soul_prison.minimum_casting_time = 49
@@ -810,7 +824,7 @@ visit_soul_prison.system = """Roll Intelligence + Occult. The ritual allows the 
 visit_soul_prison.torment_effect = """The high-Torment version of this ritual allows the trapped spirit to attack the Ankida during her visit. The spirit can attempt to inflict damage on the Ankida's spiritual form using its Social Attributes against her Willpower in a resisted roll. Each net success inflicts one health level of bashing damage on the Ankida's physical body."""
 visit_soul_prison.variations = ""
 visit_soul_prison.flavor_text = "This ritual allows a demon to enter a soul prison and communicate directly with the spirit trapped within, a valuable tool for interrogation and negotiation."
-visit_soul_prison.source_page = "DPG 207"
+visit_soul_prison.add_source("Demon Players Guide", 207)
 visit_soul_prison.save()
 
 prison_of_flesh = Ritual.objects.get_or_create(
@@ -818,10 +832,10 @@ prison_of_flesh = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 prison_of_flesh.primary_lore = lore_of_the_flesh
-prison_of_flesh.primary_lore_of_rating = 4
-prison_of_flesh.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_spirit.id, "rating": 3},
-    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
+prison_of_flesh.primary_lore_rating = 4
+prison_of_flesh.secondary_lore_requirements = [
+    {"lore": lore_of_the_spirit.property_name, "rating": 3},
+    {"lore": lore_of_the_realms.property_name, "rating": 2},
 ]
 prison_of_flesh.base_cost = 27
 prison_of_flesh.minimum_casting_time = 81
@@ -830,7 +844,8 @@ prison_of_flesh.system = """Roll Manipulation + Medicine in a resisted roll agai
 prison_of_flesh.torment_effect = """The high-Torment version of this ritual transforms the victim into a screaming, writhing mass of tortured souls and corrupted flesh. The victim immediately gains a severe derangement and suffers one level of lethal damage each day as the imprisoned spirits literally tear at the victim's body from within. The victim cannot heal this damage while the spirits remain imprisoned."""
 prison_of_flesh.variations = ""
 prison_of_flesh.flavor_text = "This horrific ritual was developed during the Time of Atrocities as a means of creating mobile prisons for captured enemy spirits. The cruelty of the ritual marked it as one of the darkest achievements of the fallen."
-prison_of_flesh.source_page = "DPG 207-208"
+prison_of_flesh.add_source("Demon Players Guide", 207)
+prison_of_flesh.add_source("Demon Players Guide", 208)
 prison_of_flesh.save()
 
 create_specter = Ritual.objects.get_or_create(
@@ -838,10 +853,10 @@ create_specter = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 create_specter.primary_lore = lore_of_death
-create_specter.primary_lore_of_rating = 4
-create_specter.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_spirit.id, "rating": 3},
-    {"lore_of_id": lore_of_the_realms.id, "rating": 3},
+create_specter.primary_lore_rating = 4
+create_specter.secondary_lore_requirements = [
+    {"lore": lore_of_the_spirit.property_name, "rating": 3},
+    {"lore": lore_of_the_realms.property_name, "rating": 3},
 ]
 create_specter.base_cost = 30
 create_specter.minimum_casting_time = 100
@@ -850,7 +865,7 @@ create_specter.system = """Roll Manipulation + Occult. The ritual creates a spec
 create_specter.torment_effect = """The high-Torment version of this ritual creates a specter that feeds on fear and pain. The creature gains the ability to cause nightmares in sleeping victims within 100 yards. Victims must make a Willpower roll (difficulty 7) or suffer nightmares that prevent restful sleep, causing them to lose one die from all dice pools the following day due to fatigue. The Ankida has only nominal control over the specter; a Willpower roll (difficulty 8) must be made each time she attempts to command it. If the roll fails, the specter acts according to the Storyteller's discretion."""
 create_specter.variations = ""
 create_specter.flavor_text = "This dark ritual allows the Slayers to create a bound spirit servant from the lingering trauma of a violent death, a guardian or assassin that exists between the worlds."
-create_specter.source_page = "DPG 208"
+create_specter.add_source("Demon Players Guide", 208)
 create_specter.save()
 
 fate_of_firstborn = Ritual.objects.get_or_create(
@@ -858,11 +873,11 @@ fate_of_firstborn = Ritual.objects.get_or_create(
     house=slayers,
 )[0]
 fate_of_firstborn.primary_lore = lore_of_death
-fate_of_firstborn.primary_lore_of_rating = 5
-fate_of_firstborn.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_spirit.id, "rating": 4},
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
-    {"lore_of_id": lore_of_humanity.id, "rating": 3},
+fate_of_firstborn.primary_lore_rating = 5
+fate_of_firstborn.secondary_lore_requirements = [
+    {"lore": lore_of_the_spirit.property_name, "rating": 4},
+    {"lore": lore_of_the_firmament.property_name, "rating": 3},
+    {"lore": lore_of_humanity.property_name, "rating": 3},
 ]
 fate_of_firstborn.base_cost = 75
 fate_of_firstborn.minimum_casting_time = 225
@@ -871,7 +886,8 @@ fate_of_firstborn.system = """Roll Stamina + Occult (difficulty 9). This is one 
 fate_of_firstborn.torment_effect = """The high-Torment version of this ritual does not distinguish between firstborn children and any children. All children within the affected area die at midnight, and their deaths are violent and horrific rather than peaceful. The ritual also marks the Ankida with a spiritual stain that can be sensed by any angel or demon with Awareness 3 or higher."""
 fate_of_firstborn.variations = ""
 fate_of_firstborn.flavor_text = "This is the ritual that became the basis for the tenth plague of Egypt, one of the darkest moments in the war between Heaven and Hell. It was created as an act of desperation and has never been used since that terrible night."
-fate_of_firstborn.source_page = "DPG 208-209"
+fate_of_firstborn.add_source("Demon Players Guide", 208)
+fate_of_firstborn.add_source("Demon Players Guide", 209)
 fate_of_firstborn.save()
 
 # ============================================================================
@@ -883,10 +899,10 @@ prophetic_dream = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 prophetic_dream.primary_lore = lore_of_patterns
-prophetic_dream.primary_lore_of_rating = 4
-prophetic_dream.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
-    {"lore_of_id": lore_of_the_spirit.id, "rating": 1},
+prophetic_dream.primary_lore_rating = 4
+prophetic_dream.secondary_lore_requirements = [
+    {"lore": lore_of_the_firmament.property_name, "rating": 2},
+    {"lore": lore_of_the_spirit.property_name, "rating": 1},
 ]
 prophetic_dream.base_cost = 21
 prophetic_dream.minimum_casting_time = 49
@@ -897,7 +913,8 @@ prophetic_dream.system = """Roll Perception + Intuition. The ritual grants the r
 prophetic_dream.torment_effect = """The high-Torment version of this ritual shows the recipient where the subject (be it a person, place or event) is at risk of suffering an accident or other misfortune, and it shows the best way to cause the tragic circumstances to occur."""
 prophetic_dream.variations = ""
 prophetic_dream.flavor_text = "The Fiends developed this ritual during the war as an aid to the commanders of Lucifer's legions, allowing them a glimpse of their own future as a tool to refining their battle plans. In practice the infernal leaders had to apply a great deal of insight to interpret their visions, often requiring the advice of the Neberu once the vision had passed."
-prophetic_dream.source_page = "DPG 196-197"
+prophetic_dream.add_source("Demon Players Guide", 196)
+prophetic_dream.add_source("Demon Players Guide", 197)
 prophetic_dream.save()
 
 centarnels_portal = Ritual.objects.get_or_create(
@@ -905,9 +922,9 @@ centarnels_portal = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 centarnels_portal.primary_lore = lore_of_portals
-centarnels_portal.primary_lore_of_rating = 4
-centarnels_portal.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_patterns.id, "rating": 3},
+centarnels_portal.primary_lore_rating = 4
+centarnels_portal.secondary_lore_requirements = [
+    {"lore": lore_of_patterns.property_name, "rating": 3},
 ]
 centarnels_portal.base_cost = 14
 centarnels_portal.minimum_casting_time = 49
@@ -916,7 +933,8 @@ centarnels_portal.system = """Roll Intelligence + Occult. The ritual creates a s
 centarnels_portal.torment_effect = """The high-Torment version of this ritual creates an unstable and dangerous portal. Each time an individual passes through, they must make a Stamina roll (difficulty 7) or suffer one level of bashing damage as the portal tears at their physical form. In addition, there is a 10% chance each hour that the portal will collapse unexpectedly, potentially trapping anyone currently passing through in a hellish limbo between locations. Trapped individuals require a separate ritual to rescue."""
 centarnels_portal.variations = ""
 centarnels_portal.flavor_text = "This ritual was developed by the Fiend Centarnel as a means of rapidly moving troops and supplies during the war, creating stable gateways between distant battlefields."
-centarnels_portal.source_page = "DPG 197-198"
+centarnels_portal.add_source("Demon Players Guide", 197)
+centarnels_portal.add_source("Demon Players Guide", 198)
 centarnels_portal.save()
 
 shooting_star = Ritual.objects.get_or_create(
@@ -924,10 +942,10 @@ shooting_star = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 shooting_star.primary_lore = lore_of_light
-shooting_star.primary_lore_of_rating = 3
-shooting_star.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
+shooting_star.primary_lore_rating = 3
+shooting_star.secondary_lore_requirements = [
+    {"lore": lore_of_the_celestials.property_name, "rating": 2},
+    {"lore": lore_of_the_firmament.property_name, "rating": 2},
 ]
 shooting_star.base_cost = 21
 shooting_star.minimum_casting_time = 49
@@ -936,7 +954,7 @@ shooting_star.system = """Roll Charisma + Occult. The ritual creates a brilliant
 shooting_star.torment_effect = """The high-Torment version of this ritual creates a falling star that appears to crash to earth at a location chosen by the Ankida within her line of sight. When the "star" impacts, it creates an explosion with a radius of 10 yards times the number of successes rolled. Everyone within the blast radius suffers a number of dice of lethal damage equal to the Ankida's Torment score. The explosion is obviously supernatural in nature and leaves behind scorched earth and a lingering sense of dread."""
 shooting_star.variations = ""
 shooting_star.flavor_text = "This ritual was used by the fallen as a signaling method during the war, creating celestial displays that could coordinate troop movements across vast distances."
-shooting_star.source_page = "DPG 198"
+shooting_star.add_source("Demon Players Guide", 198)
 shooting_star.save()
 
 tapestry_of_light = Ritual.objects.get_or_create(
@@ -944,10 +962,10 @@ tapestry_of_light = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 tapestry_of_light.primary_lore = lore_of_light
-tapestry_of_light.primary_lore_of_rating = 4
-tapestry_of_light.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_patterns.id, "rating": 3},
-    {"lore_of_id": lore_of_radiance.id, "rating": 2},
+tapestry_of_light.primary_lore_rating = 4
+tapestry_of_light.secondary_lore_requirements = [
+    {"lore": lore_of_patterns.property_name, "rating": 3},
+    {"lore": lore_of_radiance.property_name, "rating": 2},
 ]
 tapestry_of_light.base_cost = 27
 tapestry_of_light.minimum_casting_time = 81
@@ -956,7 +974,8 @@ tapestry_of_light.system = """Roll Intelligence + Expression. The ritual creates
 tapestry_of_light.torment_effect = """The high-Torment version of this ritual creates disturbing, nightmarish images that assault the minds of viewers. Anyone who views the tapestry must make a Willpower roll (difficulty 7) or suffer a temporary derangement for the remainder of the scene as the images burn themselves into their psyche. Demons who view the tapestry gain one point of temporary Torment."""
 tapestry_of_light.variations = ""
 tapestry_of_light.flavor_text = "This ritual was one of the greatest teaching tools created by the Fiends, allowing them to share complex knowledge and visions with mortals and fellow demons alike."
-tapestry_of_light.source_page = "DPG 198-199"
+tapestry_of_light.add_source("Demon Players Guide", 198)
+tapestry_of_light.add_source("Demon Players Guide", 199)
 tapestry_of_light.save()
 
 time_watch = Ritual.objects.get_or_create(
@@ -964,10 +983,10 @@ time_watch = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 time_watch.primary_lore = lore_of_patterns
-time_watch.primary_lore_of_rating = 5
-time_watch.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_firmament.id, "rating": 4},
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 3},
+time_watch.primary_lore_rating = 5
+time_watch.secondary_lore_requirements = [
+    {"lore": lore_of_the_firmament.property_name, "rating": 4},
+    {"lore": lore_of_the_celestials.property_name, "rating": 3},
 ]
 time_watch.base_cost = 48
 time_watch.minimum_casting_time = 144
@@ -976,7 +995,7 @@ time_watch.system = """Roll Perception + Awareness (difficulty 8). This incredib
 time_watch.torment_effect = """The high-Torment version of this ritual does not show the truth of the past but instead shows a twisted, nightmarish version of events that reflects the Ankida's own corruption. The visions are unreliable at best and potentially dangerous, as the distorted images can implant false memories if the observer is not careful. Anyone who witnesses these visions (including the Ankida) must make a Willpower roll (difficulty 8) or gain a temporary derangement based on the traumatic content."""
 time_watch.variations = ""
 time_watch.flavor_text = "This ritual represents one of the pinnacle achievements of the Fiends' understanding of time and fate, allowing them to witness history firsthand."
-time_watch.source_page = "DPG 199"
+time_watch.add_source("Demon Players Guide", 199)
 time_watch.save()
 
 replicate = Ritual.objects.get_or_create(
@@ -984,10 +1003,10 @@ replicate = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 replicate.primary_lore = lore_of_transfiguration
-replicate.primary_lore_of_rating = 4
-replicate.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_patterns.id, "rating": 3},
-    {"lore_of_id": lore_of_the_forge.id, "rating": 2},
+replicate.primary_lore_rating = 4
+replicate.secondary_lore_requirements = [
+    {"lore": lore_of_patterns.property_name, "rating": 3},
+    {"lore": lore_of_the_forge.property_name, "rating": 2},
 ]
 replicate.base_cost = 27
 replicate.minimum_casting_time = 81
@@ -996,7 +1015,7 @@ replicate.system = """Roll Intelligence + Crafts. The ritual creates a perfect d
 replicate.torment_effect = """The high-Torment version of this ritual creates a flawed and potentially dangerous copy. The duplicate might have subtle defects that cause it to fail at critical moments (a sword that shatters in combat, a book with crucial pages that are blank, a key that breaks off in the lock). The Storyteller should determine when and how the copy fails for maximum dramatic effect."""
 replicate.variations = ""
 replicate.flavor_text = "This ritual was developed by the Fiends as a means of mass-producing tools and weapons for the mortal armies fighting alongside the fallen during the war."
-replicate.source_page = "DPG 197"
+replicate.add_source("Demon Players Guide", 197)
 replicate.save()
 
 darkness_eternal = Ritual.objects.get_or_create(
@@ -1004,10 +1023,10 @@ darkness_eternal = Ritual.objects.get_or_create(
     house=fiends,
 )[0]
 darkness_eternal.primary_lore = lore_of_light
-darkness_eternal.primary_lore_of_rating = 5
-darkness_eternal.secondary_lore_of_requirements = [
-    {"lore_of_id": lore_of_the_celestials.id, "rating": 4},
-    {"lore_of_id": lore_of_the_realms.id, "rating": 3},
+darkness_eternal.primary_lore_rating = 5
+darkness_eternal.secondary_lore_requirements = [
+    {"lore": lore_of_the_celestials.property_name, "rating": 4},
+    {"lore": lore_of_the_realms.property_name, "rating": 3},
 ]
 darkness_eternal.base_cost = 48
 darkness_eternal.minimum_casting_time = 144
@@ -1016,5 +1035,5 @@ darkness_eternal.system = """Roll Stamina + Occult (difficulty 9). This terrible
 darkness_eternal.torment_effect = """The high-Torment version of this ritual doesn't simply block light — it actively drains the life force from those trapped within. Every living being within the darkness suffers one level of lethal damage per hour as the darkness feeds on their vitality. In addition, the darkness seems to whisper with voices of despair, requiring a Willpower roll (difficulty 7) each hour to avoid gaining a temporary derangement. Even demons are not immune to these effects, though they only gain temporary Torment instead of derangements."""
 darkness_eternal.variations = ""
 darkness_eternal.flavor_text = "This is one of the most feared rituals ever created by the fallen, a manifestation of absolute darkness that devours light itself. Its use during the war was so devastating that even Lucifer himself forbade its casting after witnessing its effects."
-darkness_eternal.source_page = "DPG 199"
+darkness_eternal.add_source("Demon Players Guide", 199)
 darkness_eternal.save()

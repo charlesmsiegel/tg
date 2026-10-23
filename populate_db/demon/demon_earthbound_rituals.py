@@ -33,7 +33,7 @@ undying_fire = Ritual.objects.get_or_create(
 undying_fire.primary_lore = lore_flesh
 undying_fire.primary_lore_rating = 4
 undying_fire.secondary_lore_requirements = [
-    {"lore_id": lore_of_flame.id, "rating": 2},
+    {"lore": lore_of_flame.property_name, "rating": 2},
 ]
 undying_fire.base_cost = 12
 undying_fire.minimum_casting_time = 36
@@ -48,7 +48,8 @@ The effects of this ritual last for the duration of a scene. Once its effects ex
 undying_fire.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 undying_fire.variations = ""
 undying_fire.flavor_text = "Originally developed from the Devils' ritual Resist Fire as a tool for punishment, this ritual sets the victim on fire, inflicting hideous agony without the release of unconsciousness or death."
-undying_fire.source_page = "Earthbound 113-114"
+undying_fire.add_source("Earthbound", 113)
+undying_fire.add_source("Earthbound", 114)
 undying_fire.save()
 
 # Unholy Geas
@@ -59,7 +60,7 @@ unholy_geas = Ritual.objects.get_or_create(
 unholy_geas.primary_lore = lore_violation
 unholy_geas.primary_lore_rating = 4
 unholy_geas.secondary_lore_requirements = [
-    {"lore_id": lore_celestials.id, "rating": 2},
+    {"lore": lore_celestials.property_name, "rating": 2},
 ]
 unholy_geas.base_cost = 12
 unholy_geas.minimum_casting_time = 36
@@ -74,7 +75,8 @@ The ritual's compulsion lasts for a number of days equal to the Ankida's Willpow
 unholy_geas.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 unholy_geas.variations = ""
 unholy_geas.flavor_text = "This ritual inflicts a long-lasting and irresistible compulsion to obey the will of the Earthbound. The geas manifests as whispered voices, hallucinations and near-uncontrollable urges to follow commands."
-unholy_geas.source_page = "Earthbound 114-115"
+unholy_geas.add_source("Earthbound", 114)
+unholy_geas.add_source("Earthbound", 115)
 unholy_geas.save()
 
 # Song of Sinuous Questioning
@@ -85,7 +87,7 @@ song_of_sinuous_questioning = Ritual.objects.get_or_create(
 song_of_sinuous_questioning.primary_lore = lore_spirit
 song_of_sinuous_questioning.primary_lore_rating = 5
 song_of_sinuous_questioning.secondary_lore_requirements = [
-    {"lore_id": lore_violation.id, "rating": 2},
+    {"lore": lore_violation.property_name, "rating": 2},
 ]
 song_of_sinuous_questioning.base_cost = 14
 song_of_sinuous_questioning.minimum_casting_time = 49
@@ -98,7 +100,7 @@ If the ritual does not reveal enough information for the Earthbound's satisfacti
 song_of_sinuous_questioning.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 song_of_sinuous_questioning.variations = ""
 song_of_sinuous_questioning.flavor_text = "This ritual uses seduction and corruption to overcome the will of trapped demons, forcing the truth from them. It paralyzes the demon's spirit rather than its physical form."
-song_of_sinuous_questioning.source_page = "Earthbound 115"
+song_of_sinuous_questioning.add_source("Earthbound", 115)
 song_of_sinuous_questioning.save()
 
 # Soul Cascade
@@ -109,7 +111,7 @@ soul_cascade = Ritual.objects.get_or_create(
 soul_cascade.primary_lore = lore_forge
 soul_cascade.primary_lore_rating = 5
 soul_cascade.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 3},
+    {"lore": lore_patterns.property_name, "rating": 3},
 ]
 soul_cascade.base_cost = 16
 soul_cascade.minimum_casting_time = 64
@@ -126,7 +128,8 @@ Before it is inhabited, however, the potential reliquary can make the Earthbound
 soul_cascade.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 soul_cascade.variations = ""
 soul_cascade.flavor_text = "This ritual creates a backup reliquary that serves as an emergency vessel should the Earthbound's primary reliquary be destroyed."
-soul_cascade.source_page = "Earthbound 115-116"
+soul_cascade.add_source("Earthbound", 115)
+soul_cascade.add_source("Earthbound", 116)
 soul_cascade.save()
 
 # Plague Tide
@@ -137,8 +140,8 @@ plague_tide = Ritual.objects.get_or_create(
 plague_tide.primary_lore = lore_beast
 plague_tide.primary_lore_rating = 3
 plague_tide.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_contamination.id, "rating": 2},
+    {"lore": lore_awakening.property_name, "rating": 2},
+    {"lore": lore_contamination.property_name, "rating": 2},
 ]
 plague_tide.base_cost = 21
 plague_tide.minimum_casting_time = 49
@@ -153,7 +156,7 @@ Every day thereafter, the victim suffers an additional level of bashing damage a
 plague_tide.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 plague_tide.variations = ""
 plague_tide.flavor_text = "Previous uses of this ritual have been responsible for awful contagions and plagues throughout history. The Earthbound commands hordes of vile beasts to spread disease and misery."
-plague_tide.source_page = "Earthbound 116"
+plague_tide.add_source("Earthbound", 116)
 plague_tide.save()
 
 # Networking
@@ -164,8 +167,8 @@ networking = Ritual.objects.get_or_create(
 networking.primary_lore = lore_firmament
 networking.primary_lore_rating = 4
 networking.secondary_lore_requirements = [
-    {"lore_id": lore_of_humanity.id, "rating": 3},
-    {"lore_id": lore_forge.id, "rating": 3},
+    {"lore": lore_of_humanity.property_name, "rating": 3},
+    {"lore": lore_forge.property_name, "rating": 3},
 ]
 networking.base_cost = 30
 networking.minimum_casting_time = 100
@@ -180,5 +183,5 @@ The effects of the ritual last for a number of weeks equal to the Ankida's Faith
 networking.torment_effect = "Earthbound rituals do not have low-Torment effects. Fallen participants automatically gain a temporary point of Torment."
 networking.variations = ""
 networking.flavor_text = "This newly developed ritual creates an Internet presence for the demon, an online persona who is witty, charming and interesting, preying upon the honesty and trust of naïve souls."
-networking.source_page = "Earthbound 116"
+networking.add_source("Earthbound", 116)
 networking.save()

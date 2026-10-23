@@ -18,8 +18,8 @@ eternal_imprisonment = Ritual.objects.get_or_create(
 eternal_imprisonment.primary_lore = lore_portals
 eternal_imprisonment.primary_lore_rating = 5
 eternal_imprisonment.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 5},
-    {"lore_id": lore_portals.id, "rating": 2},
+    {"lore": lore_patterns.property_name, "rating": 5},
+    {"lore": lore_portals.property_name, "rating": 2},
 ]
 eternal_imprisonment.base_cost = 36
 eternal_imprisonment.minimum_casting_time = 144
@@ -32,5 +32,5 @@ If the ritual botches, however, there is a risk that the temporal bubble meant t
 eternal_imprisonment.torment_effect = "None"
 eternal_imprisonment.variations = "There are rumors that the ritual could be performed with seven Mudu with Lore of Portals ••••, which would permit the prisoner to be teleported back to reality after a specific length of time had passed or a certain set of conditions had been met."
 eternal_imprisonment.flavor_text = "This nightmarish ritual was created in the last days of the war as a means of striking fear into the hearts of enemy angels. It was only used twice, and so horrific were its effects that all but the most hardened fallen cried out against it ever being used again. In fact, some fallen think that it was the use of this ritual that caused the Creator to cast the rebels into the Abyss. The ritual was thought to be lost, until one of the books of Gaar-Asok turned up with the details of the ritual mentioned inside."
-eternal_imprisonment.source_page = "Houses of the Fallen, p. 106"
+eternal_imprisonment.add_source("Houses of the Fallen", 106)
 eternal_imprisonment.save()

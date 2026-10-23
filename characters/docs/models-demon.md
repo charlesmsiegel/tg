@@ -135,3 +135,12 @@ fully view its demon or its thrall (`characters.views.demon.pact.user_can_view_p
 - [Services](services.md) (`demon_chargen`)
 - [Chargen](chargen.md)
 - [Views and URLs](views-and-urls.md#demon)
+
+## Ritual reference data
+
+Ritual secondary lore requirements use stable `Lore.property_name` keys and integer
+ratings 1?5, validated in `Ritual.clean()`. Missing lores raise a field validation
+error instead of disappearing from the requirement display. See
+[reference data](reference-data.md#demon-ritual-requirements) for the JSON format.
+Ritual citations use `sources`; the detail page retains a legacy citation fallback
+for manually entered records that have no structured references.

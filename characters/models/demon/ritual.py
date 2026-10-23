@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -34,9 +35,11 @@ class Ritual(Model):
     )
 
     # Secondary lore requirements stored as JSON
-    # Format: [{"lore_id": 1, "rating": 2}, {"lore_id": 3, "rating": 1}]
+    # Format: [{"lore": "flame", "rating": 2}]; stable Lore.property_name, never a PK.
     secondary_lore_requirements = models.JSONField(
-        default=list, blank=True, help_text="List of secondary lore requirements"
+        default=list,
+        blank=True,
+        help_text='List of {"lore": "property_name", "rating": 1} requirements (ratings 1-5)',
     )
 
     # Experience point cost to learn
@@ -85,7 +88,7 @@ class Ritual(Model):
         help_text="Historical context or descriptive flavor text",
     )
 
-    # Source page reference
+    # Legacy/manual citation fallback. Seeded citations use Model.sources.
     source_page = models.CharField(
         max_length=100,
         default="",
@@ -107,16 +110,46 @@ class Ritual(Model):
     def get_update_url(self):
         return reverse("characters:demon:update:ritual", kwargs={"pk": self.pk})
 
+    def clean(self):
+        super().clean()
+        # An optional JSON form field maps an empty textarea to None.
+        if self.secondary_lore_requirements is None:
+            self.secondary_lore_requirements = []
+        self.get_secondary_lores()
+
     def get_secondary_lores(self):
-        """Get list of secondary lore objects with ratings."""
-        lores = []
-        for req in self.secondary_lore_requirements:
-            try:
-                lore = Lore.objects.get(pk=req["lore_id"])
-                lores.append({"lore": lore, "rating": req["rating"]})
-            except (Lore.DoesNotExist, KeyError):
-                continue
-        return lores
+        """Resolve durable lore keys together; never hide a broken requirement."""
+        requirements = self.secondary_lore_requirements
+        error = "Use a list of {lore: property_name, rating: integer 1-5} requirements."
+        if not isinstance(requirements, list):
+            raise ValidationError({"secondary_lore_requirements": error})
+        for requirement in requirements:
+            if (
+                not isinstance(requirement, dict)
+                or set(requirement) != {"lore", "rating"}
+                or not isinstance(requirement["lore"], str)
+                or not requirement["lore"]
+                or not isinstance(requirement["rating"], int)
+                or isinstance(requirement["rating"], bool)
+                or not 1 <= requirement["rating"] <= 5
+            ):
+                raise ValidationError({"secondary_lore_requirements": error})
+        if not requirements:
+            return []
+        keys = {requirement["lore"] for requirement in requirements}
+        lores = {lore.property_name: lore for lore in Lore.objects.filter(property_name__in=keys)}
+        missing = keys - lores.keys()
+        if missing:
+            raise ValidationError(
+                {"secondary_lore_requirements": "Unknown lore: " + ", ".join(sorted(missing))}
+            )
+        return [{"lore": lores[req["lore"]], "rating": req["rating"]} for req in requirements]
+
+    def display_sources(self):
+        """Plain text citations; templates escape book titles normally."""
+        return ", ".join(
+            f"{source.book} p. {source.page}" for source in self.sources.select_related("book")
+        )
 
     def total_lore_dots(self):
         """Calculate total dots of lore required."""

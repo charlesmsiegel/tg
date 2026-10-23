@@ -226,3 +226,21 @@ Two commands create non-reference data for trying the site out; both are describ
 - [Management commands](../reference/management-commands.md)
 - [`populate_db/` package](../../populate_db/README.md)
 - [Schema migrations](../architecture/schema-migrations.md)
+
+### Repairing existing Demon ritual data
+
+After applying `tg_schema.0015_ritual_lore_keys`, reload the ritual scripts to
+restore requirements lost by the old Demon Players Guide loader and attach
+structured book/page citations. This preserves ritual identities and character
+links. Run from the repository root:
+
+```bash
+python manage.py populate_gamedata --only 00_books
+python manage.py populate_gamedata --only demon_rituals
+python manage.py populate_gamedata --only demon_earthbound_rituals
+```
+
+The migration converts resolvable legacy lore IDs on all ritual records. It logs
+unresolved IDs without deleting requirements; repair custom records manually.
+The seed reload repairs the published catalogue. Legacy free-text citations remain
+available as a fallback on records without structured citations.
