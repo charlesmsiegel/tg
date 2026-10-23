@@ -92,14 +92,16 @@ gameline = models.CharField(max_length=3, choices=settings.GAMELINE_CHOICES, def
   preload on by default), secure session and CSRF cookies, `X_FRAME_OPTIONS = "DENY"`,
   `SECURE_CONTENT_TYPE_NOSNIFF`, `SECURE_REFERRER_POLICY = "same-origin"`.
 - CSRF: `CSRF_COOKIE_SAMESITE = "Strict"`, `CSRF_TRUSTED_ORIGINS` from the environment.
-- Sessions: stored in the cache (`SESSION_ENGINE = "django.contrib.sessions.backends.cache"`),
+- Sessions: database-authoritative with Redis caching (`SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"`),
   `SESSION_COOKIE_AGE` (default two weeks), `SESSION_EXPIRE_AT_BROWSER_CLOSE`.
 - Database: the base SQLite database with `CONN_MAX_AGE` from `DB_CONN_MAX_AGE` (default
   600). PostgreSQL and MySQL blocks are present as comments only.
 - Static files: `ManifestStaticFilesStorage` (content-hashed names; run `collectstatic`).
 - Cache: Redis through `django_redis` at `REDIS_URL` (default
   `redis://127.0.0.1:6379/1`), key prefix `tg`, `IGNORE_EXCEPTIONS = True` so a Redis
-  outage does not raise.
+  outage becomes a cache miss. Ignored exceptions are logged through `tg` with
+  `DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True` / `DJANGO_REDIS_LOGGER = "tg"`.
+  Session data survives in the database; auth counters fail closed with 429.
 - Channel layer: `channels_redis` at `REDIS_URL` (default database 0).
 - Logging: rotating files `logs/app.log`, `logs/error.log`, `logs/warning.log`; Django
   at `WARNING`, project loggers at `INFO`; a `mail_admins` handler
@@ -120,7 +122,7 @@ The file handlers need a `logs/` directory under `BASE_DIR`.
 | `DJANGO_ENVIRONMENT` | `__init__.py` (after loading `.env`) | `development` |
 | `SECRET_KEY` | development (optional), production (required) | insecure key in development |
 | `DJANGO_ALLOWED_HOSTS` | both | `localhost,127.0.0.1` in development; required in production |
-| `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT`, `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`, `AUTH_THROTTLE_WINDOW` | base | see `base.py` |
+| `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_TIMEOUT`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `PASSWORD_RESET_TIMEOUT`, `AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`, `AUTH_THROTTLE_WINDOW`, `AUTH_THROTTLE_TRUSTED_PROXIES` | base | see `base.py` |
 | `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SECURE_HSTS_INCLUDE_SUBDOMAINS`, `SECURE_HSTS_PRELOAD`, `CSRF_TRUSTED_ORIGINS`, `SESSION_COOKIE_AGE`, `SESSION_EXPIRE_AT_BROWSER_CLOSE`, `DB_CONN_MAX_AGE`, `ADMIN_EMAILS`, `REDIS_URL` | production | see `production.py` |
 | `DJANGO_LOG_SQL` | development | `False` |
 
@@ -134,3 +136,16 @@ Boolean variables are true only when their value is exactly `True`. The
 - [Deployment](../../docs/operations/deployment.md)
 - [Logging and monitoring](../../docs/operations/logging-and-monitoring.md)
 - [`tg/settings/`](../settings/)
+
+### Authentication throttle proxy configuration
+
+`AUTH_THROTTLE_TRUSTED_PROXIES` is parsed as a comma-separated list of IPs/CIDRs.
+Unset means `None` (headers ignored, deploy warning); an explicitly empty environment
+value means direct access with `REMOTE_ADDR`. Only trusted peers may supply forwarded
+client addresses. Throttle counters use a weighted two-bucket estimate and fail closed
+on cache errors; see [authentication](../../accounts/docs/authentication.md#throttling).
+
+Switching production from cache-only to cached database sessions requires existing
+users to log in once after rollout: old Redis-only sessions are not copied. New
+sessions thereafter survive Redis eviction/restarts/outages, provided the database
+is available. Django's existing sessions table must be migrated as usual.

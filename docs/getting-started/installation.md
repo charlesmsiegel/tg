@@ -138,12 +138,13 @@ Edit files in the source directories, never in `collected_static/`.
 | Environment | Cache | Sessions | Channel layer (websockets) |
 |-------------|-------|----------|----------------------------|
 | Development ([`development.py`](../../tg/settings/development.py), [`base.py`](../../tg/settings/base.py)) | `LocMemCache` | Database (Django default) | `InMemoryChannelLayer` |
-| Production ([`production.py`](../../tg/settings/production.py)) | `django_redis.cache.RedisCache` | Cache (`SESSION_ENGINE = "django.contrib.sessions.backends.cache"`) | `channels_redis.core.RedisChannelLayer` |
+| Production ([`production.py`](../../tg/settings/production.py)) | `django_redis.cache.RedisCache` | Database with Redis cache (`SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"`) | `channels_redis.core.RedisChannelLayer` |
 
 Development and the test suite need no Redis. Production requires it: the cache is
-configured with `IGNORE_EXCEPTIONS: True`, so cache reads and writes fail quietly when
-Redis is down, but sessions live in that cache and live scene chat needs the channel layer.
-Both read `REDIS_URL`; see [Configuration](configuration.md).
+configured with `IGNORE_EXCEPTIONS: True`, so failed cache operations are logged and
+become misses. Database-backed sessions survive Redis loss. Authentication POSTs
+fail closed with 429 when their counters are unavailable, and live scene chat needs
+the Redis channel layer. Cache and channels read `REDIS_URL`; see [Configuration](configuration.md).
 
 ## Check the installation
 

@@ -87,16 +87,17 @@ for scene chat.
 - Password-reset links expire after `PASSWORD_RESET_TIMEOUT` seconds (default 3600).
 - POSTs to `accounts/login/`, `accounts/signup/` and `accounts/password_reset/` are throttled
   in the cache: by default 10 per client address (and username or email) and, for log in
-  and reset, 50 per address whatever account is named, per five minutes, then `429` until
-  the window ends (`AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`,
+  and reset, 50 per address whatever account is named, per five minutes, then `429` while
+  the weighted two-bucket estimate exceeds the limit (`AUTH_THROTTLE_LIMIT`, `AUTH_THROTTLE_CLIENT_LIMIT`,
   `AUTH_THROTTLE_WINDOW`; see
   [Authentication flows](../../accounts/docs/authentication.md#throttling)). The client
-  address is only the visitor's if Daphne runs with `--proxy-headers` behind the proxy.
+  address comes from `REMOTE_ADDR`, or a forwarded chain through explicitly configured
+  `AUTH_THROTTLE_TRUSTED_PROXIES`. Counting failures refuse auth POSTs with 429.
   There is no account lockout, and `admin/login/` is not throttled; rate-limit it at the
   proxy if the admin is exposed.
 - Sessions: development uses Django's default database sessions. Production uses
-  `django.contrib.sessions.backends.cache` on the Redis cache, so sessions disappear if Redis
-  is flushed, restarted without persistence or unreachable (every user is logged out). Session
+  `django.contrib.sessions.backends.cached_db`: the database retains sessions through
+  Redis outages or eviction. Switching from the old cache-only backend requires one fresh login. Session
   lifetime is `SESSION_COOKIE_AGE` (default two weeks), optionally ending at browser close.
 - An anonymous request to a login-protected view gets a 401 page instead of a login redirect,
   and a `PermissionDenied` gets a 403 page

@@ -47,27 +47,41 @@ See [settings](../../docs/reference/settings.md) for the email settings in full.
 ## Throttling
 
 `SignUp`, `CustomLoginView` and `CustomPasswordResetView` use
-`accounts.throttle.AuthThrottleMixin`. Every POST counts against a fixed window in the
-cache, keyed on the view (`signup`, `login`, `password_reset`), the client address
-(`REMOTE_ADDR`) and, for log in and password reset, the posted username or email
-(trimmed, case-insensitive). Sign-up counts per address only. Once a key passes
-`AUTH_THROTTLE_LIMIT` posts (default 10) in the current `AUTH_THROTTLE_WINDOW` (default
-300 seconds) the view answers `429` with an empty form and the message "Too many
-attempts. Please wait a few minutes and try again." The form is not run, so no password
-is checked, no account is created and no email is sent. GET requests are not counted.
-Log in and password reset also count every post from the address, whatever username or
-email it names, against `AUTH_THROTTLE_CLIENT_LIMIT` (default 50), so rotating accounts
-from one address does not escape the throttle. The windows are fixed, so a burst that
-spans a window boundary can reach twice a limit.
+`accounts.throttle.AuthThrottleMixin`. Every POST counts against the view scope
+(`signup`, `login`, `password_reset`), client address and, for login/reset, normalized
+username or email. Sign-up counts per address. Defaults are 10 attempts per account
+and 50 per address over 300 seconds; changing the named account does not reset the
+per-address counter. GET requests are not counted. Refused POSTs return `429` and an
+empty form, without checking passwords, creating users or sending reset mail.
 
-- The counters live in the default cache (Redis in production). If the cache cannot
-  count, the attempt is allowed. `check --deploy` warns (`accounts.W001`) when the default
-  cache is per process (`LocMemCache`, `DummyCache`), since each worker would count alone.
-- Behind a reverse proxy, `REMOTE_ADDR` is the proxy's address unless Daphne runs with
-  `--proxy-headers`. Without it every visitor shares one address, so the sign-up limit
-  and the per-address log-in and reset limits become site-wide.
-- `client.login()` and `force_login()` in tests bypass the views and are never counted.
-- The admin login (`/admin/login/`) and password change are not throttled.
+The shared cache holds the current and previous time buckets, retained for two
+windows. The estimate is `current + previous * (1 - elapsed / window)`. A full
+previous bucket therefore still applies just after a boundary, then gradually
+decays. This approximation assumes uniformly distributed attempts in the previous
+bucket; its error is bounded by that bucket's count. It is not an exact rolling
+log. Rejected attempts also count, so continued attempts extend the refusal.
+
+If a counter expires between initialization and increment, it is retried once.
+Missing/unreadable counters and cache exceptions fail closed for **all three forms**,
+including login, and log an error through `accounts.throttle`. Redis outages therefore
+block new authentication attempts; existing database-backed sessions still work.
+`accounts.W001` from `check --deploy` warns about per-process cache backends.
+
+### Client addresses and proxy trust
+
+`AUTH_THROTTLE_TRUSTED_PROXIES` is a comma-separated environment list of trusted proxy
+IPs/CIDRs, for example `127.0.0.1,::1` for a local reverse proxy. With it unset,
+forwarded headers are ignored and deploy check `accounts.W002` requests an explicit
+decision. Set an empty value for a direct deployment using `REMOTE_ADDR` only.
+Invalid proxy addresses/networks produce `accounts.E001` at `check --deploy`.
+
+`client_address()` accepts `X-Forwarded-For` only from trusted socket peers, walking
+the chain right to left and stopping at the first untrusted address. Spoofed entries
+to the left cannot reset a client's counter. Malformed trusted hops fall back to the
+socket peer. Do not trust the entire public address space. Keep the ASGI listener
+private behind the proxy; if Daphne also processes proxy headers, that layer must
+receive only sanitized headers from the actual proxy. Otherwise the application
+cannot recover the original socket peer after `REMOTE_ADDR` has been rewritten.
 
 ## Sign up
 

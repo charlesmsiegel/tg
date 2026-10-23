@@ -119,7 +119,7 @@ these from outside:
 | What | Why | How to notice a problem |
 |------|-----|-------------------------|
 | The ASGI process | Serves all HTTP and WebSocket traffic | HTTP probe of `/` (the public home page, `core:home`) |
-| Redis | Cache, sessions and channel layer ([Deployment](deployment.md#redis)) | `redis-cli ping`; users suddenly logged out; scene chat stops updating live. Cache errors are suppressed (`IGNORE_EXCEPTIONS`), so the application logs do not show a Redis outage. |
+| Redis | Cache, sessions and channel layer ([Deployment](deployment.md#redis)) | `redis-cli ping`; auth forms answer 429 and scene chat stops updating live. Ignored cache exceptions are logged by `tg` to `logs/error.log`; fail-closed auth refusals use `accounts.throttle`. Database-backed sessions survive. |
 | WebSockets through the proxy | Live scene chat | Open a scene page: the connection state shows in the page (`data-ws-state`). Handshake failures appear in the proxy and Daphne logs, not in `logs/`. |
 | Disk: `db.sqlite3` and its directory | SQLite needs space for the database and its journal | Free space on the volume; write errors in `logs/error.log` |
 | Disk: `logs/` | Production rotation bounds `app.log` and `error.log` at about 110 MB each and `warning.log` at about 30 MB; development files grow without limit | Directory size |
