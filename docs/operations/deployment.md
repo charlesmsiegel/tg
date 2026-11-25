@@ -148,7 +148,7 @@ Production uses one Redis server for three things, all configured in `production
 | Use | Setting | Configuration |
 |-----|---------|---------------|
 | Cache | `CACHES["default"]` | `django_redis.cache.RedisCache` at `REDIS_URL`; `KEY_PREFIX = "tg"`; `TIMEOUT = 300`; zlib compression; `SOCKET_CONNECT_TIMEOUT` and `SOCKET_TIMEOUT` 5 s; pool of 50 connections; `IGNORE_EXCEPTIONS = True` |
-| Sessions | `SESSION_ENGINE = "django.contrib.sessions.backends.cache"`, `SESSION_CACHE_ALIAS = "default"` | Sessions live only in the cache above |
+| Sessions | `SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"`, `SESSION_CACHE_ALIAS = "default"` | Database-backed sessions with Redis read-through caching |
 | Channel layer | `CHANNEL_LAYERS["default"]` | `channels_redis.core.RedisChannelLayer` at `REDIS_URL`, `capacity` 1500, `expiry` 10 |
 
 When `REDIS_URL` is set, cache, sessions and the channel layer share that one Redis database.
@@ -157,13 +157,20 @@ variable is unset.
 
 What happens when Redis is unavailable:
 
-- Cache reads miss and writes are dropped silently (`IGNORE_EXCEPTIONS`), so pages still render,
-  more slowly.
-- Sessions cannot be read or stored: every visitor is anonymous and logins do not persist.
+- Cache reads miss and writes are dropped (`IGNORE_EXCEPTIONS`), so pages still render,
+  more slowly. Ignored exceptions reach `logs/error.log` through the `tg` logger.
+- Existing sessions read/write their authoritative database copy, surviving Redis loss.
+- New login, sign-up and password-reset attempts return 429 when the throttle cannot
+  count them; `accounts.throttle` logs the refusal. Restore Redis to restore these forms.
 - The scene-chat WebSocket cannot join or broadcast to its group. A post saved over HTTP still
   commits; its broadcast runs in a `transaction.on_commit` callback
   ([`game/scene_chat.py`](../../game/scene_chat.py)) whose failure is logged to
   `logs/error.log` and does not fail the post.
+
+On the first rollout from cache-only to `cached_db` sessions, existing users must log
+in again: old Redis-only sessions are not automatically copied. Ensure Django's
+sessions table exists (`python manage.py migrate`). Later Redis outages do not erase
+sessions created under the new backend.
 
 Development needs no Redis: it uses `LocMemCache`, database sessions and
 `InMemoryChannelLayer` ([Installation](../getting-started/installation.md#redis)).
@@ -187,9 +194,8 @@ DJANGO_ENVIRONMENT=production daphne -b 127.0.0.1 -p 8000 tg.asgi:application
 ```
 
 Useful Daphne options (from `daphne --help`): `-u/--unix-socket` to bind a socket instead of
-a port, `--proxy-headers` to take the client address from `X-Forwarded-For` (use it behind
-a proxy: the log-in throttle counts attempts per client address, see
-[Security](security.md)),
+a port, `--proxy-headers` to let Daphne rewrite client addresses from forwarded headers
+(only when the listener is private and the proxy sanitizes those headers),
 `--access-log` to choose where the access log goes, and `--websocket-max-message-size` /
 `--websocket-max-frame-size`.
 
@@ -200,13 +206,23 @@ import path all assume it as the working directory.
 serves HTTP only; under a WSGI server there is no WebSocket endpoint, so scene pages lose
 live updates.
 
-You can run more than one ASGI process: the Redis channel layer and Redis-backed sessions are
+You can run more than one ASGI process: the Redis channel layer and database-backed sessions are
 shared between them. Each process loads the static-file manifest and Python code at start, so
 restart every process after an update.
 
+Configure `AUTH_THROTTLE_TRUSTED_PROXIES` with the IPs/CIDRs of actual proxy peers
+(for a local proxy, for example `127.0.0.1,::1`). The application walks forwarded
+addresses from the trusted end; without this setting it ignores headers and uses
+`REMOTE_ADDR`. An empty environment value explicitly chooses direct access. Run
+`python manage.py check --deploy` to review missing/invalid proxy trust configuration.
+See [authentication](../../accounts/docs/authentication.md#client-addresses-and-proxy-trust).
+
 ## Reverse proxy requirements
 
-The repository contains no proxy configuration. Whatever you use must:
+The installer generates nginx configuration that replaces client-supplied
+`X-Forwarded-For` with `$remote_addr` before Daphne processes proxy headers.
+Existing installations must apply this nginx change too; app-level checks cannot
+recover a socket peer that Daphne already rewrote from an unsafe header. Custom proxy setups must:
 
 - **Terminate TLS and set `X-Forwarded-Proto`.** `SECURE_PROXY_SSL_HEADER` is
   `("HTTP_X_FORWARDED_PROTO", "https")`. Without the header Django treats every request as

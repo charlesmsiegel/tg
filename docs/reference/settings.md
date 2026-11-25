@@ -110,7 +110,8 @@ active. `BASE_DIR` is the repository root.
 | `PASSWORD_RESET_TIMEOUT` | `3600` (one hour) | `PASSWORD_RESET_TIMEOUT` | Lifetime of password-reset links in seconds. |
 | `AUTH_THROTTLE_LIMIT` | `10` | `AUTH_THROTTLE_LIMIT` | POSTs to log in, sign up or password reset allowed per client address (and username or email) per window (`accounts.throttle`). |
 | `AUTH_THROTTLE_CLIENT_LIMIT` | `50` | `AUTH_THROTTLE_CLIENT_LIMIT` | POSTs to log in or password reset allowed per client address per window, whatever username or email they name. |
-| `AUTH_THROTTLE_WINDOW` | `300` | `AUTH_THROTTLE_WINDOW` | Throttle window in seconds. |
+| `AUTH_THROTTLE_WINDOW` | `300` | `AUTH_THROTTLE_WINDOW` | Weighted two-bucket throttle window in seconds; cache failures refuse attempts. |
+| `AUTH_THROTTLE_TRUSTED_PROXIES` | `None` | `AUTH_THROTTLE_TRUSTED_PROXIES` | Comma-separated proxy IPs/CIDRs allowed to supply forwarded client addresses. Unset warns on deploy; empty explicitly uses `REMOTE_ADDR` only. |
 
 ## Internationalisation
 
@@ -141,7 +142,7 @@ active. `BASE_DIR` is the repository root.
 | `CACHES["default"]["TIMEOUT"]` | `300` | `300` | none |
 | `CACHES["default"]["OPTIONS"]` | `MAX_ENTRIES: 1000` | django-redis `DefaultClient`; pool `max_connections: 50`, `retry_on_timeout: True`; `SOCKET_CONNECT_TIMEOUT: 5`, `SOCKET_TIMEOUT: 5`; zlib compressor; `IGNORE_EXCEPTIONS: True` (cache errors are swallowed) | none |
 | `CACHES["default"]["KEY_PREFIX"]` | none | `tg` | none |
-| `SESSION_ENGINE` | Django default (database) | `django.contrib.sessions.backends.cache` | none |
+| `SESSION_ENGINE` | Django default (database) | `django.contrib.sessions.backends.cached_db` | none |
 | `SESSION_CACHE_ALIAS` | Django default | `default` | none |
 | `SESSION_COOKIE_NAME` | Django default (`sessionid`) | `sessionid` | none |
 | `SESSION_COOKIE_AGE` | Django default (two weeks) | env, default `1209600` | `SESSION_COOKIE_AGE` |

@@ -144,13 +144,21 @@ LOGIN_REDIRECT_URL = "core:home"
 LOGOUT_REDIRECT_URL = "core:home"
 
 # Throttle for POSTs to log in, sign up and password reset (accounts.throttle): at most
-# AUTH_THROTTLE_LIMIT per client address (and username or email) per window of
-# AUTH_THROTTLE_WINDOW seconds; further posts get 429 until the window ends.
+# AUTH_THROTTLE_LIMIT per address/account over a weighted AUTH_THROTTLE_WINDOW.
+# The previous bucket decays gradually; cache failures refuse attempts with 429.
 AUTH_THROTTLE_LIMIT = int(os.environ.get("AUTH_THROTTLE_LIMIT", "10"))
 # Log in and password reset also cap all posts from one address, whatever account they
 # name, so rotating usernames or emails does not get past the limit.
 AUTH_THROTTLE_CLIENT_LIMIT = int(os.environ.get("AUTH_THROTTLE_CLIENT_LIMIT", "50"))
 AUTH_THROTTLE_WINDOW = int(os.environ.get("AUTH_THROTTLE_WINDOW", "300"))
+# Trust only these socket peers/intermediate proxies when resolving X-Forwarded-For.
+# Unset (None) warns at deploy; explicitly empty means direct REMOTE_ADDR-only access.
+AUTH_THROTTLE_TRUSTED_PROXIES = (
+    env_list("AUTH_THROTTLE_TRUSTED_PROXIES")
+    if "AUTH_THROTTLE_TRUSTED_PROXIES" in os.environ
+    else None
+)
+
 
 # Email Configuration
 # ====================

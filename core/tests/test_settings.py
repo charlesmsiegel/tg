@@ -4,13 +4,15 @@ import importlib
 import os
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.backends.django import DjangoTemplates
 from django.template.loaders.cached import Loader as CachedLoader
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase, override_settings
+from django_redis.cache import RedisCache
+from django_redis.exceptions import ConnectionInterrupted
 
 import tg
 
@@ -104,6 +106,18 @@ class SettingsSecurityTest(TestCase):
 class SettingsEnvironmentTest(SimpleTestCase):
     """DJANGO_ENVIRONMENT chooses the settings module, from the environment or .env."""
 
+    def test_proxy_trust_is_explicitly_configured_from_environment(self):
+        for value, expected in (
+            (None, None),
+            ("", []),
+            ("10.0.0.2, 2001:db8::/32", ["10.0.0.2", "2001:db8::/32"]),
+        ):
+            with self.subTest(value=value):
+                module = load_settings(
+                    {"DJANGO_ENVIRONMENT": "development", "AUTH_THROTTLE_TRUSTED_PROXIES": value}
+                )
+                self.assertEqual(module.AUTH_THROTTLE_TRUSTED_PROXIES, expected)
+
     def test_unset_environment_loads_development(self):
         module = load_settings({"DJANGO_ENVIRONMENT": None})
         self.assertTrue(module.DEBUG)
@@ -160,6 +174,25 @@ class SettingsEnvironmentTest(SimpleTestCase):
 
 class ProductionSettingsTest(SimpleTestCase):
     """Tests for production-specific settings."""
+
+    def test_production_sessions_have_database_backing_and_log_cache_failures(self):
+        module = load_settings(PRODUCTION_ENV)
+        self.assertEqual(module.SESSION_ENGINE, "django.contrib.sessions.backends.cached_db")
+        self.assertEqual(module.SESSION_CACHE_ALIAS, "default")
+        self.assertTrue(module.DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS)
+        self.assertEqual(module.DJANGO_REDIS_LOGGER, "tg")
+
+    def test_suppressed_redis_errors_are_logged_by_the_configured_logger(self):
+        module = load_settings(PRODUCTION_ENV)
+        with override_settings(
+            DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS=module.DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS,
+            DJANGO_REDIS_LOGGER=module.DJANGO_REDIS_LOGGER,
+        ):
+            backend = RedisCache("redis://unused/1", module.CACHES["default"])
+            backend._client = MagicMock()
+            backend._client.incr.side_effect = ConnectionInterrupted(None)
+            with self.assertLogs("tg", "ERROR"):
+                self.assertIsNone(backend.incr("auth-counter"))
 
     def test_conn_max_age_set_in_production(self):
         """Production keeps database connections for 600 seconds by default."""
@@ -243,3 +276,40 @@ class ProductionSettingsTest(SimpleTestCase):
         load_settings(PRODUCTION_ENV)
         module = load_settings({"DJANGO_ENVIRONMENT": "development"})
         self.assertNotIn("mail_admins", module.LOGGING["handlers"])
+
+
+class ProductionSessionOutageTests(TestCase):
+    def test_session_reads_and_writes_survive_suppressed_cache_failure(self):
+        module = load_settings(PRODUCTION_ENV)
+        store_class = importlib.import_module(module.SESSION_ENGINE).SessionStore
+        store = store_class()
+        store["player"] = 123
+        store.save()
+        session_key = store.session_key
+        unavailable_cache = MagicMock()
+        unavailable_cache.get.return_value = None
+        unavailable_cache.set.return_value = None
+        unavailable_cache.add.return_value = None
+        recovered = store_class(session_key)
+        recovered._cache = unavailable_cache
+        self.assertEqual(recovered["player"], 123)
+        recovered["player"] = 456
+        recovered.save()
+        reloaded = store_class(session_key)
+        reloaded._cache = unavailable_cache
+        self.assertEqual(reloaded["player"], 456)
+
+    def test_new_session_can_be_saved_during_cache_outage(self):
+        module = load_settings(PRODUCTION_ENV)
+        store_class = importlib.import_module(module.SESSION_ENGINE).SessionStore
+        unavailable_cache = MagicMock()
+        unavailable_cache.get.return_value = None
+        unavailable_cache.set.return_value = None
+        unavailable_cache.add.return_value = None
+        store = store_class()
+        store._cache = unavailable_cache
+        store["player"] = 123
+        store.save()
+        reloaded = store_class(store.session_key)
+        reloaded._cache = unavailable_cache
+        self.assertEqual(reloaded["player"], 123)

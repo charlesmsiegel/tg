@@ -251,15 +251,19 @@ CACHES = {
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
-            "IGNORE_EXCEPTIONS": True,  # Don't crash if Redis is down
+            "IGNORE_EXCEPTIONS": True,  # Sessions fall back to DB; auth attempts fail closed.
         },
         "KEY_PREFIX": "tg",
         "TIMEOUT": 300,  # Default timeout: 5 minutes
     }
 }
 
-# Session backend using Redis
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# Ignored cache errors still reach the production error log through tg's handlers.
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+DJANGO_REDIS_LOGGER = "tg"
+
+# Database-authoritative sessions; Redis is a read-through cache.
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_CACHE_ALIAS = "default"
 
 # Channel Layers Configuration for Production
